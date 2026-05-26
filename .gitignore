@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Editable installs
+*.dist-info/
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp

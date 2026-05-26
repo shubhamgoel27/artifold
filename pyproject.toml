@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-folio"
+version = "0.5.0"
+description = "Local-first library for your AI-generated HTML artifacts (Claude, ChatGPT, v0, …)."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Shubham Goel" }]
+keywords = ["llm", "claude", "chatgpt", "artifacts", "html", "dashboard", "local-first"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "platformdirs>=4.0",
+  "playwright==1.51.0",
+  "watchdog>=4.0",
+]
+
+[project.optional-dependencies]
+# Smart layer: LLM-derived intent metadata for search & generation.
+# Pure local-only Folio works without this. Opt in only if you want it.
+intent = ["anthropic>=0.40"]
+
+[project.scripts]
+folio = "folio.cli:main"
+
+[project.urls]
+Homepage      = "https://github.com/shubhamgoel27/folio"
+Repository    = "https://github.com/shubhamgoel27/folio"
+Issues        = "https://github.com/shubhamgoel27/folio/issues"
+Documentation = "https://github.com/shubhamgoel27/folio#readme"
+Changelog     = "https://github.com/shubhamgoel27/folio/blob/main/tasks/"
+
+[tool.hatch.build.targets.wheel]
+packages = ["folio"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"folio/template.html" = "folio/template.html"
+"folio/skills/craft/SKILL.md" = "folio/skills/craft/SKILL.md"
