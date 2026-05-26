@@ -48,3 +48,13 @@ packages = ["artifold"]
 [tool.hatch.build.targets.wheel.force-include]
 "artifold/template.html" = "artifold/template.html"
 "artifold/skills/craft/SKILL.md" = "artifold/skills/craft/SKILL.md"
+
+[tool.hatch.build.targets.sdist]
+# Demo assets (docs/) and dev notes (tasks/) don't belong in the sdist.
+# Keep the source distribution lean for `pip install --no-binary`.
+include = [
+  "/artifold",
+  "/README.md",
+  "/LICENSE",
+  "/pyproject.toml",
+]
