@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <title>30-Day Beginner Strength Tracker</title>
 <style>
+  @page { size: A4; margin: 12mm; }
   * { box-sizing: border-box; }
   body {
-    font-family: Georgia, "Times New Roman", serif;
-    background: #f7f5f0;
-    color: #1f1f1f;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 24px;
+    background: #f5f3ee;
+    color: #1f1f1f;
     line-height: 1.4;
   }
   .page {
@@ -18,191 +19,205 @@
     margin: 0 auto;
     background: #fff;
     padding: 32px 36px;
-    border: 2px solid #1f1f1f;
-    box-shadow: 6px 6px 0 #1f1f1f;
+    border: 1px solid #d8d4cb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   header {
-    border-bottom: 3px double #1f1f1f;
+    border-bottom: 3px solid #1f1f1f;
     padding-bottom: 16px;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   h1 {
-    font-size: 30px;
-    margin: 0 0 6px 0;
-    letter-spacing: 0.5px;
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: -0.5px;
   }
   .subtitle {
-    font-style: italic;
-    color: #555;
-    font-size: 14px;
-  }
-  .meta-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 14px;
+    color: #5a5a5a;
     font-size: 13px;
+    margin-top: 4px;
   }
-  .meta-grid div {
-    border: 1px solid #1f1f1f;
-    padding: 6px 10px;
-    background: #faf8f2;
+  .meta {
+    font-size: 12px;
+    color: #444;
+    text-align: right;
   }
-  .meta-grid span {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 1px;
-    display: block;
-    color: #777;
+  .meta label {
+    display: inline-block;
+    margin-left: 12px;
+  }
+  .meta .line {
+    display: inline-block;
+    border-bottom: 1px solid #888;
+    width: 110px;
+    height: 14px;
+    vertical-align: bottom;
   }
   .legend {
     display: flex;
     flex-wrap: wrap;
     gap: 14px;
-    margin: 14px 0 22px 0;
     font-size: 12px;
-    align-items: center;
+    margin-bottom: 18px;
+    padding: 10px 14px;
+    background: #faf8f3;
+    border: 1px solid #e6e1d4;
   }
-  .legend .tag {
+  .legend .swatch {
     display: inline-block;
-    padding: 3px 10px;
-    border: 1px solid #1f1f1f;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-size: 11px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #777;
+    vertical-align: middle;
+    margin-right: 6px;
   }
-  .tag.push   { background: #ffe7d6; }
-  .tag.pull   { background: #d8e8ff; }
-  .tag.legs   { background: #dff5d8; }
-  .tag.full   { background: #f1e2ff; }
-  .tag.rest   { background: #ececec; color: #555; }
+  .sw-push  { background: #d9e8d3; }
+  .sw-pull  { background: #d6e1ee; }
+  .sw-legs  { background: #ecdcd2; }
+  .sw-core  { background: #f0e6c8; }
+  .sw-full  { background: #e3d8e9; }
+  .sw-rest  { background: #ececec; }
+
   .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .day {
-    border: 1.5px solid #1f1f1f;
-    padding: 10px 10px 12px 10px;
-    background: #fffefb;
-    min-height: 230px;
-    position: relative;
+    border: 1px solid #c8c2b4;
+    padding: 10px 10px 8px;
+    background: #fff;
+    font-size: 11px;
+    min-height: 180px;
     display: flex;
     flex-direction: column;
   }
-  .day .head {
+  .day.push  { background: #f1f7ee; }
+  .day.pull  { background: #eef3f8; }
+  .day.legs  { background: #faefe7; }
+  .day.core  { background: #fbf5e0; }
+  .day.full  { background: #f4ecf6; }
+  .day.rest  { background: #f3f3f3; }
+
+  .day-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px dashed #888;
-    padding-bottom: 5px;
     margin-bottom: 6px;
+    border-bottom: 1px solid #bbb4a4;
+    padding-bottom: 4px;
   }
-  .day .head .dnum {
-    font-weight: bold;
-    font-size: 14px;
+  .day-num {
+    font-weight: 700;
+    font-size: 13px;
   }
-  .day .head .tag {
+  .day-tag {
     font-size: 9px;
-    padding: 2px 6px;
+    text-transform: uppercase;
     letter-spacing: 0.6px;
+    padding: 2px 5px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 2px;
+    color: #333;
   }
-  .day ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: 11.5px;
-    flex: 1;
-  }
-  .day ul li {
-    margin: 4px 0;
-    display: flex;
-    align-items: flex-start;
-    gap: 5px;
-    line-height: 1.25;
-  }
-  .day ul li .box {
-    width: 11px;
-    height: 11px;
-    border: 1.2px solid #1f1f1f;
-    flex-shrink: 0;
-    margin-top: 2px;
+  .check {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #444;
     background: #fff;
+    vertical-align: middle;
   }
-  .day .footer {
-    margin-top: 6px;
-    border-top: 1px dotted #aaa;
-    padding-top: 5px;
-    font-size: 10px;
-    color: #444;
+  ul.ex {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 6px;
+    flex-grow: 1;
+  }
+  ul.ex li {
+    padding: 2px 0;
+    border-bottom: 1px dotted #c7c1b3;
     display: flex;
     justify-content: space-between;
+    gap: 6px;
   }
-  .day.rest {
-    background: #f4f4f4;
+  ul.ex li:last-child { border-bottom: none; }
+  .ex-name { color: #1f1f1f; }
+  .ex-spec { color: #555; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .rest-note {
+    font-size: 10px;
+    color: #555;
+    margin-top: auto;
+    padding-top: 4px;
+    border-top: 1px solid #c8c2b4;
+    font-style: italic;
   }
-  .day.rest .body {
-    flex: 1;
+  .rest-day-body {
+    flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    font-style: italic;
     color: #555;
+    font-style: italic;
+    text-align: center;
+    padding: 0 6px;
+  }
+
+  .week-label {
+    grid-column: 1 / -1;
+    background: #1f1f1f;
+    color: #fff;
+    padding: 6px 10px;
     font-size: 12px;
-    padding: 10px 6px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 6px;
   }
-  .complete-stamp {
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: #1f1f1f;
+  .week-label:first-child { margin-top: 0; }
+  .week-label .pct {
+    float: right;
+    font-weight: normal;
+    color: #ddd;
+    text-transform: none;
+    letter-spacing: 0;
   }
-  .complete-stamp .big {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid #1f1f1f;
-    background: #fff;
-  }
-  section.notes {
-    margin-top: 28px;
-    border-top: 3px double #1f1f1f;
-    padding-top: 18px;
+
+  .footer {
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 2px solid #1f1f1f;
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 24px;
+    font-size: 12px;
   }
-  section.notes h2 {
-    font-size: 16px;
-    margin: 0 0 8px 0;
+  .footer h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-  .progression p, .tips p { font-size: 13px; margin: 6px 0; }
-  .progression ul, .tips ul { font-size: 13px; padding-left: 20px; }
-  footer {
-    margin-top: 22px;
-    text-align: center;
-    font-size: 11px;
-    color: #777;
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
+  .footer ul {
+    margin: 0;
+    padding-left: 18px;
+    color: #333;
+  }
+  .footer ul li { margin-bottom: 4px; }
+  .notes-box {
+    border: 1px solid #c8c2b4;
+    min-height: 110px;
+    padding: 8px;
+    background: #fafaf6;
+    background-image: repeating-linear-gradient(transparent, transparent 19px, #e5e0d2 19px, #e5e0d2 20px);
   }
   @media print {
     body { background: #fff; padding: 0; }
-    .page { border: none; box-shadow: none; padding: 18px; }
-  }
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: repeat(3, 1fr); }
-    .meta-grid { grid-template-columns: repeat(2, 1fr); }
-    section.notes { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 540px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
+    .page { border: none; box-shadow: none; padding: 0; }
   }
 </style>
 </head>
@@ -210,358 +225,336 @@
 <div class="page">
 
   <header>
-    <h1>30-Day Beginner Strength Tracker</h1>
-    <div class="subtitle">A printable 4-week ramp covering push, pull, legs, and core. Tick the box after each set.</div>
-    <div class="meta-grid">
-      <div><span>Name</span> ____________________</div>
-      <div><span>Start Date</span> ___ / ___ / ____</div>
-      <div><span>Bodyweight</span> _______ lb / kg</div>
-      <div><span>Goal</span> ____________________</div>
+    <div>
+      <h1>30-Day Beginner Strength Tracker</h1>
+      <div class="subtitle">3 working sets unless noted &middot; rest 60-90s between sets &middot; tick the box when the workout is done</div>
     </div>
-    <div class="legend">
-      <strong style="font-size:12px;letter-spacing:1px;">SPLIT:</strong>
-      <span class="tag push">Push</span>
-      <span class="tag pull">Pull</span>
-      <span class="tag legs">Legs</span>
-      <span class="tag full">Full Body</span>
-      <span class="tag rest">Rest / Mobility</span>
-      <span style="font-size:11px;color:#666;margin-left:auto;">RIR = Reps In Reserve &middot; @ = working weight</span>
+    <div class="meta">
+      Name <span class="line"></span>
+      <label>Start date <span class="line"></span></label>
+      <label>Bodyweight <span class="line"></span></label>
     </div>
   </header>
 
+  <div class="legend">
+    <span><span class="swatch sw-push"></span>Push</span>
+    <span><span class="swatch sw-pull"></span>Pull</span>
+    <span><span class="swatch sw-legs"></span>Legs</span>
+    <span><span class="swatch sw-core"></span>Core</span>
+    <span><span class="swatch sw-full"></span>Full Body</span>
+    <span><span class="swatch sw-rest"></span>Rest / Mobility</span>
+    <span style="margin-left:auto;color:#555">DB = dumbbell &middot; BW = bodyweight &middot; AMRAP = as many reps as possible</span>
+  </div>
+
   <div class="grid">
 
-    <!-- WEEK 1: Foundation (light loads, learn movement) -->
-    <div class="day">
-      <div class="head"><span class="dnum">Day 1 &middot; Mon</span><span class="tag full">Full</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 3 &times; 8 @ 15 lb</li>
-        <li><span class="box"></span>Push-Up (knee ok) &mdash; 3 &times; 6</li>
-        <li><span class="box"></span>DB Row &mdash; 3 &times; 8 @ 15 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 20 sec</li>
-        <li><span class="box"></span>Glute Bridge &mdash; 2 &times; 12</li>
+    <!-- WEEK 1: Foundation -->
+    <div class="week-label">Week 1 &mdash; Foundation (learn the movements, light loads) <span class="pct">Target effort: 5-6 / 10</span></div>
+
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 1</span><span class="day-tag">Full Body</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
+        <li><span class="ex-name">Push-up (knee)</span><span class="ex-spec">3 x 8</span></li>
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
+        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 20s</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~25 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 90s. Focus: form.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 2 &middot; Tue</span><span class="tag rest">Rest</span></div>
-      <div class="body">Active recovery: 20 min walk + 5 min hip mobility.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 2</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Walk 20-30 min<br>+ 5 min stretching</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 3 &middot; Wed</span><span class="tag push">Push</span></div>
-      <ul>
-        <li><span class="box"></span>DB Bench Press &mdash; 3 &times; 8 @ 15 lb</li>
-        <li><span class="box"></span>Incline Push-Up &mdash; 3 &times; 8</li>
-        <li><span class="box"></span>DB Shoulder Press &mdash; 3 &times; 8 @ 10 lb</li>
-        <li><span class="box"></span>Tricep Kickback &mdash; 2 &times; 12 @ 8 lb</li>
-        <li><span class="box"></span>Dead Bug &mdash; 2 &times; 10/side</li>
+    <div class="day legs">
+      <div class="day-head"><span class="day-num">Day 3</span><span class="day-tag">Legs + Core</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Bodyweight Squat</span><span class="ex-spec">3 x 12</span></li>
+        <li><span class="ex-name">Reverse Lunge</span><span class="ex-spec">3 x 8/side</span></li>
+        <li><span class="ex-name">Glute Bridge</span><span class="ex-spec">3 x 12</span></li>
+        <li><span class="ex-name">Dead Bug</span><span class="ex-spec">3 x 8/side</span></li>
       </ul>
-      <div class="footer"><span>Rest 60-90 sec</span><span>~30 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 60s. Slow tempo.</div>
+    </div>
+
+    <div class="day push">
+      <div class="day-head"><span class="day-num">Day 4</span><span class="day-tag">Push</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Incline Push-up</span><span class="ex-spec">3 x 8</span></li>
+        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">3 x 8 / 10 lb</span></li>
+        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
+        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 25s</span></li>
+      </ul>
+      <div class="rest-note">Rest 90s.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 4 &middot; Thu</span><span class="tag rest">Rest</span></div>
-      <div class="body">Light cardio: 15-20 min easy bike or walk.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 5</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Light yoga<br>or easy bike ride</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 5 &middot; Fri</span><span class="tag legs">Legs</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 3 &times; 10 @ 20 lb</li>
-        <li><span class="box"></span>Reverse Lunge &mdash; 3 &times; 8/leg</li>
-        <li><span class="box"></span>DB RDL &mdash; 3 &times; 8 @ 20 lb</li>
-        <li><span class="box"></span>Calf Raise &mdash; 3 &times; 15</li>
-        <li><span class="box"></span>Side Plank &mdash; 2 &times; 15 sec/side</li>
+    <div class="day pull">
+      <div class="day-head"><span class="day-num">Day 6</span><span class="day-tag">Pull</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 15 lb</span></li>
+        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">3 x 8 / 20 lb</span></li>
+        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 10 / 10 lb</span></li>
+        <li><span class="ex-name">Superman Hold</span><span class="ex-spec">3 x 20s</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~30 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 75s.</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 6 &middot; Sat</span><span class="tag pull">Pull</span></div>
-      <ul>
-        <li><span class="box"></span>DB Row &mdash; 3 &times; 10 @ 20 lb</li>
-        <li><span class="box"></span>Band Pull-Apart &mdash; 3 &times; 15</li>
-        <li><span class="box"></span>DB Bicep Curl &mdash; 3 &times; 10 @ 10 lb</li>
-        <li><span class="box"></span>Superman Hold &mdash; 3 &times; 20 sec</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 25 sec</li>
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 7</span><span class="day-tag">Full Body</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 20 lb</span></li>
+        <li><span class="ex-name">Push-up (knee)</span><span class="ex-spec">3 x 10</span></li>
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 17.5 lb</span></li>
+        <li><span class="ex-name">Side Plank</span><span class="ex-spec">2 x 20s/side</span></li>
       </ul>
-      <div class="footer"><span>Rest 60-90 sec</span><span>~30 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">First week done!</div>
+    </div>
+
+    <!-- WEEK 2: Build -->
+    <div class="week-label">Week 2 &mdash; Build (add a rep or 2-3 lb where it feels easy) <span class="pct">Target effort: 6-7 / 10</span></div>
+
+    <div class="day legs">
+      <div class="day-head"><span class="day-num">Day 8</span><span class="day-tag">Legs</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 22.5 lb</span></li>
+        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">3 x 8 / 20 lb</span></li>
+        <li><span class="ex-name">Walking Lunge</span><span class="ex-spec">3 x 10/side</span></li>
+        <li><span class="ex-name">Calf Raise</span><span class="ex-spec">3 x 15</span></li>
+      </ul>
+      <div class="rest-note">Rest 90s.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 7 &middot; Sun</span><span class="tag rest">Rest</span></div>
-      <div class="body">Full rest. Stretch, hydrate, log Week 1 notes below.</div>
-      <div class="complete-stamp"><span class="big"></span>Week 1 logged</div>
+      <div class="day-head"><span class="day-num">Day 9</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Mobility:<br>hips + thoracic spine<br>10 min</div>
     </div>
 
-    <!-- WEEK 2: add a rep / +5 lb where comfortable -->
-    <div class="day">
-      <div class="head"><span class="dnum">Day 8 &middot; Mon</span><span class="tag full">Full</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 3 &times; 10 @ 20 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 3 &times; 8</li>
-        <li><span class="box"></span>DB Row &mdash; 3 &times; 10 @ 20 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 30 sec</li>
-        <li><span class="box"></span>Glute Bridge &mdash; 3 &times; 12</li>
+    <div class="day push">
+      <div class="day-head"><span class="day-num">Day 10</span><span class="day-tag">Push</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Push-up (full)</span><span class="ex-spec">3 x 6</span></li>
+        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">3 x 10 / 12.5 lb</span></li>
+        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">3 x 10 / 17.5 lb</span></li>
+        <li><span class="ex-name">Tricep Kickback</span><span class="ex-spec">3 x 10 / 8 lb</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~30 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 75s.</div>
+    </div>
+
+    <div class="day core">
+      <div class="day-head"><span class="day-num">Day 11</span><span class="day-tag">Core</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 30s</span></li>
+        <li><span class="ex-name">Dead Bug</span><span class="ex-spec">3 x 10/side</span></li>
+        <li><span class="ex-name">Bird Dog</span><span class="ex-spec">3 x 8/side</span></li>
+        <li><span class="ex-name">Russian Twist</span><span class="ex-spec">3 x 20 / 10 lb</span></li>
+      </ul>
+      <div class="rest-note">Rest 45s.</div>
+    </div>
+
+    <div class="day pull">
+      <div class="day-head"><span class="day-num">Day 12</span><span class="day-tag">Pull</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 20 lb</span></li>
+        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">3 x 8 / 25 lb</span></li>
+        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 10 / 12.5 lb</span></li>
+        <li><span class="ex-name">Face Pull (band)</span><span class="ex-spec">3 x 15</span></li>
+      </ul>
+      <div class="rest-note">Rest 75s.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 9 &middot; Tue</span><span class="tag rest">Rest</span></div>
-      <div class="body">Mobility: cat-cow, world's greatest stretch, 90/90 hips.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 13</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Walk 30-40 min<br>foam roll quads + back</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 10 &middot; Wed</span><span class="tag push">Push</span></div>
-      <ul>
-        <li><span class="box"></span>DB Bench Press &mdash; 3 &times; 10 @ 20 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 3 &times; 10</li>
-        <li><span class="box"></span>DB Shoulder Press &mdash; 3 &times; 10 @ 12.5 lb</li>
-        <li><span class="box"></span>Tricep Kickback &mdash; 3 &times; 12 @ 10 lb</li>
-        <li><span class="box"></span>Dead Bug &mdash; 3 &times; 10/side</li>
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 14</span><span class="day-tag">Full Body</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 25 lb</span></li>
+        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 8</span></li>
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 22.5 lb</span></li>
+        <li><span class="ex-name">Plank</span><span class="ex-spec">2 x 40s</span></li>
       </ul>
-      <div class="footer"><span>Rest 75 sec</span><span>~32 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Halfway! Log how you feel.</div>
+    </div>
+
+    <!-- WEEK 3: Strength -->
+    <div class="week-label">Week 3 &mdash; Strength (heavier loads, lower reps on key lifts) <span class="pct">Target effort: 7-8 / 10</span></div>
+
+    <div class="day legs">
+      <div class="day-head"><span class="day-num">Day 15</span><span class="day-tag">Legs</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">4 x 6 / 30 lb</span></li>
+        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">4 x 6 / 30 lb</span></li>
+        <li><span class="ex-name">Bulgarian Split Sq.</span><span class="ex-spec">3 x 8/side / 10 lb</span></li>
+        <li><span class="ex-name">Calf Raise</span><span class="ex-spec">3 x 20</span></li>
+      </ul>
+      <div class="rest-note">Rest 2 min on heavy sets.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 11 &middot; Thu</span><span class="tag rest">Rest</span></div>
-      <div class="body">20-30 min brisk walk. Foam roll quads &amp; lats.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 16</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Easy walk<br>+ hip flexor stretch</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 12 &middot; Fri</span><span class="tag legs">Legs</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 4 &times; 10 @ 25 lb</li>
-        <li><span class="box"></span>Reverse Lunge &mdash; 3 &times; 10/leg @ 10 lb</li>
-        <li><span class="box"></span>DB RDL &mdash; 3 &times; 10 @ 25 lb</li>
-        <li><span class="box"></span>Calf Raise &mdash; 3 &times; 18</li>
-        <li><span class="box"></span>Side Plank &mdash; 2 &times; 20 sec/side</li>
+    <div class="day push">
+      <div class="day-head"><span class="day-num">Day 17</span><span class="day-tag">Push</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Push-up</span><span class="ex-spec">4 x 8</span></li>
+        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">4 x 6 / 17.5 lb</span></li>
+        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">4 x 6 / 22.5 lb</span></li>
+        <li><span class="ex-name">Lateral Raise</span><span class="ex-spec">3 x 12 / 7.5 lb</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~32 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 90s.</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 13 &middot; Sat</span><span class="tag pull">Pull</span></div>
-      <ul>
-        <li><span class="box"></span>DB Row &mdash; 4 &times; 10 @ 22.5 lb</li>
-        <li><span class="box"></span>Band Pull-Apart &mdash; 3 &times; 18</li>
-        <li><span class="box"></span>DB Bicep Curl &mdash; 3 &times; 10 @ 12.5 lb</li>
-        <li><span class="box"></span>Superman Hold &mdash; 3 &times; 25 sec</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 35 sec</li>
+    <div class="day pull">
+      <div class="day-head"><span class="day-num">Day 18</span><span class="day-tag">Pull</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">4 x 6 / 27.5 lb</span></li>
+        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">4 x 6 / 35 lb</span></li>
+        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
+        <li><span class="ex-name">Inverted Row</span><span class="ex-spec">3 x AMRAP</span></li>
       </ul>
-      <div class="footer"><span>Rest 75 sec</span><span>~32 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 90s.</div>
+    </div>
+
+    <div class="day core">
+      <div class="day-head"><span class="day-num">Day 19</span><span class="day-tag">Core</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 45s</span></li>
+        <li><span class="ex-name">Side Plank</span><span class="ex-spec">3 x 25s/side</span></li>
+        <li><span class="ex-name">Hollow Hold</span><span class="ex-spec">3 x 20s</span></li>
+        <li><span class="ex-name">Hanging Knee Raise</span><span class="ex-spec">3 x 6</span></li>
+      </ul>
+      <div class="rest-note">Rest 60s.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 14 &middot; Sun</span><span class="tag rest">Rest</span></div>
-      <div class="body">Full rest. Re-test Week 1 plank time. Note progress.</div>
-      <div class="complete-stamp"><span class="big"></span>Week 2 logged</div>
+      <div class="day-head"><span class="day-num">Day 20</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Full rest day<br>extra sleep tonight</div>
     </div>
 
-    <!-- WEEK 3: add volume / introduce variations -->
-    <div class="day">
-      <div class="head"><span class="dnum">Day 15 &middot; Mon</span><span class="tag full">Full</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 4 &times; 10 @ 25 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 4 &times; 8-10</li>
-        <li><span class="box"></span>DB Row &mdash; 4 &times; 10 @ 25 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 40 sec</li>
-        <li><span class="box"></span>Hip Thrust (BW) &mdash; 3 &times; 12</li>
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 21</span><span class="day-tag">Full Body</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 30 lb</span></li>
+        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 10</span></li>
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 27.5 lb</span></li>
+        <li><span class="ex-name">Farmer Carry</span><span class="ex-spec">3 x 30s / 30 lb</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~35 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Sustained effort.</div>
+    </div>
+
+    <!-- WEEK 4: Peak -->
+    <div class="week-label">Week 4 &mdash; Peak &amp; Test (push hardest sets, finish strong) <span class="pct">Target effort: 8-9 / 10</span></div>
+
+    <div class="day legs">
+      <div class="day-head"><span class="day-num">Day 22</span><span class="day-tag">Legs</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">4 x 5 / 35 lb</span></li>
+        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">4 x 5 / 40 lb</span></li>
+        <li><span class="ex-name">Reverse Lunge</span><span class="ex-spec">3 x 8/side / 15 lb</span></li>
+        <li><span class="ex-name">Glute Bridge</span><span class="ex-spec">3 x 12 / 25 lb</span></li>
+      </ul>
+      <div class="rest-note">Rest 2 min.</div>
+    </div>
+
+    <div class="day push">
+      <div class="day-head"><span class="day-num">Day 23</span><span class="day-tag">Push</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Push-up</span><span class="ex-spec">4 x 10</span></li>
+        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">4 x 5 / 20 lb</span></li>
+        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">4 x 5 / 25 lb</span></li>
+        <li><span class="ex-name">Lateral Raise</span><span class="ex-spec">3 x 12 / 10 lb</span></li>
+      </ul>
+      <div class="rest-note">Rest 2 min.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 16 &middot; Tue</span><span class="tag rest">Rest</span></div>
-      <div class="body">Mobility flow: 10 min. Optional 20 min easy zone-2 cardio.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 24</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Walk + mobility<br>20 min</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 17 &middot; Wed</span><span class="tag push">Push</span></div>
-      <ul>
-        <li><span class="box"></span>DB Bench Press &mdash; 4 &times; 8 @ 25 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 3 &times; 12</li>
-        <li><span class="box"></span>DB Shoulder Press &mdash; 3 &times; 10 @ 15 lb</li>
-        <li><span class="box"></span>Lateral Raise &mdash; 3 &times; 12 @ 7.5 lb</li>
-        <li><span class="box"></span>Tricep Kickback &mdash; 3 &times; 12 @ 10 lb</li>
+    <div class="day pull">
+      <div class="day-head"><span class="day-num">Day 25</span><span class="day-tag">Pull</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">4 x 5 / 30 lb</span></li>
+        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">4 x 5 / 40 lb</span></li>
+        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 8 / 17.5 lb</span></li>
+        <li><span class="ex-name">Inverted Row</span><span class="ex-spec">3 x AMRAP</span></li>
       </ul>
-      <div class="footer"><span>Rest 75 sec</span><span>~35 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Rest 2 min.</div>
+    </div>
+
+    <div class="day core">
+      <div class="day-head"><span class="day-num">Day 26</span><span class="day-tag">Core</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 60s</span></li>
+        <li><span class="ex-name">Side Plank</span><span class="ex-spec">3 x 30s/side</span></li>
+        <li><span class="ex-name">Hollow Hold</span><span class="ex-spec">3 x 30s</span></li>
+        <li><span class="ex-name">Hanging Knee Raise</span><span class="ex-spec">3 x 8</span></li>
+      </ul>
+      <div class="rest-note">Tight bracing.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 17.5 &middot; Thu</span><span class="tag rest">Rest</span></div>
-      <div class="body">Day 18 &mdash; Walk 30 min. Hydrate. Sleep target 8 hrs.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
+      <div class="day-head"><span class="day-num">Day 27</span><span class="day-tag">Rest</span><span class="check"></span></div>
+      <div class="rest-day-body">Full rest<br>prep for test days</div>
     </div>
 
-    <div class="day">
-      <div class="head"><span class="dnum">Day 19 &middot; Fri</span><span class="tag legs">Legs</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 4 &times; 12 @ 25 lb</li>
-        <li><span class="box"></span>Walking Lunge &mdash; 3 &times; 10/leg @ 12.5 lb</li>
-        <li><span class="box"></span>DB RDL &mdash; 4 &times; 10 @ 30 lb</li>
-        <li><span class="box"></span>Bulgarian Split Squat &mdash; 2 &times; 8/leg (BW)</li>
-        <li><span class="box"></span>Calf Raise &mdash; 3 &times; 20</li>
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 28</span><span class="day-tag">Full Body</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 35 lb</span></li>
+        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 12</span></li>
+        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 30 lb</span></li>
+        <li><span class="ex-name">Farmer Carry</span><span class="ex-spec">3 x 40s / 35 lb</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~38 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
-    </div>
-
-    <div class="day">
-      <div class="head"><span class="dnum">Day 20 &middot; Sat</span><span class="tag pull">Pull</span></div>
-      <ul>
-        <li><span class="box"></span>DB Row &mdash; 4 &times; 10 @ 27.5 lb</li>
-        <li><span class="box"></span>Inverted Row (BW) &mdash; 3 &times; 8</li>
-        <li><span class="box"></span>Band Pull-Apart &mdash; 3 &times; 20</li>
-        <li><span class="box"></span>DB Bicep Curl &mdash; 3 &times; 12 @ 12.5 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 45 sec</li>
-      </ul>
-      <div class="footer"><span>Rest 75 sec</span><span>~35 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
+      <div class="rest-note">Last build day.</div>
     </div>
 
     <div class="day rest">
-      <div class="head"><span class="dnum">Day 21 &middot; Sun</span><span class="tag rest">Rest</span></div>
-      <div class="body">Full rest. Photo / measurements optional. Plan Week 4.</div>
-      <div class="complete-stamp"><span class="big"></span>Week 3 logged</div>
+      <div class="day-head"><span class="day-num">Day 29</span><span class="day-tag">Deload</span><span class="check"></span></div>
+      <div class="rest-day-body">Easy 20-min walk<br>stretch hips, chest, lats</div>
     </div>
 
-    <!-- WEEK 4: Peak + light deload finish -->
-    <div class="day">
-      <div class="head"><span class="dnum">Day 22 &middot; Mon</span><span class="tag full">Full</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 4 &times; 12 @ 30 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 4 &times; 10-12</li>
-        <li><span class="box"></span>DB Row &mdash; 4 &times; 10 @ 27.5 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 50 sec</li>
-        <li><span class="box"></span>Hip Thrust &mdash; 3 &times; 12 @ 25 lb</li>
+    <div class="day full">
+      <div class="day-head"><span class="day-num">Day 30</span><span class="day-tag">Test Day</span><span class="check"></span></div>
+      <ul class="ex">
+        <li><span class="ex-name">Max Push-ups</span><span class="ex-spec">1 x AMRAP</span></li>
+        <li><span class="ex-name">Goblet Squat 5RM</span><span class="ex-spec">work up</span></li>
+        <li><span class="ex-name">DB Row 5RM</span><span class="ex-spec">work up</span></li>
+        <li><span class="ex-name">Max Plank Hold</span><span class="ex-spec">1 x max</span></li>
       </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~38 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
-    </div>
-
-    <div class="day rest">
-      <div class="head"><span class="dnum">Day 23 &middot; Tue</span><span class="tag rest">Rest</span></div>
-      <div class="body">Active recovery: yoga or 25 min walk + mobility.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
-    </div>
-
-    <div class="day">
-      <div class="head"><span class="dnum">Day 24 &middot; Wed</span><span class="tag push">Push</span></div>
-      <ul>
-        <li><span class="box"></span>DB Bench Press &mdash; 4 &times; 8 @ 30 lb</li>
-        <li><span class="box"></span>Push-Up &mdash; 4 &times; 12 (RIR 1)</li>
-        <li><span class="box"></span>DB Shoulder Press &mdash; 4 &times; 8 @ 17.5 lb</li>
-        <li><span class="box"></span>Lateral Raise &mdash; 3 &times; 12 @ 8 lb</li>
-        <li><span class="box"></span>Tricep Kickback &mdash; 3 &times; 12 @ 12.5 lb</li>
-      </ul>
-      <div class="footer"><span>Rest 75-90 sec</span><span>~38 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
-    </div>
-
-    <div class="day rest">
-      <div class="head"><span class="dnum">Day 25 &middot; Thu</span><span class="tag rest">Rest</span></div>
-      <div class="body">Light walk. Hydrate 3L. Carbs up before tomorrow.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
-    </div>
-
-    <div class="day">
-      <div class="head"><span class="dnum">Day 26 &middot; Fri</span><span class="tag legs">Legs</span></div>
-      <ul>
-        <li><span class="box"></span>Goblet Squat &mdash; 5 &times; 8 @ 32.5 lb</li>
-        <li><span class="box"></span>Walking Lunge &mdash; 3 &times; 12/leg @ 15 lb</li>
-        <li><span class="box"></span>DB RDL &mdash; 4 &times; 10 @ 32.5 lb</li>
-        <li><span class="box"></span>Bulgarian Split Squat &mdash; 3 &times; 8/leg @ 10 lb</li>
-        <li><span class="box"></span>Calf Raise &mdash; 3 &times; 22</li>
-      </ul>
-      <div class="footer"><span>Rest 90 sec</span><span>~40 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
-    </div>
-
-    <div class="day">
-      <div class="head"><span class="dnum">Day 27 &middot; Sat</span><span class="tag pull">Pull</span></div>
-      <ul>
-        <li><span class="box"></span>DB Row &mdash; 4 &times; 10 @ 30 lb</li>
-        <li><span class="box"></span>Inverted Row &mdash; 3 &times; 10</li>
-        <li><span class="box"></span>Band Pull-Apart &mdash; 3 &times; 20</li>
-        <li><span class="box"></span>DB Bicep Curl &mdash; 4 &times; 10 @ 15 lb</li>
-        <li><span class="box"></span>Plank &mdash; 3 &times; 60 sec</li>
-      </ul>
-      <div class="footer"><span>Rest 75 sec</span><span>~38 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Workout complete</div>
-    </div>
-
-    <div class="day rest">
-      <div class="head"><span class="dnum">Day 28 &middot; Sun</span><span class="tag rest">Rest</span></div>
-      <div class="body">Full rest before retest. Sleep 8+ hrs.</div>
-      <div class="complete-stamp"><span class="big"></span>Recovery done</div>
-    </div>
-
-    <div class="day">
-      <div class="head"><span class="dnum">Day 29 &middot; Mon</span><span class="tag full">Retest</span></div>
-      <ul>
-        <li><span class="box"></span>Max Push-Ups in 60 sec &mdash; ___</li>
-        <li><span class="box"></span>Goblet Squat 5RM &mdash; ___ lb</li>
-        <li><span class="box"></span>DB Row 8RM (per side) &mdash; ___ lb</li>
-        <li><span class="box"></span>Max Plank Hold &mdash; ___ sec</li>
-        <li><span class="box"></span>Compare vs Day 1 baseline</li>
-      </ul>
-      <div class="footer"><span>Rest as needed</span><span>~30 min</span></div>
-      <div class="complete-stamp"><span class="big"></span>Retest complete</div>
-    </div>
-
-    <div class="day rest">
-      <div class="head"><span class="dnum">Day 30 &middot; Tue</span><span class="tag rest">Celebrate</span></div>
-      <div class="body">Reflect, stretch, plan Month 2. You earned it.</div>
-      <div class="complete-stamp"><span class="big"></span>30 days done</div>
+      <div class="rest-note">Compare vs Day 1!</div>
     </div>
 
   </div>
 
-  <section class="notes">
-    <div class="progression">
-      <h2>How to progress</h2>
+  <div class="footer">
+    <div>
+      <h3>How to use this tracker</h3>
       <ul>
-        <li><strong>Add 1 rep</strong> per set each session until you hit the top of the range.</li>
-        <li><strong>Add 2.5-5 lb</strong> when you complete all sets at the top rep range with 1-2 RIR.</li>
-        <li><strong>Form first:</strong> if reps look ugly, repeat the day at the same weight.</li>
-        <li><strong>Rest:</strong> 60-90 sec on isolation, 90-120 sec on squats/RDLs.</li>
-        <li><strong>Tempo:</strong> 2 sec down, brief pause, controlled up.</li>
+        <li>Warm up 5 minutes: light cardio + arm circles + bodyweight squats before every workout.</li>
+        <li>If a set feels easier than RPE 7, add 1-2 reps or 2.5-5 lb next session.</li>
+        <li>If form breaks down, stop the set. Quality beats quantity every time.</li>
+        <li>Rest days are non-negotiable &mdash; muscle grows when you recover.</li>
+        <li>Eat ~0.7 g protein per lb bodyweight and sleep 7-9 hours nightly.</li>
+        <li>Missed a day? Just resume on the next scheduled day &mdash; don't double up.</li>
       </ul>
     </div>
-    <div class="tips">
-      <h2>Daily checklist</h2>
-      <ul>
-        <li><span style="border:1px solid #1f1f1f;display:inline-block;width:10px;height:10px;"></span> 5 min warm-up (bike or jumping jacks)</li>
-        <li><span style="border:1px solid #1f1f1f;display:inline-block;width:10px;height:10px;"></span> 0.7-1 g protein per lb bodyweight</li>
-        <li><span style="border:1px solid #1f1f1f;display:inline-block;width:10px;height:10px;"></span> 2-3 L water</li>
-        <li><span style="border:1px solid #1f1f1f;display:inline-block;width:10px;height:10px;"></span> 7-9 hrs sleep</li>
-        <li><span style="border:1px solid #1f1f1f;display:inline-block;width:10px;height:10px;"></span> Log weights used in margin</li>
-      </ul>
+    <div>
+      <h3>Notes &amp; PRs</h3>
+      <div class="notes-box"></div>
     </div>
-  </section>
-
-  <footer>
-    Print on US Letter or A4 (landscape recommended). Replace dumbbell weights with whatever pair you own &mdash; the rep targets matter more than the load.
-  </footer>
+  </div>
 
 </div>
 </body>

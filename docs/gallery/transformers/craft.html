@@ -1,374 +1,250 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="artifold:intent" content="Technical explainer of Transformer architecture for readers who know LSTMs and CNNs">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transformers — a working note for the LSTM-fluent</title>
+<meta name="artifold:intent" content="Technical explainer of the Transformer architecture for engineers fluent in LSTMs/CNNs.">
 <meta name="artifold:tool" content="claude">
-<meta name="artifold:prompt" content="Explainer of how Transformers work for someone who already understands LSTMs and convolutions but hasn't studied self-attention.">
-<title>Attention, Mechanised — A Working Guide to Transformers</title>
+<meta name="artifold:prompt" content="Explainer of how Transformers work for someone who understands LSTMs/CNNs. Cover RNN limits, QKV attention, multi-head, positional encoding, encoder-decoder, scaling.">
 <style>
-  /* ---------- design tokens ---------- */
-  :root {
-    /* neutral ramp */
-    --ink-0:   #14110d;
-    --ink-1:   #2a2620;
-    --ink-2:   #4a4338;
-    --ink-3:   #756b5c;
-    --ink-4:   #a89e8c;
-    --paper-0: #f5f1e8;
-    --paper-1: #ebe6da;
-    --paper-2: #ddd6c4;
-    --rule:    #d4ccb8;
-    /* single accent — used only for: equation tags, the Q/K/V trio in the diagram, the inline kbd marks */
-    --accent:  #8a2a1f;
-    --accent-soft: #f0d8d2;
+  /* ---- type scale: 12 / 14 / 16 / 20 / 28 / 44 ---- */
+  :root{
+    --t-xs: 12px;
+    --t-sm: 14px;
+    --t-md: 16px;
+    --t-lg: 20px;
+    --t-xl: 28px;
+    --t-xxl: 44px;
 
-    /* type scale — 6 sizes, hard cap */
-    --t-micro: 11px;
-    --t-small: 13px;
-    --t-body:  16px;
-    --t-lead:  20px;
-    --t-h2:    28px;
-    --t-h1:    52px;
-
-    --serif: "Iowan Old Style", "Charter", "Georgia", serif;
-    --sans:  -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
-    --mono:  "SF Mono", "JetBrains Mono", "Menlo", monospace;
+    --ink:        #1b1916;
+    --ink-2:      #5b554c;
+    --ink-3:      #8a8377;
+    --rule:       #d8d2c4;
+    --rule-soft:  #ece6d8;
+    --paper:      #f5f0e4;
+    --paper-2:    #efe9da;
+    --panel:      #faf6ec;
+    --mark:       #b04421;   /* one accent. used sparingly. */
+    --mark-soft:  #b0442118;
   }
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--paper-0);
-    color: var(--ink-0);
-    font-family: var(--serif);
-    font-size: var(--t-body);
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink)}
+  body{
+    font-family: "Iowan Old Style","Charter","Georgia","Cambria",serif;
+    font-size: var(--t-md);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  .mono{font-family:"SF Mono","Menlo","JetBrains Mono","Consolas",monospace}
 
-  /* ---------- page frame ---------- */
-  .page {
-    max-width: 1080px;
+  /* ---- layout: asymmetric, left numeral rail ---- */
+  .page{
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 72px 56px 96px;
+    padding: 88px 56px 120px;
   }
-
-  /* ---------- masthead ---------- */
-  .masthead {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: end;
-    border-bottom: 1px solid var(--ink-0);
-    padding-bottom: 18px;
-    margin-bottom: 56px;
+  header.masthead{
+    display:grid;
+    grid-template-columns: 72px 1fr;
     gap: 24px;
-  }
-  .masthead .lockup {
-    font-family: var(--sans);
-    font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-2);
-  }
-  .masthead .lockup .dot {
-    color: var(--accent);
-    font-family: var(--mono);
-  }
-  .masthead .meta {
-    font-family: var(--mono);
-    font-size: var(--t-micro);
-    color: var(--ink-3);
-    text-align: right;
-    line-height: 1.7;
-  }
-
-  /* ---------- title block ---------- */
-  .title-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    margin-bottom: 88px;
-    align-items: end;
-  }
-  h1 {
-    font-family: var(--serif);
-    font-size: var(--t-h1);
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    line-height: 1.02;
-    margin: 0;
-    color: var(--ink-0);
-  }
-  h1 em {
-    font-style: italic;
-    color: var(--ink-2);
-    font-weight: 400;
-  }
-  .standfirst {
-    font-family: var(--serif);
-    font-size: var(--t-lead);
-    line-height: 1.45;
-    color: var(--ink-1);
-    margin: 0;
-    font-style: italic;
-  }
-  .standfirst::before {
-    content: "";
-    display: block;
-    width: 36px;
-    height: 2px;
-    background: var(--accent);
-    margin-bottom: 18px;
-  }
-
-  /* ---------- section header ---------- */
-  section { margin-bottom: 72px; }
-  .section-head {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-    align-items: baseline;
-    gap: 24px;
-    margin-bottom: 28px;
-    padding-bottom: 14px;
     border-bottom: 1px solid var(--rule);
+    padding-bottom: 36px;
+    margin-bottom: 56px;
   }
-  .section-num {
-    font-family: var(--mono);
-    font-size: var(--t-small);
+  .colophon{
+    font-size: var(--t-xs);
     color: var(--ink-3);
     letter-spacing: 0.04em;
-  }
-  .section-num .sym { color: var(--accent); }
-  h2 {
-    font-family: var(--serif);
-    font-size: var(--t-h2);
-    font-weight: 600;
-    letter-spacing: -0.018em;
-    line-height: 1.15;
-    margin: 0;
-    color: var(--ink-0);
-  }
-
-  /* ---------- body grid: sidenote rail + main column ---------- */
-  .body-grid {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-    gap: 24px;
-  }
-  .body-grid > .rail {
-    font-family: var(--sans);
-    font-size: var(--t-micro);
-    color: var(--ink-3);
-    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding-top: 4px;
   }
-  .body-grid > .col {
-    max-width: 640px;
-  }
-  .body-grid > .col p {
-    margin: 0 0 16px;
-  }
-  .body-grid > .col p + p { margin-top: 0; }
-
-  /* ---------- prose details ---------- */
-  p strong {
-    font-weight: 600;
-    color: var(--ink-0);
-  }
-  kbd {
-    font-family: var(--mono);
-    font-size: 0.88em;
-    background: var(--accent-soft);
-    color: var(--accent);
-    padding: 1px 6px;
-    border-radius: 2px;
-  }
-  code {
-    font-family: var(--mono);
-    font-size: 0.88em;
-    color: var(--ink-1);
-    background: var(--paper-1);
-    padding: 1px 5px;
-    border-radius: 2px;
-  }
-
-  /* ---------- equation block ---------- */
-  .eq {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 16px;
-    background: transparent;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    padding: 22px 0;
-    margin: 28px 0;
-  }
-  .eq .formula {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: var(--t-lead);
-    color: var(--ink-0);
-    line-height: 1.4;
-  }
-  .eq .formula .op {
-    font-style: normal;
-    color: var(--ink-2);
-    padding: 0 4px;
-  }
-  .eq .formula .fn {
-    font-style: normal;
-    font-weight: 600;
-    color: var(--ink-0);
-  }
-  .eq .formula sub, .eq .formula sup {
-    font-size: 0.65em;
-    font-style: normal;
-  }
-  .eq .formula .frac {
-    display: inline-grid;
-    grid-template-rows: auto auto;
-    vertical-align: middle;
-    font-size: 0.85em;
-    text-align: center;
-    margin: 0 4px;
-  }
-  .eq .formula .frac .num {
-    border-bottom: 1px solid var(--ink-2);
-    padding: 0 6px 2px;
-  }
-  .eq .formula .frac .den {
-    padding: 2px 6px 0;
-  }
-  .eq .tag {
-    font-family: var(--mono);
-    font-size: var(--t-small);
-    color: var(--accent);
-  }
-
-  /* ---------- inline definition list ---------- */
-  dl.terms {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    column-gap: 20px;
-    row-gap: 8px;
-    margin: 8px 0 20px;
-    font-size: var(--t-small);
-  }
-  dl.terms dt {
-    font-family: var(--mono);
-    color: var(--accent);
+  .masthead h1{
+    margin: 6px 0 0;
+    font-size: var(--t-xxl);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
     font-weight: 500;
   }
-  dl.terms dd {
-    margin: 0;
+  .masthead .sub{
+    margin-top: 14px;
+    font-size: var(--t-lg);
+    line-height: 1.4;
     color: var(--ink-2);
-    font-family: var(--serif);
+    max-width: 56ch;
+    font-style: italic;
   }
+  .masthead .meta{
+    margin-top: 22px;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .masthead .meta span + span{ margin-left: 18px; padding-left:18px; border-left:1px solid var(--rule);}
 
-  /* ---------- comparison table ---------- */
-  table.cmp {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: var(--sans);
-    font-size: var(--t-small);
-    margin: 8px 0 12px;
+  section{
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 24px;
+    margin-top: 56px;
   }
-  table.cmp th, table.cmp td {
-    text-align: left;
-    padding: 10px 14px 10px 0;
+  .num{
+    font-family: "SF Mono","Menlo","Consolas",monospace;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    padding-top: 6px;
+  }
+  .num b{display:block; color:var(--ink); font-weight:600; font-size:var(--t-sm); margin-top:2px}
+
+  h2{
+    margin: 0 0 18px;
+    font-size: var(--t-xl);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
+  h3{
+    margin: 28px 0 8px;
+    font-size: var(--t-md);
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+  p{margin: 0 0 14px; max-width: 68ch}
+  p + p{margin-top: 0}
+  .lede{font-size: var(--t-lg); line-height:1.45; color: var(--ink); max-width: 60ch}
+  .muted{color:var(--ink-2)}
+
+  ul,ol{margin: 8px 0 14px; padding-left: 22px; max-width: 68ch}
+  li{margin-bottom: 6px}
+
+  /* ---- formula blocks ---- */
+  .formula{
+    background: var(--panel);
+    border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
-    vertical-align: top;
+    margin: 18px 0;
+    padding: 22px 28px;
+    font-family: "SF Mono","Menlo","Consolas",monospace;
+    font-size: var(--t-md);
+    color: var(--ink);
+    line-height: 1.7;
+    overflow-x: auto;
   }
-  table.cmp th {
-    font-weight: 600;
-    color: var(--ink-2);
-    font-size: var(--t-micro);
+  .formula .label{
+    display:block;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-bottom: 1px solid var(--ink-1);
+    margin-bottom: 10px;
   }
-  table.cmp td.metric {
-    font-family: var(--mono);
-    color: var(--ink-0);
-  }
-  table.cmp tr td:first-child { color: var(--ink-1); font-weight: 500; }
+  .formula .eq{ white-space: pre; }
+  .formula em{ color: var(--ink-2); font-style: italic; font-family: "Iowan Old Style",Charter,Georgia,serif }
 
-  /* ---------- pull quote / aside ---------- */
-  .aside {
-    font-family: var(--sans);
-    font-size: var(--t-small);
-    color: var(--ink-2);
-    line-height: 1.55;
-    padding: 16px 20px;
-    background: var(--paper-1);
-    border-left: 2px solid var(--accent);
-    margin: 20px 0;
-  }
-  .aside .lbl {
-    font-size: var(--t-micro);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  /* ---------- figure ---------- */
-  figure {
-    margin: 32px 0 12px;
-    padding: 0;
-  }
-  figure svg {
-    display: block;
+  /* ---- comparison table ---- */
+  table.compare{
     width: 100%;
-    height: auto;
-    background: var(--paper-1);
-    padding: 24px;
-    border-radius: 2px;
+    border-collapse: collapse;
+    margin: 16px 0 8px;
+    font-size: var(--t-sm);
   }
-  figcaption {
-    font-family: var(--sans);
-    font-size: var(--t-small);
+  table.compare th, table.compare td{
+    text-align: left;
+    padding: 10px 14px;
+    vertical-align: top;
+  }
+  table.compare thead th{
+    font-weight: 600;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--ink-3);
-    margin-top: 12px;
-    line-height: 1.5;
-    max-width: 640px;
+    border-bottom: 1px solid var(--rule);
   }
-  figcaption .fignum {
-    font-family: var(--mono);
-    color: var(--accent);
-    margin-right: 6px;
-  }
+  table.compare tbody tr + tr td{ border-top: 1px solid var(--rule-soft); }
+  table.compare td.k{ font-family:"SF Mono","Menlo",monospace; color: var(--ink); width: 22%; }
+  table.compare td.rnn{ color: var(--ink-2); }
+  table.compare td.tx{ color: var(--ink); }
 
-  /* ---------- closing ---------- */
-  .colophon {
-    margin-top: 96px;
-    padding-top: 24px;
-    border-top: 1px solid var(--ink-0);
+  /* ---- callout ---- */
+  .note{
+    margin: 18px 0;
+    padding: 14px 18px;
+    background: var(--mark-soft);
+    border-left: 2px solid var(--mark);
+    font-size: var(--t-sm);
+    color: var(--ink);
+  }
+  .note b{ color: var(--mark); font-weight: 700; letter-spacing: 0.02em; }
+
+  /* ---- key/value mini grid ---- */
+  .kv{
     display: grid;
-    grid-template-columns: 1fr auto;
-    font-family: var(--sans);
-    font-size: var(--t-micro);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    margin: 18px 0;
+  }
+  .kv > div{
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .kv > div + div{ border-left: 1px solid var(--rule-soft); }
+  .kv .k{
+    font-family:"SF Mono","Menlo",monospace;
+    font-size: var(--t-xs);
     color: var(--ink-3);
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .kv .v{ font-size: var(--t-md); color: var(--ink); }
+
+  /* ---- diagram frame ---- */
+  figure.diagram{
+    margin: 24px 0 8px;
+    padding: 28px 16px 18px;
+    background: var(--panel);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  figure.diagram svg{ display: block; margin: 0 auto; max-width: 100%; height: auto;}
+  figcaption{
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    text-align: center;
+    margin-top: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
-  /* ---------- responsive — keep type readable, collapse rails ---------- */
-  @media (max-width: 760px) {
-    .page { padding: 40px 22px 64px; }
-    h1 { font-size: 36px; }
-    .title-block { grid-template-columns: 1fr; gap: 32px; }
-    .body-grid { grid-template-columns: 1fr; gap: 0; }
-    .body-grid > .rail { display: none; }
-    .section-head { grid-template-columns: 44px 1fr; gap: 14px; }
-    .eq { grid-template-columns: 1fr; }
-    .eq .tag { text-align: right; }
+  /* ---- footer ---- */
+  footer{
+    margin-top: 96px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 24px;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  footer p{ margin: 0; max-width: none; }
+
+  /* responsive */
+  @media (max-width: 720px){
+    .page{ padding: 56px 22px 80px; }
+    header.masthead, section, footer{ grid-template-columns: 1fr; gap: 8px; }
+    .num{ padding-top: 0; }
+    .masthead h1{ font-size: 34px; }
+    .kv{ grid-template-columns: 1fr; }
+    .kv > div + div{ border-left: 0; }
   }
 </style>
 </head>
@@ -376,308 +252,298 @@
 <div class="page">
 
   <header class="masthead">
-    <div class="lockup">Working Notes <span class="dot">·</span> Architectures <span class="dot">·</span> №&nbsp;07</div>
-    <div class="meta">
-      Vaswani et&nbsp;al., 2017<br>
-      Reading time ~ 14 min
+    <div class="num">
+      No. 04<br>
+      <b>arch.</b>
+    </div>
+    <div>
+      <div class="colophon">A working note · sequence models · 8 min</div>
+      <h1>The Transformer, for the<br>LSTM-fluent.</h1>
+      <p class="sub">You already know recurrence, gates, and convolutional receptive fields. This note is the bridge: what self-attention computes, why <span class="mono">Q·Kᵀ</span> works, and what changed once we stopped reading sequences one token at a time.</p>
+      <div class="meta">
+        <span>Vaswani et&nbsp;al., 2017</span>
+        <span>Self-contained</span>
+        <span>Linear algebra prerequisite</span>
+      </div>
     </div>
   </header>
 
-  <div class="title-block">
-    <h1>Attention,<br>Mechanised.<br><em>A working guide to Transformers.</em></h1>
-    <p class="standfirst">For the reader who knows what an LSTM cell does, who has hand-rolled a 3×3 conv, and now wants to understand why the field abandoned both — and what replaced them.</p>
-  </div>
-
-  <!-- ============ §1 ============ -->
+  <!-- 1. The RNN bottleneck -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 01</div>
-      <h2>What recurrence cost us</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Premise</div>
-      <div class="col">
-        <p>An LSTM processes a sequence of length <em>n</em> in <em>n</em> sequential steps. Each hidden state <code>h<sub>t</sub></code> depends on <code>h<sub>t-1</sub></code>. This is fine in isolation. It is catastrophic at scale.</p>
-        <p>The implication you have probably internalised but not quantified: training cannot be parallelised across the time axis. A GPU with thousands of cores must wait on a chain of matrix multiplications whose length equals the sequence. Doubling sequence length doubles wall-clock time even on a machine that could in principle do all of it at once.</p>
-        <p>The second implication is subtler. Information from position <em>i</em> reaches position <em>j</em> by being copied through every cell in between. Gradients shrink, gates leak, and by the time a sentence is 200 tokens long the model has practically forgotten its subject. LSTMs patched this; they did not solve it.</p>
-        <p>Convolutions parallelise — every output position computes independently — but pay a different price. A single conv layer of kernel <em>k</em> connects a position only to its <em>k</em> neighbours. To bridge two ends of a length-<em>n</em> sequence you need a stack <em>O</em>(log<sub>k</sub>&nbsp;n) deep. The path between far-apart tokens is short in layers but never zero.</p>
+    <div class="num">§ 01<br><b>why</b></div>
+    <div>
+      <h2>The RNN bottleneck nobody talks about until it bites.</h2>
+      <p class="lede">An LSTM reads a sequence one step at a time, folding everything seen so far into a single hidden vector <span class="mono">h<sub>t</sub></span>. That recurrence is also the ceiling.</p>
 
-        <table class="cmp">
-          <thead>
-            <tr><th>Operation</th><th>Sequential ops</th><th>Max path length</th><th>Per-layer cost</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Recurrent (LSTM)</td><td class="metric">O(n)</td><td class="metric">O(n)</td><td class="metric">O(n · d²)</td></tr>
-            <tr><td>Convolutional</td><td class="metric">O(1)</td><td class="metric">O(log<sub>k</sub> n)</td><td class="metric">O(k · n · d²)</td></tr>
-            <tr><td>Self-attention</td><td class="metric">O(1)</td><td class="metric">O(1)</td><td class="metric">O(n² · d)</td></tr>
-          </tbody>
-        </table>
+      <table class="compare">
+        <thead>
+          <tr><th>Property</th><th>RNN / LSTM</th><th>Transformer</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="k">parallelism</td>
+            <td class="rnn">Sequential. Step <em>t</em> waits for <em>t&minus;1</em>.</td>
+            <td class="tx">All positions in parallel. One matmul per layer.</td>
+          </tr>
+          <tr>
+            <td class="k">path length</td>
+            <td class="rnn">O(n) hops between token 1 and token n.</td>
+            <td class="tx">O(1). Every position can attend to every other.</td>
+          </tr>
+          <tr>
+            <td class="k">gradient flow</td>
+            <td class="rnn">Vanishes/explodes through long chains.</td>
+            <td class="tx">Residual + LayerNorm, depth not length.</td>
+          </tr>
+          <tr>
+            <td class="k">state size</td>
+            <td class="rnn">Fixed <em>d</em>-dim hidden. Everything must fit.</td>
+            <td class="tx">Stores full sequence; pays O(n²) memory for it.</td>
+          </tr>
+          <tr>
+            <td class="k">inductive bias</td>
+            <td class="rnn">Strong: locality and order, baked in.</td>
+            <td class="tx">Weak. Order comes from positional encoding only.</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <p>The trade is now visible. Self-attention buys constant path length and full parallelism — and pays in <em>n</em>². The rest of this note is about whether that bargain was a good one (it was) and how the mechanism is actually built.</p>
-      </div>
+      <p>CNNs fix the parallelism issue but trade it for a finite receptive field — you stack layers to widen it, and long-range dependencies still travel through many hops. Both architectures share the same defect: <em>information has to walk across the sequence to get where it needs to go.</em></p>
+
+      <div class="note"><b>The reframe.</b> What if every output token could just <em>look at</em> every input token directly, weighting them by relevance? That is the whole idea. Everything else is bookkeeping.</div>
     </div>
   </section>
 
-  <!-- ============ §2 ============ -->
+  <!-- 2. Attention -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 02</div>
-      <h2>Attention as differentiable lookup</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Mechanism</div>
-      <div class="col">
-        <p>Think of a Python dict. You hand it a key and it returns the matching value. <kbd>Q</kbd>uery, <kbd>K</kbd>ey, <kbd>V</kbd>alue — the names are not metaphorical, they are literally that operation made continuous.</p>
-        <p>Each token in the input is projected through three learned weight matrices to produce three vectors: a query (what am I looking for?), a key (what do I advertise?), and a value (what do I actually contribute if asked?). Three projections, one input.</p>
+    <div class="num">§ 02<br><b>attn</b></div>
+    <div>
+      <h2>Attention as soft, content-based lookup.</h2>
+      <p>Think of a Python dict. You have a query, you compare it to keys, you return the matching value. Attention is the differentiable version: instead of one exact match, you return a softmax-weighted average over <em>all</em> values, weighted by how well their keys match the query.</p>
 
-        <dl class="terms">
-          <dt>Q = XW<sup>Q</sup></dt><dd>queries — one per input position, dim <em>d<sub>k</sub></em></dd>
-          <dt>K = XW<sup>K</sup></dt><dd>keys — same shape as queries</dd>
-          <dt>V = XW<sup>V</sup></dt><dd>values — dim <em>d<sub>v</sub></em>, often equal to <em>d<sub>k</sub></em></dd>
-        </dl>
+      <p>Each input vector <span class="mono">x</span> is projected three ways:</p>
 
-        <p>A token's query is dotted against every other token's key. High dot product means "this key looks like what I want." That score, after softmax-normalising into a distribution, weights the values. The output is a weighted sum.</p>
-
-        <div class="eq">
-          <div class="formula">
-            <span class="fn">Attention</span>(Q, K, V) <span class="op">=</span> <span class="fn">softmax</span><span class="op">(</span><span class="frac"><span class="num">Q K<sup>⊤</sup></span><span class="den">√d<sub>k</sub></span></span><span class="op">)</span> V
-          </div>
-          <div class="tag">eq. 1</div>
-        </div>
-
-        <p>The <em>√d<sub>k</sub></em> denominator is not cosmetic. With high-dimensional keys, raw dot products grow with <em>d<sub>k</sub></em>, pushing softmax into a regime of vanishing gradients. The scale factor keeps the variance of pre-softmax logits roughly constant in <em>d<sub>k</sub></em>. Skip it and training is materially worse — Vaswani's ablation showed this.</p>
-
-        <div class="aside">
-          <span class="lbl">Why this is not just RNN attention</span>
-          Bahdanau attention (2014) used attention as a glance from a decoder back at an encoder. The 2017 move is to use attention <em>everywhere</em>, including within a single sequence on itself — <em>self</em>-attention — and to remove the recurrence underneath it entirely. The mechanism is older than the architecture; the architecture is what changed.
-        </div>
+      <div class="formula">
+        <span class="label">Projections (learned, per layer)</span>
+<div class="eq">Q = X · W_Q        <em>what am I looking for?</em>
+K = X · W_K        <em>what do I contain?</em>
+V = X · W_V        <em>what do I return if matched?</em></div>
       </div>
+
+      <p>Same input, three different lenses. The matching itself is a single matmul; the softmax turns scores into a distribution.</p>
+
+      <div class="formula">
+        <span class="label">Scaled dot-product attention</span>
+<div class="eq">Attention(Q, K, V) = softmax( Q·Kᵀ / √d_k ) · V</div>
+      </div>
+
+      <h3>Why divide by √d<sub>k</sub>?</h3>
+      <p>If <span class="mono">Q</span> and <span class="mono">K</span> entries have variance 1 and dimension <span class="mono">d<sub>k</sub></span>, their dot product has variance <span class="mono">d<sub>k</sub></span>. Large variance pushes softmax into saturation — one logit dominates, gradients vanish. Dividing by <span class="mono">√d<sub>k</sub></span> keeps the pre-softmax logits at unit scale. A one-line fix with a real effect on training stability.</p>
+
+      <h3>Read the matrix shapes once and you have it.</h3>
+      <div class="kv">
+        <div><div class="k">X</div><div class="v mono">[n, d_model]</div></div>
+        <div><div class="k">Q, K, V</div><div class="v mono">[n, d_k]</div></div>
+        <div><div class="k">Q·Kᵀ</div><div class="v mono">[n, n]</div></div>
+        <div><div class="k">softmax(·)</div><div class="v mono">[n, n] row-stochastic</div></div>
+        <div><div class="k">· V</div><div class="v mono">[n, d_k]</div></div>
+        <div><div class="k">output</div><div class="v mono">[n, d_model]</div></div>
+      </div>
+      <p class="muted">The <span class="mono">[n,n]</span> matrix is the attention map — row <em>i</em>, column <em>j</em> is "how much does token <em>i</em> attend to token <em>j</em>." This is the matrix you visualize when papers show those striped attention plots.</p>
     </div>
   </section>
 
-  <!-- ============ §3 ============ -->
+  <!-- 3. Multi-head -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 03</div>
-      <h2>Multiple heads, multiple subspaces</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Refinement</div>
-      <div class="col">
-        <p>One attention computation produces one weighted view of the sequence. A single head must compromise: capture syntactic agreement, or coreference, or topical similarity — but not all three at once, because they prefer different projections of the input.</p>
-        <p>The fix is structurally trivial. Run <em>h</em> attention operations in parallel, each with its own <code>W<sup>Q</sup>, W<sup>K</sup>, W<sup>V</sup></code> projecting into a smaller <em>d<sub>model</sub>&nbsp;/&nbsp;h</em>-dimensional subspace. Concatenate the outputs. Apply one more linear projection. Done.</p>
+    <div class="num">§ 03<br><b>heads</b></div>
+    <div>
+      <h2>Multi-head: one attention is not enough.</h2>
+      <p>A single attention layer collapses every relationship into one weighted average. But "the cat that the dog chased ran away" has at least two relationships you want to track at once — subject-verb (cat &rarr; ran), and object-of-relative (cat &rarr; chased). One softmax cannot represent both simultaneously without averaging them.</p>
 
-        <div class="eq">
-          <div class="formula">
-            <span class="fn">MultiHead</span>(Q, K, V) <span class="op">=</span> <span class="fn">Concat</span>(head<sub>1</sub>, …, head<sub>h</sub>) W<sup>O</sup>
-          </div>
-          <div class="tag">eq. 2</div>
-        </div>
+      <p>The fix is embarrassingly simple. Split <span class="mono">d<sub>model</sub></span> into <span class="mono">h</span> subspaces, run attention independently in each, concatenate. Each head specializes — some attend to syntax, some to coreference, some to position.</p>
 
-        <p>where each <code>head<sub>i</sub> = Attention(QW<sup>Q</sup><sub>i</sub>, KW<sup>K</sup><sub>i</sub>, VW<sup>V</sup><sub>i</sub>)</code>. The total parameter count is the same as a single full-width attention — you have not added capacity, you have <em>partitioned</em> it. Each head is free to specialise.</p>
-        <p>Visualisations on trained models confirm the intuition. Some heads track grammatical dependencies. Some track positional offsets (attend to <em>i&nbsp;–&nbsp;1</em>). Some appear to do nothing useful and can be pruned. The architecture does not <em>require</em> specialisation; it permits it.</p>
+      <div class="formula">
+        <span class="label">Multi-head attention</span>
+<div class="eq">head_i  = Attention( X·W_Q^i, X·W_K^i, X·W_V^i )
+MultiHead(X) = Concat(head_1, ..., head_h) · W_O
+
+where  d_k = d_v = d_model / h     <em>(typically d_model=512, h=8, d_k=64)</em></div>
       </div>
+
+      <p>Note the parameter accounting: <em>h</em> heads of width <em>d<sub>model</sub>/h</em> cost the same as one head of width <em>d<sub>model</sub></em>. You get specialization for free.</p>
     </div>
   </section>
 
-  <!-- ============ §4 — diagram ============ -->
+  <!-- 4. Positional encoding -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 04</div>
-      <h2>The full stack, drawn once</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Architecture</div>
-      <div class="col">
-        <p>An encoder layer is: multi-head self-attention, then a position-wise feed-forward network, with residual connections and layer-norm wrapped around each. Stack <em>N&nbsp;=&nbsp;6</em>. The decoder adds a second attention block in the middle that attends from decoder positions to encoder outputs (cross-attention), and masks its own self-attention so position <em>t</em> cannot peek at <em>t&nbsp;+&nbsp;1</em>.</p>
+    <div class="num">§ 04<br><b>pos</b></div>
+    <div>
+      <h2>Positional encoding: putting order back in.</h2>
+      <p>Attention is a permutation-equivariant operation. Shuffle the input tokens, the output tokens shuffle the same way — but the <em>content</em> of each output is identical. To a transformer with no positional signal, "dog bites man" and "man bites dog" are the same set.</p>
 
-        <figure>
-          <svg viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transformer encoder-decoder architecture">
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4338"/>
-              </marker>
-              <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a2a1f"/>
-              </marker>
-            </defs>
-            <style>
-              .blk { fill: #f5f1e8; stroke: #2a2620; stroke-width: 1.25; }
-              .blk-attn { fill: #f0d8d2; stroke: #8a2a1f; stroke-width: 1.25; }
-              .blk-norm { fill: #ebe6da; stroke: #756b5c; stroke-width: 1; stroke-dasharray: 3 3; }
-              .label { font-family: -apple-system, "Inter", sans-serif; font-size: 11px; fill: #2a2620; }
-              .label-accent { font-family: -apple-system, "Inter", sans-serif; font-size: 11px; fill: #8a2a1f; font-weight: 600; }
-              .stack-label { font-family: "SF Mono", monospace; font-size: 10px; fill: #756b5c; letter-spacing: 0.08em; }
-              .title { font-family: -apple-system, "Inter", sans-serif; font-size: 12px; fill: #14110d; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-              .flow { fill: none; stroke: #4a4338; stroke-width: 1.2; }
-              .flow-accent { fill: none; stroke: #8a2a1f; stroke-width: 1.2; stroke-dasharray: 4 3; }
-              .stack-frame { fill: none; stroke: #d4ccb8; stroke-width: 1; }
-            </style>
+      <p>The original paper adds a fixed sinusoidal signal to each input embedding before the first layer:</p>
 
-            <!-- titles -->
-            <text x="155" y="24" class="title" text-anchor="middle">Encoder</text>
-            <text x="555" y="24" class="title" text-anchor="middle">Decoder</text>
-
-            <!-- ENCODER stack frame -->
-            <rect x="65" y="40" width="180" height="320" class="stack-frame" rx="2"/>
-            <text x="75" y="56" class="stack-label">N × 6</text>
-
-            <!-- encoder: input embed + pos enc -->
-            <rect x="80" y="320" width="150" height="28" class="blk" rx="2"/>
-            <text x="155" y="338" class="label" text-anchor="middle">Input embedding + PE</text>
-
-            <!-- encoder: self-attention -->
-            <rect x="80" y="220" width="150" height="40" class="blk-attn" rx="2"/>
-            <text x="155" y="237" class="label-accent" text-anchor="middle">Multi-Head</text>
-            <text x="155" y="251" class="label-accent" text-anchor="middle">Self-Attention</text>
-
-            <!-- encoder: add+norm 1 -->
-            <rect x="80" y="190" width="150" height="22" class="blk-norm" rx="2"/>
-            <text x="155" y="205" class="label" text-anchor="middle">Add &amp; LayerNorm</text>
-
-            <!-- encoder: FFN -->
-            <rect x="80" y="130" width="150" height="40" class="blk" rx="2"/>
-            <text x="155" y="147" class="label" text-anchor="middle">Position-wise</text>
-            <text x="155" y="161" class="label" text-anchor="middle">Feed-Forward</text>
-
-            <!-- encoder: add+norm 2 -->
-            <rect x="80" y="100" width="150" height="22" class="blk-norm" rx="2"/>
-            <text x="155" y="115" class="label" text-anchor="middle">Add &amp; LayerNorm</text>
-
-            <!-- encoder flow arrows -->
-            <path d="M 155 320 L 155 262" class="flow" marker-end="url(#arrow)"/>
-            <path d="M 155 220 L 155 214" class="flow"/>
-            <path d="M 155 190 L 155 172" class="flow" marker-end="url(#arrow)"/>
-            <path d="M 155 130 L 155 124" class="flow"/>
-
-            <!-- residual loops -->
-            <path d="M 155 312 C 50 310, 50 200, 80 200" class="flow"/>
-            <path d="M 155 182 C 50 180, 50 110, 80 110" class="flow"/>
-
-            <!-- DECODER stack frame -->
-            <rect x="465" y="40" width="180" height="320" class="stack-frame" rx="2"/>
-            <text x="475" y="56" class="stack-label">N × 6</text>
-
-            <!-- decoder: output embed + pos enc -->
-            <rect x="480" y="320" width="150" height="28" class="blk" rx="2"/>
-            <text x="555" y="338" class="label" text-anchor="middle">Output embedding + PE</text>
-
-            <!-- decoder: masked self-attention -->
-            <rect x="480" y="250" width="150" height="40" class="blk-attn" rx="2"/>
-            <text x="555" y="267" class="label-accent" text-anchor="middle">Masked Multi-Head</text>
-            <text x="555" y="281" class="label-accent" text-anchor="middle">Self-Attention</text>
-
-            <!-- decoder: cross-attention -->
-            <rect x="480" y="180" width="150" height="40" class="blk-attn" rx="2"/>
-            <text x="555" y="197" class="label-accent" text-anchor="middle">Cross-Attention</text>
-            <text x="555" y="211" class="label-accent" text-anchor="middle">(Q ← dec, K,V ← enc)</text>
-
-            <!-- decoder: FFN -->
-            <rect x="480" y="110" width="150" height="40" class="blk" rx="2"/>
-            <text x="555" y="127" class="label" text-anchor="middle">Position-wise</text>
-            <text x="555" y="141" class="label" text-anchor="middle">Feed-Forward</text>
-
-            <!-- decoder: output projection -->
-            <rect x="480" y="60" width="150" height="32" class="blk" rx="2"/>
-            <text x="555" y="76" class="label" text-anchor="middle">Linear → Softmax</text>
-            <text x="555" y="88" class="label" text-anchor="middle">over vocabulary</text>
-
-            <!-- decoder vertical flow -->
-            <path d="M 555 320 L 555 292" class="flow" marker-end="url(#arrow)"/>
-            <path d="M 555 250 L 555 222" class="flow" marker-end="url(#arrow)"/>
-            <path d="M 555 180 L 555 152" class="flow" marker-end="url(#arrow)"/>
-            <path d="M 555 110 L 555 94" class="flow" marker-end="url(#arrow)"/>
-
-            <!-- cross-attention link from encoder output -->
-            <path d="M 230 100 C 360 100, 360 200, 480 200" class="flow-accent" marker-end="url(#arrow-accent)"/>
-            <text x="355" y="138" class="label-accent" text-anchor="middle">K, V</text>
-
-            <!-- Q/K/V annotation inside encoder self-attn -->
-            <text x="280" y="244" class="stack-label">Q, K, V ← X</text>
-
-            <!-- bottom inputs -->
-            <text x="155" y="378" class="label" text-anchor="middle">source tokens</text>
-            <text x="555" y="378" class="label" text-anchor="middle">target tokens (shifted right)</text>
-
-            <!-- top output -->
-            <text x="555" y="46" class="label" text-anchor="middle">next-token probabilities</text>
-
-            <!-- legend -->
-            <g transform="translate(295, 320)">
-              <rect width="120" height="80" fill="#ebe6da" stroke="#d4ccb8" rx="2"/>
-              <text x="10" y="16" class="stack-label">LEGEND</text>
-              <rect x="10" y="24" width="14" height="10" class="blk-attn"/>
-              <text x="30" y="33" class="label">attention block</text>
-              <rect x="10" y="40" width="14" height="10" class="blk"/>
-              <text x="30" y="49" class="label">linear / FFN</text>
-              <rect x="10" y="56" width="14" height="10" class="blk-norm"/>
-              <text x="30" y="65" class="label">residual + norm</text>
-            </g>
-          </svg>
-          <figcaption><span class="fignum">fig. 1</span>Encoder and decoder both stack N&nbsp;=&nbsp;6 identical layers. The crimson arrow is the only inter-stack connection: encoder outputs supply K and V to decoder cross-attention; the decoder's own Q comes from the previous decoder layer. Residual connections wrap every sub-layer.</figcaption>
-        </figure>
-
-        <p>The position-wise FFN is two linear layers with a ReLU between them, applied identically to every position: <code>FFN(x) = max(0, xW<sub>1</sub> + b<sub>1</sub>)W<sub>2</sub> + b<sub>2</sub></code>. Inner dimension is typically 4× the model dimension (2048 vs. 512 in the base model). It does most of the parameter-counting work but none of the cross-position mixing — that is attention's job exclusively.</p>
+      <div class="formula">
+        <span class="label">Sinusoidal positional encoding</span>
+<div class="eq">PE(pos, 2i)   = sin( pos / 10000^(2i/d_model) )
+PE(pos, 2i+1) = cos( pos / 10000^(2i/d_model) )</div>
       </div>
+
+      <p>Each dimension is a sinusoid at a different wavelength — from short (~2 tokens) to long (~10,000). The key property: <span class="mono">PE(pos+k)</span> is a linear function of <span class="mono">PE(pos)</span>, so the model can learn relative offsets as easy rotations rather than memorizing absolute indices. Modern variants (learned absolute, RoPE, ALiBi) refine this, but the principle stands: <em>order is a feature you inject, not a property of the architecture.</em></p>
     </div>
   </section>
 
-  <!-- ============ §5 ============ -->
+  <!-- 5. Encoder-decoder diagram -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 05</div>
-      <h2>Positional encoding — why the model needs to be told</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Constraint</div>
-      <div class="col">
-        <p>Self-attention is order-invariant by construction. Permute the input tokens and the output set is the same set, just permuted. An LSTM cannot help but encode order — recurrence <em>is</em> order. A pure attention stack has to be told.</p>
-        <p>The original paper adds a fixed sinusoidal signal to each token embedding before the first layer:</p>
+    <div class="num">§ 05<br><b>shape</b></div>
+    <div>
+      <h2>The encoder–decoder stack, in one picture.</h2>
+      <p>The original Transformer is an encoder–decoder for translation. The encoder builds a contextualized representation of the source; the decoder generates the target one token at a time, attending both to its own past and to the encoder output.</p>
 
-        <div class="eq">
-          <div class="formula">
-            PE<sub>(pos, 2i)</sub> <span class="op">=</span> <span class="fn">sin</span><span class="op">(</span>pos <span class="op">/</span> 10000<sup>2i/d</sup><span class="op">)</span>
-          </div>
-          <div class="tag">eq. 3a</div>
-        </div>
-        <div class="eq">
-          <div class="formula">
-            PE<sub>(pos, 2i+1)</sub> <span class="op">=</span> <span class="fn">cos</span><span class="op">(</span>pos <span class="op">/</span> 10000<sup>2i/d</sup><span class="op">)</span>
-          </div>
-          <div class="tag">eq. 3b</div>
-        </div>
+      <figure class="diagram">
+        <svg viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transformer encoder-decoder diagram">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#5b554c"/>
+            </marker>
+            <marker id="arrowMark" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#b04421"/>
+            </marker>
+          </defs>
 
-        <p>Each dimension of the embedding traces a sinusoid of a different wavelength — the lowest dimensions oscillate fast, the highest oscillate slowly across the whole sequence. The construction has a useful linear-algebraic property: any fixed offset <em>k</em> corresponds to a linear transformation of the encoding, so the model can in principle learn to attend by relative position.</p>
-        <p>Modern variants (learned absolute, ALiBi, RoPE, relative bias) have largely replaced sinusoidal PE in production systems, but the underlying issue is the same: ordering must enter somewhere, because attention itself refuses to provide it.</p>
-      </div>
+          <style>
+            .lbl   { font: 500 12px "SF Mono","Menlo",monospace; fill:#1b1916; }
+            .lblsm { font: 400 10px "SF Mono","Menlo",monospace; fill:#5b554c; letter-spacing:.04em }
+            .sec   { font: 600 10px "SF Mono","Menlo",monospace; fill:#8a8377; letter-spacing:.12em }
+            .blk   { fill:#faf6ec; stroke:#1b1916; stroke-width:1; }
+            .blk2  { fill:#efe9da; stroke:#1b1916; stroke-width:1; }
+            .stack { fill:none; stroke:#d8d2c4; stroke-width:1; stroke-dasharray:3 3; }
+            .flow  { stroke:#5b554c; stroke-width:1.2; fill:none; }
+            .mark  { stroke:#b04421; stroke-width:1.5; fill:none; }
+          </style>
+
+          <!-- column headers -->
+          <text class="sec" x="140" y="22" text-anchor="middle">ENCODER  ×N</text>
+          <text class="sec" x="560" y="22" text-anchor="middle">DECODER  ×N</text>
+
+          <!-- encoder stack frame -->
+          <rect class="stack" x="40" y="38" width="200" height="340" rx="3"/>
+          <!-- decoder stack frame -->
+          <rect class="stack" x="440" y="38" width="240" height="340" rx="3"/>
+
+          <!-- ENCODER blocks (bottom to top) -->
+          <rect class="blk2" x="60" y="330" width="160" height="34" rx="2"/>
+          <text class="lbl" x="140" y="352" text-anchor="middle">Input Embedding</text>
+          <text class="lblsm" x="140" y="378" text-anchor="middle">+ positional encoding</text>
+
+          <rect class="blk" x="60" y="240" width="160" height="50" rx="2"/>
+          <text class="lbl" x="140" y="262" text-anchor="middle">Multi-Head</text>
+          <text class="lbl" x="140" y="280" text-anchor="middle">Self-Attention</text>
+
+          <rect class="blk2" x="60" y="208" width="160" height="22" rx="2"/>
+          <text class="lblsm" x="140" y="223" text-anchor="middle">Add &amp; LayerNorm</text>
+
+          <rect class="blk" x="60" y="148" width="160" height="50" rx="2"/>
+          <text class="lbl" x="140" y="170" text-anchor="middle">Feed-Forward</text>
+          <text class="lblsm" x="140" y="186" text-anchor="middle">Linear → GELU → Linear</text>
+
+          <rect class="blk2" x="60" y="116" width="160" height="22" rx="2"/>
+          <text class="lblsm" x="140" y="131" text-anchor="middle">Add &amp; LayerNorm</text>
+
+          <!-- arrows encoder -->
+          <line class="flow" x1="140" y1="330" x2="140" y2="294" marker-end="url(#arrow)"/>
+          <line class="flow" x1="140" y1="240" x2="140" y2="234" marker-end="url(#arrow)"/>
+          <line class="flow" x1="140" y1="208" x2="140" y2="202" marker-end="url(#arrow)"/>
+          <line class="flow" x1="140" y1="148" x2="140" y2="142" marker-end="url(#arrow)"/>
+
+          <line class="flow" x1="140" y1="116" x2="140" y2="80" marker-end="url(#arrow)"/>
+          <text class="lblsm" x="140" y="68" text-anchor="middle">encoder output</text>
+
+          <!-- DECODER blocks -->
+          <rect class="blk2" x="480" y="330" width="160" height="34" rx="2"/>
+          <text class="lbl" x="560" y="352" text-anchor="middle">Output Embedding</text>
+          <text class="lblsm" x="560" y="378" text-anchor="middle">(shifted right) + pos enc</text>
+
+          <rect class="blk" x="480" y="262" width="160" height="50" rx="2"/>
+          <text class="lbl" x="560" y="284" text-anchor="middle">Masked Multi-Head</text>
+          <text class="lbl" x="560" y="302" text-anchor="middle">Self-Attention</text>
+
+          <rect class="blk2" x="480" y="232" width="160" height="22" rx="2"/>
+          <text class="lblsm" x="560" y="247" text-anchor="middle">Add &amp; LayerNorm</text>
+
+          <rect class="blk" x="480" y="172" width="160" height="50" rx="2"/>
+          <text class="lbl" x="560" y="194" text-anchor="middle">Cross-Attention</text>
+          <text class="lblsm" x="560" y="210" text-anchor="middle">Q ← dec ·  K,V ← enc</text>
+
+          <rect class="blk2" x="480" y="142" width="160" height="22" rx="2"/>
+          <text class="lblsm" x="560" y="157" text-anchor="middle">Add &amp; LayerNorm</text>
+
+          <rect class="blk" x="480" y="82" width="160" height="50" rx="2"/>
+          <text class="lbl" x="560" y="104" text-anchor="middle">Feed-Forward</text>
+          <text class="lblsm" x="560" y="120" text-anchor="middle">Linear → GELU → Linear</text>
+
+          <!-- arrows decoder -->
+          <line class="flow" x1="560" y1="330" x2="560" y2="316" marker-end="url(#arrow)"/>
+          <line class="flow" x1="560" y1="262" x2="560" y2="256" marker-end="url(#arrow)"/>
+          <line class="flow" x1="560" y1="232" x2="560" y2="226" marker-end="url(#arrow)"/>
+          <line class="flow" x1="560" y1="172" x2="560" y2="166" marker-end="url(#arrow)"/>
+          <line class="flow" x1="560" y1="142" x2="560" y2="136" marker-end="url(#arrow)"/>
+
+          <rect class="blk2" x="480" y="42" width="160" height="28" rx="2"/>
+          <text class="lbl" x="560" y="60" text-anchor="middle">Linear → Softmax</text>
+          <line class="flow" x1="560" y1="82" x2="560" y2="76" marker-end="url(#arrow)"/>
+
+          <!-- cross-attn wire from encoder output across to decoder cross-attn block -->
+          <path class="mark" d="M 220 95 C 320 95, 360 197, 480 197" marker-end="url(#arrowMark)"/>
+          <text class="lblsm" x="350" y="115" text-anchor="middle" fill="#b04421">K, V from encoder</text>
+
+          <!-- bottom labels -->
+          <text class="sec" x="140" y="412" text-anchor="middle">SOURCE TOKENS</text>
+          <text class="sec" x="560" y="412" text-anchor="middle">TARGET TOKENS (so far)</text>
+
+          <!-- residual indicator -->
+          <path class="flow" d="M 60 265 C 30 265, 30 219, 60 219" stroke-dasharray="2 2"/>
+          <text class="lblsm" x="22" y="248" transform="rotate(-90 22 248)">residual</text>
+        </svg>
+        <figcaption>Encoder → Decoder · single layer shown · stacked N=6 in the original paper</figcaption>
+      </figure>
+
+      <h3>The three flavors of attention in this picture.</h3>
+      <ul>
+        <li><b>Encoder self-attention.</b> Q, K, V all from the source. Bidirectional — every source token sees every other.</li>
+        <li><b>Decoder masked self-attention.</b> Q, K, V from the target. Future positions are masked out (set to <span class="mono">&minus;∞</span> before softmax) so generation stays causal.</li>
+        <li><b>Cross-attention.</b> <span class="mono">Q</span> comes from the decoder, <span class="mono">K</span> and <span class="mono">V</span> from the encoder output. This is the wire that lets the decoder actually use the source.</li>
+      </ul>
+
+      <p>Around every sublayer: a residual connection and LayerNorm. That is what makes deep stacks trainable — gradients have a highway.</p>
     </div>
   </section>
 
-  <!-- ============ §6 ============ -->
+  <!-- 6. Why scale -->
   <section>
-    <div class="section-head">
-      <div class="section-num"><span class="sym">§</span> 06</div>
-      <h2>Why this scales — and where it doesn't</h2>
-    </div>
-    <div class="body-grid">
-      <div class="rail">Implication</div>
-      <div class="col">
-        <p>The hardware story is the centre of gravity. Attention's heavy operation is a batched matrix multiply: <code>Q K<sup>⊤</sup></code> is an <em>n&nbsp;×&nbsp;n</em> matrix produced from two <em>n&nbsp;×&nbsp;d</em> inputs, which is exactly what GPUs and TPUs eat for breakfast. There is no sequential dependency to wait on — every position's output is computed simultaneously. Training throughput rises nearly linearly with accelerator count, which is the precondition for everything that followed: scaling laws, foundation models, all of it.</p>
-        <p>The bill comes due in memory. The attention matrix is <em>O</em>(n²) in both compute and storage. A 32k-token context is a billion-entry matrix per head per layer. This is why context length is a primary research axis: FlashAttention reorganises the computation to never materialise the full matrix; sparse-attention variants drop most of it; linear-attention approximations replace the softmax with kernels that admit <em>O</em>(n) decomposition. None of these are settled.</p>
+    <div class="num">§ 06<br><b>scale</b></div>
+    <div>
+      <h2>Why transformers scaled when nothing else did.</h2>
+      <p>Three properties, all consequences of the design above, compound into the scaling story:</p>
 
-        <div class="aside">
-          <span class="lbl">The one-sentence summary</span>
-          A Transformer replaces sequential recurrence with parallel, content-addressed lookup, pays the bill in quadratic context cost, and in doing so makes the entire stack a series of dense matrix multiplications — the operation modern hardware is built to perform.
-        </div>
+      <ol>
+        <li><b>Hardware fit.</b> Every operation in a forward pass is either a matmul or an elementwise op. GPUs and TPUs are matmul machines. An RNN's sequential dependency leaves silicon idle; a transformer saturates it.</li>
+        <li><b>Optimization regularity.</b> Residuals + LayerNorm + Adam + warmup is a recipe that just keeps working as you stack more layers. No exploding hidden states, no vanishing recurrent gradients, no architecture surgery per task.</li>
+        <li><b>Data efficiency at scale.</b> The weak inductive bias is a feature in the high-data regime. The model is not assuming locality, so given enough data it learns whatever long-range structure actually exists — code, proteins, audio, images. One architecture, many modalities.</li>
+      </ol>
 
-        <p>If you have read this far and the architecture still feels like a list of components rather than a single object, the move is to implement it. A clean PyTorch encoder layer is around 60 lines. Once you have hand-written the einsum for scaled dot-product attention and watched the <em>n&nbsp;×&nbsp;n</em> matrix print to your terminal, the abstraction collapses into something concrete.</p>
-      </div>
+      <div class="note"><b>The bill.</b> Attention is <span class="mono">O(n²)</span> in sequence length, in both compute and memory. Everything since 2017 — sparse attention, linear attention, FlashAttention, sliding windows, state-space models, KV-cache tricks — is the field paying down that bill while keeping the rest.</div>
+
+      <h3>What to take from this note.</h3>
+      <p>If you remember one thing: <em>attention replaces the recurrent walk with a one-shot, content-addressed lookup over the entire sequence.</em> Multi-head gives you parallel relationships, positional encoding gives you order back, the encoder-decoder split gives you a place to put the source. Everything else — the LayerNorms, the residuals, the warmup schedule — is the engineering that makes a stack of these things trainable at a billion parameters.</p>
     </div>
   </section>
 
-  <footer class="colophon">
-    <div>Working Notes · Architectures · №&nbsp;07</div>
-    <div>2026 · revision A</div>
+  <footer>
+    <div class="num">end</div>
+    <p>Working note · Vaswani et&nbsp;al., <span class="mono">Attention Is All You Need</span>, NeurIPS 2017 · figures and formulas reproduced for instructional purposes</p>
   </footer>
 
 </div>

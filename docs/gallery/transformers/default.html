@@ -2,431 +2,452 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Transformers: An Explainer for People Who Know LSTMs</title>
+<title>Transformers, Explained for the RNN-Fluent</title>
 <style>
   :root {
-    --bg: #f8f6f1;
-    --ink: #1a1a1a;
-    --muted: #555;
-    --accent: #b9472a;
-    --accent2: #2a5b8a;
-    --rule: #d6d2c4;
-    --code-bg: #ece7d8;
-    --note-bg: #f0ead8;
+    --bg: #0f1115;
+    --panel: #161a21;
+    --panel-2: #1c222c;
+    --text: #e6e8ec;
+    --muted: #9aa3b2;
+    --accent: #6ea8fe;
+    --accent-2: #b48cff;
+    --warn: #ffb86b;
+    --good: #7ee787;
+    --border: #2a2f3a;
+    --code-bg: #0b0d12;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0;
     padding: 0;
     background: var(--bg);
-    color: var(--ink);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 17px;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
+    font-size: 16px;
   }
   .wrap {
-    max-width: 760px;
+    max-width: 880px;
     margin: 0 auto;
-    padding: 56px 32px 96px;
+    padding: 48px 24px 96px;
   }
   header.title {
-    border-bottom: 2px solid var(--ink);
-    padding-bottom: 18px;
-    margin-bottom: 36px;
-  }
-  header.title .kicker {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 11px;
-    color: var(--accent);
-    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
   }
   h1 {
-    font-size: 36px;
-    line-height: 1.15;
-    margin: 8px 0 12px;
-    font-weight: 700;
-  }
-  header.title .byline {
-    color: var(--muted);
-    font-style: italic;
-    font-size: 14px;
+    font-size: 2.1rem;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
   }
   h2 {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 22px;
+    font-size: 1.4rem;
     margin: 48px 0 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--rule);
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
   }
   h3 {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px;
+    font-size: 1.1rem;
     margin: 28px 0 8px;
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: var(--accent-2);
   }
-  p { margin: 0 0 14px; }
-  ul, ol { margin: 0 0 16px; padding-left: 22px; }
-  li { margin-bottom: 6px; }
+  p { margin: 12px 0; }
+  .subtitle { color: var(--muted); font-size: 1rem; }
   code {
     font-family: "SF Mono", Menlo, Consolas, monospace;
     background: var(--code-bg);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 14px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #f0d8a8;
   }
   pre {
     background: var(--code-bg);
-    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
     overflow-x: auto;
-    border-left: 3px solid var(--accent);
-    font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 13px;
-    line-height: 1.45;
-    white-space: pre;
+    font-size: 0.88rem;
   }
   .formula {
-    background: #fff;
-    border: 1px solid var(--rule);
-    padding: 16px 20px;
-    margin: 18px 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 1.02rem;
     text-align: center;
-    font-family: "Cambria Math", "STIX Two Math", Cambria, Georgia, serif;
-    font-size: 20px;
     overflow-x: auto;
   }
-  .formula .label {
-    display: block;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+  .formula .lbl {
     color: var(--muted);
-    margin-bottom: 6px;
+    font-family: -apple-system, sans-serif;
+    font-size: 0.82rem;
+    display: block;
+    margin-top: 6px;
   }
   .note {
-    background: var(--note-bg);
-    border-left: 3px solid var(--accent2);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
     padding: 12px 16px;
-    margin: 18px 0;
-    font-size: 15px;
+    margin: 16px 0;
+    border-radius: 6px;
+    font-size: 0.95rem;
   }
-  .figure {
-    margin: 24px 0 32px;
-    text-align: center;
-  }
-  .figure svg {
-    max-width: 100%;
-    height: auto;
-  }
-  .figure .caption {
-    font-size: 13px;
-    color: var(--muted);
-    font-style: italic;
-    margin-top: 10px;
+  .note .tag {
+    color: var(--warn);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 18px 0;
-    font-size: 15px;
+    margin: 16px 0;
+    font-size: 0.92rem;
   }
   th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
     text-align: left;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--rule);
   }
-  th {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--accent2);
-    border-bottom: 2px solid var(--ink);
-  }
-  .var { font-style: italic; }
-  .dropcap::first-letter {
-    font-size: 56px;
-    float: left;
-    line-height: 0.9;
-    padding: 4px 8px 0 0;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  footer {
-    margin-top: 64px;
-    padding-top: 18px;
-    border-top: 1px solid var(--rule);
-    font-size: 13px;
-    color: var(--muted);
+  th { color: var(--accent); font-weight: 600; }
+  tr:hover td { background: var(--panel); }
+  .diagram {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 24px 0;
     text-align: center;
   }
+  .diagram svg { max-width: 100%; height: auto; }
+  .caption {
+    color: var(--muted);
+    font-size: 0.86rem;
+    margin-top: 8px;
+    font-style: italic;
+  }
+  ul, ol { padding-left: 24px; }
+  li { margin: 6px 0; }
+  .small { color: var(--muted); font-size: 0.86rem; }
+  sub, sup { line-height: 0; font-size: 0.72em; }
+  .var { font-style: italic; color: #f0d8a8; }
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+  a { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header class="title">
-  <div class="kicker">Architecture &middot; Deep Learning</div>
-  <h1>Transformers, From an LSTM Person's Point of View</h1>
-  <div class="byline">A working guide to self-attention, multi-head projection, positional encoding, and the full encoder&ndash;decoder stack.</div>
+  <h1>Transformers, for People Who Already Know LSTMs</h1>
+  <p class="subtitle">A bridge from recurrence and convolution to self-attention &mdash; the architecture behind GPT, BERT, and basically everything since 2017.</p>
 </header>
 
-<p class="dropcap">If you have spent time wiring up LSTMs or stacking dilated 1-D convolutions for sequence tasks, the Transformer is going to feel both very simple and very strange. There is no recurrence. There is no convolution. The whole architecture is built out of one operation &mdash; scaled dot-product attention &mdash; applied in parallel across every position of the sequence. This piece walks through why the field abandoned recurrence, what attention actually computes, and how the pieces snap together into the encoder&ndash;decoder model from Vaswani et al. (2017).</p>
+<h2>1. Why we needed something new</h2>
 
-<h2>1. Why RNNs hit a wall</h2>
-
-<p>LSTMs and GRUs solved the vanishing-gradient problem well enough to make sequence modeling practical, but they have two structural defects that get worse as models and datasets grow:</p>
+<p>You already know that RNNs (LSTMs, GRUs) read a sequence one token at a time, carrying a hidden state <span class="var">h<sub>t</sub></span> forward. They work, but they have three pain points that motivated the entire transformer line of research:</p>
 
 <ul>
-  <li><b>Sequential compute.</b> The hidden state <code>h<sub>t</sub></code> depends on <code>h<sub>t-1</sub></code>. You cannot compute step <i>t</i> until step <i>t-1</i> is done. On a modern GPU with thousands of cores, this leaves most of the silicon idle. Training time scales linearly with sequence length, and you cannot trade extra hardware for shorter wall-clock time.</li>
-  <li><b>Information bottleneck.</b> Long-range dependencies must be funneled through a fixed-size hidden vector across many time steps. Even with gating, signal at position <i>t</i> reaching position <i>t+500</i> is mediated by 500 nonlinear updates. Gradients still degrade, and the path length between any two tokens is O(<i>n</i>).</li>
+  <li><strong>Sequential bottleneck.</strong> Computing <span class="var">h<sub>t</sub></span> requires <span class="var">h<sub>t-1</sub></span>. You cannot parallelize along the time axis. On modern GPUs, this leaves most of the silicon idle.</li>
+  <li><strong>Long-range dependencies.</strong> Information from token 1 reaches token 1000 only by squeezing through 999 hidden states. Gradients vanish, signals get overwritten, even with LSTM gating.</li>
+  <li><strong>Fixed-bandwidth memory.</strong> The hidden state is a single vector. Every new token must compress what came before into the same <span class="var">d</span>-dimensional slot.</li>
 </ul>
 
-<p>Convolutions partially fix the parallelism issue &mdash; WaveNet and ByteNet stack dilated convolutions to expose long-range structure &mdash; but the receptive field still grows only logarithmically with depth, and the model has no built-in way to route information based on <i>content</i>.</p>
+<p>Convolutions fix parallelism but introduce a different limitation: each layer only sees a local window. You stack many layers to grow the receptive field, but the path length between two distant tokens is still <span class="var">O</span>(log<sub>k</sub> n) at best.</p>
 
-<div class="note">
-The Transformer's pitch: every position should be able to look at every other position in one step, and the lookup pattern should be learned from the data itself, not baked into the topology.
-</div>
+<p>The transformer&rsquo;s pitch is: <em>make every token directly look at every other token in a single layer, in parallel</em>. The mechanism that does this is self-attention.</p>
 
-<h2>2. Scaled dot-product attention</h2>
+<h2>2. Attention as soft, content-addressable lookup</h2>
 
-<p>Attention treats a sequence as a soft, content-addressable memory. Each position emits three vectors: a <b>query</b> (what am I looking for?), a <b>key</b> (what do I contain?), and a <b>value</b> (what should I hand over if you pick me?). To produce a new representation for a position, you compare its query against every key, normalize the scores into a probability distribution, and take the weighted sum of values.</p>
+<p>Think of attention as a differentiable dictionary lookup. You have a <strong>query</strong>, and you want to retrieve a weighted blend of <strong>values</strong> based on how well your query matches each <strong>key</strong>.</p>
 
-<p>Concretely, pack the queries, keys, and values for a whole sequence into matrices <span class="var">Q</span>, <span class="var">K</span>, <span class="var">V</span> with shapes <code>(n &times; d<sub>k</sub>)</code>, <code>(n &times; d<sub>k</sub>)</code>, and <code>(n &times; d<sub>v</sub>)</code>. The output of attention is:</p>
+<p>For each token <span class="var">i</span> in the input, we project its embedding <span class="var">x<sub>i</sub></span> into three vectors via learned weight matrices:</p>
 
 <div class="formula">
-  <span class="label">Scaled Dot-Product Attention</span>
-  Attention(<i>Q</i>, <i>K</i>, <i>V</i>) = softmax&#8202;(&#8202;<i>Q&#8202;K</i><sup>T</sup> / &radic;<i>d<sub>k</sub></i>&#8202;)&#8202;<i>V</i>
+  q<sub>i</sub> = x<sub>i</sub> W<sup>Q</sup> &nbsp;&nbsp;&nbsp; k<sub>i</sub> = x<sub>i</sub> W<sup>K</sup> &nbsp;&nbsp;&nbsp; v<sub>i</sub> = x<sub>i</sub> W<sup>V</sup>
+  <span class="lbl">W<sup>Q</sup>, W<sup>K</sup> &isin; &reals;<sup>d &times; d<sub>k</sub></sup>,&nbsp;&nbsp; W<sup>V</sup> &isin; &reals;<sup>d &times; d<sub>v</sub></sup></span>
 </div>
 
-<p>Three things to internalize:</p>
+<p>Stack the per-token vectors into matrices <span class="var">Q</span>, <span class="var">K</span>, <span class="var">V</span> (each row is one token). The full <em>scaled dot-product attention</em> is:</p>
+
+<div class="formula">
+  Attention(Q, K, V) = softmax( Q K<sup>T</sup> / &radic;d<sub>k</sub> ) V
+  <span class="lbl">Vaswani et al., 2017 &mdash; the central equation of the paper</span>
+</div>
+
+<p>Let&rsquo;s read it left to right:</p>
 
 <ol>
-  <li><b>It is a matrix multiply.</b> <code>QK<sup>T</sup></code> is one GEMM. Softmax is element-wise along rows. The final multiply against <code>V</code> is another GEMM. Two dense matmuls on a GPU are roughly free compared to a 500-step recurrence.</li>
-  <li><b>The &radic;<i>d<sub>k</sub></i> scaling matters.</b> Without it, when <i>d<sub>k</sub></i> is large the dot products have variance ~<i>d<sub>k</sub></i>, the softmax saturates, and gradients vanish. Dividing by &radic;<i>d<sub>k</sub></i> keeps the pre-softmax logits at unit scale.</li>
-  <li><b>The path length is O(1).</b> Any token can attend to any other in a single layer. Compare that to O(<i>n</i>) for an RNN or O(log <i>n</i>) for a dilated CNN.</li>
+  <li><code>Q K<sup>T</sup></code> &mdash; an <span class="var">n &times; n</span> matrix where entry (<span class="var">i, j</span>) is the dot product <span class="var">q<sub>i</sub> &middot; k<sub>j</sub></span>. This is the unnormalized affinity of token <span class="var">i</span> for token <span class="var">j</span>.</li>
+  <li><code>/ &radic;d<sub>k</sub></code> &mdash; the scaling. Dot products of <span class="var">d<sub>k</sub></span>-dimensional vectors have variance proportional to <span class="var">d<sub>k</sub></span>; without scaling, the softmax saturates for large <span class="var">d<sub>k</sub></span> and gradients vanish. Dividing by &radic;<span class="var">d<sub>k</sub></span> keeps the input to softmax in a sane range.</li>
+  <li><code>softmax(&middot;)</code> &mdash; applied row-wise. Now row <span class="var">i</span> is a probability distribution over all tokens: how much should token <span class="var">i</span> attend to each token <span class="var">j</span>?</li>
+  <li><code>&middot; V</code> &mdash; each output row is a weighted sum of value vectors, weighted by those attention probabilities.</li>
 </ol>
 
-<h3>Where Q, K, V come from</h3>
+<p>Crucially, this whole computation is one big matrix multiply followed by softmax followed by another matrix multiply. The GPU loves it. And the path length between any two tokens is now exactly <strong>1</strong>.</p>
 
-<p>For a single input matrix <code>X</code> of shape <code>(n &times; d<sub>model</sub>)</code>, they are three learned linear projections:</p>
-
-<div class="formula">
-  <i>Q</i> = <i>X&#8202;W<sup>Q</sup></i>&nbsp;&nbsp;&nbsp;<i>K</i> = <i>X&#8202;W<sup>K</sup></i>&nbsp;&nbsp;&nbsp;<i>V</i> = <i>X&#8202;W<sup>V</sup></i>
+<div class="note">
+  <span class="tag">In self-attention</span> &mdash; <span class="var">Q</span>, <span class="var">K</span>, <span class="var">V</span> are all projections of the same input sequence. In <em>cross-attention</em> (used in the decoder), <span class="var">Q</span> comes from one sequence and <span class="var">K</span>, <span class="var">V</span> come from another.
 </div>
 
-<p>When <code>Q</code>, <code>K</code>, and <code>V</code> all come from the same sequence, this is <b>self-attention</b>. In the decoder, queries come from the decoder state while keys and values come from the encoder's output &mdash; this is <b>cross-attention</b>, and it is the only place the decoder gets to look at the source sequence.</p>
+<h2>3. A picture is worth a few matmuls</h2>
 
-<h2>3. Multi-head attention</h2>
-
-<p>A single attention operation has to compress every kind of relationship &mdash; syntactic, semantic, positional &mdash; into one weighted average. The fix is to run <i>h</i> attention operations in parallel, each on a lower-dimensional projection, then concatenate and project back:</p>
-
-<div class="formula">
-  <span class="label">Multi-Head Attention</span>
-  MultiHead(<i>Q</i>, <i>K</i>, <i>V</i>) = Concat(head<sub>1</sub>, &hellip;, head<sub>h</sub>)&#8202;<i>W<sup>O</sup></i><br>
-  where&nbsp; head<sub>i</sub> = Attention(<i>Q&#8202;W<sub>i</sub><sup>Q</sup></i>, <i>K&#8202;W<sub>i</sub><sup>K</sup></i>, <i>V&#8202;W<sub>i</sub><sup>V</sup></i>)
-</div>
-
-<p>In the original paper, <i>d<sub>model</sub></i> = 512 and <i>h</i> = 8, so each head works in a <i>d<sub>k</sub></i> = <i>d<sub>v</sub></i> = 64-dimensional subspace. The total compute is roughly the same as one full-width attention, but different heads learn to specialize &mdash; one might track subject&ndash;verb agreement, another might attend to the previous punctuation mark, and so on.</p>
-
-<h2>4. Positional encoding</h2>
-
-<p>Self-attention is a set operation. If you permute the input tokens, the outputs permute the same way. That is fatal for language, where "dog bites man" is not "man bites dog." Transformers fix this by adding a position-dependent vector to each token embedding before the first layer.</p>
-
-<p>The original paper uses fixed sinusoids of geometrically spaced frequencies:</p>
-
-<div class="formula">
-  PE<sub>(<i>pos</i>, 2<i>i</i>)</sub> = sin&#8202;(<i>pos</i> / 10000<sup>2<i>i</i>/<i>d<sub>model</sub></i></sup>)<br>
-  PE<sub>(<i>pos</i>, 2<i>i</i>+1)</sub> = cos&#8202;(<i>pos</i> / 10000<sup>2<i>i</i>/<i>d<sub>model</sub></i></sup>)
-</div>
-
-<p>Two useful properties fall out of this choice. First, each dimension is a sinusoid of a different wavelength, so the model can read off position at multiple scales the way Fourier features do. Second, because sin and cos satisfy linear identities, the encoding for position <i>pos</i> + <i>k</i> is a linear function of the encoding for <i>pos</i>, which makes relative position trivially learnable. Modern variants (learned absolute, RoPE, ALiBi) tweak this, but the role is the same: inject ordering into a set-symmetric operation.</p>
-
-<h2>5. The full encoder&ndash;decoder</h2>
-
-<p>The Transformer wraps multi-head attention in a residual block with a position-wise feed-forward network and layer normalization, then stacks <i>N</i> = 6 of these on each side.</p>
-
-<div class="figure">
-<svg viewBox="0 0 640 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transformer encoder-decoder architecture">
+<div class="diagram">
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scaled dot-product attention diagram">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a1a1a"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa3b2"/>
     </marker>
-    <style>
-      .box { fill: #fff; stroke: #1a1a1a; stroke-width: 1.2; }
-      .enc { fill: #fbeee1; }
-      .dec { fill: #e3ecf5; }
-      .ln  { fill: #ece7d8; }
-      .stack { fill: none; stroke: #b9472a; stroke-width: 1.4; stroke-dasharray: 5 4; }
-      .stack2 { fill: none; stroke: #2a5b8a; stroke-width: 1.4; stroke-dasharray: 5 4; }
-      .lbl { font: 11px "Helvetica Neue", Arial, sans-serif; fill: #1a1a1a; }
-      .ttl { font: bold 12px "Helvetica Neue", Arial, sans-serif; fill: #1a1a1a; }
-      .sm  { font: 10px "Helvetica Neue", Arial, sans-serif; fill: #555; }
-      .arr { stroke: #1a1a1a; stroke-width: 1.2; fill: none; }
-      .cross { stroke: #2a5b8a; stroke-width: 1.2; fill: none; stroke-dasharray: 3 2; }
-    </style>
   </defs>
 
-  <!-- ENCODER stack -->
-  <rect class="stack" x="40" y="60" width="240" height="380" rx="6"/>
-  <text class="ttl" x="160" y="52" text-anchor="middle">Encoder (xN)</text>
+  <!-- Input tokens -->
+  <g font-family="monospace" font-size="13" fill="#e6e8ec" text-anchor="middle">
+    <rect x="20" y="30" width="80" height="30" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="60" y="50">x1</text>
+    <rect x="20" y="70" width="80" height="30" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="60" y="90">x2</text>
+    <rect x="20" y="110" width="80" height="30" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="60" y="130">x3</text>
+    <rect x="20" y="150" width="80" height="30" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="60" y="170">x4</text>
+    <text x="60" y="205" fill="#9aa3b2" font-size="11">input embeddings</text>
+  </g>
 
-  <rect class="box enc" x="80" y="380" width="160" height="36" rx="4"/>
-  <text class="lbl" x="160" y="403" text-anchor="middle">Input Embedding</text>
+  <!-- Q K V projections -->
+  <g font-family="monospace" font-size="13" text-anchor="middle">
+    <rect x="180" y="40" width="70" height="36" rx="4" fill="#1c222c" stroke="#6ea8fe"/>
+    <text x="215" y="63" fill="#6ea8fe">Q = XW^Q</text>
+    <rect x="180" y="92" width="70" height="36" rx="4" fill="#1c222c" stroke="#b48cff"/>
+    <text x="215" y="115" fill="#b48cff">K = XW^K</text>
+    <rect x="180" y="144" width="70" height="36" rx="4" fill="#1c222c" stroke="#7ee787"/>
+    <text x="215" y="167" fill="#7ee787">V = XW^V</text>
+  </g>
 
-  <rect class="box ln"  x="80" y="335" width="160" height="28" rx="4"/>
-  <text class="lbl" x="160" y="353" text-anchor="middle">+ Positional Encoding</text>
+  <!-- arrows from inputs to projections -->
+  <g stroke="#9aa3b2" stroke-width="1" fill="none" marker-end="url(#arrow)">
+    <line x1="100" y1="100" x2="180" y2="58"/>
+    <line x1="100" y1="100" x2="180" y2="110"/>
+    <line x1="100" y1="100" x2="180" y2="162"/>
+  </g>
 
-  <rect class="box enc" x="80" y="265" width="160" height="50" rx="4"/>
-  <text class="lbl" x="160" y="288" text-anchor="middle">Multi-Head</text>
-  <text class="lbl" x="160" y="302" text-anchor="middle">Self-Attention</text>
+  <!-- Score block -->
+  <g font-family="monospace" font-size="12" text-anchor="middle">
+    <rect x="320" y="55" width="120" height="60" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="380" y="82" fill="#e6e8ec">QK^T / &#8730;d_k</text>
+    <text x="380" y="102" fill="#9aa3b2" font-size="10">n &#215; n scores</text>
+  </g>
+  <line x1="250" y1="58" x2="320" y2="80" stroke="#6ea8fe" marker-end="url(#arrow)"/>
+  <line x1="250" y1="110" x2="320" y2="92" stroke="#b48cff" marker-end="url(#arrow)"/>
 
-  <rect class="box ln"  x="80" y="230" width="160" height="22" rx="4"/>
-  <text class="sm" x="160" y="245" text-anchor="middle">Add &amp; LayerNorm</text>
+  <!-- Softmax -->
+  <g font-family="monospace" font-size="12" text-anchor="middle">
+    <rect x="480" y="55" width="100" height="60" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="530" y="82" fill="#e6e8ec">softmax</text>
+    <text x="530" y="102" fill="#9aa3b2" font-size="10">row-wise</text>
+  </g>
+  <line x1="440" y1="85" x2="480" y2="85" stroke="#9aa3b2" marker-end="url(#arrow)"/>
 
-  <rect class="box enc" x="80" y="170" width="160" height="44" rx="4"/>
-  <text class="lbl" x="160" y="188" text-anchor="middle">Feed-Forward</text>
-  <text class="sm"  x="160" y="203" text-anchor="middle">(2-layer MLP, GELU)</text>
+  <!-- Weighted sum -->
+  <g font-family="monospace" font-size="12" text-anchor="middle">
+    <rect x="610" y="120" width="90" height="60" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="655" y="147" fill="#e6e8ec">&#215; V</text>
+    <text x="655" y="167" fill="#9aa3b2" font-size="10">weighted sum</text>
+  </g>
+  <line x1="580" y1="95" x2="620" y2="125" stroke="#9aa3b2" marker-end="url(#arrow)"/>
+  <line x1="250" y1="162" x2="610" y2="160" stroke="#7ee787" marker-end="url(#arrow)"/>
 
-  <rect class="box ln"  x="80" y="135" width="160" height="22" rx="4"/>
-  <text class="sm" x="160" y="150" text-anchor="middle">Add &amp; LayerNorm</text>
+  <!-- Output -->
+  <g font-family="monospace" font-size="13" text-anchor="middle">
+    <rect x="610" y="220" width="90" height="36" rx="4" fill="#0b0d12" stroke="#7ee787" stroke-width="2"/>
+    <text x="655" y="243" fill="#7ee787">output</text>
+  </g>
+  <line x1="655" y1="180" x2="655" y2="220" stroke="#9aa3b2" marker-end="url(#arrow)"/>
 
-  <rect class="box enc" x="80" y="85"  width="160" height="34" rx="4"/>
-  <text class="lbl" x="160" y="106" text-anchor="middle">Encoder output</text>
-
-  <!-- arrows in encoder -->
-  <path class="arr" d="M160 380 L160 365" marker-end="url(#arrow)"/>
-  <path class="arr" d="M160 335 L160 318" marker-end="url(#arrow)"/>
-  <path class="arr" d="M160 265 L160 255" marker-end="url(#arrow)"/>
-  <path class="arr" d="M160 230 L160 217" marker-end="url(#arrow)"/>
-  <path class="arr" d="M160 170 L160 160" marker-end="url(#arrow)"/>
-  <path class="arr" d="M160 135 L160 122" marker-end="url(#arrow)"/>
-
-  <!-- DECODER stack -->
-  <rect class="stack2" x="360" y="60" width="240" height="440" rx="6"/>
-  <text class="ttl" x="480" y="52" text-anchor="middle">Decoder (xN)</text>
-
-  <rect class="box dec" x="400" y="440" width="160" height="36" rx="4"/>
-  <text class="lbl" x="480" y="463" text-anchor="middle">Output Embedding</text>
-
-  <rect class="box ln"  x="400" y="395" width="160" height="28" rx="4"/>
-  <text class="lbl" x="480" y="413" text-anchor="middle">+ Positional Encoding</text>
-
-  <rect class="box dec" x="400" y="325" width="160" height="50" rx="4"/>
-  <text class="lbl" x="480" y="348" text-anchor="middle">Masked Multi-Head</text>
-  <text class="lbl" x="480" y="362" text-anchor="middle">Self-Attention</text>
-
-  <rect class="box ln"  x="400" y="290" width="160" height="22" rx="4"/>
-  <text class="sm" x="480" y="305" text-anchor="middle">Add &amp; LayerNorm</text>
-
-  <rect class="box dec" x="400" y="225" width="160" height="50" rx="4"/>
-  <text class="lbl" x="480" y="247" text-anchor="middle">Cross-Attention</text>
-  <text class="sm"  x="480" y="262" text-anchor="middle">(Q from dec, K/V from enc)</text>
-
-  <rect class="box ln"  x="400" y="190" width="160" height="22" rx="4"/>
-  <text class="sm" x="480" y="205" text-anchor="middle">Add &amp; LayerNorm</text>
-
-  <rect class="box dec" x="400" y="135" width="160" height="40" rx="4"/>
-  <text class="lbl" x="480" y="159" text-anchor="middle">Feed-Forward</text>
-
-  <rect class="box ln"  x="400" y="100" width="160" height="22" rx="4"/>
-  <text class="sm" x="480" y="115" text-anchor="middle">Add &amp; LayerNorm</text>
-
-  <rect class="box dec" x="400" y="60"  width="160" height="28" rx="4"/>
-  <text class="lbl" x="480" y="78" text-anchor="middle">Linear + Softmax</text>
-
-  <!-- decoder internal arrows -->
-  <path class="arr" d="M480 440 L480 425" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 395 L480 378" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 325 L480 313" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 290 L480 277" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 225 L480 213" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 190 L480 175" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 135 L480 123" marker-end="url(#arrow)"/>
-  <path class="arr" d="M480 100 L480 89" marker-end="url(#arrow)"/>
-
-  <!-- cross-attention link from encoder output to decoder cross-attention -->
-  <path class="cross" d="M240 102 C 320 102, 340 250, 400 250" marker-end="url(#arrow)"/>
-  <text class="sm" x="320" y="170" text-anchor="middle" fill="#2a5b8a">K, V</text>
+  <!-- Caption labels -->
+  <text x="380" y="280" font-family="sans-serif" font-size="12" fill="#9aa3b2" text-anchor="middle">
+    Q, K, V all come from the same X: that's self-attention.
+  </text>
 </svg>
-<div class="caption">Figure 1. Encoder and decoder stacks. Solid arrows are the residual path; the dashed blue arrow feeds encoder keys and values into the decoder's cross-attention.</div>
+<div class="caption">Scaled dot-product self-attention. Every output token is a learned blend of every input value.</div>
 </div>
 
-<h3>Anatomy of one block</h3>
+<h2>4. Multi-head attention: many lookups in parallel</h2>
 
-<p>Every sub-layer in the model uses the same residual-and-norm pattern:</p>
-
-<pre>x = x + Sublayer(LayerNorm(x))   # pre-norm variant, common in practice
-# Sublayer is either MultiHeadAttention(...) or FFN(...)</pre>
-
-<p>The position-wise feed-forward network is two linear layers with a nonlinearity between them, applied independently to every token:</p>
+<p>A single attention head learns one notion of similarity. That&rsquo;s limiting &mdash; a word like &ldquo;bank&rdquo; might want to attend differently for syntactic agreement, coreference, and topical context. The fix is brutally simple: run several attention operations in parallel with different projection matrices, then concatenate and mix.</p>
 
 <div class="formula">
-  FFN(<i>x</i>) = max(0, <i>x&#8202;W</i><sub>1</sub> + <i>b</i><sub>1</sub>)&#8202;<i>W</i><sub>2</sub> + <i>b</i><sub>2</sub>
+  head<sub>i</sub> = Attention(Q W<sub>i</sub><sup>Q</sup>, K W<sub>i</sub><sup>K</sup>, V W<sub>i</sub><sup>V</sup>)
+</div>
+<div class="formula">
+  MultiHead(Q, K, V) = Concat(head<sub>1</sub>, &hellip;, head<sub>h</sub>) W<sup>O</sup>
 </div>
 
-<p>In the base model, the hidden dimension of the FFN is <i>d<sub>ff</sub></i> = 2048, four times <i>d<sub>model</sub></i>. This block holds most of the parameters and is where the model does most of its "thinking" between attention lookups.</p>
+<p>Typically <span class="var">d<sub>model</sub></span> = 512, <span class="var">h</span> = 8, and each head uses <span class="var">d<sub>k</sub></span> = <span class="var">d<sub>v</sub></span> = 64 so that the total compute roughly matches a single full-dimensional attention. The output projection <span class="var">W<sup>O</sup></span> &isin; &reals;<sup><span class="var">h&middot;d<sub>v</sub> &times; d<sub>model</sub></span></sup> mixes the heads back together.</p>
 
-<h3>The decoder's two twists</h3>
+<p>Empirically, different heads specialize: some track positional offsets (&ldquo;the previous token&rdquo;), some track syntactic dependencies, some focus on rare content words. You don&rsquo;t hand-design this &mdash; it emerges from training.</p>
 
-<ul>
-  <li><b>Causal masking.</b> During training the decoder sees the entire target sequence at once, but it must not attend to future positions or it would trivially cheat. Before the softmax in self-attention, future positions in <code>QK<sup>T</sup></code> are set to &minus;&infin;. After softmax those weights become zero.</li>
-  <li><b>Cross-attention.</b> A second multi-head block per layer takes its queries from the decoder and its keys and values from the encoder's final output. This is the only channel through which source-language information enters the decoder.</li>
-</ul>
+<h2>5. Positional encoding: putting order back in</h2>
 
-<h2>6. Why this scales</h2>
+<p>There&rsquo;s a problem. Attention as defined is <em>permutation-equivariant</em>: shuffle the input tokens and the output shuffles the same way. The model has no idea which token came first. For language (and most sequences), order matters enormously.</p>
 
-<p>The complexity story is the punchline. For sequence length <i>n</i> and representation width <i>d</i>:</p>
+<p>The fix is to add a position-dependent vector <span class="var">PE<sub>pos</sub></span> to each input embedding <em>before</em> the first attention layer. The original paper used fixed sinusoidal encodings:</p>
+
+<div class="formula">
+  PE<sub>(pos, 2i)</sub> = sin( pos / 10000<sup>2i/d<sub>model</sub></sup> )
+</div>
+<div class="formula">
+  PE<sub>(pos, 2i+1)</sub> = cos( pos / 10000<sup>2i/d<sub>model</sub></sup> )
+</div>
+
+<p>Why sinusoids? Two reasons. First, every position gets a unique fingerprint across the <span class="var">d<sub>model</sub></span> dimensions, with low-index dimensions varying fast and high-index dimensions varying slowly &mdash; like a continuous binary clock. Second, for any fixed offset <span class="var">k</span>, <span class="var">PE<sub>pos+k</sub></span> is a linear function of <span class="var">PE<sub>pos</sub></span>, which the model can exploit to reason about relative positions.</p>
+
+<p>Modern variants (learned absolute embeddings, RoPE, ALiBi) have largely replaced sinusoidal encodings, but the role is identical: inject order.</p>
+
+<h2>6. The full encoder-decoder block</h2>
+
+<p>The 2017 paper&rsquo;s architecture is encoder-decoder, designed for translation. Both stacks are made of identical blocks; here&rsquo;s the recipe.</p>
+
+<h3>Encoder block (repeated N=6 times)</h3>
+<ol>
+  <li>Multi-head <strong>self-attention</strong> over the input sequence</li>
+  <li>Residual connection + LayerNorm</li>
+  <li>Position-wise <strong>feed-forward network</strong> (FFN): two linear layers with a ReLU/GELU between, applied independently to each position
+    <div class="formula">FFN(x) = max(0, x W<sub>1</sub> + b<sub>1</sub>) W<sub>2</sub> + b<sub>2</sub></div>
+  </li>
+  <li>Residual connection + LayerNorm</li>
+</ol>
+
+<h3>Decoder block (also N=6)</h3>
+<ol>
+  <li><strong>Masked</strong> multi-head self-attention over outputs generated so far. The mask zeros out attention to future positions (sets their scores to &minus;&infin; before softmax) so the model can&rsquo;t cheat by peeking ahead.</li>
+  <li>Residual + LayerNorm</li>
+  <li><strong>Cross-attention</strong>: <span class="var">Q</span> comes from the decoder, but <span class="var">K</span> and <span class="var">V</span> come from the encoder&rsquo;s final output. This is how the decoder &ldquo;reads&rdquo; the source sentence.</li>
+  <li>Residual + LayerNorm</li>
+  <li>Position-wise FFN</li>
+  <li>Residual + LayerNorm</li>
+</ol>
+
+<p>A final linear layer projects each decoder output to vocabulary logits, followed by softmax for next-token probabilities. Training uses teacher forcing with cross-entropy loss; inference uses autoregressive decoding (greedy, beam search, or sampling).</p>
+
+<div class="diagram">
+<svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Encoder-decoder structure">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa3b2"/>
+    </marker>
+  </defs>
+
+  <!-- Encoder stack -->
+  <g font-family="sans-serif" font-size="12" text-anchor="middle">
+    <rect x="60" y="40" width="220" height="260" rx="8" fill="#161a21" stroke="#6ea8fe" stroke-dasharray="4,3"/>
+    <text x="170" y="32" fill="#6ea8fe" font-weight="600">Encoder (&#215; N)</text>
+
+    <rect x="90" y="60" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="170" y="81" fill="#e6e8ec">Input + PosEnc</text>
+
+    <rect x="90" y="110" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="170" y="131" fill="#e6e8ec">Multi-Head Self-Attn</text>
+
+    <rect x="90" y="160" width="160" height="24" rx="4" fill="#0b0d12" stroke="#2a2f3a"/>
+    <text x="170" y="177" fill="#9aa3b2" font-size="11">Add &amp; Norm</text>
+
+    <rect x="90" y="200" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="170" y="221" fill="#e6e8ec">Feed-Forward</text>
+
+    <rect x="90" y="250" width="160" height="24" rx="4" fill="#0b0d12" stroke="#2a2f3a"/>
+    <text x="170" y="267" fill="#9aa3b2" font-size="11">Add &amp; Norm</text>
+  </g>
+
+  <!-- Decoder stack -->
+  <g font-family="sans-serif" font-size="12" text-anchor="middle">
+    <rect x="420" y="40" width="220" height="310" rx="8" fill="#161a21" stroke="#b48cff" stroke-dasharray="4,3"/>
+    <text x="530" y="32" fill="#b48cff" font-weight="600">Decoder (&#215; N)</text>
+
+    <rect x="450" y="60" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="530" y="81" fill="#e6e8ec">Output + PosEnc</text>
+
+    <rect x="450" y="110" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="530" y="131" fill="#e6e8ec">Masked Self-Attn</text>
+
+    <rect x="450" y="160" width="160" height="24" rx="4" fill="#0b0d12" stroke="#2a2f3a"/>
+    <text x="530" y="177" fill="#9aa3b2" font-size="11">Add &amp; Norm</text>
+
+    <rect x="450" y="200" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="530" y="221" fill="#e6e8ec">Cross-Attn (Q&#8592;dec, K,V&#8592;enc)</text>
+
+    <rect x="450" y="250" width="160" height="24" rx="4" fill="#0b0d12" stroke="#2a2f3a"/>
+    <text x="530" y="267" fill="#9aa3b2" font-size="11">Add &amp; Norm</text>
+
+    <rect x="450" y="290" width="160" height="34" rx="4" fill="#1c222c" stroke="#2a2f3a"/>
+    <text x="530" y="311" fill="#e6e8ec">Feed-Forward + Norm</text>
+  </g>
+
+  <!-- Encoder -> Decoder cross attention -->
+  <path d="M 280 217 Q 350 217 450 217" fill="none" stroke="#7ee787" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+  <text x="365" y="208" font-family="sans-serif" font-size="11" fill="#7ee787" text-anchor="middle">K, V</text>
+</svg>
+<div class="caption">The encoder reads the source; the decoder generates the target one token at a time, attending to its own prefix and to the encoder&rsquo;s output.</div>
+</div>
+
+<div class="note">
+  <span class="tag">Variants</span> &mdash; Modern models often drop half the architecture. BERT is encoder-only (bidirectional self-attention, trained with masked language modeling). GPT is decoder-only (causal self-attention, trained on next-token prediction). T5 keeps the full encoder-decoder.
+</div>
+
+<h2>7. Why transformers scale so well</h2>
+
+<p>Compare the three architectures on three axes:</p>
 
 <table>
   <thead>
-    <tr><th>Layer type</th><th>Complexity per layer</th><th>Sequential ops</th><th>Max path length</th></tr>
+    <tr><th>Property</th><th>RNN / LSTM</th><th>1D CNN</th><th>Self-Attention</th></tr>
   </thead>
   <tbody>
-    <tr><td>Recurrent (LSTM)</td><td>O(<i>n</i> &middot; <i>d</i><sup>2</sup>)</td><td>O(<i>n</i>)</td><td>O(<i>n</i>)</td></tr>
-    <tr><td>Convolutional (k)</td><td>O(<i>k</i> &middot; <i>n</i> &middot; <i>d</i><sup>2</sup>)</td><td>O(1)</td><td>O(log<sub>k</sub> <i>n</i>)</td></tr>
-    <tr><td>Self-attention</td><td>O(<i>n</i><sup>2</sup> &middot; <i>d</i>)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Sequential ops per layer</td><td>O(n)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Max path length between tokens</td><td>O(n)</td><td>O(log<sub>k</sub> n)</td><td>O(1)</td></tr>
+    <tr><td>Compute per layer</td><td>O(n &middot; d<sup>2</sup>)</td><td>O(k &middot; n &middot; d<sup>2</sup>)</td><td>O(n<sup>2</sup> &middot; d)</td></tr>
   </tbody>
 </table>
 
-<p>Self-attention is quadratic in <i>n</i> and linear in <i>d</i>, while RNNs are linear in <i>n</i> and quadratic in <i>d</i>. For the typical regime &mdash; <i>n</i> in the low thousands, <i>d</i> in the hundreds &mdash; attention is competitive on FLOPs and dramatically better on wall-clock time because all the work is parallel matrix multiplication. Critically, every position is one hop from every other position, so gradients flow cleanly regardless of distance.</p>
+<p>Transformers trade quadratic compute in sequence length for two things you actually want on a GPU: <strong>full parallelism across positions</strong>, and <strong>direct connectivity between any two tokens</strong>. For sequences where <span class="var">n</span> &lt; <span class="var">d</span> (a common regime), the per-layer compute is actually competitive with an RNN, while the wall-clock time is far lower because everything happens in parallel.</p>
 
-<p>This is the property that made the modern scaling laws possible. Bigger models, longer contexts, and more data all map to operations that GPUs and TPUs already execute well. The quadratic <i>n</i><sup>2</sup> term is the only real cost &mdash; and a substantial subfield (FlashAttention, sparse attention, linear attention, state-space models) exists to chip away at it.</p>
+<p>The deeper reason transformers became the substrate for the scaling era:</p>
 
-<h2>7. A minimal forward pass</h2>
+<ul>
+  <li><strong>Uniform compute graph.</strong> A transformer is mostly matmuls of fixed shape. Compilers, kernels (FlashAttention, fused MHA), and accelerators can be optimized hard against a small, stable surface.</li>
+  <li><strong>No recurrence in training.</strong> The entire forward and backward pass over a sequence is one giant batched operation. You can shard across data, sequence, tensor, and pipeline dimensions cleanly.</li>
+  <li><strong>Smooth scaling laws.</strong> Loss decreases as a power law in parameters, data, and compute (Kaplan 2020, Chinchilla 2022). RNNs never showed this kind of predictable, monotonic improvement at scale.</li>
+  <li><strong>One architecture, many modalities.</strong> Swap the tokenizer and the same transformer works on text, code, images (ViT), audio, protein sequences, and actions.</li>
+</ul>
 
-<pre>def attention(Q, K, V, mask=None):
-    # Q, K, V: (batch, heads, seq, d_k)
-    scores = Q @ K.transpose(-2, -1) / sqrt(d_k)   # (b, h, n, n)
-    if mask is not None:
-        scores = scores.masked_fill(mask == 0, -1e9)
-    weights = softmax(scores, dim=-1)
-    return weights @ V                              # (b, h, n, d_v)
+<h2>8. The honest caveats</h2>
 
-def encoder_layer(x):
-    x = x + multihead_self_attn(layernorm(x))
-    x = x + ffn(layernorm(x))
-    return x
+<ul>
+  <li>The <span class="var">O(n<sup>2</sup>)</span> attention cost is real and motivates a whole zoo of efficient variants: sparse attention, linear attention, state-space models (Mamba), sliding-window + global attention (Longformer), and KV-cache compression tricks for inference.</li>
+  <li>Transformers are data-hungry. With small datasets, CNNs and even MLPs can outperform them on vision tasks; inductive biases matter when you can&rsquo;t throw 100B tokens at the problem.</li>
+  <li>Positional encoding is still an active research area. Sinusoids extrapolate badly past the training context length; RoPE, ALiBi, and YaRN all try to fix this with varying success.</li>
+</ul>
 
-def decoder_layer(x, enc_out):
-    x = x + masked_self_attn(layernorm(x))
-    x = x + cross_attn(layernorm(x), enc_out, enc_out)
-    x = x + ffn(layernorm(x))
-    return x</pre>
+<hr>
 
-<p>That is essentially the whole model. Stack six encoder layers, six decoder layers, share the embedding matrix with the output projection, train with cross-entropy and label smoothing on a billion tokens, and you have reproduced the original WMT system. Strip the encoder and the cross-attention and you have a GPT. Keep only the encoder and add a classification head and you have a BERT. The same primitive &mdash; <code>softmax(QK<sup>T</sup>/&radic;d<sub>k</sub>)V</code> &mdash; underlies all of them.</p>
+<h2>The one-paragraph version</h2>
 
-<div class="note">
-<b>The takeaway:</b> a Transformer replaces "carry state forward through time" with "look at everything at once, weighted by learned content similarity." Once you accept that single move, the rest of the architecture is bookkeeping: project into Q/K/V, do it in parallel heads, add positions back in, wrap in residual blocks, stack.
-</div>
+<p>A transformer replaces recurrence with self-attention: every token directly looks up information from every other token via softmax(QK<sup>T</sup>/&radic;d<sub>k</sub>)V, in parallel. Multi-head attention runs several of these lookups with different projections to capture different relations. Position is reintroduced via additive positional encodings since attention itself is order-blind. Stack these into encoder and decoder blocks, with residual connections, LayerNorm, and position-wise feed-forward layers, and you get an architecture that maps cleanly onto GPUs, allows direct long-range information flow in O(1) layers, and scales predictably with parameters and data &mdash; which is why it ate the field.</p>
 
-<footer>
-Based on Vaswani et al., "Attention Is All You Need" (NeurIPS 2017).
-</footer>
+<p class="small">Reference: Vaswani et al., <em>Attention Is All You Need</em>, NeurIPS 2017.</p>
 
 </div>
 </body>

@@ -1,5 +1,9 @@
 # Artifold
 
+[![PyPI](https://img.shields.io/pypi/v/artifold?color=c1452a&label=pypi&style=flat-square)](https://pypi.org/project/artifold/)
+[![Python](https://img.shields.io/pypi/pyversions/artifold?style=flat-square&color=666)](https://pypi.org/project/artifold/)
+[![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](LICENSE)
+
 **Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
 
 ![Artifold demo](docs/demo.gif)
@@ -257,10 +261,13 @@ The PyPI package is `artifold` because `artifold` was taken. CLI command is
 
 ## Status
 
-**v0.5, alpha.** Tested on macOS Sequoia; Linux should work; Windows
-untested. Single-developer project made in evenings — issues + PRs
-welcome, but I'm shipping what I personally use rather than what's
-broadly polished.
+**v0.5.2, alpha — live on PyPI.** Tested on macOS Sequoia; Linux should
+work; Windows untested. Single-developer project made in evenings —
+issues + PRs welcome, but I'm shipping what I personally use rather than
+what's broadly polished. The [`/craft` gallery](https://shubhamgoel27.github.io/artifold/)
+shows side-by-side outputs (default Claude vs `/craft`) on four prompts
+through Opus 4.7 — if you want to see what the skill actually does
+before installing, start there.
 
 If you try it and something feels off, [open an issue](../../issues/new) —
 even one line is helpful, "the X button is confusing" is exactly the
