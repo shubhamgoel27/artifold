@@ -2,22 +2,35 @@
 
 **Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
 
-![Folio dashboard](docs/hero-light.png)
+![Folio demo](docs/demo.gif)
 
 ---
 
-You've been making a lot of HTML with AI lately — Claude Artifacts,
-ChatGPT Canvas, v0, Lovable, Cursor. They land in `~/Downloads` or
-some project folder, you bookmark a tab, you mean to come back to that
-ROI calculator you made three weeks ago — and then you can't find it.
+> *"I've started preferring HTML as an output format instead of Markdown.
+> The added expressiveness means I get overall better output, and the chance
+> of someone actually reading your spec, report or PR writeup is much higher
+> if it's in HTML. … When writing this article, I asked Claude Code to read
+> through my code folder and find all the HTML files I've generated, group
+> and categorize them …"*
+>
+> — Thariq, *[The Unreasonable Effectiveness of HTML](https://x.com/trq212/status/2052809885763747935)* (Claude Code team)
 
-That's the whole story. I made a 30-day workout tracker for my partner,
-lost it in a maze of folders, regenerated a worse version, and decided
-to just build the index myself.
+**Folio is that library.** If you're shifting from Markdown to HTML for
+specs, reports, designs, prototypes, throwaway editors — the way Thariq
+describes — Folio is where they live.
 
-**Folio is that index.** Local-first, fast, runs entirely on your
-machine. Plus the part where, when you *do* want to share an artifact,
-it's one click to a permanent public URL.
+You've been making a lot of HTML with AI lately: Claude Artifacts,
+ChatGPT Canvas, v0, Lovable, Cursor. They land in `~/Downloads` or some
+project folder, you bookmark a tab, you mean to come back to that ROI
+calculator you made three weeks ago — and you can't find it.
+
+That's the whole reason this exists. I made a 30-day workout tracker
+for my partner, lost it in a maze of folders, regenerated a worse
+version, and decided to just build the index myself.
+
+Local-first, fast, runs entirely on your machine. Plus the part where,
+when you *do* want to share an artifact, it's one click to a permanent
+public URL.
 
 ## Three things you can do
 
