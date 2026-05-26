@@ -58,6 +58,10 @@ a new file in any watched folder and it appears within seconds.
 
 ### 3. 🎨 Generate new artifacts that match your style — `/craft` skill
 
+→ **See [the side-by-side gallery](https://shubhamgoel27.github.io/artifold/)**:
+four prompts run through `claude-sonnet-4` *twice* — once plainly, once via
+`/craft`. Same model, same prompt, visibly different output.
+
 After installing the Claude Code skill, type `/craft a 30-day strength
 tracker for a beginner` in any session. The skill:
 
