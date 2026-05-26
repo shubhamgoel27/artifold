@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Foundation · 30-Day Strength Log</title>
+<meta name="artifold:intent" content="Printable 30-day beginner strength log, daily sets/reps/load with linear progression and rest cues.">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:prompt" content="30-day strength tracker for a beginner — daily exercises, sets, reps, weight progression, rest. Printable, tick-off, all 30 days visible.">
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --paper:#f6f2e7;
+    --paper-2:#efe9d8;
+    --rule:#d8cfb6;
+    --rule-2:#c2b896;
+    --ink:#1b2a3a;
+    --ink-2:#3a4a5c;
+    --ink-3:#6a7686;
+    --ink-4:#9aa3b1;
+    --accent:#9c2d1a;          /* one accent — used only for "today", PR, deload tag */
+    --accent-tint:#f1d9d1;
+
+    --s-12:12px; --s-13:13px; --s-14:14px; --s-16:16px; --s-22:22px; --s-34:34px; --s-54:54px;
+
+    --mono:"SF Mono","JetBrains Mono","Menlo","Consolas",ui-monospace,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans); font-size:var(--s-14); line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* graph-paper background — tight 22px ruling, no shadows */
+  body{
+    background-color:var(--paper);
+    background-image:
+      linear-gradient(to right, rgba(155,140,100,0.10) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(155,140,100,0.10) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+
+  .page{
+    max-width:1180px;
+    margin:0 auto;
+    padding:48px 56px 80px;
+  }
+
+  /* ---------- masthead (asymmetric, left rail) ---------- */
+  .mast{
+    display:grid;
+    grid-template-columns: 1.05fr 2.4fr;
+    gap:48px;
+    align-items:end;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--ink);
+    margin-bottom:0;
+  }
+  .mast h1{
+    margin:0;
+    font-family:var(--sans);
+    font-size:var(--s-54);
+    font-weight:700;
+    letter-spacing:-0.025em;
+    line-height:1.0;
+    color:var(--ink);
+  }
+  .mast h1 .num{ font-family:var(--mono); font-weight:500; color:var(--ink-2); }
+  .mast .eyebrow{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    margin-bottom:14px;
+  }
+  .mast .meta{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-2);
+    display:grid;
+    grid-template-columns:repeat(4, max-content);
+    gap:4px 28px;
+    align-self:end;
+    padding-bottom:6px;
+  }
+  .mast .meta dt{ color:var(--ink-3); letter-spacing:0.08em; text-transform:uppercase; }
+  .mast .meta dd{ margin:0; color:var(--ink); }
+
+  /* ---------- protocol strip ---------- */
+  .protocol{
+    display:grid;
+    grid-template-columns: 1.05fr 2.4fr;
+    gap:48px;
+    padding:22px 0 32px;
+    border-bottom:1px solid var(--rule-2);
+  }
+  .protocol .left p{
+    margin:0;
+    font-size:var(--s-13);
+    color:var(--ink-2);
+    max-width:34ch;
+  }
+  .protocol .left p strong{ color:var(--ink); font-weight:600; }
+  .legend{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:0;
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    border-left:1px solid var(--rule-2);
+  }
+  .legend .cell{
+    padding:8px 14px;
+    border-right:1px solid var(--rule-2);
+  }
+  .legend .k{ color:var(--ink-3); text-transform:uppercase; letter-spacing:0.1em; font-size:11px; margin-bottom:4px; }
+  .legend .v{ color:var(--ink); }
+
+  /* ---------- week block ---------- */
+  .week{
+    margin-top:34px;
+    page-break-inside:avoid;
+  }
+  .week-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:24px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--ink);
+    margin-bottom:0;
+  }
+  .week-head h2{
+    margin:0;
+    font-family:var(--sans);
+    font-size:var(--s-22);
+    font-weight:600;
+    letter-spacing:-0.015em;
+    color:var(--ink);
+  }
+  .week-head h2 .wlabel{ font-family:var(--mono); font-weight:400; color:var(--ink-3); font-size:var(--s-13); margin-left:12px; letter-spacing:0.06em; text-transform:uppercase; }
+  .week-head .focus{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-2);
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+  }
+  .week-head .focus .tag-deload{
+    background:var(--accent-tint);
+    color:var(--accent);
+    padding:2px 8px;
+    margin-left:10px;
+    letter-spacing:0.1em;
+    border-radius:2px;
+  }
+
+  /* ---------- day table ---------- */
+  table.days{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:0;
+    font-size:var(--s-13);
+  }
+  table.days th{
+    text-align:left;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:500;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--ink-3);
+    padding:10px 10px 8px;
+    border-bottom:1px solid var(--rule-2);
+    vertical-align:bottom;
+    background:transparent;
+  }
+  table.days td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+    color:var(--ink);
+  }
+  table.days tr:nth-child(even) td{ background:rgba(216,207,182,0.18); }
+  table.days tr.rest td{ color:var(--ink-3); }
+  table.days tr.rest td .ex{ color:var(--ink-3); font-style:italic; }
+
+  /* column widths */
+  th.c-day,td.c-day{ width:62px; }
+  th.c-date,td.c-date{ width:78px; }
+  th.c-focus,td.c-focus{ width:110px; }
+  th.c-tick,td.c-tick{ width:34px; text-align:center; }
+  th.c-rest,td.c-rest{ width:74px; }
+  th.c-notes,td.c-notes{ width:170px; }
+
+  td.c-day .n{
+    font-family:var(--mono);
+    font-size:var(--s-16);
+    font-weight:600;
+    color:var(--ink);
+  }
+  td.c-date{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-3);
+    padding-top:14px;
+  }
+  td.c-focus{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--ink-2);
+    padding-top:14px;
+  }
+  td.c-focus .pill{
+    display:inline-block;
+    padding:2px 7px;
+    background:var(--paper-2);
+    border:1px solid var(--rule-2);
+    border-radius:2px;
+  }
+  td.c-focus .pill.upper{ background:#e7ecf2; border-color:#c8d2dd; color:#2a3a4d; }
+  td.c-focus .pill.lower{ background:#ece8d6; border-color:#cfc7a3; color:#4a4426; }
+  td.c-focus .pill.full { background:#e2e8e0; border-color:#bdc8ba; color:#2f4032; }
+  td.c-focus .pill.rest { background:transparent; border-color:var(--rule); color:var(--ink-3); }
+  td.c-focus .pill.cond { background:#f1e3dd; border-color:#dec3b8; color:#6e2f1d; }
+
+  td.c-rest{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-2);
+    padding-top:14px;
+  }
+  td.c-tick{
+    padding-top:13px;
+  }
+  td.c-tick .box{
+    display:inline-block;
+    width:14px; height:14px;
+    border:1.25px solid var(--ink-2);
+    border-radius:2px;
+    background:transparent;
+  }
+  /* exercises list inside main cell */
+  td.c-ex ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+  }
+  td.c-ex li{
+    display:grid;
+    grid-template-columns: 1fr 84px 70px;
+    gap:10px;
+    padding:2px 0;
+    align-items:baseline;
+  }
+  td.c-ex li + li{ border-top:1px dashed var(--rule); padding-top:4px; margin-top:2px; }
+  td.c-ex .ex{ color:var(--ink); }
+  td.c-ex .sets{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-2);
+    text-align:right;
+  }
+  td.c-ex .load{
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-2);
+    text-align:right;
+    white-space:nowrap;
+  }
+  td.c-ex .load.pr{ color:var(--accent); }
+
+  td.c-notes{
+    font-family:var(--sans);
+    font-size:var(--s-12);
+    color:var(--ink-3);
+    padding-top:14px;
+    line-height:1.4;
+  }
+  td.c-notes .pr{ color:var(--accent); font-family:var(--mono); }
+
+  /* ---------- footer / sign-off ---------- */
+  .signoff{
+    display:grid;
+    grid-template-columns: 1.05fr 2.4fr;
+    gap:48px;
+    margin-top:44px;
+    padding-top:22px;
+    border-top:1px solid var(--ink);
+  }
+  .signoff h3{
+    margin:0 0 8px;
+    font-size:var(--s-13);
+    font-family:var(--mono);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--ink-3);
+  }
+  .signoff p{ margin:0; font-size:var(--s-13); color:var(--ink-2); max-width:60ch; }
+  .signoff .lines{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px 36px;
+    margin-top:12px;
+    font-family:var(--mono);
+    font-size:var(--s-12);
+    color:var(--ink-3);
+  }
+  .signoff .lines div{
+    border-bottom:1px solid var(--ink-3);
+    padding-bottom:2px;
+    min-height:30px;
+    display:flex; align-items:flex-end;
+  }
+  .signoff .lines div span{ text-transform:uppercase; letter-spacing:0.1em; }
+
+  .colophon{
+    margin-top:36px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-4);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    display:flex; justify-content:space-between;
+  }
+
+  /* ---------- print ---------- */
+  @media print{
+    body{ background-image:none; background-color:#fff; }
+    .page{ padding:24px 28px; max-width:none; }
+    .week{ break-inside:avoid; }
+    table.days tr:nth-child(even) td{ background:#fafafa; }
+    .accent-only-print{ display:none; }
+  }
+
+  @media (max-width:880px){
+    .mast,.protocol,.signoff{ grid-template-columns:1fr; gap:18px; }
+    .legend{ grid-template-columns:repeat(2,1fr); border-top:1px solid var(--rule-2); }
+    .page{ padding:28px 20px 60px; }
+    table.days{ font-size:var(--s-12); }
+    td.c-ex li{ grid-template-columns: 1fr 70px 60px; }
+    th.c-notes,td.c-notes{ display:none; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="mast">
+    <div>
+      <div class="eyebrow">Foundation · Beginner Protocol</div>
+      <h1>30-Day<br>Strength Log<span class="num">  /01</span></h1>
+    </div>
+    <dl class="meta">
+      <dt>Athlete</dt><dd>______________________</dd>
+      <dt>Bodyweight</dt><dd>______ lb</dd>
+      <dt>Start date</dt><dd>______________</dd>
+      <dt>Goal</dt><dd>Build base</dd>
+      <dt>Split</dt><dd>Upper / Lower / Full · 3×/wk</dd>
+      <dt>Session</dt><dd>45–55 min</dd>
+      <dt>Progression</dt><dd>+5 lb upper, +10 lb lower / week</dd>
+      <dt>Equip.</dt><dd>Barbell, DBs, bench, rack</dd>
+    </dl>
+  </header>
+
+  <!-- ========== PROTOCOL STRIP ========== -->
+  <section class="protocol">
+    <div class="left">
+      <p><strong>How to read this.</strong> Each row is one day. The exercise column lists the lift, then sets × reps, then the working weight to attempt. The first set is your warm-up build; the last working set is what counts. If you complete every prescribed rep with clean form, add the next week's load. If you miss, repeat the week.</p>
+    </div>
+    <div class="legend">
+      <div class="cell"><div class="k">Sets × Reps</div><div class="v">working sets only</div></div>
+      <div class="cell"><div class="k">Load</div><div class="v">total bar weight, lb</div></div>
+      <div class="cell"><div class="k">RIR</div><div class="v">target 2–3 reps in reserve</div></div>
+      <div class="cell"><div class="k">Rest</div><div class="v">between working sets</div></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WEEK 1 — Calibration. Find working weights. Form > load.
+       ============================================================ -->
+  <section class="week">
+    <div class="week-head">
+      <h2>Week 1<span class="wlabel">Calibration · Days 01–07</span></h2>
+      <div class="focus">Find your working weights · keep 3 RIR</div>
+    </div>
+    <table class="days">
+      <thead>
+        <tr>
+          <th class="c-day">Day</th>
+          <th class="c-date">Date</th>
+          <th class="c-focus">Focus</th>
+          <th class="c-ex">Exercise · Sets × Reps · Load</th>
+          <th class="c-rest">Rest</th>
+          <th class="c-notes">Notes</th>
+          <th class="c-tick">✓</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="c-day"><span class="n">01</span></td>
+          <td class="c-date">Mon</td>
+          <td class="c-focus"><span class="pill upper">Upper A</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Bench press (barbell)</span><span class="sets">3 × 8</span><span class="load">65 lb</span></li>
+              <li><span class="ex">Bent-over row</span><span class="sets">3 × 8</span><span class="load">65 lb</span></li>
+              <li><span class="ex">Overhead press (DB)</span><span class="sets">3 × 10</span><span class="load">15 lb</span></li>
+              <li><span class="ex">Lat pulldown</span><span class="sets">3 × 10</span><span class="load">60 lb</span></li>
+              <li><span class="ex">Plank</span><span class="sets">3 × 30 s</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">90 s</td>
+          <td class="c-notes">Start light. Last set should leave 3 clean reps in the tank.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">02</span></td>
+          <td class="c-date">Tue</td>
+          <td class="c-focus"><span class="pill rest">Recovery</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Walk 30–40 min · easy mobility (hips, T-spine)</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Soreness day. Don't skip the walk.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">03</span></td>
+          <td class="c-date">Wed</td>
+          <td class="c-focus"><span class="pill lower">Lower A</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Back squat</span><span class="sets">3 × 8</span><span class="load">95 lb</span></li>
+              <li><span class="ex">Romanian deadlift</span><span class="sets">3 × 8</span><span class="load">95 lb</span></li>
+              <li><span class="ex">Walking lunge</span><span class="sets">3 × 10/leg</span><span class="load">bw</span></li>
+              <li><span class="ex">Calf raise</span><span class="sets">3 × 12</span><span class="load">bw</span></li>
+              <li><span class="ex">Dead bug</span><span class="sets">3 × 8/side</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2 min</td>
+          <td class="c-notes">Squat to a box if depth is uncertain. Film one set from the side.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">04</span></td>
+          <td class="c-date">Thu</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Full rest. Sleep target 8 h.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Hydrate. 0.7 g protein / lb bodyweight.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">05</span></td>
+          <td class="c-date">Fri</td>
+          <td class="c-focus"><span class="pill full">Full Body</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Deadlift</span><span class="sets">3 × 5</span><span class="load">115 lb</span></li>
+              <li><span class="ex">Incline DB press</span><span class="sets">3 × 10</span><span class="load">20 lb</span></li>
+              <li><span class="ex">Goblet squat</span><span class="sets">3 × 10</span><span class="load">25 lb</span></li>
+              <li><span class="ex">Seated row</span><span class="sets">3 × 10</span><span class="load">55 lb</span></li>
+              <li><span class="ex">Farmer carry</span><span class="sets">3 × 30 s</span><span class="load">30 lb/hand</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2 min</td>
+          <td class="c-notes">Deadlift is the priority lift. Stop the set if your back rounds.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">06</span></td>
+          <td class="c-date">Sat</td>
+          <td class="c-focus"><span class="pill cond">Conditioning</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Zone 2 cardio · row, bike, or brisk walk</span><span class="sets">1 × 30 min</span><span class="load">RPE 5</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Nose-breathing pace. Optional.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">07</span></td>
+          <td class="c-date">Sun</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Log your week. Note any lift that felt off.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Bodyweight check (optional, same time of day).</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================================================
+       WEEK 2
+       ============================================================ -->
+  <section class="week">
+    <div class="week-head">
+      <h2>Week 2<span class="wlabel">Build · Days 08–14</span></h2>
+      <div class="focus">+5 lb upper · +10 lb lower from Week 1</div>
+    </div>
+    <table class="days">
+      <thead>
+        <tr>
+          <th class="c-day">Day</th>
+          <th class="c-date">Date</th>
+          <th class="c-focus">Focus</th>
+          <th class="c-ex">Exercise · Sets × Reps · Load</th>
+          <th class="c-rest">Rest</th>
+          <th class="c-notes">Notes</th>
+          <th class="c-tick">✓</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="c-day"><span class="n">08</span></td>
+          <td class="c-date">Mon</td>
+          <td class="c-focus"><span class="pill upper">Upper A</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Bench press (barbell)</span><span class="sets">3 × 8</span><span class="load">70 lb</span></li>
+              <li><span class="ex">Bent-over row</span><span class="sets">3 × 8</span><span class="load">70 lb</span></li>
+              <li><span class="ex">Overhead press (DB)</span><span class="sets">3 × 10</span><span class="load">17.5 lb</span></li>
+              <li><span class="ex">Lat pulldown</span><span class="sets">3 × 10</span><span class="load">65 lb</span></li>
+              <li><span class="ex">Plank</span><span class="sets">3 × 35 s</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">90 s</td>
+          <td class="c-notes">If last set's reps slow, hold the weight next week.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">09</span></td>
+          <td class="c-date">Tue</td>
+          <td class="c-focus"><span class="pill rest">Recovery</span></td>
+          <td class="c-ex"><ul><li><span class="ex">30-min walk · 90/90 hip series · band pull-aparts 2 × 15</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">10</span></td>
+          <td class="c-date">Wed</td>
+          <td class="c-focus"><span class="pill lower">Lower A</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Back squat</span><span class="sets">3 × 8</span><span class="load">105 lb</span></li>
+              <li><span class="ex">Romanian deadlift</span><span class="sets">3 × 8</span><span class="load">105 lb</span></li>
+              <li><span class="ex">Walking lunge</span><span class="sets">3 × 10/leg</span><span class="load">10 lb DBs</span></li>
+              <li><span class="ex">Calf raise</span><span class="sets">3 × 12</span><span class="load">10 lb DBs</span></li>
+              <li><span class="ex">Dead bug</span><span class="sets">3 × 10/side</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2 min</td>
+          <td class="c-notes">Hip warmup: 5-min bike + 2 × 10 bw squats before barbell.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">11</span></td>
+          <td class="c-date">Thu</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Full rest.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Aim for 8 h sleep tonight; Friday is the heaviest day.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">12</span></td>
+          <td class="c-date">Fri</td>
+          <td class="c-focus"><span class="pill full">Full Body</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Deadlift</span><span class="sets">3 × 5</span><span class="load">135 lb <span class="pr">PR</span></span></li>
+              <li><span class="ex">Incline DB press</span><span class="sets">3 × 10</span><span class="load">22.5 lb</span></li>
+              <li><span class="ex">Goblet squat</span><span class="sets">3 × 10</span><span class="load">30 lb</span></li>
+              <li><span class="ex">Seated row</span><span class="sets">3 × 10</span><span class="load">60 lb</span></li>
+              <li><span class="ex">Farmer carry</span><span class="sets">3 × 40 s</span><span class="load">35 lb/hand</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2–3 min</td>
+          <td class="c-notes"><span class="pr">First plate on the bar.</span> Reset between every rep.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">13</span></td>
+          <td class="c-date">Sat</td>
+          <td class="c-focus"><span class="pill cond">Conditioning</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Zone 2 · row or bike</span><span class="sets">1 × 35 min</span><span class="load">RPE 5</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">14</span></td>
+          <td class="c-date">Sun</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Weekly review. Did all reps move at the same speed?</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">If yes → progress as planned. If no → repeat W2 loads.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================================================
+       WEEK 3
+       ============================================================ -->
+  <section class="week">
+    <div class="week-head">
+      <h2>Week 3<span class="wlabel">Push · Days 15–21</span></h2>
+      <div class="focus">+5 lb upper · +10 lb lower · RIR drops to 2</div>
+    </div>
+    <table class="days">
+      <thead>
+        <tr>
+          <th class="c-day">Day</th>
+          <th class="c-date">Date</th>
+          <th class="c-focus">Focus</th>
+          <th class="c-ex">Exercise · Sets × Reps · Load</th>
+          <th class="c-rest">Rest</th>
+          <th class="c-notes">Notes</th>
+          <th class="c-tick">✓</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="c-day"><span class="n">15</span></td>
+          <td class="c-date">Mon</td>
+          <td class="c-focus"><span class="pill upper">Upper B</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Bench press (barbell)</span><span class="sets">4 × 6</span><span class="load">80 lb</span></li>
+              <li><span class="ex">Chin-up (assisted ok)</span><span class="sets">4 × 6</span><span class="load">bw / −20 lb</span></li>
+              <li><span class="ex">Standing OHP (barbell)</span><span class="sets">3 × 8</span><span class="load">55 lb</span></li>
+              <li><span class="ex">DB row, single arm</span><span class="sets">3 × 10/side</span><span class="load">30 lb</span></li>
+              <li><span class="ex">Face pull (cable)</span><span class="sets">3 × 15</span><span class="load">25 lb</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2 min</td>
+          <td class="c-notes">Bench moves to 4 × 6. Pause one beat on the chest.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">16</span></td>
+          <td class="c-date">Tue</td>
+          <td class="c-focus"><span class="pill rest">Recovery</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Walk + couch stretch 2 × 60 s/side + thoracic openers</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">17</span></td>
+          <td class="c-date">Wed</td>
+          <td class="c-focus"><span class="pill lower">Lower B</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Back squat</span><span class="sets">4 × 6</span><span class="load">115 lb</span></li>
+              <li><span class="ex">Romanian deadlift</span><span class="sets">3 × 8</span><span class="load">115 lb</span></li>
+              <li><span class="ex">Bulgarian split squat</span><span class="sets">3 × 8/leg</span><span class="load">15 lb DBs</span></li>
+              <li><span class="ex">Hip thrust</span><span class="sets">3 × 12</span><span class="load">95 lb</span></li>
+              <li><span class="ex">Side plank</span><span class="sets">3 × 25 s/side</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2–3 min</td>
+          <td class="c-notes">Squat: 4 × 6 means heavier load, fewer reps. Drive with hips.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">18</span></td>
+          <td class="c-date">Thu</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Full rest. Foam roll quads + glutes 5 min.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">19</span></td>
+          <td class="c-date">Fri</td>
+          <td class="c-focus"><span class="pill full">Full Body</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Deadlift</span><span class="sets">3 × 5</span><span class="load">155 lb</span></li>
+              <li><span class="ex">DB bench press</span><span class="sets">3 × 8</span><span class="load">35 lb</span></li>
+              <li><span class="ex">Front squat (light)</span><span class="sets">3 × 8</span><span class="load">75 lb</span></li>
+              <li><span class="ex">Pendlay row</span><span class="sets">3 × 8</span><span class="load">85 lb</span></li>
+              <li><span class="ex">Hanging knee raise</span><span class="sets">3 × 8</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2–3 min</td>
+          <td class="c-notes">If grip fails on DL, mixed grip on the last set only.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">20</span></td>
+          <td class="c-date">Sat</td>
+          <td class="c-focus"><span class="pill cond">Conditioning</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Hill walk or incline treadmill</span><span class="sets">1 × 40 min</span><span class="load">RPE 5–6</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Should be able to hold conversation throughout.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">21</span></td>
+          <td class="c-date">Sun</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Plan next week. Stock fridge — protein + carbs at every meal.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Three hard weeks done. Deload is earned, not optional.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================================================
+       WEEK 4 — DELOAD + RETEST
+       ============================================================ -->
+  <section class="week">
+    <div class="week-head">
+      <h2>Week 4<span class="wlabel">Deload · Retest · Days 22–30</span></h2>
+      <div class="focus">Volume −40% · then 1RM-style triple on Day 30 <span class="tag-deload">deload</span></div>
+    </div>
+    <table class="days">
+      <thead>
+        <tr>
+          <th class="c-day">Day</th>
+          <th class="c-date">Date</th>
+          <th class="c-focus">Focus</th>
+          <th class="c-ex">Exercise · Sets × Reps · Load</th>
+          <th class="c-rest">Rest</th>
+          <th class="c-notes">Notes</th>
+          <th class="c-tick">✓</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="c-day"><span class="n">22</span></td>
+          <td class="c-date">Mon</td>
+          <td class="c-focus"><span class="pill upper">Upper · light</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Bench press (barbell)</span><span class="sets">2 × 5</span><span class="load">65 lb</span></li>
+              <li><span class="ex">Bent-over row</span><span class="sets">2 × 5</span><span class="load">65 lb</span></li>
+              <li><span class="ex">Push-up</span><span class="sets">2 × 10</span><span class="load">bw</span></li>
+              <li><span class="ex">Band pull-apart</span><span class="sets">2 × 20</span><span class="load">light</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">60 s</td>
+          <td class="c-notes">Every rep should feel snappy. Stop if anything grinds.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">23</span></td>
+          <td class="c-date">Tue</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Walk · mobility · sleep</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">24</span></td>
+          <td class="c-date">Wed</td>
+          <td class="c-focus"><span class="pill lower">Lower · light</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Back squat</span><span class="sets">2 × 5</span><span class="load">95 lb</span></li>
+              <li><span class="ex">Romanian deadlift</span><span class="sets">2 × 5</span><span class="load">95 lb</span></li>
+              <li><span class="ex">Walking lunge</span><span class="sets">2 × 8/leg</span><span class="load">bw</span></li>
+              <li><span class="ex">Glute bridge</span><span class="sets">2 × 12</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">90 s</td>
+          <td class="c-notes">Movement quality day. Drop load further if depth suffers.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">25</span></td>
+          <td class="c-date">Thu</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Full rest.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Eat. Sleep. Don't add cardio.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">26</span></td>
+          <td class="c-date">Fri</td>
+          <td class="c-focus"><span class="pill full">Full · primer</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Deadlift</span><span class="sets">2 × 3</span><span class="load">135 lb</span></li>
+              <li><span class="ex">Incline DB press</span><span class="sets">2 × 6</span><span class="load">20 lb</span></li>
+              <li><span class="ex">Goblet squat</span><span class="sets">2 × 6</span><span class="load">25 lb</span></li>
+              <li><span class="ex">Plank</span><span class="sets">2 × 30 s</span><span class="load">bw</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">2 min</td>
+          <td class="c-notes">Crisp, fast bar speed only. This sharpens the nervous system for Day 30.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">27</span></td>
+          <td class="c-date">Sat</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Easy 25-min walk. No lifting.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">—</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">28</span></td>
+          <td class="c-date">Sun</td>
+          <td class="c-focus"><span class="pill rest">Rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Full rest. Prep your gym bag. Lay out clothes.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">8 h sleep. 80 oz water.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr class="rest">
+          <td class="c-day"><span class="n">29</span></td>
+          <td class="c-date">Mon</td>
+          <td class="c-focus"><span class="pill rest">Active rest</span></td>
+          <td class="c-ex"><ul><li><span class="ex">Light mobility 15 min + 10-min walk. Visualize tomorrow's lifts.</span><span class="sets">—</span><span class="load">—</span></li></ul></td>
+          <td class="c-rest">—</td>
+          <td class="c-notes">Caffeine cut-off by 2 pm.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+        <tr>
+          <td class="c-day"><span class="n">30</span></td>
+          <td class="c-date">Tue</td>
+          <td class="c-focus"><span class="pill full">Retest · 3RM</span></td>
+          <td class="c-ex">
+            <ul>
+              <li><span class="ex">Back squat — work up to heavy triple</span><span class="sets">1 × 3</span><span class="load">__ lb <span class="pr">PR</span></span></li>
+              <li><span class="ex">Bench press — work up to heavy triple</span><span class="sets">1 × 3</span><span class="load">__ lb <span class="pr">PR</span></span></li>
+              <li><span class="ex">Deadlift — work up to heavy triple</span><span class="sets">1 × 3</span><span class="load">__ lb <span class="pr">PR</span></span></li>
+              <li><span class="ex">Cool-down walk</span><span class="sets">1 × 10 min</span><span class="load">easy</span></li>
+            </ul>
+          </td>
+          <td class="c-rest">3–5 min</td>
+          <td class="c-notes"><span class="pr">Test day.</span> Two warm-up sets per lift, then 2–3 working singles to your top triple. Stop if form breaks.</td>
+          <td class="c-tick"><span class="box"></span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== SIGN-OFF ========== -->
+  <section class="signoff">
+    <div>
+      <h3>Rules of the road</h3>
+      <p>Form before load. Sleep before supplements. Track every working set. If a weight feels wrong, drop a plate and live to lift next week.</p>
+    </div>
+    <div>
+      <h3>End-of-month numbers</h3>
+      <div class="lines">
+        <div><span>Squat 3RM:</span></div>
+        <div><span>Bench 3RM:</span></div>
+        <div><span>Deadlift 3RM:</span></div>
+        <div><span>Bodyweight:</span></div>
+        <div><span>Sessions hit / 12:</span></div>
+        <div><span>Next-month goal:</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="colophon">
+    <span>Foundation · v1 · 30-day cycle</span>
+    <span>Print landscape · A4 / US Letter</span>
+  </div>
+
+</main>
+</body>
+</html>

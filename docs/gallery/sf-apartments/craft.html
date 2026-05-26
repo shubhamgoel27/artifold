@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Apartments · A Decision Ledger</title>
+<meta name="artifold:intent" content="Decision one-pager comparing three SF apartments across commute, light, vibe, cost">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:prompt" content="Comparison one-pager of three SF apartments (989 20th, 400 Beale, NEMA) with recommendation">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Neutral ramp — warm paper */
+    --paper:    #f4f1ea;
+    --paper-2:  #ece8dd;
+    --rule:     #d9d3c4;
+    --ink:      #1a1814;
+    --ink-2:    #4a4640;
+    --ink-3:    #7a746a;
+    --ink-4:    #a8a195;
+
+    /* Single accent — oxidized red, used 3x max */
+    --accent:   #9a3a1f;
+    --accent-2: #c8c0b0;
+
+    /* Type scale (cap 6) */
+    --t-xs: 11px;
+    --t-sm: 13px;
+    --t-md: 15px;
+    --t-lg: 22px;
+    --t-xl: 36px;
+    --t-2xl: 64px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    font-size: var(--t-md);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 56px 96px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 64px;
+  }
+
+  /* ─── Masthead ─── */
+  .mast {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-2);
+  }
+  .mast .dot { color: var(--accent); }
+
+  /* ─── Title block ─── */
+  .title {
+    grid-column: 1 / -1;
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .title .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    margin-bottom: 24px;
+  }
+  .title h1 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: var(--t-2xl);
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    margin: 0 0 24px;
+    max-width: 18ch;
+  }
+  .title .lede {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: var(--t-lg);
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 56ch;
+    font-weight: 400;
+  }
+
+  /* ─── Side rail ─── */
+  aside {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    line-height: 1.6;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  aside .label {
+    color: var(--ink);
+    margin-top: 28px;
+    margin-bottom: 6px;
+  }
+  aside .label:first-child { margin-top: 0; }
+  aside .val {
+    font-family: "IBM Plex Sans", sans-serif;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-2);
+    font-size: var(--t-sm);
+  }
+
+  /* ─── Sections ─── */
+  section {
+    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+    padding-bottom: 8px;
+  }
+  section:first-of-type { border-top: none; padding-top: 8px; }
+
+  .sec-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+  }
+  h2 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: var(--t-xl);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 6px 0 24px;
+  }
+
+  /* ─── Contender cards (3 stacked, asymmetric) ─── */
+  .contender {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    padding: 32px 0;
+    border-top: 1px dashed var(--rule);
+  }
+  .contender:first-of-type { border-top: none; padding-top: 4px; }
+
+  .contender .num {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 88px;
+    font-weight: 400;
+    line-height: 0.9;
+    color: var(--accent-2);
+    letter-spacing: -0.04em;
+  }
+  .contender h3 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: var(--t-xl);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 8px 0 4px;
+  }
+  .contender .sub {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    margin-bottom: 18px;
+  }
+  .contender p {
+    margin: 0 0 14px;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  .pull {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-style: italic;
+    font-size: var(--t-md);
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+    margin: 14px 0 0;
+    max-width: 56ch;
+  }
+
+  /* ─── Comparison ledger ─── */
+  table.ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-sm);
+    margin-top: 8px;
+  }
+  table.ledger th,
+  table.ledger td {
+    text-align: left;
+    padding: 12px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rule);
+  }
+  table.ledger thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    font-weight: 500;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 10px;
+  }
+  table.ledger tbody th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    font-weight: 500;
+    width: 18%;
+    padding-top: 16px;
+  }
+  table.ledger td {
+    color: var(--ink-2);
+    padding-top: 16px;
+  }
+  table.ledger td strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  table.ledger col.col-pick {
+    background: var(--paper-2);
+  }
+  table.ledger .badge {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ─── Scoreboard ─── */
+  .score-row {
+    display: grid;
+    grid-template-columns: 18% repeat(3, 1fr);
+    gap: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+    align-items: center;
+  }
+  .score-row.head {
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 10px;
+  }
+  .score-row .crit {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .score-row.head .crit { color: var(--ink-3); }
+  .score-row.head .opt {
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+    font-size: var(--t-md);
+    color: var(--ink);
+  }
+  .bar {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .bar i {
+    display: block;
+    width: 10px;
+    height: 18px;
+    background: var(--rule);
+  }
+  .bar i.on { background: var(--ink); }
+  .bar i.on.win { background: var(--accent); }
+  .bar .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    color: var(--ink-3);
+    margin-left: 8px;
+  }
+
+  /* ─── Verdict ─── */
+  .verdict {
+    margin-top: 12px;
+    padding: 40px 0 0;
+    border-top: 1px solid var(--ink);
+  }
+  .verdict .stamp {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+  }
+  .verdict h2 {
+    margin-top: 8px;
+    max-width: 22ch;
+  }
+  .verdict p {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: var(--t-lg);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 58ch;
+    margin: 0 0 18px;
+  }
+  .verdict ol {
+    font-size: var(--t-md);
+    color: var(--ink-2);
+    padding-left: 20px;
+    max-width: 58ch;
+  }
+  .verdict ol li { margin-bottom: 10px; }
+  .verdict ol li strong { color: var(--ink); }
+
+  /* ─── Footer colophon ─── */
+  footer {
+    grid-column: 1 / -1;
+    margin-top: 64px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 820px) {
+    .page { grid-template-columns: 1fr; gap: 40px; padding: 32px 24px 64px; }
+    .contender { grid-template-columns: 1fr; gap: 8px; }
+    .contender .num { font-size: 56px; }
+    .title h1 { font-size: 44px; }
+    .verdict p { font-size: var(--t-md); }
+    .score-row { grid-template-columns: 1fr; gap: 6px; padding: 16px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="mast">
+    <span>The Lease Ledger <span class="dot">·</span> Vol. 1, No. 3</span>
+    <span>Compiled 26 May 2026 <span class="dot">·</span> For S. &amp; A.</span>
+  </header>
+
+  <div class="title">
+    <div class="kicker">Three Apartments · A Decision</div>
+    <h1>Which door do we sign behind?</h1>
+    <p class="lede">Three viable leases, two people, one move-in date. This is the worksheet for choosing between Dogpatch quiet, Rincon Hill view, and SoMa convenience — without pretending all three are equal.</p>
+  </div>
+
+  <aside>
+    <div class="label">Decision date</div>
+    <div class="val">By 02 June 2026</div>
+
+    <div class="label">Move-in target</div>
+    <div class="val">01 July 2026</div>
+
+    <div class="label">Lease length</div>
+    <div class="val">12-month, renewable</div>
+
+    <div class="label">Hard constraints</div>
+    <div class="val">Dog-friendly · in-unit W/D · garage parking · morning sun</div>
+
+    <div class="label">Soft preferences</div>
+    <div class="val">≤ 25 min door-to-desk to Mission Bay · walkable evening · neighborhood feel over tower feel</div>
+
+    <div class="label">Budget ceiling</div>
+    <div class="val">$6,000 / mo all-in</div>
+  </aside>
+
+  <main>
+
+    <section>
+      <div class="sec-label">The Contenders</div>
+      <h2>Three buildings, three theories of the city.</h2>
+
+      <article class="contender">
+        <div class="num">01</div>
+        <div>
+          <h3>989 20th Street</h3>
+          <div class="sub">Dogpatch · ~$5,000 / mo · 2018 build</div>
+          <p>A newer mid-rise tucked off Indiana, three blocks from Esprit Park. Quiet at night in a way most of SF isn't. Coffee at Réveille, dinner at Piccino, freeway in under a minute when you actually need to leave the city.</p>
+          <p>Trade-off: nightlife is thin, and the 22-Fillmore is your only real Muni lifeline.</p>
+          <p class="pull">The "we want a neighborhood, not an address" option.</p>
+        </div>
+      </article>
+
+      <article class="contender">
+        <div class="num">02</div>
+        <div>
+          <h3>400 Beale Street</h3>
+          <div class="sub">Rincon Hill · ~$5,800 / mo · high-rise, 30+ floors</div>
+          <p>Tower living with a real bay view from the upper floors. The Embarcadero is a five-minute walk; the Ferry Building farmer's market becomes a Saturday default. BART, Muni, and the bridge ramp all within blocks.</p>
+          <p>Trade-off: the highest sticker, the smallest unit per dollar, and the building lobby is the only "outdoors" until you cross Folsom.</p>
+          <p class="pull">The "view tax is real and we accept it" option.</p>
+        </div>
+      </article>
+
+      <article class="contender">
+        <div class="num">03</div>
+        <div>
+          <h3>NEMA</h3>
+          <div class="sub">SoMa · 8th &amp; Market · ~$5,200 / mo · large complex</div>
+          <p>The amenity stack is genuinely best-in-class: 12,000 sq ft gym, two pools, rooftop, screening room, co-working lounges. Mid-Market is finally turning the corner with new ground-floor retail and a heavier daytime crowd.</p>
+          <p>Trade-off: the block itself still has rough edges after dark, and the complex is large enough that nobody knows their neighbors.</p>
+          <p class="pull">The "the apartment IS the neighborhood" option.</p>
+        </div>
+      </article>
+    </section>
+
+    <section>
+      <div class="sec-label">Side-by-side</div>
+      <h2>The ledger.</h2>
+
+      <table class="ledger">
+        <colgroup>
+          <col style="width:18%">
+          <col>
+          <col>
+          <col class="col-pick">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th>400 Beale</th>
+            <th>NEMA</th>
+            <th>989 20th <span class="badge">Pick</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Rent (1BR)</th>
+            <td>$5,800</td>
+            <td>$5,200</td>
+            <td><strong>$5,000</strong></td>
+          </tr>
+          <tr>
+            <th>Door-to-desk, Mission Bay</th>
+            <td>22 min (Muni + walk)</td>
+            <td>26 min (Muni T-line)</td>
+            <td><strong>14 min (bike) · 18 min (Muni 22)</strong></td>
+          </tr>
+          <tr>
+            <th>Morning sun</th>
+            <td>East-facing units only; high-rise glare</td>
+            <td>Depends on stack; courtyard units blocked</td>
+            <td><strong>Most stacks SE-facing; low surrounding density</strong></td>
+          </tr>
+          <tr>
+            <th>Neighborhood vibe</th>
+            <td>Financial-adjacent, weekday-heavy, quiet weekends</td>
+            <td>Dense, transit-grade, still gritty after 9pm</td>
+            <td><strong>Low-rise, residential, design-forward</strong></td>
+          </tr>
+          <tr>
+            <th>Amenities</th>
+            <td>Standard tower set; sky lounge</td>
+            <td><strong>Top-tier: pools, gym, co-work, rooftop</strong></td>
+            <td>Compact: gym, roof deck, package room</td>
+          </tr>
+          <tr>
+            <th>Parking</th>
+            <td>$350 / mo, valet</td>
+            <td>$300 / mo, self</td>
+            <td><strong>$200 / mo, self, assigned</strong></td>
+          </tr>
+          <tr>
+            <th>Gym</th>
+            <td>Mid; cardio-heavy</td>
+            <td><strong>Best in the city for a residential gym</strong></td>
+            <td>Small but well-equipped; rarely crowded</td>
+          </tr>
+          <tr>
+            <th>Dog-friendly</th>
+            <td>≤ 35 lb, $75/mo, no relief area</td>
+            <td>2-dog limit, dog wash, no green space on-site</td>
+            <td><strong>No weight cap, Esprit Park across the street</strong></td>
+          </tr>
+          <tr>
+            <th>Weak spot</th>
+            <td>Price-per-sqft and lobby-as-only-outdoors</td>
+            <td>Block-level safety after dark</td>
+            <td>Thin nightlife, single-line Muni</td>
+          </tr>
+          <tr>
+            <th>All-in monthly</th>
+            <td>$6,150</td>
+            <td>$5,500</td>
+            <td><strong>$5,200</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="sec-label">Weighted scoring</div>
+      <h2>Same criteria, different weights.</h2>
+      <p style="color:var(--ink-2); max-width:58ch; margin-top:-12px;">Bars show our weighted score on each axis, 1–5. The accent bar marks the leader.</p>
+
+      <div style="margin-top: 24px;">
+        <div class="score-row head">
+          <div class="crit">Criterion</div>
+          <div class="opt">989 20th</div>
+          <div class="opt">400 Beale</div>
+          <div class="opt">NEMA</div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Commute</div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><span class="n">5</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><span class="n">4</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Morning sun</div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><span class="n">5</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="n">2</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Vibe</div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><span class="n">5</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="n">2</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Amenities</div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><span class="n">4</span></div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><span class="n">5</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Dog-friendly</div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><span class="n">5</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="n">2</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Price value</div>
+          <div class="bar"><i class="on win"></i><i class="on win"></i><i class="on win"></i><i class="on win"></i><i></i><span class="n">4</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="n">2</span></div>
+          <div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span class="n">3</span></div>
+        </div>
+
+        <div class="score-row">
+          <div class="crit">Weighted total</div>
+          <div class="bar"><span class="n" style="margin-left:0; font-size:var(--t-md); color:var(--accent);"><strong>27 / 30</strong></span></div>
+          <div class="bar"><span class="n" style="margin-left:0; font-size:var(--t-md); color:var(--ink);">18 / 30</span></div>
+          <div class="bar"><span class="n" style="margin-left:0; font-size:var(--t-md); color:var(--ink);">18 / 30</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="verdict">
+      <div class="stamp">Verdict</div>
+      <h2>Sign at 989 20th.</h2>
+      <p>It wins on the three axes that compound daily — commute, morning light, and Esprit Park as the dog's living room — and it does so at the lowest all-in cost. The amenity gap versus NEMA is real, but pools and rooftops are weekend wins; they don't reshape a Tuesday.</p>
+      <ol>
+        <li><strong>Commute is the highest-leverage variable.</strong> A 14-minute bike to Mission Bay buys back ~80 hours a year versus the SoMa or Rincon options. That's the trip that actually compounds.</li>
+        <li><strong>Morning sun is a constraint, not a preference.</strong> NEMA's tower shadow and Beale's east-glare-then-nothing both fail it. 989's SE exposure is the only one that holds through 10am.</li>
+        <li><strong>The dog vetoes Beale.</strong> A 35-lb cap and no relief space is a daily friction tax. Esprit Park across the street is the inverse.</li>
+        <li><strong>Save the $1,000/mo delta versus Beale.</strong> Twelve months of that gap funds the kitchen renovation we've been talking about, or a real travel year.</li>
+      </ol>
+
+      <p style="font-size:var(--t-md); font-family:'IBM Plex Sans', sans-serif; color:var(--ink-3); margin-top:28px; max-width:58ch;">
+        Hold NEMA as backup if 989 falls through — its amenity stack at $5,200 is the second-best value. Pass on Beale unless the bay view is the single thing we'd most regret not having.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>The Lease Ledger · S+A Housing Committee</span>
+    <span>One page · One decision · No regrets</span>
+  </footer>
+
+</div>
+</body>
+</html>

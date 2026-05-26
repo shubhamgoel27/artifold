@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artifold /craft — side-by-side gallery</title>
+<style>
+  :root {
+    --bg: #f9f8f5;
+    --surface: #ffffff;
+    --ink: #16181d;
+    --ink-dim: #5d6679;
+    --ink-faint: #94a3b8;
+    --line: rgba(15,23,42,0.10);
+    --line-2: rgba(15,23,42,0.20);
+    --accent: #c1452a;          /* one accent, carries meaning */
+    --maxw: 1280px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* — masthead ——————————————————————————— */
+  header {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 56px 32px 24px;
+  }
+  .eyebrow {
+    font: 600 11.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.05; letter-spacing: -0.025em;
+    font-weight: 700;
+    margin-bottom: 16px;
+    max-width: 16ch;
+  }
+  h1 em { font-style: italic; font-weight: 600; color: var(--accent); }
+  .lede {
+    font-size: 17px; line-height: 1.5;
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin-bottom: 32px;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 24px;
+    font: 12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-faint);
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .meta b { color: var(--ink); font-weight: 600; }
+  /* — comparison block ———————————————————— */
+  main {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 32px;
+  }
+  section.compare { margin-bottom: 56px; }
+  section.compare h2 {
+    font-size: 21px; font-weight: 650; letter-spacing: -0.015em;
+    margin-bottom: 4px;
+  }
+  section.compare .prompt {
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-dim);
+    background: rgba(15,23,42,0.04);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    border-left: 2px solid var(--ink-faint);
+  }
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 760px) {
+    .pair { grid-template-columns: 1fr; }
+  }
+  .col { display: flex; flex-direction: column; }
+  .col-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .col-label {
+    font: 600 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .col-label.craft { color: var(--accent); }
+  .col-label .sub { color: var(--ink-faint); font-weight: 500; margin-left: 8px; text-transform: none; letter-spacing: 0.02em; }
+  .col-link {
+    font-size: 12px; color: var(--ink-dim);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--ink-faint);
+    transition: color .15s;
+  }
+  .col-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .thumb {
+    display: block;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 1280 / 800;
+    position: relative;
+    transition: border-color .15s, transform .15s;
+  }
+  .thumb:hover { border-color: var(--line-2); }
+  .thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+    display: block;
+  }
+  .thumb::after {
+    content: "open full →";
+    position: absolute; right: 10px; bottom: 10px;
+    background: rgba(22,24,29,0.85);
+    color: white;
+    font: 500 11px/1 -apple-system, sans-serif;
+    padding: 6px 9px; border-radius: 4px;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  .thumb:hover::after { opacity: 1; }
+  /* — footer ——————————————————————————————— */
+  footer {
+    max-width: var(--maxw);
+    margin: 80px auto 60px;
+    padding: 32px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  footer p + p { margin-top: 12px; }
+  footer a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 2px; }
+  footer a:hover { text-decoration-color: var(--accent); }
+  .repo-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 18px;
+    padding: 9px 14px;
+    background: var(--ink);
+    color: white;
+    border-radius: 5px;
+    font-size: 13px; font-weight: 550;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .repo-cta:hover { background: var(--accent); }
+  .repo-cta code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: rgba(255,255,255,0.16);
+    padding: 2px 6px; border-radius: 3px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Artifold /craft — design comparison</div>
+  <h1>Same prompt. <em>Different output.</em></h1>
+  <p class="lede">
+    The <code>/craft</code> skill (a Claude Code skill bundled with Artifold) reads your library, picks
+    a deliberately different design direction, and applies 12 cited design principles + a 15-item
+    anti-slop checklist. Below: four prompts, each generated <em>twice</em> by the same model — once
+    plainly, once via <code>/craft</code>. Click any thumbnail to view the full artifact.
+  </p>
+  <div class="meta">
+    <span>Model: <b>claude-sonnet-4</b></span>
+    <span>Library context: <b>17 prior artifacts</b></span>
+    <span>Generated: <b>2026-05-26</b></span>
+    <span>Skill prompt: <b><a href="https://github.com/shubhamgoel27/artifold/blob/main/artifold/skills/craft/SKILL.md" style="color:inherit">artifold/skills/craft/SKILL.md</a></b></span>
+  </div>
+</header>
+
+<main>
+
+<section class="compare">
+  <h2>30-day strength tracker for a beginner</h2>
+  <div class="prompt">"Daily exercise plan with sets, reps, weight progression, and rest periods. Printable, scannable."</div>
+  <div class="pair">
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
+        <a class="col-link" href="gallery/30-day-tracker/default.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/30-day-tracker/default.html"><img src="gallery/thumbs/30-day-tracker-default.jpg" alt="default 30-day tracker" loading="lazy"></a>
+    </div>
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
+        <a class="col-link" href="gallery/30-day-tracker/craft.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/30-day-tracker/craft.html"><img src="gallery/thumbs/30-day-tracker-craft.jpg" alt="/craft 30-day tracker" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+<section class="compare">
+  <h2>Comparing three SF apartments</h2>
+  <div class="prompt">"989 20th vs 400 Beale vs NEMA — for a couple deciding between them. Compare commute, sun, amenities, vibe, price."</div>
+  <div class="pair">
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
+        <a class="col-link" href="gallery/sf-apartments/default.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/sf-apartments/default.html"><img src="gallery/thumbs/sf-apartments-default.jpg" alt="default SF apartments" loading="lazy"></a>
+    </div>
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
+        <a class="col-link" href="gallery/sf-apartments/craft.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/sf-apartments/craft.html"><img src="gallery/thumbs/sf-apartments-craft.jpg" alt="/craft SF apartments" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+<section class="compare">
+  <h2>How transformers work</h2>
+  <div class="prompt">"Explainer for someone who understands LSTMs but hasn't studied attention. Covers QKV, multi-head, positional encoding, scaling."</div>
+  <div class="pair">
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
+        <a class="col-link" href="gallery/transformers/default.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/transformers/default.html"><img src="gallery/thumbs/transformers-default.jpg" alt="default transformers explainer" loading="lazy"></a>
+    </div>
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
+        <a class="col-link" href="gallery/transformers/craft.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/transformers/craft.html"><img src="gallery/thumbs/transformers-craft.jpg" alt="/craft transformers explainer" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+<section class="compare">
+  <h2>SF coffee shop tier list</h2>
+  <div class="prompt">"S/A/B/C tiers of 10 SF coffee shops, ranked by pour-over quality, ambience, and seating."</div>
+  <div class="pair">
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
+        <a class="col-link" href="gallery/coffee-tier-list/default.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/coffee-tier-list/default.html"><img src="gallery/thumbs/coffee-tier-list-default.jpg" alt="default coffee tier list" loading="lazy"></a>
+    </div>
+    <div class="col">
+      <div class="col-head">
+        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
+        <a class="col-link" href="gallery/coffee-tier-list/craft.html">view full</a>
+      </div>
+      <a class="thumb" href="gallery/coffee-tier-list/craft.html"><img src="gallery/thumbs/coffee-tier-list-craft.jpg" alt="/craft coffee tier list" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    <strong>What's happening here.</strong> Both columns came from <code>claude-sonnet-4</code>, same
+    prompt, same day. The right column went through the <code>/craft</code> skill, which: (1) reads
+    the user's existing Artifold library to see overused patterns, (2) deliberately picks a
+    different direction, and (3) applies 12 design principles distilled from Refactoring UI,
+    Linear, and Vercel/Geist — while actively avoiding 15 specific AI-slop signatures.
+  </p>
+  <p>
+    The library here had 17 mostly dark / glassmorphic / gradient-heavy artifacts. All four
+    <code>/craft</code> outputs independently chose editorial / newsprint / cream-paper directions
+    as the "deliberate opposite." Different model runs would pick differently — the point is that
+    the library is the input, and each new artifact reads like it belongs to a portfolio of
+    distinct work, not 20 variations of one template.
+  </p>
+  <a class="repo-cta" href="https://github.com/shubhamgoel27/artifold">
+    <span>Artifold on GitHub →</span>
+    <code>pipx install artifold</code>
+  </a>
+</footer>
+
+</body>
+</html>

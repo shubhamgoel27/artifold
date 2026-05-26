@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF Coffee Tier List — Pour-Over, Ambience, Seating</title>
+<style>
+  :root {
+    --bg: #f6f1e7;
+    --ink: #1b1410;
+    --muted: #6b5d52;
+    --card: #ffffff;
+    --line: #e3d9c7;
+    --s: #d64545;
+    --a: #e89b2a;
+    --b: #4a90c2;
+    --c: #6b8a5a;
+    --shadow: 0 1px 0 rgba(27,20,16,0.04), 0 6px 18px rgba(27,20,16,0.06);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+  header.page {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+  }
+  .kicker {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 44px;
+    line-height: 1.1;
+    margin: 0 0 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 720px;
+    margin: 0;
+  }
+  .axes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 22px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .axes span b { color: var(--ink); font-weight: 600; }
+
+  .tier {
+    margin-bottom: 28px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .tier-head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .badge.s { background: var(--s); }
+  .badge.a { background: var(--a); }
+  .badge.b { background: var(--b); }
+  .badge.c { background: var(--c); }
+
+  .tier-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+  .tier-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--line);
+  }
+  .card {
+    background: var(--card);
+    padding: 20px 22px;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .name {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .hood {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .take {
+    font-size: 14px;
+    color: #3a2f27;
+    margin: 8px 0 14px;
+    font-style: italic;
+  }
+  .scores {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .score {
+    display: grid;
+    grid-template-columns: 92px 1fr 28px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+  .score-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+  }
+  .bar {
+    height: 6px;
+    background: #efe8d8;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    border-radius: 3px;
+  }
+  .score-num {
+    text-align: right;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .note {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .note b { color: var(--ink); font-weight: 600; }
+
+  footer.page {
+    margin-top: 40px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 32px; }
+    .wrap { padding: 36px 16px 60px; }
+    .cards { grid-template-columns: 1fr; }
+    .tier-head { padding: 14px 16px; }
+    .card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page">
+      <div class="kicker">San Francisco · Spring 2026 Edition</div>
+      <h1>The SF Pour-Over Tier List</h1>
+      <p class="lede">Ten roasters and cafés, ranked on a weighted blend of pour-over quality, ambience, and the increasingly precious art of actually finding a seat. Scores are out of 10. Field-tested on weekday mornings and weekend afternoons.</p>
+      <div class="axes">
+        <span><b>Pour-over</b> — bean clarity, brewer skill, water</span>
+        <span><b>Ambience</b> — light, sound, vibe</span>
+        <span><b>Seating</b> — odds you sit down within 5 min</span>
+      </div>
+    </header>
+
+    <!-- S TIER -->
+    <section class="tier">
+      <div class="tier-head">
+        <div class="badge s">S</div>
+        <div>
+          <p class="tier-title">S Tier — Reorder your morning around it</p>
+          <p class="tier-sub">Top-shelf brewing, a room you want to linger in, and (usually) somewhere to sit.</p>
+        </div>
+      </div>
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Saint Frank</h3>
+            <span class="hood">Russian Hill</span>
+          </div>
+          <p class="take">The platonic ideal of a third-wave SF pour-over.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:97%"></i></div><span class="score-num">9.7</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:92%"></i></div><span class="score-num">9.2</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:70%"></i></div><span class="score-num">7.0</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Single-origin Kalita on the bar, ceramic-bright cups, baristas who actually weigh water. White-oak counter at the window is the seat you want.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Sightglass</h3>
+            <span class="hood">SoMa</span>
+          </div>
+          <p class="take">The cathedral. Loud, beautiful, surprisingly dialed.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:90%"></i></div><span class="score-num">9.0</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:95%"></i></div><span class="score-num">9.5</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:80%"></i></div><span class="score-num">8.0</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Mezzanine seating is the cheat code on weekdays. Try the affogato at the upstairs bar; the Blueboon espresso is excellent if you go dark.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Andytown</h3>
+            <span class="hood">Outer Sunset</span>
+          </div>
+          <p class="take">Snowy Plover, ocean fog, perfect Irish brown bread.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:88%"></i></div><span class="score-num">8.8</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:96%"></i></div><span class="score-num">9.6</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:85%"></i></div><span class="score-num">8.5</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> The Lawton St. flagship still has the best vibe. Pour-overs use their Mancora blend more often than not — ask for a single-origin if they have one cupped.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- A TIER -->
+    <section class="tier">
+      <div class="tier-head">
+        <div class="badge a">A</div>
+        <div>
+          <p class="tier-title">A Tier — Reliable, repeat-worthy</p>
+          <p class="tier-sub">Strong on at least two axes; the third is workable.</p>
+        </div>
+      </div>
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Linea Caffe</h3>
+            <span class="hood">Mission</span>
+          </div>
+          <p class="take">Tiny, immaculate, no-nonsense espresso temple.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:89%"></i></div><span class="score-num">8.9</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:80%"></i></div><span class="score-num">8.0</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:45%"></i></div><span class="score-num">4.5</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Andrew Barnett's program is genuinely world-class on the V60. Seating is two stools and a bench — grab a cup and walk to Dolores.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Ritual Coffee Roasters</h3>
+            <span class="hood">Hayes Valley</span>
+          </div>
+          <p class="take">The OG third-waver, still pulling clean shots.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:84%"></i></div><span class="score-num">8.4</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:82%"></i></div><span class="score-num">8.2</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:78%"></i></div><span class="score-num">7.8</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Hayes Valley location has the patio and the foot traffic. Sweeter, fruit-forward roasts that pour-over especially well on a Chemex.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Verve Coffee Roasters</h3>
+            <span class="hood">Hayes Valley</span>
+          </div>
+          <p class="take">Santa Cruz energy, polished SF execution.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:86%"></i></div><span class="score-num">8.6</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:84%"></i></div><span class="score-num">8.4</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:72%"></i></div><span class="score-num">7.2</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Streetlevel blend on espresso is consistent. Bench seating along the windows is great for a 90-minute laptop block before the lunch rush.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- B TIER -->
+    <section class="tier">
+      <div class="tier-head">
+        <div class="badge b">B</div>
+        <div>
+          <p class="tier-title">B Tier — Great for what they are</p>
+          <p class="tier-sub">More café than coffee bar, or vice versa. Know what you're walking into.</p>
+        </div>
+      </div>
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Réveille Coffee Co.</h3>
+            <span class="hood">Castro</span>
+          </div>
+          <p class="take">Brunch-y, sunlit, more crowd than craft.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:72%"></i></div><span class="score-num">7.2</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:86%"></i></div><span class="score-num">8.6</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:75%"></i></div><span class="score-num">7.5</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Pour-overs are competent but not the headline act. Go for the avocado toast and a sunny corner table; bring a friend, not a laptop.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Four Barrel</h3>
+            <span class="hood">Mission</span>
+          </div>
+          <p class="take">Mission warehouse classic; cortado country.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:78%"></i></div><span class="score-num">7.8</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:80%"></i></div><span class="score-num">8.0</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:68%"></i></div><span class="score-num">6.8</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Cash-only is gone, the slow bar isn't always staffed. Still a great room — communal tables, taxidermy, Valencia people-watching.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Equator Coffees</h3>
+            <span class="hood">Fort Mason</span>
+          </div>
+          <p class="take">Bay views, B-Corp ethos, solid filter coffee.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:80%"></i></div><span class="score-num">8.0</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:88%"></i></div><span class="score-num">8.8</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:65%"></i></div><span class="score-num">6.5</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> The Fort Mason location is the one — outdoor seating overlooking the bay. Weekends are brutal; go Tuesday at 10am.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- C TIER -->
+    <section class="tier">
+      <div class="tier-head">
+        <div class="badge c">C</div>
+        <div>
+          <p class="tier-title">C Tier — Situational only</p>
+          <p class="tier-sub">Fine in a pinch, but you're picking it for location, not the cup.</p>
+        </div>
+      </div>
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-top">
+            <h3 class="name">Mazarine Coffee</h3>
+            <span class="hood">Financial District</span>
+          </div>
+          <p class="take">A perfectly fine FiDi meeting spot.</p>
+          <div class="scores">
+            <div class="score"><span class="score-label">Pour-over</span><div class="bar"><i style="width:68%"></i></div><span class="score-num">6.8</span></div>
+            <div class="score"><span class="score-label">Ambience</span><div class="bar"><i style="width:70%"></i></div><span class="score-num">7.0</span></div>
+            <div class="score"><span class="score-label">Seating</span><div class="bar"><i style="width:60%"></i></div><span class="score-num">6.0</span></div>
+          </div>
+          <p class="note"><b>Notes:</b> Multi-roaster program (often Sightglass, Verve). Convenient between Market and the Embarcadero; the brew bar is more concept than commitment.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <footer class="page">
+      <div>Methodology: weighted score = 0.5 × pour-over + 0.3 × ambience + 0.2 × seating. Visits between Jan–May 2026.</div>
+      <div>10 shops · 4 tiers · 0 chains</div>
+    </footer>
+  </div>
+</body>
+</html>
