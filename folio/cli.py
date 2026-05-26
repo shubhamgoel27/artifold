@@ -195,7 +195,15 @@ def _cmd_open(_args):
 
 def _cmd_designs(args):
     """List or dump design fingerprints. Designs are extracted at scan time,
-    cached in the provenance store, keyed by content SHA1."""
+    cached in the provenance store, keyed by content SHA1.
+
+    Stable contracts for the /craft skill (and any other automation):
+      folio designs --json              → JSON array of {id,name,dir,category,palette,fonts,flags...}
+      folio designs <id>                → JSON fingerprint object (always JSON; default)
+      folio designs <id> --template     → raw text (CSS + skeleton); paste into LLM
+      folio designs <id> --css          → raw CSS only
+      folio designs <id> --skeleton     → raw skeleton only
+    """
     from . import design, provenance
     from .paths import DATA
     import json
@@ -209,7 +217,9 @@ def _cmd_designs(args):
                 sha = (v or {}).get("sha1")
                 if sha:
                     by_sha[sha] = {"path": v["path"], "name": proj["name"],
-                                    "dir": proj["dir"], "version": v.get("version", 1)}
+                                    "dir": proj["dir"],
+                                    "category": proj.get("category"),
+                                    "version": v.get("version", 1)}
 
     if not args.id:
         # list mode
@@ -220,28 +230,36 @@ def _cmd_designs(args):
             if not d:
                 continue
             info = by_sha.get(sha, {})
-            name = info.get("name", "?")
-            sig = []
-            if d.get("themed"):   sig.append("themed")
-            if d.get("gradient"): sig.append("gradient")
-            if d.get("glass"):    sig.append("glass")
-            if d.get("animated"): sig.append("anim")
-            pal = " ".join(d.get("palette", [])[:4])
-            rows.append((sha[:8], name[:38], pal, " ".join(sig)))
+            rows.append({
+                "id": sha[:8],
+                "name": info.get("name", "?"),
+                "dir": info.get("dir", ""),
+                "category": info.get("category"),
+                "palette": d.get("palette", []),
+                "fonts": d.get("fonts", []),
+                "flags": {k: bool(d.get(k)) for k in
+                          ("themed", "gradient", "glass", "animated", "shadowed")},
+            })
+        if args.json:
+            print(json.dumps(rows, indent=2))
+            return 0
         if not rows:
             print("(no design fingerprints yet — run `folio scan`)")
             return 0
         print(f"  {'id':<10}{'name':<40}{'palette':<28}flags")
         for r in rows[:60]:
-            print(f"  {r[0]:<10}{r[1]:<40}{r[2]:<28}{r[3]}")
+            sig = " ".join(k for k, v in r["flags"].items() if v)
+            pal = " ".join(r["palette"][:4])
+            print(f"  {r['id']:<10}{r['name'][:38]:<40}{pal:<28}{sig}")
         return 0
 
     # single-artifact mode
     target_sha = next((s for s in provenance.all_items()
                        if s.startswith(args.id)), None)
     if not target_sha:
-        print(f"  ! no artifact found with id starting {args.id!r}")
-        print(f"    run `folio designs` to list available ids")
+        msg = {"error": f"no artifact found with id starting {args.id!r}",
+               "hint": "run `folio designs` to list available ids"}
+        print(json.dumps(msg) if args.json else f"  ! {msg['error']}\n    {msg['hint']}")
         return 1
     info = by_sha.get(target_sha, {})
     if args.template or args.css or args.skeleton:
@@ -255,10 +273,10 @@ def _cmd_designs(args):
                 print(s.strip())
         elif args.skeleton:
             print(design.as_template(html, include_css=False, include_skeleton=True))
-        else:  # --template (default for single-id mode with body flags)
+        else:
             print(design.as_template(html))
         return 0
-    # default: print the fingerprint as JSON
+    # default: structured JSON for the fingerprint (already machine-readable)
     entry = provenance.get(target_sha) or {}
     d = entry.get("design") or {}
     print(json.dumps({"sha1": target_sha, **info, **d}, indent=2))
@@ -400,13 +418,22 @@ def _cmd_link(args):
 
 
 def _cmd_info(args):
-    """Show provenance + project info for a file."""
+    """Show provenance + project info for a file.
+
+    With --json, emits the full provenance entry plus sha1 + path as a
+    stable JSON document (for scripts and the /craft skill).
+    """
+    import json
     p = Path(args.file).expanduser().resolve()
     if not p.is_file():
-        print(f"! not a file: {p}")
+        msg = f"not a file: {p}"
+        print(json.dumps({"error": msg}) if args.json else f"! {msg}")
         return 1
     sha = provenance.sha1_of(p)
-    entry = provenance.get(sha)
+    entry = provenance.get(sha) or {}
+    if args.json:
+        print(json.dumps({"path": str(p), "sha1": sha, **entry}, indent=2))
+        return 0
     print(f"file:    {p}")
     print(f"sha1:    {sha}")
     if not entry:
@@ -472,6 +499,8 @@ def main(argv=None) -> int:
 
     dg = sub.add_parser("designs", help="list or dump design fingerprints (style + skeleton)")
     dg.add_argument("id", nargs="?", help="artifact id prefix (from `folio designs`)")
+    dg.add_argument("--json", action="store_true",
+                    help="machine-readable JSON output (stable contract for scripts/skills)")
     dg_g = dg.add_mutually_exclusive_group()
     dg_g.add_argument("--template", action="store_true",
                       help="dump CSS + body skeleton (paste into Claude as style example)")
@@ -494,7 +523,10 @@ def main(argv=None) -> int:
     lk.set_defaults(fn=_cmd_link)
 
     inf = sub.add_parser("info", help="show provenance for a file")
-    inf.add_argument("file"); inf.set_defaults(fn=_cmd_info)
+    inf.add_argument("file")
+    inf.add_argument("--json", action="store_true",
+                     help="JSON output (stable contract for scripts/skills)")
+    inf.set_defaults(fn=_cmd_info)
 
     sh = sub.add_parser("share", help="publish an artifact to a public URL (GitHub Pages)")
     sh.add_argument("file", nargs="?", help="HTML file to share")

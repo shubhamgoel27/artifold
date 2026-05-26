@@ -27,22 +27,34 @@ If clear, proceed. Don't over-ask.
 
 Use the Bash tool to check what's available. If the `folio` command is not installed, skip this step — fall back to pure design-knowledge mode.
 
+**Always use the `--json` flag** when reading from Folio so the output stays
+parseable as the CLI evolves. The stable contract is:
+- `folio designs --json` → array of `{id, name, dir, category, palette[], fonts[], flags{themed,gradient,glass,animated,shadowed}}`
+- `folio designs <id>` → fingerprint object (already JSON, no flag needed)
+- `folio designs <id> --template` → raw CSS + body skeleton (text, not JSON)
+- `folio info <file> --json` → full provenance entry
+
 ### A. User explicitly referenced a past artifact
-- Run `folio designs` to list available designs (id + name + palette).
-- Fuzzy-match the user's mention to an id (8-char prefix). Confirm with the user if ambiguous.
+- Run `folio designs --json` and parse — find the entry whose `name` or
+  `dir` best matches what the user mentioned. Confirm with the user if ambiguous.
 - Run `folio designs <id> --template` to load the full CSS + body skeleton.
-- Treat that CSS as your baseline. Replace body content for the new topic. Keep palette, fonts, tokens, and layout motifs.
+- Treat that CSS as your baseline. Replace body content for the new topic.
+  Keep palette, fonts, tokens, and layout motifs.
 
 ### B. User provided an HTML file or URL
-- Read the file (or fetch the URL) and extract its `<style>` block + body structure manually.
-- Use as style baseline (same as A).
+- Read the file (or fetch the URL) and extract its `<style>` block + body
+  structure manually. Use as style baseline (same as A).
 
 ### C. Default — vary from past patterns (anti-slop)
-- Run `folio designs` to see the user's library.
-- Scan the palette and flags column. Identify their dominant patterns:
-  - Are most of their past artifacts dark? Light? Gradient-heavy? Glass-heavy? Same font?
-- **Deliberately pick a different direction.** If they've been doing dark+gradient, try light+editorial. If they've been doing single-column hero, try a left-rail or grid layout. The goal: their library should feel like a portfolio of distinct artifacts, not 20 variations of the same template.
-- Note your variation choice to the user in 1 sentence ("I noticed your recent reports lean dark/glass — going minimal/editorial here for variety.").
+- Run `folio designs --json` to see the user's library as structured data.
+- Aggregate across entries: tally how many are dark-themed, gradient-heavy,
+  glass-heavy; tally font families; tally palette dominant hues.
+- **Deliberately pick a different direction.** If they've been doing
+  dark+gradient, try light+editorial. If they've been doing single-column
+  hero, try left-rail or grid. The goal: their library reads as a portfolio
+  of distinct artifacts, not 20 variations of the same template.
+- Note your variation choice to the user in 1 sentence (*"Your recent
+  reports lean dark/glass — going minimal/editorial here for variety."*).
 
 ### D. No Folio, no reference
 - Apply design knowledge below from scratch. Pick one strong direction; commit to it.

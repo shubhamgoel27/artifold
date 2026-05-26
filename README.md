@@ -2,7 +2,7 @@
 
 **Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
 
-![Folio dashboard](docs/hero-grid.png)
+![Folio dashboard](docs/hero-light.png)
 
 ---
 
@@ -64,32 +64,41 @@ Your past work becomes your style guide for the next one. The loop closes.
 
 ## Install
 
-### The fastest path (if you have [pipx](https://pipx.pypa.io/))
+### 🪄 Easiest: ask Claude Code to do it
+
+If you have [Claude Code](https://claude.com/claude-code), paste this
+prompt — Claude figures out the rest, installs everything, and walks
+you through first-run:
+
+> [!TIP]
+> **Copy this into Claude Code:**
+>
+> ```
+> Install Folio from https://github.com/shubhamgoel27/folio using pipx
+> (or pip if pipx isn't installed). Then run `folio init` and help me
+> pick a folder to watch. After that, run `folio install-skill` to set
+> up the /craft skill. Open the dashboard when ready and tell me what
+> to try first.
+> ```
+
+That's the whole install. No terminal commands to memorize, no
+dependencies to debug — Claude handles the awkward parts.
+
+### Or do it yourself
+
+If you'd rather drive:
 
 ```bash
-pipx install ai-folio
-folio init                 # walks you through picking folders to watch
-folio                      # serves the dashboard + opens browser
+pipx install ai-folio          # or: pip install ai-folio
+folio init                     # interactive wizard
+folio                          # serves dashboard + opens browser
+folio install-skill            # adds /craft to ~/.claude/skills/
 ```
 
-### Or just ask Claude
+Don't have `pipx`? Run `brew install pipx` (mac) or `python -m pip
+install --user pipx` (anywhere), then the above.
 
-If you have Claude Code, paste this and let it set everything up:
-
-> Install Folio from `https://github.com/shubhamgoel27/folio` using
-> pipx (or pip if pipx isn't available). After install, run
-> `folio init` and help me pick a folder to watch. Then run
-> `folio install-skill` to set up `/craft`. Show me when it's ready.
-
-### The Claude Code skill (optional but recommended)
-
-After installing Folio:
-
-```bash
-folio install-skill        # adds /craft to ~/.claude/skills/
-```
-
-Restart Claude Code, then in any session:
+### After install, in Claude Code
 
 ```
 /craft a one-pager comparing three SF apartments
@@ -97,8 +106,10 @@ Restart Claude Code, then in any session:
 /craft a probability explainer for poker, in the style of dobble
 ```
 
+(Restart Claude Code once after `folio install-skill` so the skill loads.)
+
 The first run installs Playwright's headless Chromium (~170 MB) for
-thumbnails. After that, only new/changed files re-shoot.
+artifact thumbnails. After that, only new/changed files re-shoot.
 
 ## What it actually does
 
