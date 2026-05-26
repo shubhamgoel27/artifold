@@ -940,7 +940,7 @@ function rowHTML(p) {
     <div class="quick-acts">
       ${shared ? `<button title="Copy share URL" onclick='copyShareURL(${JSON.stringify(p.id)})'>⎘</button>`
                : `<button title="Share publicly" onclick='quickShare(${JSON.stringify(p.id)},this)'>↑</button>`}
-      <button title="Open in new tab" onclick='window.open("${reportURL(p.primary.path)}","_blank");event.stopPropagation()'>↗</button>
+      <button title="Open in new tab" onclick='event.stopPropagation();openInNewTab("${reportURL(p.primary.path)}")'>↗</button>
     </div>
   </div>`;
 }
@@ -1017,7 +1017,18 @@ function close_() {
 $('scrim').onclick = close_;
 $('d-close').onclick = close_;
 $('d-version').onchange = () => { const v = (openProj.versions || []).find(x => x.path === $('d-version').value); if (v) setVersion(v); };
-$('d-open').onclick = () => openVer && window.open(reportURL(openVer.path), '_blank');
+
+// Reliable cross-browser "open in new tab" — clicked anchor is much harder
+// to popup-block than window.open(), works headlessly too.
+function openInNewTab(url) {
+  const a = document.createElement('a');
+  a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 0);
+}
+$('d-open').onclick = () => openVer && openInNewTab(reportURL(openVer.path));
 
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
 function switchTab(name) {
@@ -1117,7 +1128,7 @@ function renderActions() {
       toast('Layout skeleton copied — use as a structural template');
     } catch(e) { flashButton(b, '✗ failed', 'err', 2200); }
   };
-  $('act-open').onclick = () => openVer && window.open(reportURL(openVer.path), '_blank');
+  $('act-open').onclick = () => openVer && openInNewTab(reportURL(openVer.path));
 }
 
 // --- share ---
