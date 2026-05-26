@@ -19,12 +19,12 @@ PATTERNS: list[tuple[str, re.Pattern]] = [
     ("cursor",   re.compile(r"\b(?:cursor\.sh|cursor ide)\b", re.I)),
 ]
 
-# Also pick up explicit folio:* meta tags emitted by our own generator
-META_INTENT = re.compile(r'<meta\s+name=["\']folio:intent["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_TOOL   = re.compile(r'<meta\s+name=["\']folio:tool["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_MODEL  = re.compile(r'<meta\s+name=["\']folio:model["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_SOURCE = re.compile(r'<meta\s+name=["\']folio:source["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_PROMPT = re.compile(r'<meta\s+name=["\']folio:prompt["\']\s+content=["\']([^"\']+)["\']', re.I)
+# Also pick up explicit artifold:* meta tags emitted by our own generator
+META_INTENT = re.compile(r'<meta\s+name=["\']artifold:intent["\']\s+content=["\']([^"\']+)["\']', re.I)
+META_TOOL   = re.compile(r'<meta\s+name=["\']artifold:tool["\']\s+content=["\']([^"\']+)["\']', re.I)
+META_MODEL  = re.compile(r'<meta\s+name=["\']artifold:model["\']\s+content=["\']([^"\']+)["\']', re.I)
+META_SOURCE = re.compile(r'<meta\s+name=["\']artifold:source["\']\s+content=["\']([^"\']+)["\']', re.I)
+META_PROMPT = re.compile(r'<meta\s+name=["\']artifold:prompt["\']\s+content=["\']([^"\']+)["\']', re.I)
 
 
 def detect_tool(html: str) -> str | None:
@@ -36,7 +36,7 @@ def detect_tool(html: str) -> str | None:
 
 
 def extract_embedded_meta(html: str) -> dict:
-    """Pull folio:* meta tags (emitted by our own generator) for zero-LLM provenance."""
+    """Pull artifold:* meta tags (emitted by our own generator) for zero-LLM provenance."""
     head = html[:8000]   # meta tags are in <head>
     out: dict = {}
     for key, pat in [("intent", META_INTENT), ("tool", META_TOOL),

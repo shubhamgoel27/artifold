@@ -2,7 +2,7 @@
 auto-populated provenance.
 
 Works for *public share* URLs (Playwright renders client-side SPAs); rejects
-*private chat* URLs (auth-walled) with a helpful pointer to `folio link`.
+*private chat* URLs (auth-walled) with a helpful pointer to `artifold link`.
 """
 from __future__ import annotations
 
@@ -47,19 +47,19 @@ def _safe_filename(s: str, fallback: str) -> str:
 
 def _ensure_drop_dir(cfg: dict) -> Path:
     """Resolve the dir where imported artifacts land. Auto-creates
-    ~/folio-inbox and adds it as a root if `drop_dir` isn't configured."""
+    ~/artifold-inbox and adds it as a root if `drop_dir` isn't configured."""
     if cfg.get("drop_dir"):
         p = Path(cfg["drop_dir"]).expanduser().resolve()
         p.mkdir(parents=True, exist_ok=True)
         return p
-    p = (Path.home() / "folio-inbox").resolve()
+    p = (Path.home() / "artifold-inbox").resolve()
     if not p.exists():
         p.mkdir(parents=True, exist_ok=True)
         print(f"  (created drop dir {p})")
     roots = [str(Path(r).resolve()) for r in (cfg.get("roots") or [])]
     if str(p) not in roots:
         config.add_root(p)
-        print(f"  (added {p} as a Folio root so imports get indexed)")
+        print(f"  (added {p} as a Artifold root so imports get indexed)")
     # persist drop_dir so we don't re-add the root on every import
     fresh = config.load()
     fresh["drop_dir"] = str(p)
@@ -76,13 +76,13 @@ def import_url(url: str, name: str | None = None,
             print(f"  ! {url}")
             print(f"    looks like a private chat URL — these need login to view.")
             print(f"    save the artifact HTML manually (download / export), then:")
-            print(f"      folio link <file> --source {url} --tool {_tool_from_url(url) or '<tool>'}")
+            print(f"      artifold link <file> --source {url} --tool {_tool_from_url(url) or '<tool>'}")
             return None
 
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("  ! folio import requires playwright (a core Folio dep).")
+        print("  ! artifold import requires playwright (a core Artifold dep).")
         return None
 
     dd = Path(drop_dir).expanduser().resolve() if drop_dir else _ensure_drop_dir(cfg)
@@ -125,5 +125,5 @@ def import_url(url: str, name: str | None = None,
         fields["tool"] = tool
     provenance.set_(sha, **fields)
     print(f"  linked → tool={tool!r}, source={url}")
-    print(f"  next: run `folio scan` to index it into the dashboard.")
+    print(f"  next: run `artifold scan` to index it into the dashboard.")
     return out

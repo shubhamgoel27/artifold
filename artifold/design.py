@@ -10,7 +10,7 @@ Use:
 - `as_template(html)` → ready-to-paste material (CSS + content-free skeleton)
   for handing to an LLM as "make new report in this style"
 
-The CSS + skeleton dump is the useful primitive — Folio extracts and serves
+The CSS + skeleton dump is the useful primitive — Artifold extracts and serves
 it; whichever LLM the user prefers does the actual generation.
 """
 from __future__ import annotations
@@ -123,7 +123,7 @@ def extract(html: str) -> dict:
 def as_template(html: str, include_css: bool = True,
                 include_skeleton: bool = True) -> str:
     """Ready-to-paste material: the artifact's CSS + a content-free skeleton
-    of its body. Intended for `folio designs <id> --template` and direct
+    of its body. Intended for `artifold designs <id> --template` and direct
     paste into a Claude/ChatGPT/Cursor chat."""
     out = []
     if include_css:

@@ -22,7 +22,7 @@ from pathlib import Path
 from . import config, design, detect, intent, provenance
 
 SKIP_DIRS = {"node_modules", ".git", ".next", "dist", "build", "__pycache__",
-             ".venv", "venv", "out", "coverage", ".cache", "folio",
+             ".venv", "venv", "out", "coverage", ".cache", "artifold",
              "templates", "site-packages", ".tox", "migrations", "vendor"}
 
 # Versions: `name-v2`, `name_v3`, `name (1)` at end of stem.
@@ -136,7 +136,7 @@ def _prov_for(f: Path) -> tuple[str | None, dict | None]:
 
 
 def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
-    """Run zero-cost enrichment on a file: embedded folio:* meta tags,
+    """Run zero-cost enrichment on a file: embedded artifold:* meta tags,
     source fingerprinting, and lightweight design extraction.
     User-asserted tool/intent fields are preserved."""
     entry = entry or {}
@@ -147,7 +147,7 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
 
     fields: dict = {}
 
-    # 1. embedded folio:* meta tags (strongest signal)
+    # 1. embedded artifold:* meta tags (strongest signal)
     if not (entry.get("tool") and entry.get("intent_source") in ("user", "embedded")):
         embedded = detect.extract_embedded_meta(content)
         if embedded:

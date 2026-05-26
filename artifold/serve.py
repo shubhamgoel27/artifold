@@ -253,7 +253,7 @@ def _start_watcher():
     roots = config.roots()
     if not roots:
         print("  ! no roots configured — auto-rescan disabled "
-              "(run `folio add <dir>`).")
+              "(run `artifold add <dir>`).")
         return None
 
     pending = {"t": None}
@@ -318,7 +318,7 @@ def serve(port: int = 8787, open_browser: bool = True) -> None:
     httpd = QuietThreadingHTTPServer(("127.0.0.1", port),
                                      partial(Handler, directory=str(CACHE_DIR)))
     url = f"http://127.0.0.1:{port}/"
-    print(f"\nFolio live at {url}\n"
+    print(f"\nArtifold live at {url}\n"
           f"(Ctrl+C to stop · ⌘K palette · auto-rescans on changes)\n")
     if open_browser:
         threading.Timer(0.5, lambda: webbrowser.open(url)).start()

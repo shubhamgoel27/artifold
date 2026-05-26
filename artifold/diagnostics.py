@@ -1,8 +1,8 @@
-"""Preflight checks for Folio.
+"""Preflight checks for Artifold.
 
-`folio doctor` runs all of these and reports pass / fail / info per item,
+`artifold doctor` runs all of these and reports pass / fail / info per item,
 plus the exact command to fix each issue. Also reused by other commands
-(e.g. `folio share`) to give targeted setup hints before they fail.
+(e.g. `artifold share`) to give targeted setup hints before they fail.
 """
 from __future__ import annotations
 
@@ -50,26 +50,26 @@ def _install_hint(pkg_brew: str, pkg_apt: str | None = None,
 # ---------- individual checks ----------
 
 def check_version() -> Check:
-    return Check("folio", "ok", f"installed (v{__version__})")
+    return Check("artifold", "ok", f"installed (v{__version__})")
 
 
 def check_roots() -> Check:
     rs = config.load().get("roots") or []
     if not rs:
         return Check("roots", "warn", "no roots configured",
-                     fix="folio add ~/Downloads   (or wherever your AI artifacts land)")
+                     fix="artifold add ~/Downloads   (or wherever your AI artifacts land)")
     missing = [r for r in rs if not Path(r).is_dir()]
     if missing:
         return Check("roots", "warn",
                      f"{len(rs)} configured, {len(missing)} missing on disk: {missing[0]}",
-                     fix=f"folio remove {missing[0]}")
+                     fix=f"artifold remove {missing[0]}")
     return Check("roots", "ok", f"{len(rs)} root(s) configured")
 
 
 def check_config() -> Check:
     if not CONFIG_FILE.exists():
         return Check("config", "warn", "no config yet",
-                     fix="folio init")
+                     fix="artifold init")
     return Check("config", "ok", str(CONFIG_FILE))
 
 
@@ -99,12 +99,12 @@ def check_chromium() -> Check:
         return Check("chromium", "ok", "installed (for screenshots)")
     return Check("chromium", "warn", "browser not installed yet",
                  fix="python -m playwright install chromium  "
-                     "(or run `folio scan` once — it installs on demand)")
+                     "(or run `artifold scan` once — it installs on demand)")
 
 
 def check_gh() -> Check:
     if not shutil.which("gh"):
-        return Check("gh CLI", "fail", "not installed (needed for `folio share`)",
+        return Check("gh CLI", "fail", "not installed (needed for `artifold share`)",
                      fix=_install_hint("gh", "gh", "https://cli.github.com/"))
     try:
         out = subprocess.run(["gh", "--version"], capture_output=True, text=True)
@@ -136,7 +136,7 @@ def check_anthropic_extra() -> Check:
     except ImportError:
         return Check("intent extra", "info",
                      "not installed (optional; only needed for AI intent inference)",
-                     fix="pip install 'ai-folio[intent]'")
+                     fix="pip install 'artifold[intent]'")
 
 
 def check_anthropic_key() -> Check:
@@ -151,7 +151,7 @@ def check_anthropic_key() -> Check:
                      fix="export ANTHROPIC_API_KEY=sk-ant-…   (in your shell rc)")
     if has_key and not enabled:
         return Check("intent", "info",
-                     "key set but feature disabled — turn on with: folio scan --intent")
+                     "key set but feature disabled — turn on with: artifold scan --intent")
     return Check("intent", "ok", "enabled + key set")
 
 
@@ -188,6 +188,6 @@ def report(checks: list[Check]) -> tuple[int, int]:
 # ---------- targeted helpers used by other commands ----------
 
 def share_preflight() -> list[Check]:
-    """The subset relevant to `folio share`. Caller surfaces only failures."""
+    """The subset relevant to `artifold share`. Caller surfaces only failures."""
     out = [check_gh(), check_gh_auth()]
     return [c for c in out if c.status in ("fail", "warn")]

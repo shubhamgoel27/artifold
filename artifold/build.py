@@ -22,7 +22,7 @@ def build(projects: list[dict], roots: list[str]) -> dict:
     }
     DATA.write_text(json.dumps(payload, separators=(",", ":")))
 
-    tpl = resources.files("folio").joinpath("template.html").read_text(encoding="utf-8")
+    tpl = resources.files("artifold").joinpath("template.html").read_text(encoding="utf-8")
     INDEX.write_text(tpl
                      .replace("__DATA__", json.dumps(payload, separators=(",", ":")))
                      .replace("__TOTAL_PROJ__", str(len(projects)))

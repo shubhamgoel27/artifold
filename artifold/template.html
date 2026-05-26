@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Folio</title>
+<title>Artifold</title>
 <style>
 /* === design tokens =========================================== */
 /* Greyscale ramp + ONE accent (blue). Color carries meaning only. */
@@ -581,7 +581,7 @@ body {
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 <script>
-(function(){var t=localStorage.getItem('folio-theme');
+(function(){var t=localStorage.getItem('artifold-theme');
  if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
  document.documentElement.dataset.theme=t;})();
 </script>
@@ -590,7 +590,7 @@ body {
 <div class="app">
   <!-- topbar -->
   <header class="topbar">
-    <div class="brand"><span class="mark">F</span>Folio</div>
+    <div class="brand"><span class="mark">F</span>Artifold</div>
     <div class="search" id="search-box">
       <span class="search-icon"></span>
       <input id="q" placeholder="Search title, content, prompt…" autofocus>
@@ -712,7 +712,7 @@ body {
     <div class="body">
       Public share URLs from Claude / v0 / Lovable / ChatGPT Canvas etc.
       Private chat URLs can't be fetched headless — save the HTML, then
-      <code style="display:inline;background:transparent;padding:0;border:none">folio link &lt;file&gt;</code>.
+      <code style="display:inline;background:transparent;padding:0;border:none">artifold link &lt;file&gt;</code>.
       <input id="import-url" placeholder="https://v0.dev/x/...   or   https://claude.ai/share/...">
     </div>
     <div class="foot">
@@ -965,16 +965,16 @@ function cardHTML(p) {
 
 function emptyHTML() {
   return `<div class="empty-state">
-    <h2>📚  Your Folio is empty</h2>
-    <p>Folio indexes AI-generated HTML artifacts from folders you point it at. Get started:</p>
+    <h2>📚  Your Artifold is empty</h2>
+    <p>Artifold indexes AI-generated HTML artifacts from folders you point it at. Get started:</p>
     <div class="quick-cards">
-      <div class="qc" onclick="alert('Run in terminal: folio add ~/Downloads')">
-        <h3>Add a folder</h3><p>Run <code>folio add ~/Downloads</code> in your terminal to start watching a directory.</p>
+      <div class="qc" onclick="alert('Run in terminal: artifold add ~/Downloads')">
+        <h3>Add a folder</h3><p>Run <code>artifold add ~/Downloads</code> in your terminal to start watching a directory.</p>
       </div>
       <div class="qc" onclick="$('btn-import').click()">
         <h3>Import a URL</h3><p>Got a public Claude / v0 / Lovable share link? Import it directly.</p>
       </div>
-      <div class="qc" onclick="alert('Run in terminal: folio install-skill')">
+      <div class="qc" onclick="alert('Run in terminal: artifold install-skill')">
         <h3>Install /craft skill</h3><p>Generate beautiful HTML artifacts in Claude Code with built-in design principles.</p>
       </div>
     </div>
@@ -1048,7 +1048,7 @@ function renderProvenance() {
     ).join('')]);
   }
   dl.innerHTML = rows.length ? rows.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')
-    : '<dt>No provenance yet</dt><dd style="color:var(--text-mut)">Annotate with <code style="background:transparent;padding:0">folio link &lt;file&gt; --tool claude --source URL</code></dd>';
+    : '<dt>No provenance yet</dt><dd style="color:var(--text-mut)">Annotate with <code style="background:transparent;padding:0">artifold link &lt;file&gt; --tool claude --source URL</code></dd>';
 }
 
 function renderDesign() {
@@ -1095,7 +1095,7 @@ function renderActions() {
 
   $('act-copy-css').onclick = async () => {
     const b = $('act-copy-css');
-    if (!SERVED) return flashButton(b, '✗ needs `folio serve`', 'err', 2200);
+    if (!SERVED) return flashButton(b, '✗ needs `artifold serve`', 'err', 2200);
     try {
       const r = await fetch('/designs/' + openProj.primary.sha1 + '?format=css');
       if (!r.ok) throw new Error('fetch failed');
@@ -1107,7 +1107,7 @@ function renderActions() {
   };
   $('act-copy-skel').onclick = async () => {
     const b = $('act-copy-skel');
-    if (!SERVED) return flashButton(b, '✗ needs `folio serve`', 'err', 2200);
+    if (!SERVED) return flashButton(b, '✗ needs `artifold serve`', 'err', 2200);
     try {
       const r = await fetch('/designs/' + openProj.primary.sha1 + '?format=skeleton');
       if (!r.ok) throw new Error('fetch failed');
@@ -1122,7 +1122,7 @@ function renderActions() {
 
 // --- share ---
 async function doShare(p) {
-  if (!SERVED) return toast('Run folio serve to enable in-UI sharing');
+  if (!SERVED) return toast('Run artifold serve to enable in-UI sharing');
   const btn = $('d-share');
   btn.disabled = true;
   btn.classList.add('spinning');
@@ -1177,7 +1177,7 @@ $('btn-import').onclick = () => { $('modal-import').classList.add('on'); setTime
 $('import-cancel').onclick = () => $('modal-import').classList.remove('on');
 $('import-go').onclick = async () => {
   const url = $('import-url').value.trim(); if (!url) return;
-  if (!SERVED) return toast('Run folio serve to enable in-UI import');
+  if (!SERVED) return toast('Run artifold serve to enable in-UI import');
   $('import-go').disabled = true; $('import-go').innerHTML = '<span class="spin"></span> importing…';
   try {
     const r = await fetch('/import', { method: 'POST', headers: {'Content-Type':'application/json'},
@@ -1219,7 +1219,7 @@ function flashButton(btn, msg, kind='ok', duration=1500) {
 $('btn-theme').onclick = () => {
   const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
   document.documentElement.dataset.theme = next;
-  localStorage.setItem('folio-theme', next);
+  localStorage.setItem('artifold-theme', next);
 };
 
 // --- view toggle ---
@@ -1232,7 +1232,7 @@ $('sort').addEventListener('change', e => { state.sort = e.target.value; render(
 
 // --- rescan ---
 $('btn-rescan').onclick = async () => {
-  if (!SERVED) return toast('Run folio serve to enable in-UI rescan');
+  if (!SERVED) return toast('Run artifold serve to enable in-UI rescan');
   const b = $('btn-rescan');
   b.classList.add('spinning');
   try { await fetch('/rescan', { method: 'POST' }); toast('Rescanning…'); }

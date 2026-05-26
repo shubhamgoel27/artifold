@@ -1,6 +1,6 @@
 ---
 name: craft
-description: Use whenever the user asks for a "report", "dashboard", "one-pager", "explainer", "tracker", "guide", "itinerary", or any HTML artifact where the output is a single styled page. Applies opinionated design principles (color/typography/spacing systems) and explicitly avoids the AI-default visual patterns (purple-gradient hero, identical bento cards, decorative emoji, glassmorphism, etc.). If Folio (the `folio` CLI) is installed, consults the user's library to inherit a referenced style — or, by default, varies from their past patterns so each new artifact has a distinct identity.
+description: Use whenever the user asks for a "report", "dashboard", "one-pager", "explainer", "tracker", "guide", "itinerary", or any HTML artifact where the output is a single styled page. Applies opinionated design principles (color/typography/spacing systems) and explicitly avoids the AI-default visual patterns (purple-gradient hero, identical bento cards, decorative emoji, glassmorphism, etc.). If Artifold (the `artifold` CLI) is installed, consults the user's library to inherit a referenced style — or, by default, varies from their past patterns so each new artifact has a distinct identity.
 ---
 
 # Craft
@@ -23,21 +23,21 @@ If clear, proceed. Don't over-ask.
 
 ---
 
-## Step 2: Style reference (Folio integration)
+## Step 2: Style reference (Artifold integration)
 
-Use the Bash tool to check what's available. If the `folio` command is not installed, skip this step — fall back to pure design-knowledge mode.
+Use the Bash tool to check what's available. If the `artifold` command is not installed, skip this step — fall back to pure design-knowledge mode.
 
-**Always use the `--json` flag** when reading from Folio so the output stays
+**Always use the `--json` flag** when reading from Artifold so the output stays
 parseable as the CLI evolves. The stable contract is:
-- `folio designs --json` → array of `{id, name, dir, category, palette[], fonts[], flags{themed,gradient,glass,animated,shadowed}}`
-- `folio designs <id>` → fingerprint object (already JSON, no flag needed)
-- `folio designs <id> --template` → raw CSS + body skeleton (text, not JSON)
-- `folio info <file> --json` → full provenance entry
+- `artifold designs --json` → array of `{id, name, dir, category, palette[], fonts[], flags{themed,gradient,glass,animated,shadowed}}`
+- `artifold designs <id>` → fingerprint object (already JSON, no flag needed)
+- `artifold designs <id> --template` → raw CSS + body skeleton (text, not JSON)
+- `artifold info <file> --json` → full provenance entry
 
 ### A. User explicitly referenced a past artifact
-- Run `folio designs --json` and parse — find the entry whose `name` or
+- Run `artifold designs --json` and parse — find the entry whose `name` or
   `dir` best matches what the user mentioned. Confirm with the user if ambiguous.
-- Run `folio designs <id> --template` to load the full CSS + body skeleton.
+- Run `artifold designs <id> --template` to load the full CSS + body skeleton.
 - Treat that CSS as your baseline. Replace body content for the new topic.
   Keep palette, fonts, tokens, and layout motifs.
 
@@ -46,7 +46,7 @@ parseable as the CLI evolves. The stable contract is:
   structure manually. Use as style baseline (same as A).
 
 ### C. Default — vary from past patterns (anti-slop)
-- Run `folio designs --json` to see the user's library as structured data.
+- Run `artifold designs --json` to see the user's library as structured data.
 - Aggregate across entries: tally how many are dark-themed, gradient-heavy,
   glass-heavy; tally font families; tally palette dominant hues.
 - **Deliberately pick a different direction.** If they've been doing
@@ -56,7 +56,7 @@ parseable as the CLI evolves. The stable contract is:
 - Note your variation choice to the user in 1 sentence (*"Your recent
   reports lean dark/glass — going minimal/editorial here for variety."*).
 
-### D. No Folio, no reference
+### D. No Artifold, no reference
 - Apply design knowledge below from scratch. Pick one strong direction; commit to it.
 
 ---
@@ -102,21 +102,21 @@ Before writing CSS, commit to NOT producing these:
 
 ---
 
-## Step 5: Embed Folio provenance
+## Step 5: Embed Artifold provenance
 
 In the artifact's `<head>`, include:
 
 ```html
-<meta name="folio:intent" content="<10–15 word description of what this artifact accomplishes>">
-<meta name="folio:tool" content="claude">
-<meta name="folio:prompt" content="<the user's original prompt, ≤ 200 chars>">
+<meta name="artifold:intent" content="<10–15 word description of what this artifact accomplishes>">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:prompt" content="<the user's original prompt, ≤ 200 chars>">
 ```
 
-This auto-populates Folio's library when the file lands in a scanned root. No further work from the user.
+This auto-populates Artifold's library when the file lands in a scanned root. No further work from the user.
 
 If the user referenced a past artifact for style, also add:
 ```html
-<meta name="folio:style-from" content="<id-of-reference-artifact>">
+<meta name="artifold:style-from" content="<id-of-reference-artifact>">
 ```
 
 ---
@@ -146,24 +146,24 @@ If any fail, iterate before delivering.
 
 **Save the artifact yourself** — don't just hand the user code to copy/paste.
 
-If `folio` is installed (try `folio inbox <topic>` via Bash):
+If `artifold` is installed (try `artifold inbox <topic>` via Bash):
 - It returns the canonical path, e.g.
-  `/Users/me/folio-inbox/2026-05-26-30-day-strength-tracker.html`
+  `/Users/me/artifold-inbox/2026-05-26-30-day-strength-tracker.html`
 - The path uses today's date (YYYY-MM-DD) prefix + a 4–6 word
   lowercase kebab-case topic slug derived from what the artifact actually is.
-- `folio inbox` also auto-creates the dir and registers it as a watched
-  Folio root, so the artifact gets indexed automatically.
+- `artifold inbox` also auto-creates the dir and registers it as a watched
+  Artifold root, so the artifact gets indexed automatically.
 - Use the Write tool to save the artifact to that exact path.
 
-If Folio isn't installed (command not found):
-- Default to `~/folio-inbox/YYYY-MM-DD-<topic-slug>.html` directly,
+If Artifold isn't installed (command not found):
+- Default to `~/artifold-inbox/YYYY-MM-DD-<topic-slug>.html` directly,
   creating the dir if needed.
-- Mention to the user: *"Run `pipx install ai-folio && folio init` to
+- Mention to the user: *"Run `pipx install artifold && artifold init` to
   organize these and get a searchable dashboard."*
 
 After saving:
 - Tell the user the path you wrote to (one line)
-- Tell them: *"It'll show up in your Folio dashboard within ~2 seconds
+- Tell them: *"It'll show up in your Artifold dashboard within ~2 seconds
   with intent, design fingerprint, and source tagged automatically."*
 - Don't dump the HTML in chat — they don't need to scroll through 600
   lines of CSS. The file is the deliverable.

@@ -1,14 +1,14 @@
-"""Folio CLI.
+"""Artifold CLI.
 
 Subcommands:
-    folio init                    create config dir
-    folio add <dir>               add a root to scan
-    folio remove <dir>            remove a root
-    folio roots                   list configured roots
-    folio scan                    scan + screenshot + build (one-shot)
-    folio serve [--port N]        live dashboard with auto-rescan
-    folio open                    print the dashboard URL / file
-    folio                         default: serve + open the browser
+    artifold init                    create config dir
+    artifold add <dir>               add a root to scan
+    artifold remove <dir>            remove a root
+    artifold roots                   list configured roots
+    artifold scan                    scan + screenshot + build (one-shot)
+    artifold serve [--port N]        live dashboard with auto-rescan
+    artifold open                    print the dashboard URL / file
+    artifold                         default: serve + open the browser
 """
 from __future__ import annotations
 
@@ -44,11 +44,11 @@ def _cmd_init(args):
     if not CONFIG_FILE.exists():
         config.save(dict(config.DEFAULTS))
 
-    print(f"\n  📚  Folio — local library for your AI-generated artifacts\n")
+    print(f"\n  📚  Artifold — local library for your AI-generated artifacts\n")
     print(f"  config: {CONFIG_FILE}\n")
 
     if args.non_interactive or not _is_tty():
-        print("  (non-interactive — skipping wizard. next: `folio add <dir>`)")
+        print("  (non-interactive — skipping wizard. next: `artifold add <dir>`)")
         return 0
 
     cfg = config.load()
@@ -66,12 +66,12 @@ def _cmd_init(args):
 
     cfg = config.load()
     if not (cfg.get("roots") or []):
-        print("\n  Nothing scanned yet. Add a root any time: folio add <dir>")
+        print("\n  Nothing scanned yet. Add a root any time: artifold add <dir>")
         return 0
 
     ans = input("\n  Run an initial scan now? (~30s + chromium download on first run) [Y/n]: ").strip().lower()
     if ans in ("n", "no"):
-        print("  ok — run `folio scan` when ready.")
+        print("  ok — run `artifold scan` when ready.")
         return 0
 
     from . import scan, shoot, build
@@ -86,7 +86,7 @@ def _cmd_init(args):
 
     if input("\n  Open the dashboard? [Y/n]: ").strip().lower() not in ("n", "no"):
         return _cmd_open(None)
-    print("\n  done. run `folio` any time to view + auto-rescan.")
+    print("\n  done. run `artifold` any time to view + auto-rescan.")
     return 0
 
 
@@ -140,7 +140,7 @@ def _cmd_remove(args):
 def _cmd_roots(_args):
     rs = config.load().get("roots") or []
     if not rs:
-        print("(no roots configured)  run: folio add <dir>")
+        print("(no roots configured)  run: artifold add <dir>")
         return
     for r in rs:
         print(r)
@@ -150,7 +150,7 @@ def _cmd_scan(args):
     from . import scan, shoot, build
     rs = config.roots()
     if not rs:
-        print("! no roots configured. run: folio add <dir>")
+        print("! no roots configured. run: artifold add <dir>")
         return 1
     intent_override = True if args.intent else (False if args.no_intent else None)
     if args.intent:                       # explicit opt-in: explain if we'll skip
@@ -158,7 +158,7 @@ def _cmd_scan(args):
         try:
             import anthropic  # noqa: F401
         except ImportError:
-            print("  ! --intent: extra not installed. run: pip install 'ai-folio[intent]'")
+            print("  ! --intent: extra not installed. run: pip install 'artifold[intent]'")
             intent_override = False
         else:
             if not _intent.have_api_key():
@@ -186,7 +186,7 @@ def _cmd_serve(args):
 
 def _cmd_open(_args):
     if not INDEX.exists():
-        print("! no dashboard built yet. run: folio scan")
+        print("! no dashboard built yet. run: artifold scan")
         return 1
     url = INDEX.as_uri()
     print(url)
@@ -198,11 +198,11 @@ def _cmd_designs(args):
     cached in the provenance store, keyed by content SHA1.
 
     Stable contracts for the /craft skill (and any other automation):
-      folio designs --json              → JSON array of {id,name,dir,category,palette,fonts,flags...}
-      folio designs <id>                → JSON fingerprint object (always JSON; default)
-      folio designs <id> --template     → raw text (CSS + skeleton); paste into LLM
-      folio designs <id> --css          → raw CSS only
-      folio designs <id> --skeleton     → raw skeleton only
+      artifold designs --json              → JSON array of {id,name,dir,category,palette,fonts,flags...}
+      artifold designs <id>                → JSON fingerprint object (always JSON; default)
+      artifold designs <id> --template     → raw text (CSS + skeleton); paste into LLM
+      artifold designs <id> --css          → raw CSS only
+      artifold designs <id> --skeleton     → raw skeleton only
     """
     from . import design, provenance
     from .paths import DATA
@@ -244,7 +244,7 @@ def _cmd_designs(args):
             print(json.dumps(rows, indent=2))
             return 0
         if not rows:
-            print("(no design fingerprints yet — run `folio scan`)")
+            print("(no design fingerprints yet — run `artifold scan`)")
             return 0
         print(f"  {'id':<10}{'name':<40}{'palette':<28}flags")
         for r in rows[:60]:
@@ -258,14 +258,14 @@ def _cmd_designs(args):
                        if s.startswith(args.id)), None)
     if not target_sha:
         msg = {"error": f"no artifact found with id starting {args.id!r}",
-               "hint": "run `folio designs` to list available ids"}
+               "hint": "run `artifold designs` to list available ids"}
         print(json.dumps(msg) if args.json else f"  ! {msg['error']}\n    {msg['hint']}")
         return 1
     info = by_sha.get(target_sha, {})
     if args.template or args.css or args.skeleton:
         if not info.get("path"):
             print(f"  ! no current file path for {target_sha[:8]} "
-                  f"— run `folio scan` first")
+                  f"— run `artifold scan` first")
             return 1
         html = Path(info["path"]).read_text(encoding="utf-8", errors="ignore")
         if args.css:
@@ -286,7 +286,7 @@ def _cmd_designs(args):
 def _cmd_install_skill(args):
     """Copy the bundled /craft Claude Code skill into ~/.claude/skills/."""
     from importlib import resources
-    src = resources.files("folio.skills.craft").joinpath("SKILL.md")
+    src = resources.files("artifold.skills.craft").joinpath("SKILL.md")
     dest_dir = Path(args.dest).expanduser() if args.dest else \
                Path.home() / ".claude" / "skills" / "craft"
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -303,7 +303,7 @@ def _cmd_install_skill(args):
     print("    /craft a one-pager comparing SF apartments")
     print("    /craft an explainer of how transformers work, like dobble")
     print()
-    print("  The skill will consult your Folio library for style references")
+    print("  The skill will consult your Artifold library for style references")
     print("  by default; pass a reference explicitly with `like <id-or-name>`.")
     return 0
 
@@ -312,7 +312,7 @@ def _cmd_inbox(args):
     """Print the canonical path for a new artifact (date-prefixed slug).
 
     Used by the /craft skill (and humans) to keep all generated artifacts
-    in one place with sortable filenames. Auto-creates ~/folio-inbox/
+    in one place with sortable filenames. Auto-creates ~/artifold-inbox/
     and adds it as a root the first time it's needed.
     """
     import re
@@ -321,7 +321,7 @@ def _cmd_inbox(args):
     if cfg.get("drop_dir"):
         inbox = Path(cfg["drop_dir"]).expanduser().resolve()
     else:
-        inbox = (Path.home() / "folio-inbox").resolve()
+        inbox = (Path.home() / "artifold-inbox").resolve()
     inbox.mkdir(parents=True, exist_ok=True)
     # Ensure inbox is a watched root (so the artifact auto-indexes when written)
     roots = [str(Path(r).expanduser().resolve()) for r in (cfg.get("roots") or [])]
@@ -347,7 +347,7 @@ def _cmd_inbox(args):
 
 def _cmd_doctor(_args):
     from . import diagnostics
-    print(f"Folio diagnostics (config: {diagnostics.CONFIG_FILE})\n")
+    print(f"Artifold diagnostics (config: {diagnostics.CONFIG_FILE})\n")
     checks = diagnostics.run_all()
     fails, warns = diagnostics.report(checks)
     print()
@@ -437,7 +437,7 @@ def _cmd_info(args):
     print(f"file:    {p}")
     print(f"sha1:    {sha}")
     if not entry:
-        print("(no provenance attached — run `folio link <file> ...`)")
+        print("(no provenance attached — run `artifold link <file> ...`)")
         return 0
     for k in ("source", "tool", "model", "tags", "prompt", "notes", "added_at"):
         if entry.get(k) is not None:
@@ -445,12 +445,12 @@ def _cmd_info(args):
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(prog="folio",
+    p = argparse.ArgumentParser(prog="artifold",
         description="Local-first library for your AI-generated HTML artifacts.")
-    p.add_argument("--version", action="version", version=f"folio {__version__}")
+    p.add_argument("--version", action="version", version=f"artifold {__version__}")
     sub = p.add_subparsers(dest="cmd")
 
-    init_p = sub.add_parser("init", help="initialize Folio (interactive wizard)")
+    init_p = sub.add_parser("init", help="initialize Artifold (interactive wizard)")
     init_p.add_argument("--non-interactive", action="store_true",
                         help="skip prompts; just create the config dir")
     init_p.set_defaults(fn=_cmd_init)
@@ -498,7 +498,7 @@ def main(argv=None) -> int:
     isk.set_defaults(fn=_cmd_install_skill)
 
     dg = sub.add_parser("designs", help="list or dump design fingerprints (style + skeleton)")
-    dg.add_argument("id", nargs="?", help="artifact id prefix (from `folio designs`)")
+    dg.add_argument("id", nargs="?", help="artifact id prefix (from `artifold designs`)")
     dg.add_argument("--json", action="store_true",
                     help="machine-readable JSON output (stable contract for scripts/skills)")
     dg_g = dg.add_mutually_exclusive_group()
@@ -539,7 +539,7 @@ def main(argv=None) -> int:
     im = sub.add_parser("import", help="fetch a shared AI-artifact URL into your library")
     im.add_argument("url")
     im.add_argument("--name", help="override filename (no .html needed)")
-    im.add_argument("--drop-dir", help="save into this dir (defaults to ~/folio-inbox)")
+    im.add_argument("--drop-dir", help="save into this dir (defaults to ~/artifold-inbox)")
     im.set_defaults(fn=_cmd_import)
 
     args = p.parse_args(argv)

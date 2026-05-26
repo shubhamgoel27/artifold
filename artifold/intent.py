@@ -1,11 +1,11 @@
 """LLM-derived intent metadata for an artifact (opt-in extra).
 
-This is the *only* part of Folio that calls out to an LLM. It's gated by:
-  1. `pip install ai-folio[intent]` (pulls the `anthropic` SDK)
+This is the *only* part of Artifold that calls out to an LLM. It's gated by:
+  1. `pip install artifold[intent]` (pulls the `anthropic` SDK)
   2. `ANTHROPIC_API_KEY` set in the environment
-  3. `enable_intent: true` in config OR `folio scan --intent` for one run
+  3. `enable_intent: true` in config OR `artifold scan --intent` for one run
 
-Default Folio is fully local; this module is only loaded when explicitly used.
+Default Artifold is fully local; this module is only loaded when explicitly used.
 
 One Claude Haiku call per artifact, cached forever by content SHA1 in the
 provenance store.
@@ -108,7 +108,7 @@ async def infer_many(items: list[tuple[str, str, str]],     # (sha, title, body)
         from anthropic import AsyncAnthropic
     except ImportError:
         print("  ! intent inference requires the [intent] extra.\n"
-              "    install:  pip install 'ai-folio[intent]'")
+              "    install:  pip install 'artifold[intent]'")
         return {}
 
     if not have_api_key():

@@ -1,4 +1,4 @@
-"""Folio user config — roots to scan + small overrides.
+"""Artifold user config — roots to scan + small overrides.
 
 config.json schema:
     {
@@ -44,7 +44,7 @@ DEFAULTS = {
     "enable_intent": False,    # LLM-derived intent metadata (requires ANTHROPIC_API_KEY)
     "intent_model": "claude-haiku-4-5",
     "intent_concurrency": 5,
-    "drop_dir": None,          # where `folio import <url>` saves fetched artifacts
+    "drop_dir": None,          # where `artifold import <url>` saves fetched artifacts
 }
 
 

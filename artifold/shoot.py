@@ -43,9 +43,9 @@ def resolve_cached_thumbs(projects: list[dict]) -> list[tuple]:
 def _ensure_chromium() -> bool:
     """Install playwright chromium-headless-shell if missing. Returns True on success.
 
-    We install only the headless shell, not full chromium — Folio always launches
+    We install only the headless shell, not full chromium — Artifold always launches
     headless, and the shell is ~170 MB vs ~290 MB for the full browser. Saves
-    ~120 MB on disk for every Folio install. Idempotent: fast when already present.
+    ~120 MB on disk for every Artifold install. Idempotent: fast when already present.
     """
     BROWSERS.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(BROWSERS))

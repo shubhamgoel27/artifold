@@ -1,7 +1,7 @@
 """Publish a single artifact to a public URL via GitHub Pages.
 
 Default backend: GitHub Pages via the `gh` CLI (which most devs already have
-authed). Uses one repo per user — `<user>/folio-share` — and writes each
+authed). Uses one repo per user — `<user>/artifold-share` — and writes each
 shared artifact as `<short-sha>.html`. Idempotent: re-sharing the same file
 returns the same URL.
 
@@ -22,7 +22,7 @@ from pathlib import Path
 from . import provenance
 from .paths import CACHE_DIR, ensure_dirs
 
-SHARE_REPO_NAME = "folio-share"
+SHARE_REPO_NAME = "artifold-share"
 SHARE_REPO_DIR = CACHE_DIR / "share-repo"
 
 
@@ -56,7 +56,7 @@ def _create_repo(user: str) -> bool:
     print(f"  creating public repo {user}/{SHARE_REPO_NAME}…")
     r = _gh("repo", "create", SHARE_REPO_NAME,
             "--public",
-            "--description", "Folio shared artifacts (managed by the folio CLI).",
+            "--description", "Artifold shared artifacts (managed by the artifold CLI).",
             "--clone=false")
     if r.returncode != 0:
         print(f"  ! repo create failed: {r.stderr.strip()}")
@@ -97,17 +97,17 @@ def _bootstrap_repo(user: str, repo_dir: Path) -> bool:
     idx = repo_dir / "index.html"
     if not idx.exists():
         idx.write_text(
-            "<!doctype html><meta charset=utf-8><title>Folio shares</title>"
+            "<!doctype html><meta charset=utf-8><title>Artifold shares</title>"
             "<body style='font:15px/1.5 -apple-system,sans-serif;"
             "max-width:560px;margin:60px auto;color:#222;padding:0 20px'>"
-            "<h1>Folio shares</h1>"
+            "<h1>Artifold shares</h1>"
             "<p>This repo holds artifacts shared from a "
-            "<a href='https://github.com/shubhamgoel27/folio'>Folio</a> library. "
+            "<a href='https://github.com/shubhamgoel27/artifold'>Artifold</a> library. "
             "Each share has its own URL — you reach it directly.</p>")
-        _git("-c", "user.email=folio@local", "-c", "user.name=Folio",
+        _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
              "add", "index.html", cwd=repo_dir)
-        _git("-c", "user.email=folio@local", "-c", "user.name=Folio",
-             "commit", "-q", "-m", "Initial: folio share index", cwd=repo_dir)
+        _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
+             "commit", "-q", "-m", "Initial: artifold share index", cwd=repo_dir)
         if _git("push", "origin", "HEAD:main", cwd=repo_dir).returncode != 0:
             # default branch may not be main yet; create it
             _git("branch", "-M", "main", cwd=repo_dir)
@@ -116,7 +116,7 @@ def _bootstrap_repo(user: str, repo_dir: Path) -> bool:
 
 
 def _ensure_repo_clone(user: str) -> Path | None:
-    """Ensure local clone of <user>/folio-share is present and current."""
+    """Ensure local clone of <user>/artifold-share is present and current."""
     if not _repo_exists(user):
         if not _create_repo(user):
             return None
@@ -183,12 +183,12 @@ def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
     from . import diagnostics
     issues = diagnostics.share_preflight()
     if issues:
-        print("`folio share` needs a one-time setup before it works:\n")
+        print("`artifold share` needs a one-time setup before it works:\n")
         for c in issues:
             print(f"  {c.glyph} {c.name}: {c.message}")
             if c.fix:
                 print(f"      → {c.fix}")
-        print("\nfix those, then re-run.  (run `folio doctor` any time.)")
+        print("\nfix those, then re-run.  (run `artifold doctor` any time.)")
         if _copy_to_clipboard(issues[0].fix or ""):
             print("(first fix command copied to clipboard)")
         return None
@@ -223,9 +223,9 @@ def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
 
     dest = repo_dir / f"{short_id}.html"
     dest.write_bytes(file.read_bytes())
-    _git("-c", "user.email=folio@local", "-c", "user.name=Folio",
+    _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
          "add", f"{short_id}.html", cwd=repo_dir)
-    _git("-c", "user.email=folio@local", "-c", "user.name=Folio",
+    _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
          "commit", "-q", "-m", f"share {file.name}", cwd=repo_dir)
     push = _git("push", "--quiet", "origin", "main", cwd=repo_dir)
     if push.returncode != 0:
@@ -285,7 +285,7 @@ def revoke(short_id: str) -> bool:
         print(f"  ! no share with id {short_id} in the repo")
         return False
     _git("rm", "--quiet", f"{short_id}.html", cwd=repo_dir)
-    _git("-c", "user.email=folio@local", "-c", "user.name=Folio",
+    _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
          "commit", "-q", "-m", f"revoke {short_id}", cwd=repo_dir)
     if _git("push", "--quiet", "origin", "main", cwd=repo_dir).returncode != 0:
         print("  ! push failed"); return False

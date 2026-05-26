@@ -1,8 +1,8 @@
-# Folio
+# Artifold
 
 **Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
 
-![Folio demo](docs/demo.gif)
+![Artifold demo](docs/demo.gif)
 
 ---
 
@@ -15,9 +15,9 @@
 >
 > — Thariq, *[The Unreasonable Effectiveness of HTML](https://x.com/trq212/status/2052809885763747935)* (Claude Code team)
 
-**Folio is that library.** If you're shifting from Markdown to HTML for
+**Artifold is that library.** If you're shifting from Markdown to HTML for
 specs, reports, designs, prototypes, throwaway editors — the way Thariq
-describes — Folio is where they live.
+describes — Artifold is where they live.
 
 You've been making a lot of HTML with AI lately: Claude Artifacts,
 ChatGPT Canvas, v0, Lovable, Cursor. They land in `~/Downloads` or some
@@ -37,11 +37,11 @@ public URL.
 ### 1. ✨ Share any artifact in seconds → public URL anyone can open
 
 Click any card → hit the share icon → in ~30 seconds you get back a
-permanent URL like `https://you.github.io/folio-share/abc12345.html`
+permanent URL like `https://you.github.io/artifold-share/abc12345.html`
 that you can paste into iMessage, Slack, email, anywhere. URL is copied
 to your clipboard automatically.
 
-Free forever (uses your GitHub Pages quota — no Folio infrastructure,
+Free forever (uses your GitHub Pages quota — no Artifold infrastructure,
 no sign-up, no per-share fees, no expiry). Anyone with the link sees
 the fully-rendered report; recipient needs nothing installed.
 
@@ -70,8 +70,8 @@ tracker for a beginner` in any session. The skill:
   Linear, and Vercel/Geist (every one cited)
 - Avoids 15 specific AI-slop signatures (purple-gradient hero, identical
   bento cards, decorative emoji on every list item, glassmorphism, etc.)
-- Saves to `~/folio-inbox/2026-05-26-<topic>.html` — auto-indexed in
-  Folio within ~2 seconds
+- Saves to `~/artifold-inbox/2026-05-26-<topic>.html` — auto-indexed in
+  Artifold within ~2 seconds
 
 Your past work becomes your style guide for the next one. The loop closes.
 
@@ -87,9 +87,9 @@ you through first-run:
 > **Copy this into Claude Code:**
 >
 > ```
-> Install Folio from https://github.com/shubhamgoel27/folio using pipx
-> (or pip if pipx isn't installed). Then run `folio init` and help me
-> pick a folder to watch. After that, run `folio install-skill` to set
+> Install Artifold from https://github.com/shubhamgoel27/artifold using pipx
+> (or pip if pipx isn't installed). Then run `artifold init` and help me
+> pick a folder to watch. After that, run `artifold install-skill` to set
 > up the /craft skill. Open the dashboard when ready and tell me what
 > to try first.
 > ```
@@ -102,10 +102,10 @@ dependencies to debug — Claude handles the awkward parts.
 If you'd rather drive:
 
 ```bash
-pipx install ai-folio          # or: pip install ai-folio
-folio init                     # interactive wizard
-folio                          # serves dashboard + opens browser
-folio install-skill            # adds /craft to ~/.claude/skills/
+pipx install artifold          # or: pip install artifold
+artifold init                     # interactive wizard
+artifold                          # serves dashboard + opens browser
+artifold install-skill            # adds /craft to ~/.claude/skills/
 ```
 
 Don't have `pipx`? Run `brew install pipx` (mac) or `python -m pip
@@ -119,7 +119,7 @@ install --user pipx` (anywhere), then the above.
 /craft a probability explainer for poker, in the style of dobble
 ```
 
-(Restart Claude Code once after `folio install-skill` so the skill loads.)
+(Restart Claude Code once after `artifold install-skill` so the skill loads.)
 
 The first run installs Playwright's headless Chromium (~170 MB) for
 artifact thumbnails. After that, only new/changed files re-shoot.
@@ -133,14 +133,14 @@ library stays clean even when your folders aren't.
 
 **Source-aware** — fingerprints Claude / ChatGPT / v0 / Lovable / Bolt
 / Gemini artifacts from HTML markers, tags each card with the tool that
-made it. Also reads `<meta name="folio:*">` tags (which the `/craft`
+made it. Also reads `<meta name="artifold:*">` tags (which the `/craft`
 skill emits) for zero-effort provenance.
 
 **Visual** — every artifact gets a real screenshot thumbnail. Click a
 card → slide-out preview pane with tabs for Provenance (source URL,
 prompt, model, tags) and Design (palette swatches, fonts, mood flags).
 
-**Live** — `folio serve` watches your folders. Drop in a new artifact
+**Live** — `artifold serve` watches your folders. Drop in a new artifact
 and it appears in the dashboard within ~2 seconds, no refresh.
 
 **Searchable** — ⌘K palette runs across titles, prompts, intents, and
@@ -153,40 +153,40 @@ Raycast pattern.
 ## All commands
 
 ```bash
-folio                  # default: scan + serve + open browser
-folio init             # interactive setup wizard
-folio add <dir>        # watch another folder
-folio roots            # list watched folders
-folio scan             # one-shot rescan
-folio open             # open the existing dashboard
+artifold                  # default: scan + serve + open browser
+artifold init             # interactive setup wizard
+artifold add <dir>        # watch another folder
+artifold roots            # list watched folders
+artifold scan             # one-shot rescan
+artifold open             # open the existing dashboard
 
-folio share <file>     # publish to public URL + copy to clipboard
-folio share --list     # all shares
-folio share --revoke <id>   # take a public share down
+artifold share <file>     # publish to public URL + copy to clipboard
+artifold share --list     # all shares
+artifold share --revoke <id>   # take a public share down
 
-folio import <url>     # fetch a public Claude/v0/Lovable share URL
-folio link <file> --tool claude --source URL --prompt "..."
-folio info <file>      # show provenance for a file
+artifold import <url>     # fetch a public Claude/v0/Lovable share URL
+artifold link <file> --tool claude --source URL --prompt "..."
+artifold info <file>      # show provenance for a file
 
-folio designs                     # list design fingerprints
-folio designs <id> --template     # dump CSS + skeleton (paste into Claude)
+artifold designs                     # list design fingerprints
+artifold designs <id> --template     # dump CSS + skeleton (paste into Claude)
 
-folio inbox [topic]    # print the canonical path for a new artifact
-folio install-skill    # install /craft into ~/.claude/skills/
-folio doctor           # check setup; tells you exactly what to fix
+artifold inbox [topic]    # print the canonical path for a new artifact
+artifold install-skill    # install /craft into ~/.claude/skills/
+artifold doctor           # check setup; tells you exactly what to fix
 ```
 
 ## Config
 
-`~/Library/Application Support/folio/config.json` on macOS,
-`~/.config/folio/config.json` on Linux:
+`~/Library/Application Support/artifold/config.json` on macOS,
+`~/.config/artifold/config.json` on Linux:
 
 ```jsonc
 {
   "roots": ["/Users/me/Downloads", "/Users/me/work"],
   "allow_repos": [],          // dirs with their own .git to include anyway
   "max_depth": 3,
-  "drop_dir": null,           // where `folio import` saves (default ~/folio-inbox)
+  "drop_dir": null,           // where `artifold import` saves (default ~/artifold-inbox)
   "enable_intent": false,     // opt-in LLM intent metadata (Claude Haiku)
   "categories": {             // extend the auto-tag keywords
     "Research": ["paper", "experiment", "ablation"]
@@ -195,7 +195,7 @@ folio doctor           # check setup; tells you exactly what to fix
 ```
 
 Cache (thumbnails, manifest, dashboard, Playwright Chromium) lives
-under `~/Library/Caches/folio/`. Wiping it just regenerates everything
+under `~/Library/Caches/artifold/`. Wiping it just regenerates everything
 from your real files — cache is replaceable, your source files are sacred.
 
 ## Keyboard
@@ -212,44 +212,44 @@ from your real files — cache is replaceable, your source files are sacred.
 
 ## Optional: AI intent layer
 
-Folio's core is **fully local — no LLM, no network, no API key required**.
+Artifold's core is **fully local — no LLM, no network, no API key required**.
 
 If you want richer metadata (a one-line intent per artifact, topic tags,
 audience detection — used for smarter search):
 
 ```bash
-pipx install 'ai-folio[intent]'
+pipx install 'artifold[intent]'
 export ANTHROPIC_API_KEY=sk-ant-...
-folio scan --intent
+artifold scan --intent
 ```
 
 ~$0.003 per artifact with Claude Haiku, cached forever by content hash
 so re-scans are free. ~$0.05 for 15 artifacts. Toggle off with
-`folio scan --no-intent`. Skip the extra and the feature simply
+`artifold scan --no-intent`. Skip the extra and the feature simply
 doesn't appear.
 
-## What Folio is not
+## What Artifold is not
 
 - **Not a cloud product.** Nothing leaves your machine unless you
-  explicitly `folio share`. There's no sign-up, no account, no Folio
-  server somewhere. Your library is `~/folio-inbox/` and the dirs you
+  explicitly `artifold share`. There's no sign-up, no account, no Artifold
+  server somewhere. Your library is `~/artifold-inbox/` and the dirs you
   pointed it at — that's it.
 - **Not a replacement for git** or your existing organization. It's a
   *lens* on whatever you already have.
 - **Not opinionated about where your files live.** Multi-root by
   design. Want it to watch `~/Downloads` + `~/Documents` +
-  `~/work/reports`? Run `folio add` three times.
+  `~/work/reports`? Run `artifold add` three times.
 - **Not trying to be everything for everyone.** Built for the specific
   pain of "where did I put that thing I generated last month."
 
-## Why "Folio"
+## Why "Artifold"
 
-A folio is a working collection of pages that informs your next piece
+A artifold is a working collection of pages that informs your next piece
 of work. Your past artifacts become the reference set for the next one.
 It's not an archive (cold storage), it's a working library.
 
-The PyPI package is `ai-folio` because `folio` was taken. CLI command is
-`folio`. Same pattern as `open-interpreter` / `interpreter`.
+The PyPI package is `artifold` because `artifold` was taken. CLI command is
+`artifold`. Same pattern as `open-interpreter` / `interpreter`.
 
 ## Status
 
@@ -267,11 +267,11 @@ feedback that improves things.
 In rough priority order:
 
 - [ ] **Mobile dashboard** — currently breaks below 760px
-- [ ] **`folio adopt <file>`** — opt-in consolidation into `~/folio-inbox/`
+- [ ] **`artifold adopt <file>`** — opt-in consolidation into `~/artifold-inbox/`
       for existing files (keeping multi-root for those who want it)
-- [ ] **Cloudflare Pages backend** for `folio share` (alternative to GH
+- [ ] **Cloudflare Pages backend** for `artifold share` (alternative to GH
       Pages for users without `gh` CLI)
-- [ ] **`folio generate --like <id>`** — direct one-command generation,
+- [ ] **`artifold generate --like <id>`** — direct one-command generation,
       opt-in via `[intent]` extra
 - [ ] **Markdown rendering** — first-class support for `*.md`
 - [ ] **Semantic search** — when you remember the gist but not the title
