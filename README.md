@@ -1,120 +1,156 @@
 # Folio
 
-**A local-first library for the stuff you make with AI.**
+**Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
 
 ![Folio dashboard](docs/hero-grid.png)
 
 ---
 
-You've been generating a *lot* of HTML lately. Claude Artifacts. ChatGPT
-Canvas. v0. Lovable. Cursor. They land in `~/Downloads` or some project
-folder, you bookmark a tab, you mean to come back to that ROI calculator
-you made three weeks ago — and then you can't find it.
+You've been making a lot of HTML with AI lately — Claude Artifacts,
+ChatGPT Canvas, v0, Lovable, Cursor. They land in `~/Downloads` or
+some project folder, you bookmark a tab, you mean to come back to that
+ROI calculator you made three weeks ago — and then you can't find it.
 
-That's the whole story of how this got built. I made a 30-day workout
-tracker for my partner, lost it in a maze of folders, regenerated a
-worse version, and decided to just build the index myself.
+That's the whole story. I made a 30-day workout tracker for my partner,
+lost it in a maze of folders, regenerated a worse version, and decided
+to just build the index myself.
 
-**Folio is that index.** It watches the folders where you save things,
-indexes them with thumbnails + metadata, gives you a fast dashboard with
-search + filters + a slide-out preview pane. Everything stays on your
-disk. Nothing leaves.
+**Folio is that index.** Local-first, fast, runs entirely on your
+machine. Plus the part where, when you *do* want to share an artifact,
+it's one click to a permanent public URL.
 
-There's also a Claude Code skill called `/craft` that generates new
-artifacts in the style of your old ones — your library becomes the
-design system for the next thing you make.
+## Three things you can do
 
-## Install
+### 1. ✨ Share any artifact in seconds → public URL anyone can open
 
-```bash
-pipx install ai-folio
-folio init
-```
+Click any card → hit the share icon → in ~30 seconds you get back a
+permanent URL like `https://you.github.io/folio-share/abc12345.html`
+that you can paste into iMessage, Slack, email, anywhere. URL is copied
+to your clipboard automatically.
 
-`folio init` walks you through it: pick a folder to watch (your Downloads,
-your work dir, wherever AI stuff lands), and you're done. Run `folio` to
-serve the dashboard.
+Free forever (uses your GitHub Pages quota — no Folio infrastructure,
+no sign-up, no per-share fees, no expiry). Anyone with the link sees
+the fully-rendered report; recipient needs nothing installed.
 
-```bash
-folio                  # serve + open browser, keep this running
-folio share <file>     # publish any artifact to a public URL (GitHub Pages)
-folio import <url>     # pull a Claude / v0 / Lovable share URL into your library
-folio install-skill    # install the /craft skill for Claude Code
-folio doctor           # check setup; tells you exactly what to fix
-```
+![Share flow in detail pane](docs/share-detail.png)
 
-The first run installs Playwright's headless chromium (~170 MB) for
-thumbnail rendering. After that, only new/changed files re-shoot.
+### 2. 📚 Browse everything you've made, in one place
 
-## What it does
-
-**Auto-indexes** every `*.html` in your watched folders. Groups
-`-v2`, `(1)`, `print` variants into one card with a version dropdown.
-Skips templates, `.git` repos, and anything buried 3 levels deep —
-so your library stays clean.
-
-**Source-aware** — fingerprints Claude / ChatGPT / v0 / Lovable / Bolt
-/ Gemini artifacts from HTML markers, tags each card. Also reads
-`<meta name="folio:*">` tags (which the `/craft` skill emits).
-
-**Searchable** — ⌘K palette runs across titles, prompts, intents, and
-exposed actions (Toggle theme, Switch view, Rescan, Import).
-
-**Visual** — every artifact gets a real screenshot thumbnail. Click a
-card → slide-out preview with tabs for Provenance (where it came from)
-and Design (palette swatches, fonts, mood flags).
-
-**Shareable** — `folio share <file>` publishes to a public GitHub Pages
-URL anyone can view. Free, durable, no infrastructure to run, URL
-ready in 30-60s.
-
-**Live** — `folio serve` watches your folders. Drop in a new artifact
-and it appears in the dashboard within seconds, no refresh.
-
-![Detail pane — Preview](docs/detail-preview.png)
-![Detail pane — Design](docs/detail-design.png)
-
-## The `/craft` skill
-
-This is where it gets fun. After `folio install-skill`, in any Claude
-Code session:
-
-```
-/craft a 30-day strength tracker for a beginner
-/craft a one-pager comparing SF apartments
-/craft a poker probability explainer, like dobble
-```
-
-The skill:
-
-1. **Reads your library** (`folio designs`) to see what styles you've
-   used. By default, picks a *different* direction so your next artifact
-   doesn't look like the last one — actively fighting the "all AI output
-   looks the same" trap.
-2. **Inherits a style** if you reference one (`like dobble` →
-   `folio designs <id> --template` loads dobble's CSS as the baseline).
-3. **Applies 12 opinionated design principles** distilled from
-   Refactoring UI, Linear's design philosophy, and Vercel/Geist
-   (hierarchy via weight not size, tighten display tracking, color
-   carries meaning, etc. — every one with a real source).
-4. **Avoids 15 specific AI-slop signatures** (the purple-gradient hero,
-   four identical bento cards, decorative emoji on every list item,
-   glassmorphism, etc.).
-5. **Saves to `~/folio-inbox/2026-05-26-<topic-slug>.html`** with
-   embedded `<meta name="folio:*">` tags so it auto-indexes the moment
-   it lands.
-
-The output is a styled, self-contained HTML file that doesn't read like
-it came from a generic prompt. Your past work becomes your style guide.
-
-## ⌘K palette
+Sidebar filters by tool, status (shared / local), category, date.
+⌘K palette to jump to anything by name, prompt, or intent. Click → in-app
+preview pane, no tab spam. Dark/light themes. Live auto-rescan — drop
+a new file in any watched folder and it appears within seconds.
 
 ![Command palette](docs/cmdk.png)
 
-Open it from anywhere in the dashboard. Top section runs **actions**
-(toggle theme, switch view, rescan, import URL), bottom section
-fuzzy-matches **artifacts** by title / prompt / intent. Linear /
+### 3. 🎨 Generate new artifacts that match your style — `/craft` skill
+
+After installing the Claude Code skill, type `/craft a 30-day strength
+tracker for a beginner` in any session. The skill:
+
+- Reads your library to see styles you've used, then deliberately picks
+  a *different* direction so your next artifact doesn't look like the
+  last one (the "all AI output looks the same" problem, actively fought)
+- OR inherits a specific style: `/craft a poker probability explainer,
+  like dobble` — pulls dobble's actual CSS as the design baseline
+- Applies 12 opinionated design principles distilled from Refactoring UI,
+  Linear, and Vercel/Geist (every one cited)
+- Avoids 15 specific AI-slop signatures (purple-gradient hero, identical
+  bento cards, decorative emoji on every list item, glassmorphism, etc.)
+- Saves to `~/folio-inbox/2026-05-26-<topic>.html` — auto-indexed in
+  Folio within ~2 seconds
+
+Your past work becomes your style guide for the next one. The loop closes.
+
+## Install
+
+### The fastest path (if you have [pipx](https://pipx.pypa.io/))
+
+```bash
+pipx install ai-folio
+folio init                 # walks you through picking folders to watch
+folio                      # serves the dashboard + opens browser
+```
+
+### Or just ask Claude
+
+If you have Claude Code, paste this and let it set everything up:
+
+> Install Folio from `https://github.com/shubhamgoel27/folio` using
+> pipx (or pip if pipx isn't available). After install, run
+> `folio init` and help me pick a folder to watch. Then run
+> `folio install-skill` to set up `/craft`. Show me when it's ready.
+
+### The Claude Code skill (optional but recommended)
+
+After installing Folio:
+
+```bash
+folio install-skill        # adds /craft to ~/.claude/skills/
+```
+
+Restart Claude Code, then in any session:
+
+```
+/craft a one-pager comparing three SF apartments
+/craft a 30-day strength tracker, like my last one
+/craft a probability explainer for poker, in the style of dobble
+```
+
+The first run installs Playwright's headless Chromium (~170 MB) for
+thumbnails. After that, only new/changed files re-shoot.
+
+## What it actually does
+
+**Auto-indexes** every `*.html` in your watched folders. Groups
+`-v2`, ` (1)`, `print` variants into one card with a version dropdown.
+Skips templates, `.git` repos, and anything buried 3 levels deep — your
+library stays clean even when your folders aren't.
+
+**Source-aware** — fingerprints Claude / ChatGPT / v0 / Lovable / Bolt
+/ Gemini artifacts from HTML markers, tags each card with the tool that
+made it. Also reads `<meta name="folio:*">` tags (which the `/craft`
+skill emits) for zero-effort provenance.
+
+**Visual** — every artifact gets a real screenshot thumbnail. Click a
+card → slide-out preview pane with tabs for Provenance (source URL,
+prompt, model, tags) and Design (palette swatches, fonts, mood flags).
+
+**Live** — `folio serve` watches your folders. Drop in a new artifact
+and it appears in the dashboard within ~2 seconds, no refresh.
+
+**Searchable** — ⌘K palette runs across titles, prompts, intents, and
+exposed actions (toggle theme, switch view, rescan, import). Linear /
 Raycast pattern.
+
+![Detail — Preview](docs/detail-preview.png)
+![Detail — Design](docs/detail-design.png)
+
+## All commands
+
+```bash
+folio                  # default: scan + serve + open browser
+folio init             # interactive setup wizard
+folio add <dir>        # watch another folder
+folio roots            # list watched folders
+folio scan             # one-shot rescan
+folio open             # open the existing dashboard
+
+folio share <file>     # publish to public URL + copy to clipboard
+folio share --list     # all shares
+folio share --revoke <id>   # take a public share down
+
+folio import <url>     # fetch a public Claude/v0/Lovable share URL
+folio link <file> --tool claude --source URL --prompt "..."
+folio info <file>      # show provenance for a file
+
+folio designs                     # list design fingerprints
+folio designs <id> --template     # dump CSS + skeleton (paste into Claude)
+
+folio inbox [topic]    # print the canonical path for a new artifact
+folio install-skill    # install /craft into ~/.claude/skills/
+folio doctor           # check setup; tells you exactly what to fix
+```
 
 ## Config
 
@@ -126,25 +162,24 @@ Raycast pattern.
   "roots": ["/Users/me/Downloads", "/Users/me/work"],
   "allow_repos": [],          // dirs with their own .git to include anyway
   "max_depth": 3,
-  "drop_dir": null,           // where `folio import` saves (defaults to ~/folio-inbox)
+  "drop_dir": null,           // where `folio import` saves (default ~/folio-inbox)
   "enable_intent": false,     // opt-in LLM intent metadata (Claude Haiku)
-  "categories": {             // extend or override the auto-tag keywords
+  "categories": {             // extend the auto-tag keywords
     "Research": ["paper", "experiment", "ablation"]
   }
 }
 ```
 
-Cache (thumbnails, manifest, generated dashboard, Playwright chromium)
-lives under `~/Library/Caches/folio/` (macOS) or `~/.cache/folio/`
-(Linux). Wiping it just regenerates everything from your real files —
-the cache is replaceable, your source files are sacred.
+Cache (thumbnails, manifest, dashboard, Playwright Chromium) lives
+under `~/Library/Caches/folio/`. Wiping it just regenerates everything
+from your real files — cache is replaceable, your source files are sacred.
 
 ## Keyboard
 
 | Key             | What |
 |-----------------|------|
-| `⌘K` / `Ctrl+K` | open palette (actions + artifact search) |
-| `↵`             | open selected in preview pane / run action |
+| `⌘K` / `Ctrl+K` | palette (actions + artifact search) |
+| `↵`             | open selected in preview / run action |
 | `⇧↵`            | open selected in new tab |
 | `Esc`           | close palette / preview |
 | `/`             | focus the search box |
@@ -155,9 +190,8 @@ the cache is replaceable, your source files are sacred.
 
 Folio's core is **fully local — no LLM, no network, no API key required**.
 
-If you want richer metadata (a one-line intent line per artifact, topic
-tags, audience detection — useful for search and the future closed-loop
-generation features):
+If you want richer metadata (a one-line intent per artifact, topic tags,
+audience detection — used for smarter search):
 
 ```bash
 pipx install 'ai-folio[intent]'
@@ -166,8 +200,9 @@ folio scan --intent
 ```
 
 ~$0.003 per artifact with Claude Haiku, cached forever by content hash
-so re-scans are free. ~$0.05 for 15 artifacts. Disable any time with
-`folio scan --no-intent`.
+so re-scans are free. ~$0.05 for 15 artifacts. Toggle off with
+`folio scan --no-intent`. Skip the extra and the feature simply
+doesn't appear.
 
 ## What Folio is not
 
@@ -175,8 +210,8 @@ so re-scans are free. ~$0.05 for 15 artifacts. Disable any time with
   explicitly `folio share`. There's no sign-up, no account, no Folio
   server somewhere. Your library is `~/folio-inbox/` and the dirs you
   pointed it at — that's it.
-- **Not a replacement for git** or your existing file organization.
-  It's a *lens* on whatever you already have.
+- **Not a replacement for git** or your existing organization. It's a
+  *lens* on whatever you already have.
 - **Not opinionated about where your files live.** Multi-root by
   design. Want it to watch `~/Downloads` + `~/Documents` +
   `~/work/reports`? Run `folio add` three times.
@@ -186,19 +221,18 @@ so re-scans are free. ~$0.05 for 15 artifacts. Disable any time with
 ## Why "Folio"
 
 A folio is a working collection of pages that informs your next piece
-of work. That's the whole vibe — your past artifacts become the
-reference set for the next one. It's not an archive (cold storage),
-it's a working library.
+of work. Your past artifacts become the reference set for the next one.
+It's not an archive (cold storage), it's a working library.
 
-The PyPI package is `ai-folio` because `folio` is taken. The CLI
-command is `folio`. Same pattern as `open-interpreter` / `interpreter`.
+The PyPI package is `ai-folio` because `folio` was taken. CLI command is
+`folio`. Same pattern as `open-interpreter` / `interpreter`.
 
 ## Status
 
-**v0.5, alpha.** Tested on macOS Sequoia; Linux should work but
-hasn't been beaten on; Windows untested. Single-developer project
-made in evenings — issues + PRs welcome, but I'm shipping what I
-personally use rather than what's broadly polished.
+**v0.5, alpha.** Tested on macOS Sequoia; Linux should work; Windows
+untested. Single-developer project made in evenings — issues + PRs
+welcome, but I'm shipping what I personally use rather than what's
+broadly polished.
 
 If you try it and something feels off, [open an issue](../../issues/new) —
 even one line is helpful, "the X button is confusing" is exactly the
@@ -210,32 +244,28 @@ In rough priority order:
 
 - [ ] **Mobile dashboard** — currently breaks below 760px
 - [ ] **`folio adopt <file>`** — opt-in consolidation into `~/folio-inbox/`
-      for existing files (keeping the multi-root option for those who want it)
-- [ ] **Cloudflare Pages backend** for `folio share` (alternative to GH Pages
-      for users without `gh`)
-- [ ] **`folio generate --like <id>`** — direct one-command artifact
-      generation, opt-in via `[intent]` extra
-- [ ] **Markdown rendering** — first-class support for `*.md` (currently
-      HTML-only)
-- [ ] **Semantic search** — when you genuinely don't remember the title
-      but remember the gist
-- [ ] **Version diff view** — when you iterate on a report v1/v2/v3, see
-      what changed in design + content
+      for existing files (keeping multi-root for those who want it)
+- [ ] **Cloudflare Pages backend** for `folio share` (alternative to GH
+      Pages for users without `gh` CLI)
+- [ ] **`folio generate --like <id>`** — direct one-command generation,
+      opt-in via `[intent]` extra
+- [ ] **Markdown rendering** — first-class support for `*.md`
+- [ ] **Semantic search** — when you remember the gist but not the title
+- [ ] **Version diff view** — when you iterate v1/v2/v3, see what changed
 - [ ] **A real test suite** — currently human-tested
 
 ## Made by
 
 [@shubhamgoel27](https://github.com/shubhamgoel27) — built because I
-genuinely needed it. If you find it useful, the best thing you can do
-is star the repo so other people building with AI find it too.
+genuinely needed it. If you find it useful, **starring the repo is the
+single best thing you can do** so other people building with AI find it.
 
-The `/craft` skill in particular took real research to make
-non-generic — the 12 design principles trace to specific chapters in
-Refactoring UI, Linear's [Method](https://linear.app/method/introduction),
-Vercel's [Geist](https://vercel.com/geist) design system, and a couple
-of recent AI-slop critique articles. If you ship cool reports with it,
-[tag me](https://twitter.com/shubhamgoel27) — I love seeing what
-people make.
+The `/craft` skill took real research to make non-generic — the 12
+design principles trace to Refactoring UI chapters, Linear's
+[Method](https://linear.app/method/introduction), Vercel's
+[Geist](https://vercel.com/geist), and a couple of recent AI-slop
+critique articles. If you ship cool reports with it, tag me — I love
+seeing what people make.
 
 ## License
 
