@@ -17,3 +17,14 @@ venv/
 .vscode/
 .idea/
 *.swp
+
+# Secrets — NEVER COMMIT
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.pypirc
+.credentials
+secrets.json
+.secret*
