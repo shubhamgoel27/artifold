@@ -2,675 +2,434 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SF Coffee · A Working Tier List</title>
-<meta name="artifold:intent" content="Editorial tier list ranking 10 SF coffee shops on pour-over, ambience, seating">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SF Pour-Over Tier List · 10 Shops Ranked</title>
+<meta name="artifold:intent" content="Rank 10 SF coffee shops S-to-C on pour-over, ambience, and seating">
 <meta name="artifold:tool" content="claude">
-<meta name="artifold:prompt" content="Tier list S/A/B/C of 10 SF coffee shops ranked by pour-over, ambience, seating. Real shops. Visual/playful but restrained.">
+<meta name="artifold:prompt" content="Tier list (S/A/B/C) of 10 great SF coffee shops, ranked by pour-over quality, ambience, and seating availability">
+<meta name="artifold:design-mode" content="magazine-fashion">
+<meta name="artifold:voice-register" content="enthusiast">
 <style>
-  :root{
-    /* Type scale — 6 sizes, capped */
-    --t-11: 11px;
-    --t-13: 13px;
-    --t-15: 15px;
-    --t-20: 20px;
-    --t-32: 32px;
-    --t-56: 56px;
-
-    /* Neutrals — warm ink on warm paper */
-    --paper:    #f3efe6;
-    --paper-2:  #ebe6d8;
-    --rule:     #d7d1c0;
-    --ink:      #14110c;
-    --ink-2:    #3a352b;
-    --ink-3:    #6e6757;
-    --ink-4:    #98917f;
-
-    /* Tier signal — desaturated ink shades, NOT rainbow */
-    --tier-s:   #7a2e1f;   /* deep ochre-red */
-    --tier-a:   #3d5a3b;   /* moss */
-    --tier-b:   #4a5a78;   /* slate blue */
-    --tier-c:   #6e6757;   /* warm grey */
-
-    --serif: "Iowan Old Style", "Hoefler Text", "Source Serif Pro", Georgia, serif;
-    --sans:  -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    --mono:  "SF Mono", "JetBrains Mono", "IBM Plex Mono", Menlo, monospace;
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f4f1ec;
+    --rule: #0d0d0d;
+    --tier-s: #ff3b30;
+    --tier-a: #ff9a1f;
+    --tier-b: #ffd400;
+    --tier-c: #74c2c2;
+    --chip-bg: #0d0d0d;
+    --chip-ink: #f4f1ec;
+    --size-1: 11px;
+    --size-2: 14px;
+    --size-3: 18px;
+    --size-4: 28px;
+    --size-5: 56px;
+    --size-6: 132px;
   }
-
-  *{box-sizing:border-box; margin:0; padding:0}
-  html,body{background:var(--paper); color:var(--ink); -webkit-font-smoothing:antialiased}
-  body{
-    font-family: var(--sans);
-    font-size: var(--t-15);
-    line-height: 1.5;
-    font-weight: 400;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Helvetica Neue", "Inter", system-ui, sans-serif;
+    font-size: var(--size-2);
+    line-height: 1.35;
+    -webkit-font-smoothing: antialiased;
   }
+  .page { max-width: 1200px; margin: 0 auto; padding: 48px 40px 80px; }
 
-  .page{
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 56px 40px 96px;
-  }
-
-  /* ── MASTHEAD ──────────────────────────────────────────── */
-  .masthead{
-    display:grid;
+  /* Masthead */
+  .mast {
+    display: grid;
     grid-template-columns: 1fr auto;
     align-items: end;
     gap: 24px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
   }
-  .eyebrow{
-    font-family: var(--mono);
-    font-size: var(--t-11);
-    letter-spacing: 0.12em;
+  .mast h1 {
+    font-size: clamp(56px, 9vw, 112px);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 0.88;
     text-transform: uppercase;
-    color: var(--ink-3);
-    margin-bottom: 18px;
   }
-  h1{
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: var(--t-56);
-    line-height: 1.02;
-    letter-spacing: -0.025em;
-    color: var(--ink);
-  }
-  h1 em{
+  .mast h1 span.thin {
+    font-weight: 300;
     font-style: italic;
-    color: var(--ink-2);
   }
-  .meta{
-    font-family: var(--mono);
-    font-size: var(--t-11);
-    color: var(--ink-3);
+  .mast .meta {
     text-align: right;
-    line-height: 1.6;
-    letter-spacing: 0.04em;
-  }
-  .meta span{display:block}
-
-  /* ── DECK ─────────────────────────────────────────────── */
-  .deck{
-    display:grid;
-    grid-template-columns: 7fr 5fr;
-    gap: 64px;
-    padding: 28px 0 40px;
-    border-bottom: 1px solid var(--rule);
-  }
-  .lede{
-    font-family: var(--serif);
-    font-size: var(--t-20);
-    line-height: 1.45;
-    color: var(--ink-2);
-  }
-  .lede b{color: var(--ink); font-weight: 600}
-
-  .legend{
-    font-family: var(--mono);
-    font-size: var(--t-13);
-    color: var(--ink-2);
-  }
-  .legend .row{
-    display:grid;
-    grid-template-columns: 60px 1fr;
-    gap: 12px;
-    padding: 7px 0;
-    border-bottom: 1px dotted var(--rule);
-    align-items: baseline;
-  }
-  .legend .row:last-child{border-bottom:none}
-  .legend .key{
-    display:flex; align-items:center; gap:10px;
-  }
-  .legend .bar{
-    display:inline-block;
-    width: 3px; height: 14px;
-  }
-  .legend .label{
-    color: var(--ink); font-weight: 600;
-  }
-  .legend .gloss{color: var(--ink-3)}
-
-  /* ── AXES KEY ─────────────────────────────────────────── */
-  .axes{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    margin: 32px 0 8px;
-    font-family: var(--mono);
-    font-size: var(--t-11);
+    font-size: var(--size-1);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
+    letter-spacing: 0.14em;
+    line-height: 1.5;
+    max-width: 220px;
   }
-  .axes div{
-    padding: 10px 0;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--rule);
-  }
-  .axes b{color: var(--ink); font-weight: 600}
-  .axes span{color: var(--ink-4); margin-left: 6px}
+  .mast .meta b { display: block; font-weight: 800; font-size: var(--size-2); letter-spacing: 0.08em; }
 
-  /* ── TIER GROUP ───────────────────────────────────────── */
-  .tier{
-    display:grid;
-    grid-template-columns: 80px 1fr;
+  /* Axes legend */
+  .axes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 0;
-    padding: 36px 0 8px;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 32px;
   }
-  .tier-mark{
-    font-family: var(--serif);
-    font-size: var(--t-56);
-    line-height: 1;
-    font-weight: 400;
-    letter-spacing: -0.04em;
+  .axes div {
+    padding: 14px 16px;
+    border-right: 1px solid var(--ink);
+    font-size: var(--size-1);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .axes div:last-child { border-right: 0; }
+  .axes div b { display: block; font-weight: 800; font-size: var(--size-3); letter-spacing: -0.01em; text-transform: none; margin-top: 4px; }
+
+  /* Tier band */
+  .tier {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: stretch;
+    border: 3px solid var(--ink);
+    margin-bottom: 18px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .tier .label {
+    background: var(--tier-s);
+    border-right: 3px solid var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 8px;
     color: var(--ink);
-    padding-top: 6px;
   }
-  .tier-mark small{
-    display:block;
-    font-family: var(--mono);
-    font-size: var(--t-11);
+  .tier .label .glyph {
+    font-size: var(--size-6);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+  }
+  .tier .label .tag {
+    margin-top: 6px;
+    font-size: var(--size-1);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
-    margin-top: 10px;
-    font-weight: 400;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    text-align: center;
+    max-width: 150px;
   }
+  .tier.a .label { background: var(--tier-a); }
+  .tier.b .label { background: var(--tier-b); }
+  .tier.c .label { background: var(--tier-c); }
 
-  .rows{display:flex; flex-direction:column}
-
-  /* Each shop row */
-  .shop{
-    display:grid;
-    grid-template-columns: 3px 1fr;
+  .entries { display: grid; grid-template-columns: 1fr; }
+  .entry {
+    display: grid;
+    grid-template-columns: 56px 1.4fr 2fr 1.3fr;
     gap: 18px;
-    padding: 20px 0;
-    border-bottom: 1px dotted var(--rule);
-  }
-  .shop:last-child{border-bottom:none}
-  .shop .rail{background: var(--ink-4); width: 3px; align-self: stretch}
-
-  .shop[data-tier="S"] .rail{background: var(--tier-s)}
-  .shop[data-tier="A"] .rail{background: var(--tier-a)}
-  .shop[data-tier="B"] .rail{background: var(--tier-b)}
-  .shop[data-tier="C"] .rail{background: var(--tier-c)}
-
-  .shop-body{
-    display:grid;
-    grid-template-columns: 1.6fr 2.4fr;
-    gap: 32px;
     align-items: start;
-  }
-
-  .id{
-    display:flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .id .name{
-    font-family: var(--serif);
-    font-size: var(--t-20);
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: -0.005em;
-  }
-  .id .hood{
-    font-family: var(--mono);
-    font-size: var(--t-11);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
-  }
-  .id .take{
-    margin-top: 8px;
-    font-size: var(--t-13);
-    color: var(--ink-2);
-    font-style: italic;
-    font-family: var(--serif);
-    line-height: 1.45;
-  }
-
-  .scores{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-  }
-  .score{
-    display:flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .score .axis{
-    font-family: var(--mono);
-    font-size: var(--t-11);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-4);
-  }
-  .score .val{
-    font-family: var(--mono);
-    font-size: var(--t-13);
-    color: var(--ink);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-  .score .note{
-    font-size: var(--t-13);
-    color: var(--ink-2);
-    line-height: 1.4;
-  }
-
-  /* dots: 5 bars, filled by score */
-  .dots{display:inline-flex; gap:3px; margin-left: 8px; vertical-align: 2px}
-  .dot{width:6px; height:6px; background: var(--ink-4); opacity: 0.25}
-  .dot.on{opacity: 1; background: var(--ink)}
-
-  /* ── COLOPHON ─────────────────────────────────────────── */
-  .colophon{
-    margin-top: 56px;
-    padding-top: 20px;
+    padding: 18px 22px;
     border-top: 1px solid var(--ink);
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 32px;
-    font-family: var(--mono);
-    font-size: var(--t-11);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-3);
   }
-  .colophon b{color: var(--ink); font-weight: 600; display:block; margin-bottom: 6px}
+  .entry:first-child { border-top: 0; }
+  .rank {
+    font-size: var(--size-4);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .ident .name {
+    font-size: var(--size-3);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+  .ident .hood {
+    font-size: var(--size-1);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+    margin-top: 6px;
+    display: inline-block;
+    background: var(--chip-bg);
+    color: var(--chip-ink);
+    padding: 3px 8px 2px;
+  }
+  .take {
+    font-size: var(--size-2);
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    font-size: var(--size-1);
+  }
+  .score {
+    border: 1.5px solid var(--ink);
+    padding: 6px 8px;
+    background: var(--paper);
+  }
+  .score .k {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    font-size: 9.5px;
+    display: block;
+    margin-bottom: 3px;
+    opacity: 0.7;
+  }
+  .score .v {
+    font-weight: 800;
+    font-size: var(--size-2);
+    letter-spacing: -0.01em;
+  }
+  .bar {
+    display: inline-block;
+    height: 6px;
+    background: var(--ink);
+    vertical-align: middle;
+    margin-left: 6px;
+  }
 
-  @media (max-width: 720px){
-    .page{padding: 32px 20px 64px}
-    h1{font-size: 36px}
-    .deck{grid-template-columns: 1fr; gap: 28px}
-    .shop-body{grid-template-columns: 1fr; gap: 18px}
-    .tier{grid-template-columns: 56px 1fr}
-    .tier-mark{font-size: 40px}
-    .scores{grid-template-columns: 1fr}
-    .colophon{grid-template-columns: 1fr; gap: 14px}
+  /* Footer */
+  .colophon {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 3px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+    font-size: var(--size-1);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .colophon p { max-width: 720px; text-transform: none; letter-spacing: 0; font-size: var(--size-2); line-height: 1.5; }
+
+  @media (max-width: 760px) {
+    .page { padding: 28px 18px 60px; }
+    .axes { grid-template-columns: repeat(2, 1fr); }
+    .axes div:nth-child(2) { border-right: 0; }
+    .axes div:nth-child(1), .axes div:nth-child(2) { border-bottom: 1px solid var(--ink); }
+    .tier { grid-template-columns: 110px 1fr; }
+    .tier .label .glyph { font-size: 80px; }
+    .entry { grid-template-columns: 36px 1fr; gap: 10px; }
+    .entry .take, .entry .scores { grid-column: 1 / -1; }
   }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- MASTHEAD -->
-  <header class="masthead">
-    <div>
-      <div class="eyebrow">Field Notes · No. 14 · Coffee</div>
-      <h1>Ten SF coffee bars,<br>ranked <em>honestly</em>.</h1>
-    </div>
+  <header class="mast">
+    <h1>SF Pour-Over<br><span class="thin">tier list</span> — vol. 01</h1>
     <div class="meta">
-      <span>San Francisco</span>
-      <span>May 2026</span>
-      <span>10 shops · 3 axes</span>
+      <b>10 shops · 1 ranking</b>
+      Pour-over · Ambience · Seating<br>
+      Issue 05.26.26
     </div>
   </header>
 
-  <!-- DECK -->
-  <section class="deck">
-    <p class="lede">
-      A working tier list of pour-over rooms in the city, judged on three things and three things only: <b>what comes out of the V60</b>, <b>whether you want to sit there</b>, and <b>whether you can</b>. No latte art scoring, no pastry detours, no rewards for marketing.
-    </p>
-    <div class="legend">
-      <div class="row">
-        <div class="key"><span class="bar" style="background:var(--tier-s)"></span><span class="label">S</span></div>
-        <div class="gloss">Worth a crosstown trip. All three axes land.</div>
+  <section class="axes" aria-label="Scoring rubric">
+    <div>Axis 01 <b>Pour-over</b></div>
+    <div>Axis 02 <b>Ambience</b></div>
+    <div>Axis 03 <b>Seating</b></div>
+    <div>Scale <b>0 – 10</b></div>
+  </section>
+
+  <!-- S TIER -->
+  <article class="tier s">
+    <div class="label">
+      <div class="glyph">S</div>
+      <div class="tag">The drop-everything tier</div>
+    </div>
+    <div class="entries">
+
+      <div class="entry">
+        <div class="rank">01</div>
+        <div class="ident">
+          <div class="name">Saint Frank</div>
+          <span class="hood">Russian Hill</span>
+        </div>
+        <div class="take">The cleanest cup in the city, served by baristas who actually weigh the water. The pour-over bar is the whole point.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">9.6</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">9.2</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.0</span></div>
+        </div>
       </div>
-      <div class="row">
-        <div class="key"><span class="bar" style="background:var(--tier-a)"></span><span class="label">A</span></div>
-        <div class="gloss">Excellent on two axes, fine on the third.</div>
+
+      <div class="entry">
+        <div class="rank">02</div>
+        <div class="ident">
+          <div class="name">Sightglass</div>
+          <span class="hood">SoMa · 7th St</span>
+        </div>
+        <div class="take">Cathedral ceilings, mezzanine roaster, and a Kalita that hasn't missed in a decade. The flagship still sets the bar.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">9.2</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">9.5</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.8</span></div>
+        </div>
       </div>
-      <div class="row">
-        <div class="key"><span class="bar" style="background:var(--tier-b)"></span><span class="label">B</span></div>
-        <div class="gloss">Solid daily driver. Strong somewhere, soft elsewhere.</div>
+
+      <div class="entry">
+        <div class="rank">03</div>
+        <div class="ident">
+          <div class="name">Linea Caffe</div>
+          <span class="hood">Mission · 18th St</span>
+        </div>
+        <div class="take">Andrew Barnett's tiny window punches three weight classes up. Single origins so bright they buzz.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">9.4</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">8.0</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">5.0</span></div>
+        </div>
       </div>
-      <div class="row">
-        <div class="key"><span class="bar" style="background:var(--tier-c)"></span><span class="label">C</span></div>
-        <div class="gloss">Fine. Order, leave, no notes.</div>
+
+    </div>
+  </article>
+
+  <!-- A TIER -->
+  <article class="tier a">
+    <div class="label">
+      <div class="glyph">A</div>
+      <div class="tag">Daily-driver elite</div>
+    </div>
+    <div class="entries">
+
+      <div class="entry">
+        <div class="rank">04</div>
+        <div class="ident">
+          <div class="name">Andytown</div>
+          <span class="hood">Outer Sunset</span>
+        </div>
+        <div class="take">Snowy Plover empire aside, the V60 here is tuned for fog days. Worth the N-Judah ride.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">8.7</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">9.0</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.5</span></div>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- AXES KEY -->
-  <div class="axes">
-    <div><b>Axis 01</b> <span>Pour-over quality</span></div>
-    <div><b>Axis 02</b> <span>Ambience</span></div>
-    <div><b>Axis 03</b> <span>Seating availability</span></div>
-  </div>
-
-  <!-- ── S TIER ────────────────────────────────────────── -->
-  <section class="tier">
-    <div class="tier-mark">S<small>Top shelf · 2 shops</small></div>
-    <div class="rows">
-
-      <article class="shop" data-tier="S">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Saint Frank</div>
-            <div class="hood">Russian Hill · Polk &amp; Vallejo</div>
-            <div class="take">The most consistent V60 in the city, full stop.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">5.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span></div>
-              <div class="note">Tight single-origin program, baristas weigh and time every cup.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">4.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">White subway tile, marble bar, calm even at peak. Sunlit afternoons.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Bar stools plus a back room. Usually a seat by 10am on weekdays.</div>
-            </div>
-          </div>
+      <div class="entry">
+        <div class="rank">05</div>
+        <div class="ident">
+          <div class="name">Ritual</div>
+          <span class="hood">Mission · Valencia</span>
         </div>
-      </article>
-
-      <article class="shop" data-tier="S">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Linea Caffe</div>
-            <div class="hood">Mission · 18th near Linda</div>
-            <div class="take">Andrew Barnett's hand-poured cups, no laptops, no fuss.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">5.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span></div>
-              <div class="note">Ex-Ecco roaster pulling extraordinary Ethiopians. Genuinely a destination cup.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">4.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Tiny, bright, conversational. Forced presence — phones go down.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Sidewalk bench + a handful of stools. Turnover is fast because nobody camps.</div>
-            </div>
-          </div>
+        <div class="take">Third-wave OGs. Roasts skew acidic-and-proud; the pour-over still ranks among the city's most consistent.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">8.8</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">7.8</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.2</span></div>
         </div>
-      </article>
+      </div>
+
+      <div class="entry">
+        <div class="rank">06</div>
+        <div class="ident">
+          <div class="name">Verve</div>
+          <span class="hood">Hayes Valley</span>
+        </div>
+        <div class="take">Santa Cruz import that nailed the SF translation. Streetlevel seating, polished bar, reliable Streetlevel blend.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">8.5</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">8.3</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.0</span></div>
+        </div>
+      </div>
 
     </div>
-  </section>
+  </article>
 
-  <!-- ── A TIER ────────────────────────────────────────── -->
-  <section class="tier">
-    <div class="tier-mark">A<small>Strong · 3 shops</small></div>
-    <div class="rows">
+  <!-- B TIER -->
+  <article class="tier b">
+    <div class="label">
+      <div class="glyph">B</div>
+      <div class="tag">Solid, situational</div>
+    </div>
+    <div class="entries">
 
-      <article class="shop" data-tier="A">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Sightglass</div>
-            <div class="hood">SoMa · 7th Street flagship</div>
-            <div class="take">The cathedral. Pour-over is good; the room is the point.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Reliable, sometimes brilliant. Single-origin menu rotates weekly.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">5.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span></div>
-              <div class="note">Double-height warehouse with a mezzanine. Best designed café in the city.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Big footprint, plenty of seats, but laptops claim the upstairs by 11.</div>
-            </div>
-          </div>
+      <div class="entry">
+        <div class="rank">07</div>
+        <div class="ident">
+          <div class="name">Four Barrel</div>
+          <span class="hood">Mission · Valencia</span>
         </div>
-      </article>
-
-      <article class="shop" data-tier="A">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Andytown</div>
-            <div class="hood">Outer Sunset · Lawton &amp; 43rd</div>
-            <div class="take">The Snowy Plover gets the press; the pour-over deserves it.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Irish-roasted beans, balanced and forgiving. Not flashy, very good.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">4.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Sunset fog, wooden bar, neighborhood regulars. Feels like a real café.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Small. Weekend mornings have a line; weekdays you'll find a stool.</div>
-            </div>
-          </div>
+        <div class="take">Big, loud, full of laptops. The taproom-of-coffee vibe wears thin, but the slow bar still throws a clean cup.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">8.2</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">7.0</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">8.5</span></div>
         </div>
-      </article>
+      </div>
 
-      <article class="shop" data-tier="A">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Réveille</div>
-            <div class="hood">Castro / Hayes Valley / Jackson Sq</div>
-            <div class="take">The reliable A-minus across every location.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Clean, well-extracted, never wrong. Rarely transcendent.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">4.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Pale wood, big windows, every location built by a designer who cared.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">4.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Generous tables, outdoor patios at Hayes and Jackson. Easiest sit in town.</div>
-            </div>
-          </div>
+      <div class="entry">
+        <div class="rank">08</div>
+        <div class="ident">
+          <div class="name">Réveille</div>
+          <span class="hood">Hayes Valley · Castro</span>
         </div>
-      </article>
+        <div class="take">Brunch-y crowd, warm white-tile build, espresso heavier than the pour-over. Show up early or fight for a table.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">7.8</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">8.4</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">6.5</span></div>
+        </div>
+      </div>
 
     </div>
-  </section>
+  </article>
 
-  <!-- ── B TIER ────────────────────────────────────────── -->
-  <section class="tier">
-    <div class="tier-mark">B<small>Daily driver · 3 shops</small></div>
-    <div class="rows">
+  <!-- C TIER -->
+  <article class="tier c">
+    <div class="label">
+      <div class="glyph">C</div>
+      <div class="tag">Fine, not a destination</div>
+    </div>
+    <div class="entries">
 
-      <article class="shop" data-tier="B">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Ritual</div>
-            <div class="hood">Mission · Valencia flagship</div>
-            <div class="take">First-wave third-wave. Still good, no longer the bar.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Bright, acidic house style. Some cups sing; some thin out.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">3.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">The original red wall is a landmark. The room itself runs loud and tight.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">3.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">A few communal tables and a long bench. Laptop occupation rate: extreme.</div>
-            </div>
-          </div>
+      <div class="entry">
+        <div class="rank">09</div>
+        <div class="ident">
+          <div class="name">Equator</div>
+          <span class="hood">Mid-Market · Proper</span>
         </div>
-      </article>
-
-      <article class="shop" data-tier="B">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Four Barrel</div>
-            <div class="hood">Mission · Valencia &amp; 23rd</div>
-            <div class="take">Excellent roast, deliberately frictional experience.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">4.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Slow-bar program is the real draw. Worth ordering one and waiting.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">3.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">Cavernous wood barn, taxidermy boar. Polarizing on purpose.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">2.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">No-laptop policy keeps turnover, but the room fills fast on weekends.</div>
-            </div>
-          </div>
+        <div class="take">B-Corp ethics, hotel-lobby polish, perfectly fine cup. Pour-over feels secondary to the espresso program.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">7.2</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">7.4</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">8.8</span></div>
         </div>
-      </article>
+      </div>
 
-      <article class="shop" data-tier="B">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Verve</div>
-            <div class="hood">Hayes Valley · Market &amp; Page</div>
-            <div class="take">Santa Cruz import that mostly travels well.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Streetlevel blend is excellent; single-origins variable shop to shop.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Bright, designed, slightly corporate. Pleasant if you don't squint.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Mid-sized footprint, outdoor seats, decent odds before noon.</div>
-            </div>
-          </div>
+      <div class="entry">
+        <div class="rank">10</div>
+        <div class="ident">
+          <div class="name">Mazarine</div>
+          <span class="hood">FiDi · New Montgomery</span>
         </div>
-      </article>
+        <div class="take">Suits, MacBooks, and a serviceable V60. A great place to take a call; a so-so place to taste a single origin.</div>
+        <div class="scores">
+          <div class="score"><span class="k">Pour</span><span class="v">6.8</span></div>
+          <div class="score"><span class="k">Vibe</span><span class="v">7.0</span></div>
+          <div class="score"><span class="k">Seats</span><span class="v">7.8</span></div>
+        </div>
+      </div>
 
     </div>
-  </section>
+  </article>
 
-  <!-- ── C TIER ────────────────────────────────────────── -->
-  <section class="tier">
-    <div class="tier-mark">C<small>Order &amp; go · 2 shops</small></div>
-    <div class="rows">
-
-      <article class="shop" data-tier="C">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Equator</div>
-            <div class="hood">FiDi · Mission Street + airport satellites</div>
-            <div class="take">Competent, ubiquitous, slightly anonymous.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">3.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">Fine cup, never the reason you came. Espresso program outshines it.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">2.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">Office-lobby energy. Functional, forgettable.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">3.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span></div>
-              <div class="note">Plenty of stools when the FiDi crowd thins after the morning rush.</div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="shop" data-tier="C">
-        <div class="rail"></div>
-        <div class="shop-body">
-          <div class="id">
-            <div class="name">Mazarine</div>
-            <div class="hood">FiDi · Kearny &amp; Market</div>
-            <div class="take">A perfectly fine commuter cup with a great window seat.</div>
-          </div>
-          <div class="scores">
-            <div class="score">
-              <div class="axis">Pour-over</div>
-              <div class="val">2.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">Multi-roaster rotation; pulls vary. Order an espresso drink instead.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Ambience</div>
-              <div class="val">3.0 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">Narrow, marble, slightly fussy. Charm carries it.</div>
-            </div>
-            <div class="score">
-              <div class="axis">Seating</div>
-              <div class="val">2.5 <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></span></div>
-              <div class="note">A handful of seats, all spoken for by suits with laptops by 9am.</div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-    </div>
-  </section>
-
-  <!-- COLOPHON -->
   <footer class="colophon">
-    <div>
-      <b>Method</b>
-      Scored 0–5 on three axes. Tier is a judgment, not a sum.
-    </div>
-    <div>
-      <b>Bias disclosure</b>
-      Pour-over weighted heaviest. Latte art ignored entirely.
-    </div>
-    <div>
-      <b>Field notes</b>
-      Visits, May 2026. SoMa, Mission, FiDi, Sunset.
-    </div>
+    <p>Rankings are one taster's call across morning visits in May 2026, weighted 50% pour-over, 30% ambience, 20% seating availability. Disagree loudly. Bring a backup shop.</p>
+    <div>SF · Vol 01 · No 1</div>
   </footer>
 
 </div>

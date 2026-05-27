@@ -19,12 +19,21 @@ PATTERNS: list[tuple[str, re.Pattern]] = [
     ("cursor",   re.compile(r"\b(?:cursor\.sh|cursor ide)\b", re.I)),
 ]
 
-# Also pick up explicit artifold:* meta tags emitted by our own generator
-META_INTENT = re.compile(r'<meta\s+name=["\']artifold:intent["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_TOOL   = re.compile(r'<meta\s+name=["\']artifold:tool["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_MODEL  = re.compile(r'<meta\s+name=["\']artifold:model["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_SOURCE = re.compile(r'<meta\s+name=["\']artifold:source["\']\s+content=["\']([^"\']+)["\']', re.I)
-META_PROMPT = re.compile(r'<meta\s+name=["\']artifold:prompt["\']\s+content=["\']([^"\']+)["\']', re.I)
+# Explicit artifold:* meta tags emitted by our /craft skill (and any tool
+# that wants to pre-populate provenance). Legacy folio:* names supported.
+def _meta(tag: str) -> re.Pattern:
+    return re.compile(
+        rf'<meta\s+name=["\'](?:artifold|folio):{tag}["\']\s+content=["\']([^"\']+)["\']',
+        re.I)
+
+META_INTENT         = _meta("intent")
+META_TOOL           = _meta("tool")
+META_MODEL          = _meta("model")
+META_SOURCE         = _meta("source")
+META_PROMPT         = _meta("prompt")
+META_DESIGN_MODE    = _meta("design-mode")
+META_VOICE_REGISTER = _meta("voice-register")
+META_STYLE_FROM     = _meta("style-from")
 
 
 def detect_tool(html: str) -> str | None:
@@ -36,12 +45,21 @@ def detect_tool(html: str) -> str | None:
 
 
 def extract_embedded_meta(html: str) -> dict:
-    """Pull artifold:* meta tags (emitted by our own generator) for zero-LLM provenance."""
+    """Pull artifold:* meta tags (emitted by our own generator) for zero-LLM provenance.
+    Map the dashed tag names to underscored Python-friendly keys."""
     head = html[:8000]   # meta tags are in <head>
     out: dict = {}
-    for key, pat in [("intent", META_INTENT), ("tool", META_TOOL),
-                     ("model", META_MODEL), ("source", META_SOURCE),
-                     ("prompt", META_PROMPT)]:
+    fields = [
+        ("intent",         META_INTENT),
+        ("tool",           META_TOOL),
+        ("model",          META_MODEL),
+        ("source",         META_SOURCE),
+        ("prompt",         META_PROMPT),
+        ("design_mode",    META_DESIGN_MODE),
+        ("voice_register", META_VOICE_REGISTER),
+        ("style_from",     META_STYLE_FROM),
+    ]
+    for key, pat in fields:
         m = pat.search(head)
         if m:
             out[key] = m.group(1)

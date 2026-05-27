@@ -239,7 +239,16 @@ def _cmd_designs(args):
                 "fonts": d.get("fonts", []),
                 "flags": {k: bool(d.get(k)) for k in
                           ("themed", "gradient", "glass", "animated", "shadowed")},
+                # Critical for /craft: lets the next invocation read the design
+                # mode + voice register used by recent /craft outputs and avoid
+                # repeating them (key fix for the convergence problem).
+                "design_mode":    entry.get("design_mode"),
+                "voice_register": entry.get("voice_register"),
+                "tool":           entry.get("tool"),
+                "added_at":       entry.get("added_at"),
             })
+        # Sort recent-first so the skill can grab "last 3 /craft" trivially.
+        rows.sort(key=lambda r: r.get("added_at") or "", reverse=True)
         if args.json:
             print(json.dumps(rows, indent=2))
             return 0
