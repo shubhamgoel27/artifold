@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Morning Routine!</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Comic Sans MS", "Chalkboard SE", "Trebuchet MS", sans-serif;
+    background: linear-gradient(135deg, #ffd1dc 0%, #c1e7ff 50%, #fff5ba 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    border: 5px dashed #ffb6c1;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  h1 {
+    font-size: 3em;
+    color: #ff6b9d;
+    text-shadow: 3px 3px 0px #ffe066;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-size: 1.4em;
+    color: #5b9bd5;
+    margin-bottom: 20px;
+  }
+  .routine-list {
+    display: grid;
+    gap: 15px;
+  }
+  .task {
+    display: flex;
+    align-items: center;
+    background: #fffbe6;
+    border-radius: 20px;
+    padding: 20px;
+    border: 3px solid #ffd700;
+    transition: transform 0.2s;
+  }
+  .task:hover {
+    transform: scale(1.02);
+  }
+  .task:nth-child(odd) {
+    background: #e6f7ff;
+    border-color: #87ceeb;
+  }
+  .task:nth-child(even) {
+    background: #ffe6f0;
+    border-color: #ffb6c1;
+  }
+  .checkbox {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #333;
+    border-radius: 10px;
+    background: white;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  .emoji {
+    font-size: 2.5em;
+    margin-right: 15px;
+  }
+  .task-info {
+    flex-grow: 1;
+  }
+  .task-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #444;
+  }
+  .task-time {
+    font-size: 1.1em;
+    color: #888;
+    margin-top: 4px;
+  }
+  .star {
+    font-size: 1.8em;
+  }
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(90deg, #ffe066, #ffb6c1);
+    border-radius: 20px;
+    font-size: 1.3em;
+    color: #444;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>My Morning Routine!</h1>
+      <p class="subtitle">Let's have a SUPER morning!</p>
+    </header>
+    <div class="routine-list">
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🌞</div>
+        <div class="task-info">
+          <div class="task-name">Wake Up!</div>
+          <div class="task-time">7:00 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🚽</div>
+        <div class="task-info">
+          <div class="task-name">Go Potty &amp; Wash Hands</div>
+          <div class="task-time">7:05 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🪥</div>
+        <div class="task-info">
+          <div class="task-name">Brush Teeth</div>
+          <div class="task-time">7:10 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">👕</div>
+        <div class="task-info">
+          <div class="task-name">Get Dressed</div>
+          <div class="task-time">7:15 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🥞</div>
+        <div class="task-info">
+          <div class="task-name">Eat Breakfast</div>
+          <div class="task-time">7:25 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">💇</div>
+        <div class="task-info">
+          <div class="task-name">Brush Hair</div>
+          <div class="task-time">7:40 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🎒</div>
+        <div class="task-info">
+          <div class="task-name">Pack Backpack</div>
+          <div class="task-time">7:45 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">👟</div>
+        <div class="task-info">
+          <div class="task-name">Put On Shoes &amp; Jacket</div>
+          <div class="task-time">7:50 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🤗</div>
+        <div class="task-info">
+          <div class="task-name">Hug Mom &amp; Dad</div>
+          <div class="task-time">7:55 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+      <div class="task">
+        <div class="checkbox"></div>
+        <div class="emoji">🚌</div>
+        <div class="task-info">
+          <div class="task-name">Leave for School</div>
+          <div class="task-time">8:00 AM</div>
+        </div>
+        <div class="star">⭐</div>
+      </div>
+    </div>
+    <footer>
+      🎉 You did it! Have an AMAZING day! 🎉
+    </footer>
+  </div>
+</body>
+</html>

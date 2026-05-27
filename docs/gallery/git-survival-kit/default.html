@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Cheatsheet for New Developers</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    color: #222;
+    background: #ffffff;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+  header {
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: #1e3a8a;
+  }
+  header p {
+    margin: 0;
+    color: #555;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 18px;
+    background: #fafafa;
+  }
+  .card h2 {
+    margin: 0 0 6px 0;
+    font-size: 1.05rem;
+    color: #2563eb;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .card p {
+    margin: 0 0 10px 0;
+    font-size: 0.92rem;
+    color: #444;
+  }
+  pre {
+    background: #f1f3f5;
+    border: 1px solid #e0e3e7;
+    border-radius: 6px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.85rem;
+    color: #777;
+    text-align: center;
+  }
+  .tip {
+    background: #fffbea;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 24px 0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Git Survival Kit</h1>
+  <p>The 14 essential git commands every new developer should know, with working examples.</p>
+</header>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>git init</h2>
+    <p>Create a new git repository in the current directory.</p>
+<pre><code>git init
+git init my-project</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git clone</h2>
+    <p>Copy an existing remote repository to your local machine.</p>
+<pre><code>git clone https://github.com/user/repo.git
+git clone git@github.com:user/repo.git my-folder</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git status</h2>
+    <p>Show which files are modified, staged, or untracked.</p>
+<pre><code>git status
+git status -s   # short format</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git add</h2>
+    <p>Stage changes to be included in the next commit.</p>
+<pre><code>git add README.md
+git add .              # stage everything
+git add -p             # interactively pick hunks</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git commit</h2>
+    <p>Record staged changes to the repository history.</p>
+<pre><code>git commit -m "Add login form"
+git commit -am "Quick fix"   # add tracked + commit
+git commit --amend           # edit last commit</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git log</h2>
+    <p>View commit history with various formatting options.</p>
+<pre><code>git log
+git log --oneline
+git log --graph --oneline --all</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git diff</h2>
+    <p>Show changes between commits, branches, or working tree.</p>
+<pre><code>git diff               # unstaged changes
+git diff --staged      # staged changes
+git diff main feature  # compare branches</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git branch</h2>
+    <p>List, create, or delete branches.</p>
+<pre><code>git branch                 # list local branches
+git branch new-feature     # create branch
+git branch -d old-feature  # delete merged branch</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git checkout / switch</h2>
+    <p>Switch between branches or restore files.</p>
+<pre><code>git switch main
+git switch -c new-feature   # create + switch
+git checkout -- file.txt    # discard changes</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git merge</h2>
+    <p>Combine changes from another branch into the current one.</p>
+<pre><code>git switch main
+git merge feature-branch
+git merge --no-ff feature-branch</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git pull</h2>
+    <p>Fetch from remote and merge into the current branch.</p>
+<pre><code>git pull
+git pull origin main
+git pull --rebase</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git push</h2>
+    <p>Upload local commits to a remote repository.</p>
+<pre><code>git push
+git push origin main
+git push -u origin new-feature   # set upstream</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git reset</h2>
+    <p>Undo commits or unstage files. Use with care.</p>
+<pre><code>git reset HEAD file.txt     # unstage
+git reset --soft HEAD~1     # undo last commit, keep changes
+git reset --hard HEAD~1     # discard last commit</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git stash</h2>
+    <p>Temporarily shelve uncommitted changes so you can switch context.</p>
+<pre><code>git stash
+git stash list
+git stash pop</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>git remote</h2>
+    <p>Manage the set of remote repositories tracked by your project.</p>
+<pre><code>git remote -v
+git remote add origin https://github.com/user/repo.git
+git remote remove origin</code></pre>
+  </div>
+
+</div>
+
+<div class="tip">
+  <strong>Pro tip:</strong> Run <code>git config --global user.name "Your Name"</code> and
+  <code>git config --global user.email "you@example.com"</code> once when setting up a new machine,
+  so your commits are attributed properly.
+</div>
+
+<footer>
+  Git Cheatsheet &middot; Keep this open in a tab until the commands feel natural.
+</footer>
+
+</body>
+</html>

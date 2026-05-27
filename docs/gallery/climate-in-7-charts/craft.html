@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="artifold:design-mode" content="monochrome-poster">
+<meta name="artifold:voice-register" content="urgent">
+<meta name="artifold:tool" content="claude">
+<title>Climate Change. Seven Charts.</title>
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #000000;
+    color: #ffffff;
+    font-family: 'Helvetica Neue', Helvetica, Inter, system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  :root {
+    --ink: #ffffff;
+    --void: #000000;
+    --alarm: #facc15;
+    --axis: #404040;
+    --mono: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', monospace;
+  }
+  section.page {
+    min-height: 100vh;
+    width: 100%;
+    padding: 64px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    border-bottom: 1px solid var(--ink);
+  }
+  section.page:last-child { border-bottom: none; }
+
+  .chapter {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .chapter .num { color: var(--alarm); }
+
+  h1.headline {
+    font-size: 64px;
+    line-height: 0.98;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    max-width: 1100px;
+    margin-top: 24px;
+  }
+  h1.headline .alarm { color: var(--alarm); }
+
+  .hero-number {
+    font-size: 144px;
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--alarm);
+  }
+  .hero-unit {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .caption {
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    max-width: 640px;
+    color: var(--ink);
+  }
+  .caption b { font-weight: 700; }
+
+  .source {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.7;
+  }
+
+  .meta-tl {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .chart-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 32px 0;
+  }
+  .chart-wrap svg { width: 100%; height: auto; max-height: 56vh; display: block; }
+
+  .axis-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    fill: var(--ink);
+    letter-spacing: 0.08em;
+  }
+  .axis-tick { fill: var(--ink); font-family: var(--mono); font-size: 11px; opacity: 0.85; }
+  .axis-line { stroke: var(--axis); stroke-width: 1; }
+  .baseline { stroke: var(--ink); stroke-width: 1; }
+  .data-line { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  .trend-line { stroke: var(--alarm); stroke-width: 2; fill: none; }
+  .data-bar { fill: var(--ink); }
+  .alarm-bar { fill: var(--alarm); }
+  .endpoint { fill: var(--alarm); }
+  .endpoint-label {
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    fill: var(--alarm);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .start-label {
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    fill: var(--ink);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* Cover */
+  .cover {
+    justify-content: center;
+    text-align: left;
+    padding: 80px;
+  }
+  .cover .title {
+    font-size: 168px;
+    line-height: 0.86;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+  }
+  .cover .title .alarm { color: var(--alarm); }
+  .cover .deck {
+    font-size: 20px;
+    line-height: 1.4;
+    max-width: 720px;
+    margin-top: 48px;
+    font-weight: 400;
+  }
+  .cover .rule {
+    width: 100%;
+    height: 1px;
+    background: var(--ink);
+    margin: 56px 0 32px 0;
+  }
+  .cover .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Closing */
+  .closing {
+    background: var(--void);
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px;
+  }
+  .imperative {
+    font-size: 168px;
+    line-height: 0.88;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    color: var(--alarm);
+  }
+  .closing .coda {
+    font-size: 18px;
+    margin-top: 56px;
+    max-width: 720px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .closing .colophon {
+    margin-top: 64px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  .hero-col { text-align: right; min-width: 280px; }
+
+  .bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+  }
+
+  @media (max-width: 800px) {
+    section.page { padding: 48px 32px; }
+    h1.headline { font-size: 40px; }
+    .hero-number { font-size: 88px; }
+    .cover .title, .imperative { font-size: 80px; }
+    .top-row, .bottom-row { flex-direction: column; align-items: flex-start; }
+    .hero-col { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <div class="meta-tl">Artifold &mdash; Climate Dossier &mdash; 2025</div>
+  <div>
+    <div class="chapter"><span class="num">000</span> &nbsp; The Brief</div>
+    <h1 class="title">Climate<br>change.<br>Seven <span class="alarm">charts.</span></h1>
+    <p class="deck">One planet. One atmosphere. One window closing. The numbers are not opinions. They are measurements. Read them in order. Do not look away.</p>
+    <div class="rule"></div>
+    <div class="meta-row">
+      <span>Sources: NOAA &middot; NASA &middot; NSIDC &middot; IPCC &middot; GCP</span>
+      <span>1958 &mdash; 2024</span>
+    </div>
+  </div>
+  <div class="source">SET IN HELVETICA. PURE BLACK. PURE WHITE. ONE ALARM.</div>
+</section>
+
+<!-- ============ 01 CO2 ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 01 / 07 &mdash; Atmosphere</div>
+  <div>
+    <div class="chapter"><span class="num">01</span> &nbsp; Carbon Dioxide</div>
+    <h1 class="headline">The air is thicker. <span class="alarm">425 parts per million.</span> Higher than any moment in three million years.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <!-- Mauna Loa CO2 1958 - 2024 -->
+    <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet" aria-label="Atmospheric CO2 at Mauna Loa 1958-2024">
+      <!-- y-axis baseline -->
+      <line class="axis-line" x1="80" y1="40" x2="80" y2="420"/>
+      <!-- x-axis -->
+      <line class="axis-line" x1="80" y1="420" x2="1160" y2="420"/>
+      <!-- y ticks: 300, 350, 400, 425 -->
+      <text class="axis-tick" x="70" y="425" text-anchor="end">300</text>
+      <text class="axis-tick" x="70" y="306" text-anchor="end">350</text>
+      <text class="axis-tick" x="70" y="187" text-anchor="end">400</text>
+      <text class="axis-tick" x="70" y="128" text-anchor="end">425</text>
+      <text class="axis-label" x="80" y="22">PPM CO&#8322;</text>
+      <!-- x ticks years -->
+      <text class="axis-tick" x="80" y="445" text-anchor="start">1958</text>
+      <text class="axis-tick" x="370" y="445" text-anchor="middle">1980</text>
+      <text class="axis-tick" x="660" y="445" text-anchor="middle">2000</text>
+      <text class="axis-tick" x="1160" y="445" text-anchor="end">2024</text>
+
+      <!-- Data polyline: approx annual mean ppm scaled
+           x: (year-1958)/(2024-1958) * 1080 + 80
+           y: 420 - ((ppm-300)/(425-300)) * 380  (so 300->420, 425->40)
+      -->
+      <polyline class="data-line" points="
+        80,290
+        96,287
+        112,283
+        129,280
+        145,275
+        161,272
+        177,268
+        194,264
+        210,260
+        226,256
+        243,251
+        259,248
+        275,244
+        291,239
+        308,234
+        324,230
+        340,225
+        357,220
+        373,215
+        389,210
+        405,206
+        422,201
+        438,196
+        454,191
+        471,187
+        487,182
+        503,177
+        519,172
+        536,167
+        552,162
+        568,157
+        585,152
+        601,147
+        617,142
+        633,137
+        650,131
+        666,126
+        682,121
+        698,116
+        715,110
+        731,105
+        747,99
+        764,94
+        780,88
+        796,82
+        812,76
+        829,71
+        845,65
+        861,59
+        878,53
+        894,47
+        910,41
+        926,36
+        943,30
+        959,25
+        975,19
+        991,14
+        1008,9
+        1024,5
+        1040,1
+        1057,-1
+        1073,-3
+        1089,-5
+        1106,-8
+        1122,-12
+        1138,-18
+        1160,-24
+      " transform="translate(0,170)"/>
+
+      <!-- 1958 start label -->
+      <circle cx="80" cy="295" r="5" class="data-bar" fill="#ffffff"/>
+      <text class="start-label" x="92" y="290">315 ppm &middot; 1958</text>
+
+      <!-- 2024 endpoint -->
+      <circle cx="1160" cy="128" r="7" class="endpoint"/>
+      <text class="endpoint-label" x="1148" y="118" text-anchor="end">425 ppm &middot; 2024</text>
+
+      <!-- Pre-industrial baseline reference -->
+      <line stroke="#404040" stroke-dasharray="4 4" x1="80" y1="384" x2="1160" y2="384"/>
+      <text class="axis-tick" x="1156" y="378" text-anchor="end">PRE-INDUSTRIAL 280 PPM</text>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">Charles Keeling started measuring in 1958 from a Hawaiian volcano. The line has never gone down. <b>Up 35 percent since the Industrial Revolution. Up 110 ppm in one human lifetime.</b> The last time CO&#8322; was this high, Greenland was a forest.</p>
+    <div class="hero-col">
+      <div class="hero-number">+110</div>
+      <div class="hero-unit">PPM since 1958</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: NOAA GLOBAL MONITORING LAB &middot; MAUNA LOA OBSERVATORY</div>
+</section>
+
+<!-- ============ 02 TEMP ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 02 / 07 &mdash; Temperature</div>
+  <div>
+    <div class="chapter"><span class="num">02</span> &nbsp; Surface Temperature</div>
+    <h1 class="headline">The planet ran a fever. <span class="alarm">+1.28&deg;C in 2024.</span> The hottest year in the instrumental record.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <!-- Temp anomaly 1880 - 2024, bars -->
+    <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet" aria-label="Global temperature anomaly 1880-2024">
+      <!-- zero baseline -->
+      <line class="baseline" x1="80" y1="300" x2="1160" y2="300"/>
+      <!-- y axis -->
+      <line class="axis-line" x1="80" y1="40" x2="80" y2="420"/>
+      <!-- x axis under -->
+      <text class="axis-tick" x="70" y="305" text-anchor="end">0.0</text>
+      <text class="axis-tick" x="70" y="225" text-anchor="end">+0.5</text>
+      <text class="axis-tick" x="70" y="145" text-anchor="end">+1.0</text>
+      <text class="axis-tick" x="70" y="105" text-anchor="end">+1.25</text>
+      <text class="axis-label" x="80" y="22">&deg;C vs 1951&ndash;1980</text>
+
+      <text class="axis-tick" x="80" y="445" text-anchor="start">1880</text>
+      <text class="axis-tick" x="360" y="445" text-anchor="middle">1920</text>
+      <text class="axis-tick" x="640" y="445" text-anchor="middle">1960</text>
+      <text class="axis-tick" x="920" y="445" text-anchor="middle">2000</text>
+      <text class="axis-tick" x="1160" y="445" text-anchor="end">2024</text>
+
+      <!-- 145 bars (1880-2024), each width ~6, gap 1
+           x = 80 + i*7.45 ; bar height = anomaly*160 (so 1.0C = 160px)
+           Negative bars go down from y=300, positive go up
+           Series approximated from NASA GISTEMP LOTI annual means
+      -->
+      <g>
+        <!-- Programmatic generation done by hand for fidelity to dataset shape -->
+        <!-- For brevity each <rect> is one year -->
+        <!-- 1880..1899 mostly negative -->
+        <rect class="data-bar" x="80"  y="300" width="6" height="29"/>
+        <rect class="data-bar" x="87"  y="300" width="6" height="35"/>
+        <rect class="data-bar" x="95"  y="300" width="6" height="32"/>
+        <rect class="data-bar" x="102" y="300" width="6" height="28"/>
+        <rect class="data-bar" x="110" y="300" width="6" height="45"/>
+        <rect class="data-bar" x="117" y="300" width="6" height="50"/>
+        <rect class="data-bar" x="125" y="300" width="6" height="40"/>
+        <rect class="data-bar" x="132" y="300" width="6" height="40"/>
+        <rect class="data-bar" x="140" y="300" width="6" height="32"/>
+        <rect class="data-bar" x="147" y="300" width="6" height="18"/>
+        <rect class="data-bar" x="155" y="300" width="6" height="33"/>
+        <rect class="data-bar" x="162" y="300" width="6" height="38"/>
+        <rect class="data-bar" x="170" y="300" width="6" height="38"/>
+        <rect class="data-bar" x="177" y="300" width="6" height="44"/>
+        <rect class="data-bar" x="185" y="300" width="6" height="35"/>
+        <rect class="data-bar" x="192" y="300" width="6" height="30"/>
+        <rect class="data-bar" x="200" y="300" width="6" height="17"/>
+        <rect class="data-bar" x="207" y="300" width="6" height="20"/>
+        <rect class="data-bar" x="215" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="222" y="294" width="6" height="6"/>
+        <!-- 1900s -->
+        <rect class="data-bar" x="230" y="300" width="6" height="14"/>
+        <rect class="data-bar" x="237" y="300" width="6" height="24"/>
+        <rect class="data-bar" x="245" y="300" width="6" height="34"/>
+        <rect class="data-bar" x="252" y="300" width="6" height="40"/>
+        <rect class="data-bar" x="260" y="300" width="6" height="45"/>
+        <rect class="data-bar" x="267" y="300" width="6" height="32"/>
+        <rect class="data-bar" x="275" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="282" y="300" width="6" height="44"/>
+        <rect class="data-bar" x="290" y="300" width="6" height="44"/>
+        <rect class="data-bar" x="297" y="300" width="6" height="40"/>
+        <!-- 1910s -->
+        <rect class="data-bar" x="305" y="300" width="6" height="44"/>
+        <rect class="data-bar" x="312" y="300" width="6" height="40"/>
+        <rect class="data-bar" x="320" y="300" width="6" height="36"/>
+        <rect class="data-bar" x="327" y="300" width="6" height="28"/>
+        <rect class="data-bar" x="335" y="300" width="6" height="20"/>
+        <rect class="data-bar" x="342" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="350" y="300" width="6" height="32"/>
+        <rect class="data-bar" x="357" y="300" width="6" height="44"/>
+        <rect class="data-bar" x="365" y="300" width="6" height="40"/>
+        <rect class="data-bar" x="372" y="300" width="6" height="24"/>
+        <!-- 1920s -->
+        <rect class="data-bar" x="380" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="387" y="300" width="6" height="20"/>
+        <rect class="data-bar" x="395" y="300" width="6" height="26"/>
+        <rect class="data-bar" x="402" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="410" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="417" y="300" width="6" height="6"/>
+        <rect class="data-bar" x="425" y="295" width="6" height="5"/>
+        <rect class="data-bar" x="432" y="300" width="6" height="3"/>
+        <rect class="data-bar" x="440" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="447" y="291" width="6" height="9"/>
+        <!-- 1930s -->
+        <rect class="data-bar" x="455" y="298" width="6" height="2"/>
+        <rect class="data-bar" x="462" y="300" width="6" height="12"/>
+        <rect class="data-bar" x="470" y="299" width="6" height="1"/>
+        <rect class="data-bar" x="477" y="291" width="6" height="9"/>
+        <rect class="data-bar" x="485" y="288" width="6" height="12"/>
+        <rect class="data-bar" x="492" y="295" width="6" height="5"/>
+        <rect class="data-bar" x="500" y="296" width="6" height="4"/>
+        <rect class="data-bar" x="507" y="290" width="6" height="10"/>
+        <rect class="data-bar" x="515" y="284" width="6" height="16"/>
+        <rect class="data-bar" x="522" y="285" width="6" height="15"/>
+        <!-- 1940s -->
+        <rect class="data-bar" x="530" y="280" width="6" height="20"/>
+        <rect class="data-bar" x="537" y="280" width="6" height="20"/>
+        <rect class="data-bar" x="545" y="285" width="6" height="15"/>
+        <rect class="data-bar" x="552" y="285" width="6" height="15"/>
+        <rect class="data-bar" x="560" y="300" width="6" height="9"/>
+        <rect class="data-bar" x="567" y="300" width="6" height="3"/>
+        <rect class="data-bar" x="575" y="290" width="6" height="10"/>
+        <rect class="data-bar" x="582" y="290" width="6" height="10"/>
+        <rect class="data-bar" x="590" y="298" width="6" height="2"/>
+        <rect class="data-bar" x="597" y="300" width="6" height="8"/>
+        <!-- 1950s -->
+        <rect class="data-bar" x="605" y="300" width="6" height="18"/>
+        <rect class="data-bar" x="612" y="300" width="6" height="12"/>
+        <rect class="data-bar" x="620" y="300" width="6" height="9"/>
+        <rect class="data-bar" x="627" y="291" width="6" height="9"/>
+        <rect class="data-bar" x="635" y="300" width="6" height="6"/>
+        <rect class="data-bar" x="642" y="300" width="6" height="20"/>
+        <rect class="data-bar" x="650" y="300" width="6" height="22"/>
+        <rect class="data-bar" x="657" y="297" width="6" height="3"/>
+        <rect class="data-bar" x="665" y="291" width="6" height="9"/>
+        <rect class="data-bar" x="672" y="290" width="6" height="10"/>
+        <!-- 1960s -->
+        <rect class="data-bar" x="680" y="295" width="6" height="5"/>
+        <rect class="data-bar" x="687" y="296" width="6" height="4"/>
+        <rect class="data-bar" x="695" y="289" width="6" height="11"/>
+        <rect class="data-bar" x="702" y="290" width="6" height="10"/>
+        <rect class="data-bar" x="710" y="300" width="6" height="14"/>
+        <rect class="data-bar" x="717" y="300" width="6" height="6"/>
+        <rect class="data-bar" x="725" y="296" width="6" height="4"/>
+        <rect class="data-bar" x="732" y="298" width="6" height="2"/>
+        <rect class="data-bar" x="740" y="300" width="6" height="5"/>
+        <rect class="data-bar" x="747" y="285" width="6" height="15"/>
+        <!-- 1970s -->
+        <rect class="data-bar" x="755" y="287" width="6" height="13"/>
+        <rect class="data-bar" x="762" y="300" width="6" height="2"/>
+        <rect class="data-bar" x="770" y="282" width="6" height="18"/>
+        <rect class="data-bar" x="777" y="271" width="6" height="29"/>
+        <rect class="data-bar" x="785" y="298" width="6" height="2"/>
+        <rect class="data-bar" x="792" y="294" width="6" height="6"/>
+        <rect class="data-bar" x="800" y="278" width="6" height="22"/>
+        <rect class="data-bar" x="807" y="263" width="6" height="37"/>
+        <rect class="data-bar" x="815" y="276" width="6" height="24"/>
+        <rect class="data-bar" x="822" y="270" width="6" height="30"/>
+        <!-- 1980s -->
+        <rect class="data-bar" x="830" y="259" width="6" height="41"/>
+        <rect class="data-bar" x="837" y="252" width="6" height="48"/>
+        <rect class="data-bar" x="845" y="278" width="6" height="22"/>
+        <rect class="data-bar" x="852" y="259" width="6" height="41"/>
+        <rect class="data-bar" x="860" y="280" width="6" height="20"/>
+        <rect class="data-bar" x="867" y="267" width="6" height="33"/>
+        <rect class="data-bar" x="875" y="251" width="6" height="49"/>
+        <rect class="data-bar" x="882" y="248" width="6" height="52"/>
+        <rect class="data-bar" x="890" y="244" width="6" height="56"/>
+        <rect class="data-bar" x="897" y="255" width="6" height="45"/>
+        <!-- 1990s -->
+        <rect class="data-bar" x="905" y="238" width="6" height="62"/>
+        <rect class="data-bar" x="912" y="244" width="6" height="56"/>
+        <rect class="data-bar" x="920" y="268" width="6" height="32"/>
+        <rect class="data-bar" x="927" y="259" width="6" height="41"/>
+        <rect class="data-bar" x="935" y="248" width="6" height="52"/>
+        <rect class="data-bar" x="942" y="232" width="6" height="68"/>
+        <rect class="data-bar" x="950" y="241" width="6" height="59"/>
+        <rect class="data-bar" x="957" y="228" width="6" height="72"/>
+        <rect class="data-bar" x="965" y="206" width="6" height="94"/>
+        <rect class="data-bar" x="972" y="232" width="6" height="68"/>
+        <!-- 2000s -->
+        <rect class="data-bar" x="980" y="232" width="6" height="68"/>
+        <rect class="data-bar" x="987" y="216" width="6" height="84"/>
+        <rect class="data-bar" x="995" y="209" width="6" height="91"/>
+        <rect class="data-bar" x="1002" y="209" width="6" height="91"/>
+        <rect class="data-bar" x="1010" y="219" width="6" height="81"/>
+        <rect class="data-bar" x="1017" y="200" width="6" height="100"/>
+        <rect class="data-bar" x="1025" y="206" width="6" height="94"/>
+        <rect class="data-bar" x="1032" y="200" width="6" height="100"/>
+        <rect class="data-bar" x="1040" y="216" width="6" height="84"/>
+        <rect class="data-bar" x="1047" y="206" width="6" height="94"/>
+        <!-- 2010s -->
+        <rect class="data-bar" x="1055" y="194" width="6" height="106"/>
+        <rect class="data-bar" x="1062" y="216" width="6" height="84"/>
+        <rect class="data-bar" x="1070" y="206" width="6" height="94"/>
+        <rect class="data-bar" x="1077" y="200" width="6" height="100"/>
+        <rect class="data-bar" x="1085" y="187" width="6" height="113"/>
+        <rect class="data-bar" x="1092" y="156" width="6" height="144"/>
+        <rect class="data-bar" x="1100" y="146" width="6" height="154"/>
+        <rect class="data-bar" x="1107" y="156" width="6" height="144"/>
+        <rect class="data-bar" x="1115" y="178" width="6" height="122"/>
+        <rect class="data-bar" x="1122" y="156" width="6" height="144"/>
+        <!-- 2020s -->
+        <rect class="data-bar" x="1130" y="153" width="6" height="147"/>
+        <rect class="data-bar" x="1137" y="178" width="6" height="122"/>
+        <rect class="data-bar" x="1145" y="156" width="6" height="144"/>
+        <rect class="data-bar" x="1152" y="119" width="6" height="181"/>
+        <!-- 2024 alarm -->
+        <rect class="alarm-bar" x="1159" y="98" width="6" height="202"/>
+      </g>
+
+      <!-- 1.5C dashed line -->
+      <line stroke="#facc15" stroke-dasharray="5 4" x1="80" y1="60" x2="1160" y2="60"/>
+      <text class="endpoint-label" x="1156" y="54" text-anchor="end">PARIS LIMIT &middot; +1.5&deg;C</text>
+
+      <!-- 2024 callout -->
+      <text class="endpoint-label" x="1156" y="92" text-anchor="end">2024 &middot; +1.28&deg;C</text>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">144 years of measurement. Every one of the ten hottest sits in the last decade. <b>2024 was the first calendar year to breach +1.5&deg;C.</b> The Paris ceiling was meant to be a wall. It is a turnstile.</p>
+    <div class="hero-col">
+      <div class="hero-number">+1.28&deg;</div>
+      <div class="hero-unit">Celsius &middot; 2024</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: NASA GISS GISTEMP V4 &middot; LAND-OCEAN TEMPERATURE INDEX</div>
+</section>
+
+<!-- ============ 03 ARCTIC ICE ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 03 / 07 &mdash; Cryosphere</div>
+  <div>
+    <div class="chapter"><span class="num">03</span> &nbsp; Arctic Sea Ice</div>
+    <h1 class="headline">The top of the world is melting. <span class="alarm">2.7 million square kilometres lost</span> from the September minimum since 1979.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet" aria-label="Arctic sea ice minimum extent 1979-2024">
+      <!-- y axis -->
+      <line class="axis-line" x1="80" y1="40" x2="80" y2="420"/>
+      <line class="axis-line" x1="80" y1="420" x2="1160" y2="420"/>
+      <text class="axis-tick" x="70" y="425" text-anchor="end">3</text>
+      <text class="axis-tick" x="70" y="349" text-anchor="end">4</text>
+      <text class="axis-tick" x="70" y="273" text-anchor="end">5</text>
+      <text class="axis-tick" x="70" y="197" text-anchor="end">6</text>
+      <text class="axis-tick" x="70" y="121" text-anchor="end">7</text>
+      <text class="axis-tick" x="70" y="45"  text-anchor="end">8</text>
+      <text class="axis-label" x="80" y="22">MILLION KM&#178;</text>
+
+      <text class="axis-tick" x="80" y="445" text-anchor="start">1979</text>
+      <text class="axis-tick" x="450" y="445" text-anchor="middle">1995</text>
+      <text class="axis-tick" x="820" y="445" text-anchor="middle">2010</text>
+      <text class="axis-tick" x="1160" y="445" text-anchor="end">2024</text>
+
+      <!-- 46 bars (1979-2024), x spacing ~23, width 18 -->
+      <!-- y for value v (in million km^2): 420 - (v-3)/5 * 380  -->
+      <g>
+        <rect class="data-bar" x="80"   y="116" width="18" height="304"/> <!-- 1979 7.0 -->
+        <rect class="data-bar" x="103"  y="93"  width="18" height="327"/> <!-- 1980 7.3 -->
+        <rect class="data-bar" x="126"  y="139" width="18" height="281"/> <!-- 1981 6.7 -->
+        <rect class="data-bar" x="149"  y="116" width="18" height="304"/> <!-- 1982 7.0 -->
+        <rect class="data-bar" x="172"  y="124" width="18" height="296"/> <!-- 1983 6.9 -->
+        <rect class="data-bar" x="195"  y="184" width="18" height="236"/> <!-- 1984 6.2 -->
+        <rect class="data-bar" x="218"  y="170" width="18" height="250"/> <!-- 1985 6.4 -->
+        <rect class="data-bar" x="241"  y="116" width="18" height="304"/> <!-- 1986 7.0 -->
+        <rect class="data-bar" x="264"  y="116" width="18" height="304"/> <!-- 1987 7.0 -->
+        <rect class="data-bar" x="287"  y="139" width="18" height="281"/> <!-- 1988 6.7 -->
+        <rect class="data-bar" x="310"  y="161" width="18" height="259"/> <!-- 1989 6.6 -->
+        <rect class="data-bar" x="333"  y="199" width="18" height="221"/> <!-- 1990 6.0 -->
+        <rect class="data-bar" x="356"  y="170" width="18" height="250"/> <!-- 1991 6.4 -->
+        <rect class="data-bar" x="379"  y="155" width="18" height="265"/> <!-- 1992 6.6 -->
+        <rect class="data-bar" x="402"  y="184" width="18" height="236"/> <!-- 1993 6.2 -->
+        <rect class="data-bar" x="425"  y="184" width="18" height="236"/> <!-- 1994 6.2 -->
+        <rect class="data-bar" x="448"  y="222" width="18" height="198"/> <!-- 1995 5.6 -->
+        <rect class="data-bar" x="471"  y="153" width="18" height="267"/> <!-- 1996 6.6 -->
+        <rect class="data-bar" x="494"  y="184" width="18" height="236"/> <!-- 1997 6.2 -->
+        <rect class="data-bar" x="517"  y="207" width="18" height="213"/> <!-- 1998 5.9 -->
+        <rect class="data-bar" x="540"  y="222" width="18" height="198"/> <!-- 1999 5.6 -->
+        <rect class="data-bar" x="563"  y="215" width="18" height="205"/> <!-- 2000 5.7 -->
+        <rect class="data-bar" x="586"  y="184" width="18" height="236"/> <!-- 2001 6.2 -->
+        <rect class="data-bar" x="609"  y="244" width="18" height="176"/> <!-- 2002 5.3 -->
+        <rect class="data-bar" x="632"  y="222" width="18" height="198"/> <!-- 2003 5.6 -->
+        <rect class="data-bar" x="655"  y="237" width="18" height="183"/> <!-- 2004 5.4 -->
+        <rect class="data-bar" x="678"  y="259" width="18" height="161"/> <!-- 2005 5.1 -->
+        <rect class="data-bar" x="701"  y="252" width="18" height="168"/> <!-- 2006 5.2 -->
+        <rect class="data-bar" x="724"  y="320" width="18" height="100"/> <!-- 2007 4.3 -->
+        <rect class="data-bar" x="747"  y="297" width="18" height="123"/> <!-- 2008 4.6 -->
+        <rect class="data-bar" x="770"  y="289" width="18" height="131"/> <!-- 2009 4.7 -->
+        <rect class="data-bar" x="793"  y="297" width="18" height="123"/> <!-- 2010 4.6 -->
+        <rect class="data-bar" x="816"  y="328" width="18" height="92"/>  <!-- 2011 4.2 -->
+        <rect class="data-bar" x="839"  y="382" width="18" height="38"/>  <!-- 2012 3.39 (record) -->
+        <rect class="data-bar" x="862"  y="282" width="18" height="138"/> <!-- 2013 4.8 -->
+        <rect class="data-bar" x="885"  y="282" width="18" height="138"/> <!-- 2014 4.8 -->
+        <rect class="data-bar" x="908"  y="297" width="18" height="123"/> <!-- 2015 4.6 -->
+        <rect class="data-bar" x="931"  y="313" width="18" height="107"/> <!-- 2016 4.4 -->
+        <rect class="data-bar" x="954"  y="320" width="18" height="100"/> <!-- 2017 4.3 -->
+        <rect class="data-bar" x="977"  y="320" width="18" height="100"/> <!-- 2018 4.3 -->
+        <rect class="data-bar" x="1000" y="343" width="18" height="77"/>  <!-- 2019 4.0 -->
+        <rect class="data-bar" x="1023" y="358" width="18" height="62"/>  <!-- 2020 3.8 -->
+        <rect class="data-bar" x="1046" y="297" width="18" height="123"/> <!-- 2021 4.6 -->
+        <rect class="data-bar" x="1069" y="297" width="18" height="123"/> <!-- 2022 4.6 -->
+        <rect class="data-bar" x="1092" y="305" width="18" height="115"/> <!-- 2023 4.5 -->
+        <rect class="alarm-bar" x="1115" y="320" width="18" height="100"/> <!-- 2024 4.28 -->
+      </g>
+
+      <!-- annotate 1980 -->
+      <text class="start-label" x="103" y="83" text-anchor="start">7.3 &middot; 1980</text>
+      <!-- annotate 2024 -->
+      <text class="endpoint-label" x="1133" y="312" text-anchor="end">4.28 &middot; 2024</text>
+      <!-- annotate 2012 record -->
+      <text class="axis-tick" x="848" y="396" text-anchor="middle" fill="#facc15">RECORD 2012 &middot; 3.39</text>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">In 1980 the September minimum was a frozen continent. Today it is a third smaller. <b>2024 placed seventh-lowest on record; every September of the last eighteen years sits below the 1980s average.</b> Ships now sail where ice once stood.</p>
+    <div class="hero-col">
+      <div class="hero-number">&minus;39%</div>
+      <div class="hero-unit">since 1980</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: NSIDC SEA ICE INDEX V3 &middot; SEPTEMBER MEAN EXTENT</div>
+</section>
+
+<!-- ============ 04 SEA LEVEL ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 04 / 07 &mdash; Oceans</div>
+  <div>
+    <div class="chapter"><span class="num">04</span> &nbsp; Global Mean Sea Level</div>
+    <h1 class="headline">The ocean is rising. <span class="alarm">106 millimetres higher</span> than 1993. Four millimetres added every year.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet" aria-label="Global mean sea level 1993-2024">
+      <line class="axis-line" x1="80" y1="40" x2="80" y2="420"/>
+      <line class="baseline" x1="80" y1="420" x2="1160" y2="420"/>
+
+      <text class="axis-tick" x="70" y="425" text-anchor="end">0</text>
+      <text class="axis-tick" x="70" y="349" text-anchor="end">25</text>
+      <text class="axis-tick" x="70" y="273" text-anchor="end">50</text>
+      <text class="axis-tick" x="70" y="197" text-anchor="end">75</text>
+      <text class="axis-tick" x="70" y="121" text-anchor="end">100</text>
+      <text class="axis-label" x="80" y="22">MILLIMETRES vs 1993</text>
+
+      <text class="axis-tick" x="80" y="445" text-anchor="start">1993</text>
+      <text class="axis-tick" x="487" y="445" text-anchor="middle">2003</text>
+      <text class="axis-tick" x="893" y="445" text-anchor="middle">2013</text>
+      <text class="axis-tick" x="1160" y="445" text-anchor="end">2024</text>
+
+      <!-- Polyline of monthly altimetry simplified to annual means
+           y = 420 - mm * (380/125)  (so 100mm -> ~120)
+           x distributes 32 yrs over 1080 px -> step ~34.8 -->
+      <polyline class="data-line" points="
+        80,420
+        115,418
+        149,414
+        184,409
+        219,403
+        254,397
+        289,391
+        323,386
+        358,379
+        393,371
+        428,363
+        463,357
+        497,348
+        532,340
+        567,331
+        602,322
+        637,314
+        671,307
+        706,298
+        741,289
+        776,277
+        811,265
+        845,257
+        880,247
+        915,236
+        950,226
+        985,213
+        1019,201
+        1054,182
+        1089,158
+        1124,138
+        1160,98
+      "/>
+
+      <!-- endpoint -->
+      <circle cx="1160" cy="98" r="7" class="endpoint"/>
+      <text class="endpoint-label" x="1148" y="90" text-anchor="end">+106 mm &middot; 2024</text>
+      <!-- start -->
+      <circle cx="80" cy="420" r="5" fill="#ffffff"/>
+      <text class="start-label" x="92" y="414">BASELINE 1993</text>
+
+      <!-- rate trend -->
+      <line class="trend-line" x1="80" y1="420" x2="1160" y2="98" opacity="0.55" stroke-dasharray="4 4"/>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">Thermal expansion plus Greenland plus Antarctica. The rate has doubled. <b>From 2.1 mm per year in the 1990s to 4.6 mm per year in the last decade.</b> Miami, Jakarta, Dhaka, Lagos &mdash; do the math.</p>
+    <div class="hero-col">
+      <div class="hero-number">+106</div>
+      <div class="hero-unit">millimetres</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: NASA JPL / U. COLORADO SATELLITE ALTIMETRY &middot; TOPEX-JASON</div>
+</section>
+
+<!-- ============ 05 DISASTERS ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 05 / 07 &mdash; Disasters</div>
+  <div>
+    <div class="chapter"><span class="num">05</span> &nbsp; Billion-Dollar Events &middot; U.S.</div>
+    <h1 class="headline">The bills are coming due. <span class="alarm">28 billion-dollar disasters in 2024.</span> The 1980s averaged three.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet" aria-label="U.S. billion-dollar climate disasters 1980-2024">
+      <line class="axis-line" x1="80" y1="40" x2="80" y2="420"/>
+      <line class="axis-line" x1="80" y1="420" x2="1160" y2="420"/>
+
+      <text class="axis-tick" x="70" y="425" text-anchor="end">0</text>
+      <text class="axis-tick" x="70" y="349" text-anchor="end">8</text>
+      <text class="axis-tick" x="70" y="273" text-anchor="end">16</text>
+      <text class="axis-tick" x="70" y="197" text-anchor="end">24</text>
+      <text class="axis-tick" x="70" y="121" text-anchor="end">28</text>
+      <text class="axis-label" x="80" y="22">EVENTS / YEAR (CPI-ADJ.)</text>
+
+      <text class="axis-tick" x="80" y="445" text-anchor="start">1980</text>
+      <text class="axis-tick" x="320" y="445" text-anchor="middle">1990</text>
+      <text class="axis-tick" x="560" y="445" text-anchor="middle">2000</text>
+      <text class="axis-tick" x="800" y="445" text-anchor="middle">2010</text>
+      <text class="axis-tick" x="1160" y="445" text-anchor="end">2024</text>
+
+      <!-- 45 bars; width 18; gap 6; x = 80 + i*24
+           y = 420 - count * 12 (so 28 = 84 from top => y=84? let's: 420 - 28*12 = 84) -->
+      <g>
+        <rect class="data-bar" x="80"   y="384" width="18" height="36"/>  <!-- 1980 3 -->
+        <rect class="data-bar" x="104"  y="372" width="18" height="48"/>  <!-- 1981 4 -->
+        <rect class="data-bar" x="128"  y="396" width="18" height="24"/>  <!-- 1982 2 -->
+        <rect class="data-bar" x="152"  y="372" width="18" height="48"/>  <!-- 1983 4 -->
+        <rect class="data-bar" x="176"  y="408" width="18" height="12"/>  <!-- 1984 1 -->
+        <rect class="data-bar" x="200"  y="384" width="18" height="36"/>  <!-- 1985 3 -->
+        <rect class="data-bar" x="224"  y="408" width="18" height="12"/>  <!-- 1986 1 -->
+        <rect class="data-bar" x="248"  y="408" width="18" height="12"/>  <!-- 1987 1 -->
+        <rect class="data-bar" x="272"  y="372" width="18" height="48"/>  <!-- 1988 4 -->
+        <rect class="data-bar" x="296"  y="372" width="18" height="48"/>  <!-- 1989 4 -->
+        <rect class="data-bar" x="320"  y="384" width="18" height="36"/>  <!-- 1990 3 -->
+        <rect class="data-bar" x="344"  y="348" width="18" height="72"/>  <!-- 1991 6 -->
+        <rect class="data-bar" x="368"  y="384" width="18" height="36"/>  <!-- 1992 3 -->
+        <rect class="data-bar" x="392"  y="360" width="18" height="60"/>  <!-- 1993 5 -->
+        <rect class="data-bar" x="416"  y="384" width="18" height="36"/>  <!-- 1994 3 -->
+        <rect class="data-bar" x="440"  y="324" width="18" height="96"/>  <!-- 1995 8 -->
+        <rect class="data-bar" x="464"  y="360" width="18" height="60"/>  <!-- 1996 5 -->
+        <rect class="data-bar" x="488"  y="396" width="18" height="24"/>  <!-- 1997 2 -->
+        <rect class="data-bar" x="512"  y="312" width="18" height="108"/> <!-- 1998 9 -->
+        <rect class="data-bar" x="536"  y="360" width="18" height="60"/>  <!-- 1999 5 -->
+        <rect class="data-bar" x="560"  y="372" width="18" height="48"/>  <!-- 2000 4 -->
+        <rect class="data-bar" x="584"  y="372" width="18" height="48"/>  <!-- 2001 4 -->
+        <rect class="data-bar" x="608"  y="372" width="18" height="48"/>  <!-- 2002 4 -->
+        <rect class="data-bar" x="632"  y="324" width="18" height="96"/>  <!-- 2003 8 -->
+        <rect class="data-bar" x="656"  y="324" width="18" height="96"/>  <!-- 2004 8 -->
+        <rect class="data-bar" x="680"  y="348" width="18" height="72"/>  <!-- 2005 6 -->
+        <rect class="data-bar" x="704"  y="360" width="18" height="60"/>  <!-- 2006 5 -->
+        <rect class="data-bar" x="728"  y="348" width="18" height="72"/>  <!-- 2007 6 -->
+        <rect class="data-bar" x="752"  y="300" width="18" height="120"/> <!-- 2008 10 -->
+        <rect class="data-bar" x="776"  y="384" width="18" height="36"/>  <!-- 2009 3 -->
+        <rect class="data-bar" x="800"  y="312" width="18" height="108"/> <!-- 2010 9 -->
+        <rect class="data-bar" x="824"  y="240" width="18" height="180"/> <!-- 2011 15 -->
+        <rect class="data-bar" x="848"  y="288" width="18" height="132"/> <!-- 2012 11 -->
+        <rect class="data-bar" x="872"  y="312" width="18" height="108"/> <!-- 2013 9 -->
+        <rect class="data-bar" x="896"  y="324" width="18" height="96"/>  <!-- 2014 8 -->
+        <rect class="data-bar" x="920"  y="300" width="18" height="120"/> <!-- 2015 10 -->
+        <rect class="data-bar" x="944"  y="240" width="18" height="180"/> <!-- 2016 15 -->
+        <rect class="data-bar" x="968"  y="228" width="18" height="192"/> <!-- 2017 16 -->
+        <rect class="data-bar" x="992"  y="252" width="18" height="168"/> <!-- 2018 14 -->
+        <rect class="data-bar" x="1016" y="252" width="18" height="168"/> <!-- 2019 14 -->
+        <rect class="data-bar" x="1040" y="156" width="18" height="264"/> <!-- 2020 22 -->
+        <rect class="data-bar" x="1064" y="204" width="18" height="216"/> <!-- 2021 18 -->
+        <rect class="data-bar" x="1088" y="204" width="18" height="216"/> <!-- 2022 18 -->
+        <rect class="data-bar" x="1112" y="96"  width="18" height="324"/> <!-- 2023 27 -->
+        <rect class="alarm-bar" x="1136" y="84"  width="18" height="336"/> <!-- 2024 28 -->
+      </g>
+
+      <text class="endpoint-label" x="1154" y="76" text-anchor="end">28 &middot; 2024</text>
+      <text class="start-label" x="80" y="376">3 &middot; 1980</text>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">NOAA only counts disasters costing a billion dollars or more, inflation-adjusted. <b>The U.S. now averages one such event every fortnight.</b> Hurricanes, derechos, wildfires, floods. The atmosphere holds more energy. It spends it.</p>
+    <div class="hero-col">
+      <div class="hero-number">9.3&times;</div>
+      <div class="hero-unit">more than the 1980s</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: NOAA NCEI &middot; U.S. BILLION-DOLLAR WEATHER & CLIMATE DISASTERS</div>
+</section>
+
+<!-- ============ 06 COUNTRIES ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 06 / 07 &mdash; Emitters</div>
+  <div>
+    <div class="chapter"><span class="num">06</span> &nbsp; Top Ten Emitters &middot; 2023</div>
+    <h1 class="headline">Ten countries. <span class="alarm">25.9 gigatonnes.</span> Two thirds of the world's CO&#8322;.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid meet" aria-label="Top 10 emitting countries 2023">
+      <!-- horizontal bars; max value 11.4 -> 880 px -->
+      <!-- Scale: 1 GtCO2 = 77.2 px ; bar starts at x=260 -->
+      <line class="axis-line" x1="260" y1="20" x2="260" y2="500"/>
+      <line class="axis-line" x1="260" y1="500" x2="1160" y2="500"/>
+
+      <!-- x ticks 0, 4, 8, 12 -->
+      <text class="axis-tick" x="260" y="518" text-anchor="middle">0</text>
+      <text class="axis-tick" x="569" y="518" text-anchor="middle">4</text>
+      <text class="axis-tick" x="877" y="518" text-anchor="middle">8</text>
+      <text class="axis-tick" x="1145" y="518" text-anchor="middle">11.4</text>
+      <text class="axis-label" x="700" y="500" dy="-6" text-anchor="middle">GIGATONNES CO&#8322; / YEAR</text>
+
+      <!-- Country rows
+           row height 36, gap 8 -> 44; first y=30 -->
+      <g>
+        <!-- China 11.4 -->
+        <text class="start-label" x="248" y="55" text-anchor="end">CHINA</text>
+        <rect class="alarm-bar" x="260" y="30" width="880" height="36"/>
+        <text class="endpoint-label" x="1148" y="55" text-anchor="end" fill="#000000">11.4</text>
+
+        <!-- US 5.0 -->
+        <text class="start-label" x="248" y="99" text-anchor="end">UNITED STATES</text>
+        <rect class="data-bar" x="260" y="74" width="386" height="36"/>
+        <text class="start-label" x="654" y="99" fill="#ffffff">5.0</text>
+
+        <!-- India 3.1 -->
+        <text class="start-label" x="248" y="143" text-anchor="end">INDIA</text>
+        <rect class="data-bar" x="260" y="118" width="239" height="36"/>
+        <text class="start-label" x="507" y="143" fill="#ffffff">3.1</text>
+
+        <!-- Russia 1.9 -->
+        <text class="start-label" x="248" y="187" text-anchor="end">RUSSIA</text>
+        <rect class="data-bar" x="260" y="162" width="147" height="36"/>
+        <text class="start-label" x="415" y="187" fill="#ffffff">1.9</text>
+
+        <!-- Japan 1.0 -->
+        <text class="start-label" x="248" y="231" text-anchor="end">JAPAN</text>
+        <rect class="data-bar" x="260" y="206" width="77" height="36"/>
+        <text class="start-label" x="345" y="231" fill="#ffffff">1.0</text>
+
+        <!-- Iran 0.78 -->
+        <text class="start-label" x="248" y="275" text-anchor="end">IRAN</text>
+        <rect class="data-bar" x="260" y="250" width="60" height="36"/>
+        <text class="start-label" x="328" y="275" fill="#ffffff">0.78</text>
+
+        <!-- Saudi 0.71 -->
+        <text class="start-label" x="248" y="319" text-anchor="end">SAUDI ARABIA</text>
+        <rect class="data-bar" x="260" y="294" width="55" height="36"/>
+        <text class="start-label" x="323" y="319" fill="#ffffff">0.71</text>
+
+        <!-- Indonesia 0.69 -->
+        <text class="start-label" x="248" y="363" text-anchor="end">INDONESIA</text>
+        <rect class="data-bar" x="260" y="338" width="53" height="36"/>
+        <text class="start-label" x="321" y="363" fill="#ffffff">0.69</text>
+
+        <!-- Germany 0.67 -->
+        <text class="start-label" x="248" y="407" text-anchor="end">GERMANY</text>
+        <rect class="data-bar" x="260" y="382" width="52" height="36"/>
+        <text class="start-label" x="320" y="407" fill="#ffffff">0.67</text>
+
+        <!-- S Korea 0.62 -->
+        <text class="start-label" x="248" y="451" text-anchor="end">SOUTH KOREA</text>
+        <rect class="data-bar" x="260" y="426" width="48" height="36"/>
+        <text class="start-label" x="316" y="451" fill="#ffffff">0.62</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">China emits more CO&#8322; than the United States, India and Russia combined. The United States, per capita, still doubles China. <b>Ten flags. Twenty-six billion tonnes. One sky.</b> Nobody decarbonises alone.</p>
+    <div class="hero-col">
+      <div class="hero-number">67%</div>
+      <div class="hero-unit">of global CO&#8322;</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: GLOBAL CARBON PROJECT &middot; GLOBAL CARBON BUDGET 2024 (TERRITORIAL)</div>
+</section>
+
+<!-- ============ 07 BUDGET ============ -->
+<section class="page">
+  <div class="meta-tl">Chart 07 / 07 &mdash; The Window</div>
+  <div>
+    <div class="chapter"><span class="num">07</span> &nbsp; Remaining Carbon Budget</div>
+    <h1 class="headline">For a coin-flip at 1.5&deg;C: <span class="alarm">250 gigatonnes left.</span> We spend 37 per year. The math is brutal.</h1>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" aria-label="Remaining carbon budget for 1.5C">
+      <!-- Single horizontal "fuel gauge" -->
+      <!-- Total bar 1080 wide at x=80, y=140, h=140 represents 1000 GtCO2 budget originally remaining circa 2020 -->
+      <!-- Spent since 2020: ~150 GtCO2 (4*37) shown as white block; remaining 250 GtCO2 as alarm; pre-2020 emissions not shown -->
+
+      <!-- For visual clarity: scale 1 GtCO2 = 2.7 px, total budget shown = 400 GtCO2 of "decision window"  -->
+      <!-- Remaining 250 -> 675 px; spent 2020-2024 (~150) -> 405 px -->
+
+      <line class="axis-line" x1="80" y1="80" x2="80" y2="320"/>
+      <text class="axis-label" x="80" y="62">GtCO&#8322; AVAILABLE FOR +1.5&deg;C (50% PROB.)</text>
+
+      <!-- Spent block -->
+      <rect class="data-bar" x="80"  y="140" width="405" height="140" fill="#404040"/>
+      <text class="start-label" x="92" y="220" fill="#ffffff">SPENT 2020&ndash;2024</text>
+      <text class="start-label" x="92" y="240" fill="#ffffff">~150 GtCO&#8322;</text>
+
+      <!-- Remaining block -->
+      <rect class="alarm-bar" x="485" y="140" width="675" height="140"/>
+      <text class="endpoint-label" x="497" y="200" fill="#000000">REMAINING</text>
+      <text x="497" y="245" fill="#000000" font-family="Helvetica Neue, Helvetica, sans-serif" font-weight="700" font-size="64">250 GtCO&#8322;</text>
+
+      <!-- Tick marks for years of burn at 37 Gt/yr -->
+      <!-- 1 year = 37*2.7 = 99.9 px ; mark at 485 + k*100 -->
+      <g>
+        <line stroke="#000000" stroke-width="2" x1="585" y1="140" x2="585" y2="290"/>
+        <text class="axis-tick" x="585" y="306" text-anchor="middle" fill="#000000">2026</text>
+        <line stroke="#000000" stroke-width="2" x1="685" y1="140" x2="685" y2="290"/>
+        <text class="axis-tick" x="685" y="306" text-anchor="middle" fill="#000000">2027</text>
+        <line stroke="#000000" stroke-width="2" x1="785" y1="140" x2="785" y2="290"/>
+        <text class="axis-tick" x="785" y="306" text-anchor="middle" fill="#000000">2028</text>
+        <line stroke="#000000" stroke-width="2" x1="885" y1="140" x2="885" y2="290"/>
+        <text class="axis-tick" x="885" y="306" text-anchor="middle" fill="#000000">2029</text>
+        <line stroke="#000000" stroke-width="2" x1="985" y1="140" x2="985" y2="290"/>
+        <text class="axis-tick" x="985" y="306" text-anchor="middle" fill="#000000">2030</text>
+        <line stroke="#000000" stroke-width="2" x1="1085" y1="140" x2="1085" y2="290"/>
+        <text class="axis-tick" x="1085" y="306" text-anchor="middle" fill="#000000">2031</text>
+        <line stroke="#000000" stroke-width="2" x1="1160" y1="140" x2="1160" y2="290"/>
+        <text class="axis-tick" x="1160" y="306" text-anchor="middle" fill="#000000">2032</text>
+      </g>
+
+      <!-- TODAY arrow on left edge of remaining -->
+      <text class="endpoint-label" x="485" y="125" text-anchor="start">TODAY</text>
+      <polygon points="485,128 480,140 490,140" fill="#facc15"/>
+
+      <!-- Caption inside -->
+      <text x="80" y="370" font-family="SF Mono, Menlo, monospace" font-size="13" fill="#ffffff" letter-spacing="2">
+        BAR LENGTH = GIGATONNES &middot; AT 37 GtCO&#8322;/YR, BUDGET EXHAUSTED IN APPROX. SEVEN YEARS
+      </text>
+    </svg>
+  </div>
+
+  <div class="bottom-row">
+    <p class="caption">The IPCC's central estimate. Fifty-fifty odds. Half the chance of a coin. <b>Every gigatonne sooner buys a degree later.</b> Every year of delay shaves a year off the window. There is no extension.</p>
+    <div class="hero-col">
+      <div class="hero-number">7</div>
+      <div class="hero-unit">years at current rate</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE: IPCC AR6 WG1 + GLOBAL CARBON BUDGET 2024 &middot; 50% PROBABILITY THRESHOLD</div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="page closing">
+  <div class="meta-tl">Coda &mdash; What To Do With This</div>
+  <div>
+    <div class="chapter"><span class="num">END</span> &nbsp; Six Verbs</div>
+    <div class="imperative">
+      Vote.<br>
+      Insulate.<br>
+      Electrify.<br>
+      Ride.<br>
+      Plant.<br>
+      Repeat.
+    </div>
+    <p class="coda">Seven charts. One conclusion. The atmosphere does not negotiate. The data is the design. The decade is the deadline. Do something today. Do something tomorrow. Then do it again.</p>
+    <div class="colophon">Artifold &middot; Climate Dossier &middot; Set in Helvetica &middot; Black, white, alarm</div>
+  </div>
+  <div class="source">SOURCES: NOAA &middot; NASA &middot; NSIDC &middot; IPCC &middot; GCP &middot; AS OF 2024</div>
+</section>
+
+</body>
+</html>

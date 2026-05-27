@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Artifold /craft — side-by-side gallery</title>
+<title>Artifold /craft — gallery (carousel preview)</title>
 <style>
   :root {
     --bg: #f9f8f5;
@@ -13,7 +13,7 @@
     --ink-faint: #94a3b8;
     --line: rgba(15,23,42,0.10);
     --line-2: rgba(15,23,42,0.20);
-    --accent: #c1452a;          /* one accent, carries meaning */
+    --accent: #c1452a;
     --maxw: 1280px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,81 +24,128 @@
     font: 15px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  /* — masthead ——————————————————————————— */
+
+  /* — masthead (compact, single band) ——————— */
   header {
     max-width: var(--maxw);
     margin: 0 auto;
-    padding: 56px 32px 24px;
+    padding: 22px 32px 14px;
   }
-  .eyebrow {
-    font: 600 11.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-  h1 {
-    font-size: clamp(32px, 5vw, 52px);
-    line-height: 1.05; letter-spacing: -0.025em;
-    font-weight: 700;
-    margin-bottom: 16px;
-    max-width: 16ch;
-  }
-  h1 em { font-style: italic; font-weight: 600; color: var(--accent); }
-  .lede {
-    font-size: 17px; line-height: 1.5;
-    color: var(--ink-dim);
-    max-width: 60ch;
-    margin-bottom: 32px;
-  }
-  .meta {
-    display: flex; flex-wrap: wrap; gap: 24px;
-    font: 12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: var(--ink-faint);
-    padding: 14px 0;
-    border-top: 1px solid var(--line);
+  .masthead-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+    padding-bottom: 14px;
     border-bottom: 1px solid var(--line);
   }
-  .meta b { color: var(--ink); font-weight: 600; }
-  /* — comparison block ———————————————————— */
-  main {
-    max-width: var(--maxw);
-    margin: 0 auto;
-    padding: 32px;
+  .brand-line {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
   }
-  section.compare { margin-bottom: 56px; }
-  section.compare h2 {
-    font-size: 21px; font-weight: 650; letter-spacing: -0.015em;
-    margin-bottom: 4px;
+  .eyebrow {
+    font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
   }
-  section.compare .prompt {
-    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  h1 {
+    font-size: clamp(22px, 2.8vw, 30px);
+    line-height: 1.1; letter-spacing: -0.018em;
+    font-weight: 680;
+  }
+  h1 em { font-style: italic; font-weight: 600; color: var(--accent); }
+  .masthead-meta {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    font: 11.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-faint);
+  }
+  .masthead-meta b { color: var(--ink); font-weight: 600; }
+  .masthead-meta a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
+  .masthead-meta a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* — carousel chrome ——————————————————————— */
+  main { max-width: var(--maxw); margin: 0 auto; padding: 14px 32px 32px; }
+
+  .carousel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; margin-bottom: 12px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dots { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--line-2); border: none; padding: 0; cursor: pointer;
+    transition: background .15s, transform .15s;
+  }
+  .dot:hover { background: var(--ink-dim); transform: scale(1.15); }
+  .dot.active { background: var(--accent); }
+  .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .counter {
+    font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-dim); letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .counter b { color: var(--ink); font-weight: 700; }
+
+  .keys {
+    font: 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-faint); letter-spacing: 0.02em;
+  }
+  .keys kbd {
+    font: 600 10.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: white; border: 1px solid var(--line-2); border-radius: 3px;
+    padding: 2px 6px; margin: 0 2px; color: var(--ink);
+  }
+  @media (max-width: 760px) { .keys { display: none; } }
+
+  /* — stage ————————————————————————————————— */
+  .stage { position: relative; min-height: 480px; }
+  .slide {
+    display: none; opacity: 0;
+    transition: opacity .22s ease-out;
+  }
+  .slide.active { display: block; opacity: 1; }
+
+  .slide-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .slide h2 {
+    font-size: 21px; font-weight: 680; letter-spacing: -0.015em;
+  }
+  .mode-strip {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font: 11.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-faint);
+  }
+  .mode-strip b { color: var(--ink); font-weight: 600; }
+  .mode-strip .pill {
+    background: rgba(193,69,42,0.08);
+    color: var(--accent);
+    padding: 2px 7px; border-radius: 3px; font-weight: 600;
+  }
+  .slide .prompt {
+    font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
     color: var(--ink-dim);
     background: rgba(15,23,42,0.04);
-    padding: 8px 12px;
-    border-radius: 4px;
-    margin-bottom: 18px;
+    padding: 7px 12px; border-radius: 4px;
+    margin: 6px 0 12px;
     border-left: 2px solid var(--ink-faint);
   }
+
   .pair {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
   }
-  @media (max-width: 760px) {
-    .pair { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
   .col { display: flex; flex-direction: column; }
   .col-head {
     display: flex; align-items: baseline; justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .col-label {
     font: 600 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: 0.05em; text-transform: uppercase;
-    color: var(--ink-dim);
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-dim);
   }
   .col-label.craft { color: var(--accent); }
-  .col-label .sub { color: var(--ink-faint); font-weight: 500; margin-left: 8px; text-transform: none; letter-spacing: 0.02em; }
   .col-link {
     font-size: 12px; color: var(--ink-dim);
     text-decoration: none;
@@ -106,42 +153,109 @@
     transition: color .15s;
   }
   .col-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
   .thumb {
-    display: block;
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    overflow: hidden;
+    display: block; background: white;
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
     aspect-ratio: 1280 / 800;
     position: relative;
-    transition: border-color .15s, transform .15s;
+    transition: border-color .15s;
   }
   .thumb:hover { border-color: var(--line-2); }
   .thumb img {
     width: 100%; height: 100%;
-    object-fit: cover; object-position: top;
-    display: block;
+    object-fit: cover; object-position: top; display: block;
   }
   .thumb::after {
     content: "open full →";
     position: absolute; right: 10px; bottom: 10px;
-    background: rgba(22,24,29,0.85);
-    color: white;
+    background: rgba(22,24,29,0.85); color: white;
     font: 500 11px/1 -apple-system, sans-serif;
     padding: 6px 9px; border-radius: 4px;
-    opacity: 0;
-    transition: opacity .15s;
+    opacity: 0; transition: opacity .15s;
   }
   .thumb:hover::after { opacity: 1; }
+
+  /* — nav arrows ————————————————————————————— */
+  .nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: white; color: var(--ink);
+    border: 1px solid var(--line-2);
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.08);
+    transition: transform .15s, background .15s, border-color .15s;
+    z-index: 20;
+  }
+  .nav:hover { background: var(--ink); color: white; border-color: var(--ink); transform: translateY(-50%) scale(1.06); }
+  .nav:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav:disabled:hover { background: white; color: var(--ink); transform: translateY(-50%); }
+  .nav.prev { left: 24px; }
+  .nav.next { right: 24px; }
+  @media (max-width: 980px) {
+    .nav { width: 44px; height: 44px; }
+    .nav.prev { left: 10px; } .nav.next { right: 10px; }
+  }
+
+  /* — overview modal ———————————————————————— */
+  .overview {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(22,24,29,0.85); backdrop-filter: blur(8px);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 24px; overflow-y: auto;
+  }
+  .overview.open { display: flex; }
+  .overview-inner {
+    max-width: 1100px; width: 100%;
+    background: var(--bg); border-radius: 10px;
+    padding: 32px 36px 40px; position: relative;
+  }
+  .overview h3 {
+    font-size: 20px; font-weight: 680; letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .overview .sub {
+    color: var(--ink-dim); font-size: 14px; margin-bottom: 22px;
+  }
+  .overview-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: transparent; border: 1px solid var(--line-2);
+    font-size: 18px; cursor: pointer; color: var(--ink-dim);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .overview-close:hover { background: var(--ink); color: white; border-color: var(--ink); }
+  .ov-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .ov-cell {
+    background: white; border: 1px solid var(--line); border-radius: 6px;
+    overflow: hidden; cursor: pointer; padding: 0;
+    text-align: left; display: flex; flex-direction: column;
+    transition: border-color .15s, transform .15s;
+  }
+  .ov-cell:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .ov-cell.current { border-color: var(--accent); border-width: 2px; }
+  .ov-cell img { width: 100%; aspect-ratio: 1280 / 800; object-fit: cover; object-position: top; display: block; }
+  .ov-cell .ov-meta { padding: 8px 10px; }
+  .ov-cell .ov-num {
+    font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-faint); letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .ov-cell .ov-name { font-size: 13px; color: var(--ink); line-height: 1.3; }
+  .ov-cell .ov-mode {
+    font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--accent); margin-top: 4px;
+  }
+
   /* — footer ——————————————————————————————— */
   footer {
-    max-width: var(--maxw);
-    margin: 80px auto 60px;
-    padding: 32px;
+    max-width: var(--maxw); margin: 80px auto 60px; padding: 32px;
     border-top: 1px solid var(--line);
-    color: var(--ink-dim);
-    font-size: 13.5px;
-    line-height: 1.6;
+    color: var(--ink-dim); font-size: 13.5px; line-height: 1.6;
   }
   footer p + p { margin-top: 12px; }
   footer a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 2px; }
@@ -149,153 +263,275 @@
   .repo-cta {
     display: inline-flex; align-items: center; gap: 8px;
     margin-top: 18px;
-    padding: 9px 14px;
-    background: var(--ink);
-    color: white;
-    border-radius: 5px;
-    font-size: 13px; font-weight: 550;
-    text-decoration: none;
-    transition: background .15s;
+    padding: 9px 14px; background: var(--ink); color: white;
+    border-radius: 5px; font-size: 13px; font-weight: 550;
+    text-decoration: none; transition: background .15s;
   }
   .repo-cta:hover { background: var(--accent); }
   .repo-cta code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     background: rgba(255,255,255,0.16);
-    padding: 2px 6px; border-radius: 3px;
-    font-size: 12px;
+    padding: 2px 6px; border-radius: 3px; font-size: 12px;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="eyebrow">Artifold /craft — design comparison</div>
-  <h1>Same prompt. <em>Different output.</em></h1>
-  <p class="lede">
-    The <code>/craft</code> skill (a Claude Code skill bundled with Artifold) reads your library, picks
-    a deliberately different design direction, and applies 12 cited design principles + a 15-item
-    anti-slop checklist. Below: four prompts, each generated <em>twice</em> by the same model — once
-    plainly, once via <code>/craft</code>. Click any thumbnail to view the full artifact.
-  </p>
-  <div class="meta">
-    <span>Model: <b>claude-opus-4-7</b></span>
-    <span>Library context: <b>17 prior artifacts</b></span>
-    <span>Generated: <b>2026-05-26</b></span>
-    <span>Skill prompt: <b><a href="https://github.com/shubhamgoel27/artifold/blob/main/artifold/skills/craft/SKILL.md" style="color:inherit">artifold/skills/craft/SKILL.md</a></b></span>
+  <div class="masthead-row">
+    <div class="brand-line">
+      <div class="eyebrow">Artifold /craft</div>
+      <h1>Same prompt. <em>Different output.</em></h1>
+    </div>
+    <div class="masthead-meta">
+      <span><b>11</b> topics · <b>11</b> modes · <b>opus 4.7</b></span>
+      <span><a href="https://github.com/shubhamgoel27/artifold/blob/main/artifold/skills/craft/SKILL.md">SKILL.md ↗</a></span>
+      <span><a href="https://github.com/shubhamgoel27/artifold">repo ↗</a></span>
+    </div>
   </div>
 </header>
 
 <main>
-
-<section class="compare">
-  <h2>30-day strength tracker for a beginner</h2>
-  <div class="prompt">"Daily exercise plan with sets, reps, weight progression, and rest periods. Printable, scannable."</div>
-  <div class="pair">
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
-        <a class="col-link" href="gallery/30-day-tracker/default.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/30-day-tracker/default.html"><img src="gallery/thumbs/30-day-tracker-default.jpg" alt="default 30-day tracker" loading="lazy"></a>
-    </div>
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
-        <a class="col-link" href="gallery/30-day-tracker/craft.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/30-day-tracker/craft.html"><img src="gallery/thumbs/30-day-tracker-craft.jpg" alt="/craft 30-day tracker" loading="lazy"></a>
+  <div class="carousel-bar">
+    <div class="dots" id="dots" role="tablist" aria-label="Gallery topics"></div>
+    <div class="counter"><b id="cur">1</b> <span style="color:var(--line-2)">/</span> <span id="tot">11</span></div>
+    <div class="keys">
+      <kbd>←</kbd> <kbd>→</kbd> navigate &nbsp;·&nbsp;
+      <kbd>↵</kbd> open /craft &nbsp;·&nbsp;
+      <kbd>esc</kbd> overview
     </div>
   </div>
-</section>
 
-<section class="compare">
-  <h2>Comparing three SF apartments</h2>
-  <div class="prompt">"989 20th vs 400 Beale vs NEMA — for a couple deciding between them. Compare commute, sun, amenities, vibe, price."</div>
-  <div class="pair">
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
-        <a class="col-link" href="gallery/sf-apartments/default.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/sf-apartments/default.html"><img src="gallery/thumbs/sf-apartments-default.jpg" alt="default SF apartments" loading="lazy"></a>
-    </div>
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
-        <a class="col-link" href="gallery/sf-apartments/craft.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/sf-apartments/craft.html"><img src="gallery/thumbs/sf-apartments-craft.jpg" alt="/craft SF apartments" loading="lazy"></a>
-    </div>
-  </div>
-</section>
-
-<section class="compare">
-  <h2>How transformers work</h2>
-  <div class="prompt">"Explainer for someone who understands LSTMs but hasn't studied attention. Covers QKV, multi-head, positional encoding, scaling."</div>
-  <div class="pair">
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
-        <a class="col-link" href="gallery/transformers/default.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/transformers/default.html"><img src="gallery/thumbs/transformers-default.jpg" alt="default transformers explainer" loading="lazy"></a>
-    </div>
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
-        <a class="col-link" href="gallery/transformers/craft.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/transformers/craft.html"><img src="gallery/thumbs/transformers-craft.jpg" alt="/craft transformers explainer" loading="lazy"></a>
-    </div>
-  </div>
-</section>
-
-<section class="compare">
-  <h2>SF coffee shop tier list</h2>
-  <div class="prompt">"S/A/B/C tiers of 10 SF coffee shops, ranked by pour-over quality, ambience, and seating."</div>
-  <div class="pair">
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label">Default Claude <span class="sub">/ no skill</span></span>
-        <a class="col-link" href="gallery/coffee-tier-list/default.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/coffee-tier-list/default.html"><img src="gallery/thumbs/coffee-tier-list-default.jpg" alt="default coffee tier list" loading="lazy"></a>
-    </div>
-    <div class="col">
-      <div class="col-head">
-        <span class="col-label craft">With /craft <span class="sub">/ library-aware</span></span>
-        <a class="col-link" href="gallery/coffee-tier-list/craft.html">view full</a>
-      </div>
-      <a class="thumb" href="gallery/coffee-tier-list/craft.html"><img src="gallery/thumbs/coffee-tier-list-craft.jpg" alt="/craft coffee tier list" loading="lazy"></a>
-    </div>
-  </div>
-</section>
-
+  <div class="stage" id="stage"></div>
 </main>
+
+<button class="nav prev" id="prev" aria-label="Previous topic">◀</button>
+<button class="nav next" id="next" aria-label="Next topic">▶</button>
+
+<div class="overview" id="overview" role="dialog" aria-modal="true" aria-label="All gallery topics">
+  <div class="overview-inner">
+    <button class="overview-close" id="overview-close" aria-label="Close overview">×</button>
+    <h3>11 topics · 11 design modes · 11 voice registers</h3>
+    <p class="sub">Click any tile to jump to that comparison.</p>
+    <div class="ov-grid" id="overview-grid"></div>
+  </div>
+</div>
 
 <footer>
   <p>
-    <strong>What's happening here.</strong> Both columns came from <code>claude-opus-4-7</code>, same
-    prompt, same day. The right column went through the <code>/craft</code> skill, which: (1) reads
-    the user's existing Artifold library to see overused patterns, (2) deliberately picks a
-    different direction, and (3) applies 12 design principles distilled from Refactoring UI,
-    Linear, and Vercel/Geist — while actively avoiding 15 specific AI-slop signatures.
+    <strong>What's happening here.</strong> Both columns came from <code>claude-opus-4-7</code>,
+    same prompt, same day. The right column went through the <code>/craft</code> skill, which:
+    (1) reads the user's existing Artifold library to see overused patterns, (2) deliberately
+    picks a different direction, and (3) applies 12 design principles distilled from
+    Refactoring UI, Linear, and Vercel/Geist — while actively avoiding 15 specific AI-slop
+    signatures.
   </p>
   <p>
-    The <code>/craft</code> skill picks from 15 named design modes and 9 voice registers, each
-    matched to the format convention of the topic. On this run: <code>swiss-grid</code> (tracker,
-    a workmanlike printable grid), <code>data-dashboard</code> (apartments, Bloomberg-style
-    decision matrix), <code>technical-blueprint</code> (transformers, drafting-blueprint with
-    SVG diagrams), <code>magazine-fashion</code> (coffee, native tier-list bold-band layout).
-    The skill reads the user's library + recent <code>/craft</code> outputs and refuses to
-    repeat any of the last three modes — so the library reads as a portfolio of distinct work,
-    not 20 variations of one template.
+    <code>/craft</code> picks from 15 named design modes and 9 voice registers, each matched
+    to the format convention of the topic. On this gallery: <b>swiss-grid · data-dashboard ·
+    technical-blueprint · magazine-fashion · field-guide · brutalist-web · museum-label ·
+    terminal-tui · monochrome-poster · handwritten-journal · corporate-memo</b>. The skill
+    reads the user's library + recent <code>/craft</code> outputs and refuses to repeat any
+    of the last three modes — so the library reads as a portfolio of distinct work, not 20
+    variations of one template.
   </p>
   <a class="repo-cta" href="https://github.com/shubhamgoel27/artifold">
     <span>Artifold on GitHub →</span>
-    <code>pipx install artifold</code>
+    <code>pip install artifold</code>
   </a>
 </footer>
+
+<script>
+(() => {
+  const TOPICS = [
+    { slug: "30-day-tracker", name: "30-day strength tracker for a beginner",
+      prompt: '"Daily exercise plan with sets, reps, weight progression, and rest periods. Printable, scannable."',
+      mode: "swiss-grid", voice: "coach-imperative",
+      formatRef: "Whoop / Strava / coach's spreadsheet" },
+    { slug: "sf-apartments", name: "Comparing three SF apartments",
+      prompt: '"989 20th vs 400 Beale vs NEMA — for a couple deciding between them. Compare commute, sun, amenities, vibe, price."',
+      mode: "data-dashboard", voice: "spec-sheet",
+      formatRef: "Compass / Wirecutter buyers' guide / Bloomberg matrix" },
+    { slug: "transformers", name: "How transformers work",
+      prompt: '"Explainer for someone who understands LSTMs but hasn’t studied attention. Covers QKV, multi-head, positional encoding, scaling."',
+      mode: "technical-blueprint", voice: "encyclopedic",
+      formatRef: "Distill.pub / The Pudding / 3Blue1Brown" },
+    { slug: "coffee-tier-list", name: "SF coffee shop tier list",
+      prompt: '"S/A/B/C tiers of 10 SF coffee shops, ranked by pour-over quality, ambience, and seating."',
+      mode: "magazine-fashion", voice: "enthusiast",
+      formatRef: "Eater Heatmap / tiermaker / r/anime tier-list" },
+    { slug: "yosemite-climbing", name: "Yosemite trad climbing route guide",
+      prompt: '"A guide to the most famous trad climbing routes in Yosemite — El Cap, Half Dome, Astroman, Snake Dike. Include grade, length, gear, season."',
+      mode: "field-guide", voice: "enthusiast",
+      formatRef: "AAC American Alpine Journal + Sibley field guide" },
+    { slug: "slow-software-manifesto", name: "Manifesto for slow software",
+      prompt: '"A 12-point manifesto for slow, file-based, anti-bloat software. Each point: a sharp imperative + a short paragraph."',
+      mode: "brutalist-web", voice: "pitch-deck",
+      formatRef: "Cluetrain / bretvictor.com / jwz.org" },
+    { slug: "macintosh-1984", name: "History of the original Macintosh",
+      prompt: '"History of the original 1984 Apple Macintosh — specs, key people, cultural impact."',
+      mode: "museum-label", voice: "encyclopedic",
+      formatRef: "MoMA / Cooper Hewitt wall labels" },
+    { slug: "git-survival-kit", name: "Git survival kit for new devs",
+      prompt: '"The 12 git commands a new developer needs in their first 90 days. With examples and recovery tips."',
+      mode: "terminal-tui", voice: "spec-sheet",
+      formatRef: "lazygit / htop / k9s" },
+    { slug: "climate-in-7-charts", name: "Climate change in 7 charts",
+      prompt: '"Climate change explained in 7 charts — CO2, temperature, sea ice, sea level, disasters, emissions, carbon budget."',
+      mode: "monochrome-poster", voice: "wire-news",
+      formatRef: "Ed Hawkins climate stripes / Vignelli subway / IPCC" },
+    { slug: "kid-morning-routine", name: "Kids' morning routine chart",
+      prompt: '"A morning routine chart for kids 5-8 — printable, with checkboxes and gold stars."',
+      mode: "handwritten-journal", voice: "intimate-letter",
+      formatRef: "parent's fridge / Montessori card" },
+    { slug: "gemini-embedding-2", name: "arXiv paper explainer — Gemini Embedding 2",
+      prompt: '"Explainer for this arxiv paper: https://arxiv.org/abs/2605.27295 — Gemini Embedding 2."',
+      mode: "corporate-memo", voice: "pitch-deck",
+      formatRef: "Google internal product-review memo / Amazon 6-pager" },
+  ];
+
+  const stage   = document.getElementById("stage");
+  const dotsEl  = document.getElementById("dots");
+  const curEl   = document.getElementById("cur");
+  const totEl   = document.getElementById("tot");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
+  const overview = document.getElementById("overview");
+  const overviewGrid = document.getElementById("overview-grid");
+  const overviewClose = document.getElementById("overview-close");
+
+  totEl.textContent = TOPICS.length;
+
+  // build slides
+  TOPICS.forEach((t, i) => {
+    const slide = document.createElement("article");
+    slide.className = "slide";
+    slide.dataset.i = i;
+    slide.innerHTML = `
+      <div class="slide-head">
+        <h2>${t.name}</h2>
+        <div class="mode-strip">
+          <span>/craft picked <span class="pill">${t.mode}</span></span>
+          <span>voice: <b>${t.voice}</b></span>
+          <span>ref: <b>${t.formatRef}</b></span>
+        </div>
+      </div>
+      <div class="prompt">${t.prompt}</div>
+      <div class="pair">
+        <div class="col">
+          <div class="col-head">
+            <span class="col-label">Default Claude <span class="sub" style="color:var(--ink-faint);font-weight:500;margin-left:8px;text-transform:none;letter-spacing:0.02em;">/ no skill</span></span>
+            <a class="col-link" href="gallery/${t.slug}/default.html" target="_blank">view full ↗</a>
+          </div>
+          <a class="thumb" href="gallery/${t.slug}/default.html" target="_blank">
+            <img src="gallery/thumbs/${t.slug}-default.jpg" alt="default ${t.name}" loading="lazy">
+          </a>
+        </div>
+        <div class="col">
+          <div class="col-head">
+            <span class="col-label craft">With /craft <span class="sub" style="color:var(--ink-faint);font-weight:500;margin-left:8px;text-transform:none;letter-spacing:0.02em;">/ ${t.mode}</span></span>
+            <a class="col-link" href="gallery/${t.slug}/craft.html" target="_blank">view full ↗</a>
+          </div>
+          <a class="thumb craft-thumb" href="gallery/${t.slug}/craft.html" target="_blank">
+            <img src="gallery/thumbs/${t.slug}-craft.jpg" alt="/craft ${t.name}" loading="lazy">
+          </a>
+        </div>
+      </div>
+    `;
+    stage.appendChild(slide);
+  });
+
+  // build dots
+  TOPICS.forEach((t, i) => {
+    const d = document.createElement("button");
+    d.className = "dot";
+    d.setAttribute("role", "tab");
+    d.setAttribute("aria-label", `Topic ${i+1}: ${t.name}`);
+    d.title = `${i+1}. ${t.name}`;
+    d.addEventListener("click", () => go(i));
+    dotsEl.appendChild(d);
+  });
+
+  // build overview grid
+  TOPICS.forEach((t, i) => {
+    const cell = document.createElement("button");
+    cell.className = "ov-cell";
+    cell.innerHTML = `
+      <img src="gallery/thumbs/${t.slug}-craft.jpg" alt="${t.name}" loading="lazy">
+      <div class="ov-meta">
+        <div class="ov-num">${String(i+1).padStart(2,'0')} / ${TOPICS.length}</div>
+        <div class="ov-name">${t.name}</div>
+        <div class="ov-mode">${t.mode}</div>
+      </div>
+    `;
+    cell.addEventListener("click", () => {
+      go(i);
+      closeOverview();
+    });
+    overviewGrid.appendChild(cell);
+  });
+
+  // state + navigation
+  let idx = 0;
+  const slides = [...document.querySelectorAll(".slide")];
+  const dots = [...document.querySelectorAll(".dot")];
+  const cells = [...document.querySelectorAll(".ov-cell")];
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+    dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+    cells.forEach((c, i) => c.classList.toggle("current", i === idx));
+    curEl.textContent = idx + 1;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === TOPICS.length - 1;
+    if (history.replaceState) history.replaceState(null, "", `#t/${idx+1}`);
+    // preload neighbors
+    [idx - 1, idx + 1].forEach(i => {
+      if (i < 0 || i >= TOPICS.length) return;
+      ["default", "craft"].forEach(v => {
+        const img = new Image();
+        img.src = `gallery/thumbs/${TOPICS[i].slug}-${v}.jpg`;
+      });
+    });
+  }
+
+  function go(i) {
+    if (i < 0 || i >= TOPICS.length) return;
+    idx = i;
+    render();
+  }
+
+  prevBtn.addEventListener("click", () => go(idx - 1));
+  nextBtn.addEventListener("click", () => go(idx + 1));
+
+  function openOverview()  { overview.classList.add("open"); }
+  function closeOverview() { overview.classList.remove("open"); }
+  overviewClose.addEventListener("click", closeOverview);
+  overview.addEventListener("click", e => { if (e.target === overview) closeOverview(); });
+
+  document.addEventListener("keydown", e => {
+    if (overview.classList.contains("open")) {
+      if (e.key === "Escape") closeOverview();
+      return;
+    }
+    if (e.key === "ArrowLeft")  go(idx - 1);
+    if (e.key === "ArrowRight") go(idx + 1);
+    if (e.key === "Escape")     openOverview();
+    if (e.key === "Enter") {
+      const link = slides[idx].querySelector(".craft-thumb");
+      if (link) window.open(link.href, "_blank");
+    }
+  });
+
+  // initial: parse #t/N from URL hash
+  const m = location.hash.match(/^#t\/(\d+)$/);
+  if (m) {
+    const n = parseInt(m[1], 10) - 1;
+    if (n >= 0 && n < TOPICS.length) idx = n;
+  }
+  render();
+})();
+</script>
 
 </body>
 </html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="artifold:design-mode" content="handwritten-journal">
+<meta name="artifold:voice-register" content="playful">
+<meta name="artifold:tool" content="claude">
+<title>My Morning Mission!</title>
+<style>
+  /* ---------- paper + base ---------- */
+  :root {
+    --paper: #fde6d3;
+    --ink: #2a2118;
+    --coral: #f87171;
+    --sky: #60a5fa;
+    --sun: #fbbf24;
+    --mint: #34d399;
+    --lilac: #c084fc;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* paper grain via tiny inline SVG noise */
+  body {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,0.55) 0, transparent 38%),
+      radial-gradient(circle at 85% 8%, rgba(255,255,255,0.4) 0, transparent 42%),
+      radial-gradient(circle at 78% 92%, rgba(248,113,113,0.10) 0, transparent 45%),
+      radial-gradient(circle at 8% 82%, rgba(192,132,252,0.10) 0, transparent 45%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-blend-mode: normal, normal, normal, normal, multiply;
+  }
+
+  .page {
+    max-width: 880px;
+    margin: 36px auto 60px;
+    padding: 38px 42px 54px;
+    background: rgba(255, 250, 240, 0.55);
+    border: 3px dashed rgba(42, 33, 24, 0.35);
+    border-radius: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ---------- corner doodles ---------- */
+  .corner {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    pointer-events: none;
+  }
+  .corner.tl { top: 8px; left: 12px; }
+  .corner.tr { top: 6px; right: 14px; }
+  .corner.bl { bottom: 10px; left: 14px; }
+  .corner.br { bottom: 8px; right: 12px; }
+
+  /* ---------- headline ---------- */
+  .headline {
+    text-align: center;
+    margin: 8px 0 4px;
+    position: relative;
+  }
+  .headline h1 {
+    margin: 0;
+    font-size: clamp(40px, 6.4vw, 64px);
+    letter-spacing: 1px;
+    color: var(--ink);
+    transform: rotate(-1.2deg);
+    line-height: 1.05;
+  }
+  .headline h1 .pop-coral { color: var(--coral); }
+  .headline h1 .pop-sky   { color: var(--sky); }
+  .headline h1 .pop-sun   { color: #d97706; }
+  .headline .squiggle {
+    display: block;
+    margin: 6px auto 0;
+    width: 320px;
+    max-width: 86%;
+  }
+  .subhead {
+    text-align: center;
+    font-size: 22px;
+    margin: 14px 0 28px;
+    color: #4b3a2a;
+    transform: rotate(0.6deg);
+  }
+  .subhead em {
+    font-style: normal;
+    background: rgba(251, 191, 36, 0.45);
+    padding: 0 8px;
+    border-radius: 8px;
+  }
+
+  /* ---------- task list ---------- */
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0 0 30px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .task {
+    display: grid;
+    grid-template-columns: 64px 88px 1fr 240px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px 12px 12px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    box-shadow: 3px 4px 0 rgba(42, 33, 24, 0.15);
+    position: relative;
+  }
+  /* slight rotation per row, hand-stuck feel */
+  .task:nth-child(1) { transform: rotate(-1.4deg); }
+  .task:nth-child(2) { transform: rotate(0.9deg); }
+  .task:nth-child(3) { transform: rotate(-0.8deg); }
+  .task:nth-child(4) { transform: rotate(1.6deg); }
+  .task:nth-child(5) { transform: rotate(-1.1deg); }
+  .task:nth-child(6) { transform: rotate(0.7deg); }
+  .task:nth-child(7) { transform: rotate(-1.7deg); }
+  .task:nth-child(8) { transform: rotate(1.2deg); }
+
+  /* number circle */
+  .num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 4px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    background: #fff;
+    box-shadow: 2px 2px 0 rgba(42, 33, 24, 0.25);
+    transform: rotate(-3deg);
+  }
+  .task:nth-child(odd) .num { transform: rotate(2deg); }
+  .task:nth-child(1) .num { background: #fde2e2; }
+  .task:nth-child(2) .num { background: #dbeafe; }
+  .task:nth-child(3) .num { background: #fef3c7; }
+  .task:nth-child(4) .num { background: #d1fae5; }
+  .task:nth-child(5) .num { background: #ede9fe; }
+  .task:nth-child(6) .num { background: #fde2e2; }
+  .task:nth-child(7) .num { background: #dbeafe; }
+  .task:nth-child(8) .num { background: #fef3c7; }
+
+  .time {
+    font-size: 26px;
+    font-weight: 700;
+    color: #b45309;
+    text-align: center;
+    transform: rotate(-1deg);
+    letter-spacing: 1px;
+  }
+
+  .what {
+    font-size: 21px;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .what .hint {
+    display: block;
+    font-size: 15px;
+    color: #6b5a48;
+    margin-top: 2px;
+  }
+
+  /* ---------- star row ---------- */
+  .stars {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .stars .daylabel {
+    font-size: 12px;
+    color: #6b5a48;
+    width: 18px;
+    text-align: center;
+    transform: translateY(-22px);
+    position: absolute;
+  }
+  .starwrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 28px;
+  }
+  .starwrap .d {
+    font-size: 11px;
+    color: #6b5a48;
+    letter-spacing: 0;
+  }
+
+  /* hand-drawn empty star (CSS clip-path) */
+  .star {
+    width: 26px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.85);
+    clip-path: polygon(
+      50% 2%, 61% 35%, 96% 35%, 67% 56%,
+      79% 91%, 50% 70%, 21% 91%, 33% 56%,
+      4% 35%, 39% 35%
+    );
+    border: 0;
+    position: relative;
+    transform: rotate(-4deg);
+  }
+  /* outline trick: drop-shadow simulates a thick hand-drawn stroke */
+  .star {
+    filter:
+      drop-shadow(1px 0 0 var(--ink))
+      drop-shadow(-1px 0 0 var(--ink))
+      drop-shadow(0 1px 0 var(--ink))
+      drop-shadow(0 -1px 0 var(--ink));
+  }
+  .starwrap:nth-child(2n) .star { transform: rotate(5deg); }
+  .starwrap:nth-child(3n) .star { transform: rotate(-7deg); }
+  .starwrap:nth-child(5n) .star { transform: rotate(3deg); }
+
+  /* ---------- super-power section ---------- */
+  .superpower {
+    margin: 8px 0 28px;
+    padding: 22px 24px 26px;
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(251, 191, 36, 0.08) 0 12px,
+        rgba(251, 191, 36, 0.0) 12px 24px
+      ),
+      rgba(255, 255, 255, 0.55);
+    box-shadow: 4px 5px 0 rgba(42, 33, 24, 0.18);
+    transform: rotate(-0.6deg);
+    position: relative;
+  }
+  .superpower h2 {
+    margin: 0 0 4px;
+    font-size: 30px;
+    text-align: center;
+    color: var(--ink);
+  }
+  .superpower h2 .star-mini { color: #d97706; }
+  .superpower .ask {
+    text-align: center;
+    font-size: 19px;
+    color: #4b3a2a;
+    margin: 0 0 16px;
+  }
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 18px;
+  }
+  .choice {
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    width: 118px;
+    height: 118px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: #fff;
+    box-shadow: 3px 3px 0 rgba(42, 33, 24, 0.2);
+  }
+  .choice.kind     { background: #fde2e2; transform: rotate(-4deg); }
+  .choice.brave    { background: #dbeafe; transform: rotate(3deg); }
+  .choice.curious  { background: #fef3c7; transform: rotate(-2deg); }
+  .choice.patient  { background: #d1fae5; transform: rotate(4deg); }
+  .choice.silly    { background: #ede9fe; transform: rotate(-3deg); }
+
+  .circle-hint {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 15px;
+    color: #6b5a48;
+  }
+
+  /* ---------- header row for stars (days) ---------- */
+  .legend {
+    display: grid;
+    grid-template-columns: 64px 88px 1fr 240px;
+    gap: 14px;
+    padding: 0 16px 6px 12px;
+    font-size: 14px;
+    color: #6b5a48;
+    align-items: end;
+  }
+  .legend .days {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .legend .days span {
+    width: 28px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .legend .col-time   { text-align: center; }
+  .legend .col-what   { padding-left: 4px; }
+  .legend .col-num    { text-align: center; }
+
+  /* ---------- parent note ---------- */
+  .parent-note {
+    margin-top: 28px;
+    padding: 18px 22px;
+    border: 3px dashed var(--ink);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    font-size: 18px;
+    color: #4b3a2a;
+    transform: rotate(0.5deg);
+    position: relative;
+  }
+  .parent-note .ribbon {
+    display: inline-block;
+    background: var(--sun);
+    color: var(--ink);
+    padding: 2px 14px;
+    border-radius: 10px;
+    border: 2px solid var(--ink);
+    font-size: 14px;
+    transform: rotate(-2deg) translateY(-4px);
+    margin-bottom: 8px;
+  }
+  .parent-note .stars-inline {
+    color: #d97706;
+    letter-spacing: 3px;
+    font-size: 22px;
+  }
+  .parent-note .picks {
+    margin-top: 6px;
+  }
+  .parent-note .pick {
+    display: inline-block;
+    padding: 2px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    margin: 4px 4px 0;
+    background: #fff;
+    font-size: 16px;
+  }
+  .parent-note .pick.a { background: #fde2e2; transform: rotate(-1.5deg); }
+  .parent-note .pick.b { background: #dbeafe; transform: rotate(1.2deg); }
+  .parent-note .pick.c { background: #fef3c7; transform: rotate(-1deg); }
+
+  /* ---------- you-got-this footer scribble ---------- */
+  .pep {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 22px;
+    color: #b45309;
+    transform: rotate(-1deg);
+  }
+
+  /* ---------- scribble dashes in margins ---------- */
+  .scribble {
+    position: absolute;
+    color: rgba(42, 33, 24, 0.45);
+    font-size: 18px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ---------- print ---------- */
+  @media print {
+    body { background: var(--paper); }
+    .page {
+      margin: 0 auto;
+      box-shadow: none;
+      border: 2px dashed rgba(42, 33, 24, 0.4);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .task, .legend {
+      grid-template-columns: 52px 70px 1fr;
+    }
+    .stars, .legend .days { grid-column: 1 / -1; justify-content: flex-start; padding-top: 4px; }
+    .choice { width: 96px; height: 96px; font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- corner doodles -->
+  <svg class="corner tl" viewBox="0 0 100 100" aria-hidden="true">
+    <!-- stick-figure sun -->
+    <circle cx="50" cy="50" r="18" fill="#fbbf24" stroke="#2a2118" stroke-width="3"/>
+    <g stroke="#2a2118" stroke-width="3" stroke-linecap="round">
+      <line x1="50" y1="14" x2="50" y2="4"/>
+      <line x1="50" y1="86" x2="50" y2="96"/>
+      <line x1="14" y1="50" x2="4" y2="50"/>
+      <line x1="86" y1="50" x2="96" y2="50"/>
+      <line x1="24" y1="24" x2="16" y2="16"/>
+      <line x1="76" y1="76" x2="84" y2="84"/>
+      <line x1="76" y1="24" x2="84" y2="16"/>
+      <line x1="24" y1="76" x2="16" y2="84"/>
+    </g>
+    <!-- smiley face -->
+    <circle cx="44" cy="46" r="2.2" fill="#2a2118"/>
+    <circle cx="56" cy="46" r="2.2" fill="#2a2118"/>
+    <path d="M42 55 Q50 62 58 55" stroke="#2a2118" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>
+
+  <svg class="corner tr" viewBox="0 0 100 100" aria-hidden="true">
+    <!-- rainbow arc -->
+    <path d="M10 80 A40 40 0 0 1 90 80" fill="none" stroke="#f87171" stroke-width="5" stroke-linecap="round"/>
+    <path d="M18 80 A32 32 0 0 1 82 80" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round"/>
+    <path d="M26 80 A24 24 0 0 1 74 80" fill="none" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+    <path d="M34 80 A16 16 0 0 1 66 80" fill="none" stroke="#60a5fa" stroke-width="5" stroke-linecap="round"/>
+    <!-- cloud puffs -->
+    <ellipse cx="14" cy="84" rx="10" ry="6" fill="#fff" stroke="#2a2118" stroke-width="2"/>
+    <ellipse cx="86" cy="84" rx="10" ry="6" fill="#fff" stroke="#2a2118" stroke-width="2"/>
+  </svg>
+
+  <svg class="corner bl" viewBox="0 0 100 100" aria-hidden="true">
+    <!-- big star -->
+    <polygon points="50,8 61,38 94,38 67,58 78,90 50,70 22,90 33,58 6,38 39,38"
+             fill="#fbbf24" stroke="#2a2118" stroke-width="3" stroke-linejoin="round"/>
+    <!-- mini scribbles -->
+    <path d="M4 10 Q10 4 16 10 T28 10" stroke="#2a2118" stroke-width="2" fill="none"/>
+  </svg>
+
+  <svg class="corner br" viewBox="0 0 100 100" aria-hidden="true">
+    <!-- heart -->
+    <path d="M50 82 C 18 60, 18 28, 38 28 C 46 28, 50 36, 50 40 C 50 36, 54 28, 62 28 C 82 28, 82 60, 50 82 Z"
+          fill="#f87171" stroke="#2a2118" stroke-width="3" stroke-linejoin="round"/>
+    <!-- sparkle -->
+    <g stroke="#2a2118" stroke-width="2" stroke-linecap="round">
+      <line x1="14" y1="14" x2="20" y2="20"/>
+      <line x1="20" y1="14" x2="14" y2="20"/>
+      <line x1="17" y1="8"  x2="17" y2="26"/>
+      <line x1="8"  y1="17" x2="26" y2="17"/>
+    </g>
+  </svg>
+
+  <span class="scribble" style="top: 200px; left: 8px;">~ ~ ~</span>
+  <span class="scribble" style="top: 360px; right: 10px;">// //</span>
+  <span class="scribble" style="bottom: 240px; left: 10px;">★ ✦</span>
+  <span class="scribble" style="bottom: 120px; right: 14px;">~ ~</span>
+
+  <!-- ============ HEADLINE ============ -->
+  <div class="headline">
+    <h1>
+      My <span class="pop-coral">Morning</span>
+      <span class="pop-sun">Mission</span><span class="pop-sky">!</span>
+    </h1>
+    <svg class="squiggle" viewBox="0 0 320 18" aria-hidden="true">
+      <path d="M4 9 Q 24 0, 44 9 T 84 9 T 124 9 T 164 9 T 204 9 T 244 9 T 284 9 T 316 9"
+            stroke="#2a2118" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <p class="subhead">
+    Good morning, friend! Let's make today <em>awesome</em> together.
+  </p>
+
+  <!-- ============ LEGEND ============ -->
+  <div class="legend" aria-hidden="true">
+    <div class="col-num">#</div>
+    <div class="col-time">time</div>
+    <div class="col-what">what to do</div>
+    <div class="days">
+      <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+    </div>
+  </div>
+
+  <!-- ============ TASK LIST ============ -->
+  <ol class="tasks">
+
+    <li class="task">
+      <div class="num">1</div>
+      <div class="time">6:50</div>
+      <div class="what">
+        Wake up + 3 BIG stretches
+        <span class="hint">reach for the ceiling, like a sleepy lion!</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">2</div>
+      <div class="time">7:00</div>
+      <div class="what">
+        Bathroom + brush teeth
+        <span class="hint">top, bottom, sides, and the tongue too!</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">3</div>
+      <div class="time">7:10</div>
+      <div class="what">
+        Get dressed
+        <span class="hint">clothes are waiting from last night — go go go</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">4</div>
+      <div class="time">7:20</div>
+      <div class="what">
+        Breakfast at the kitchen counter
+        <span class="hint">fuel for a hero — chew slowly, sip water</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">5</div>
+      <div class="time">7:35</div>
+      <div class="what">
+        Pack your backpack
+        <span class="hint">homework, water bottle, snack — check, check, check</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">6</div>
+      <div class="time">7:45</div>
+      <div class="what">
+        Shoes on + jacket
+        <span class="hint">left foot, right foot, zip it up</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">7</div>
+      <div class="time">7:50</div>
+      <div class="what">
+        Hug a grown-up
+        <span class="hint">tell them ONE thing about today</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+
+    <li class="task">
+      <div class="num">8</div>
+      <div class="time">7:55</div>
+      <div class="what">
+        Out the door — you got this!
+        <span class="hint">deep breath, big smile, off you go</span>
+      </div>
+      <div class="stars">
+        <div class="starwrap"><div class="d">M</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">W</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">T</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">F</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+        <div class="starwrap"><div class="d">S</div><div class="star"></div></div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- ============ SUPER-POWER ============ -->
+  <section class="superpower" aria-label="Today's super-power">
+    <h2><span class="star-mini">★</span> Today's Super-Power <span class="star-mini">★</span></h2>
+    <p class="ask">What kind of awesome are you today? Circle one!</p>
+
+    <div class="choices">
+      <div class="choice kind">KIND</div>
+      <div class="choice brave">BRAVE</div>
+      <div class="choice curious">CURIOUS</div>
+      <div class="choice patient">PATIENT</div>
+      <div class="choice silly">SILLY</div>
+    </div>
+
+    <p class="circle-hint">(grab a marker, draw a big circle around the one that feels like YOU)</p>
+  </section>
+
+  <!-- ============ PARENT NOTE ============ -->
+  <div class="parent-note">
+    <div class="ribbon">a note for grown-ups</div>
+    <div>
+      <span class="stars-inline">★★★★</span> &times; <strong>4 weeks</strong>
+      = a special activity day!
+    </div>
+    <div class="picks">
+      You choose:
+      <span class="pick a">ice cream</span>
+      <span class="pick b">library trip</span>
+      <span class="pick c">pancakes for dinner</span>
+    </div>
+  </div>
+
+  <p class="pep">You got this — go be amazing today! ☺</p>
+
+</div>
+
+</body>
+</html>

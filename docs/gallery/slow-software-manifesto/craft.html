@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="artifold:design-mode" content="brutalist-web">
+<meta name="artifold:voice-register" content="manifesto">
+<meta name="artifold:tool" content="claude">
+<title>The Slow Software Manifesto</title>
+<style>
+html { background: #ffffff; }
+body {
+  color: #000000;
+  background: #ffffff;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 48px auto;
+  padding: 0 20px;
+}
+h1 { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; }
+h2 { font-size: 20px; font-weight: bold; margin: 32px 0 8px 0; }
+h3 { font-size: 18px; font-weight: bold; margin: 24px 0 4px 0; }
+p  { margin: 0 0 16px 0; }
+a  { color: #0000ee; }
+a:visited { color: #551a8b; }
+hr {
+  border: 0;
+  border-top: 1px solid #000000;
+  margin: 32px 0;
+}
+hr.hair { border-top: 1px solid #000000; margin: 24px 0 16px 0; }
+ol { padding-left: 28px; margin: 0; }
+ol > li { margin-bottom: 32px; }
+ul.signers { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 32px; }
+ul.signers li { margin: 0 0 6px 0; break-inside: avoid; }
+ul.plain { padding-left: 24px; margin: 0 0 16px 0; }
+ul.plain li { margin-bottom: 6px; }
+.subtitle { font-style: italic; margin: 0 0 24px 0; }
+.aphorism { font-weight: bold; }
+.meta { font-size: 15px; }
+footer { font-size: 15px; margin-top: 16px; }
+code { font-family: "Courier New", monospace; font-size: 16px; }
+blockquote { margin: 0 0 16px 24px; padding: 0; }
+table.toc { border-collapse: collapse; margin: 0 0 16px 0; font-size: 16px; }
+table.toc td { padding: 2px 12px 2px 0; vertical-align: top; }
+</style>
+</head>
+<body>
+
+<h1>The Slow Software Manifesto</h1>
+<p class="subtitle">Twelve points, signed by people who would rather own their tools than rent them.</p>
+
+<p class="meta">Manifest first published 27 May 2026. Version 1.0. <a href="#sign">Read the signers</a>. <a href="#contents">Read the points</a>.</p>
+
+<hr>
+
+<h2>Preface</h2>
+
+<p>Software has been getting faster at producing, and slower at serving. It ships every Tuesday and forgets you every Wednesday. It rents you back the file you wrote. It updates itself in the night and renames your menus by morning. It treats your attention as inventory and your patience as runway.</p>
+
+<p>We refuse. Below are the twelve points of slow software. None of them are difficult. All of them are unfashionable.</p>
+
+<p>This document is not a product roadmap. It is a line in the sand. If you agree, sign your name to it. If you disagree, write your own. If you find it obvious, good. The obvious has been forgotten on purpose.</p>
+
+<hr>
+
+<h2 id="contents">Contents</h2>
+
+<table class="toc">
+<tr><td>1.</td><td><a href="#p1">Respect the user, or get out of the way.</a></td></tr>
+<tr><td>2.</td><td><a href="#p2">Prefer files to apps.</a></td></tr>
+<tr><td>3.</td><td><a href="#p3">Prefer plain text to proprietary formats.</a></td></tr>
+<tr><td>4.</td><td><a href="#p4">No subscriptions for things that do not change.</a></td></tr>
+<tr><td>5.</td><td><a href="#p5">Run locally.</a></td></tr>
+<tr><td>6.</td><td><a href="#p6">Ship infrequently.</a></td></tr>
+<tr><td>7.</td><td><a href="#p7">Embrace constraints.</a></td></tr>
+<tr><td>8.</td><td><a href="#p8">Be small enough to read.</a></td></tr>
+<tr><td>9.</td><td><a href="#p9">Do not autoupdate without consent.</a></td></tr>
+<tr><td>10.</td><td><a href="#p10">Owned, not rented.</a></td></tr>
+<tr><td>11.</td><td><a href="#p11">Archive well.</a></td></tr>
+<tr><td>12.</td><td><a href="#p12">Outlive the company.</a></td></tr>
+</table>
+
+<hr>
+
+<h2>The Twelve Points</h2>
+
+<ol>
+
+<li id="p1">
+<p class="aphorism">1. Respect the user, or get out of the way.</p>
+<p>The user is the reason the program exists. Not the metric. Not the dashboard. Not the quarterly review. Software that interrupts, nags, upsells, or guilts is software that has forgotten its job. Build a tool. Then leave the room.</p>
+</li>
+
+<li id="p2">
+<p class="aphorism">2. Prefer files to apps.</p>
+<p>A file is a noun the user can hold. An app is a verb the company controls. Files can be moved, copied, emailed, backed up, opened in 2050, and read by a program nobody has written yet. Apps can be deprecated on a Thursday. Files outlive apps. Design accordingly.</p>
+</li>
+
+<li id="p3">
+<p class="aphorism">3. Prefer plain text to proprietary formats.</p>
+<p>Plain text is the only format with a hundred-year warranty. It opens in anything. It diffs cleanly. It survives the company, the founder, the acquirer, and the bankruptcy. If your format requires the vendor's binary to be readable, your format is a leash. Write to disk in something a human could squint at and understand.</p>
+</li>
+
+<li id="p4">
+<p class="aphorism">4. No subscriptions for things that do not change.</p>
+<p>A text editor is not a streaming service. A calculator is not a magazine. Charging rent for a program that ran the same yesterday is a confession that you have nothing new to offer. Sell the thing. Let the buyer keep the thing. Rent only what genuinely costs you every month.</p>
+</li>
+
+<li id="p5">
+<p class="aphorism">5. Run locally.</p>
+<p>The fastest network is no network. The most private server is no server. Software that requires a round trip to a faraway machine to flip a checkbox is software that has chosen its convenience over yours. Run on the user's hardware. The hardware is good now. Use it.</p>
+</li>
+
+<li id="p6">
+<p class="aphorism">6. Ship infrequently.</p>
+<p>Every release is a small tax on someone's muscle memory. Every redesign asks the world to relearn what already worked. Ship when you have something to say. Then be quiet. A program that has not changed in three years is not abandoned. It is finished.</p>
+</li>
+
+<li id="p7">
+<p class="aphorism">7. Embrace constraints.</p>
+<p>A small program does a few things well and refuses the rest. A large program does a thousand things badly and calls it a platform. Choose your scope and defend it. The feature you turn down is the feature that does not break next year. Scope is a moral position.</p>
+</li>
+
+<li id="p8">
+<p class="aphorism">8. Be small enough to read.</p>
+<p>The user cannot trust what the user cannot inspect. A program of a few thousand lines can be read by one curious person in one afternoon. A program of a few million lines is a religion: you must take it on faith. Slow software is small software. Small software is honest software.</p>
+</li>
+
+<li id="p9">
+<p class="aphorism">9. Do not autoupdate without consent.</p>
+<p>The program on the user's disk belongs to the user. It does not have permission to rewrite itself overnight. Ask before you change. Change only what was asked. The user who said no last Tuesday is allowed to say no this Tuesday. Consent is not a checkbox buried in settings.</p>
+</li>
+
+<li id="p10">
+<p class="aphorism">10. Owned, not rented.</p>
+<p>A tool you cannot keep is not a tool. It is an arrangement. When the company turns off the lights, your work should still open. When your card expires, your archive should still read. Buy software the way you buy a hammer: once, fully, forever. The hammer does not phone home.</p>
+</li>
+
+<li id="p11">
+<p class="aphorism">11. Archive well.</p>
+<p>Future you is a stranger with no password manager. Write data in formats that stranger can open. Keep names that stranger can search. Avoid clever schemas that only the current version of the program understands. The archive is the product. Everything else is a viewer.</p>
+</li>
+
+<li id="p12">
+<p class="aphorism">12. Outlive the company.</p>
+<p>Companies die. Founders leave. Investors lose patience. Servers get shut off in alphabetical order. Software that requires its maker to stay alive is software with an expiration date stamped on the user. Build tools that work after you are gone. That is the only software worth signing your name to.</p>
+</li>
+
+</ol>
+
+<hr>
+
+<h2>What we are against</h2>
+
+<p>Your software watches you. Your data is collateral. Your file is a row in someone else's table. Your subscription is a hostage negotiation conducted monthly. Your update broke the workflow you spent a year building. Your vendor was acquired and your archive is now read-only and your read-only access expires in ninety days.</p>
+
+<p>None of this is necessary. All of it is a choice. Other choices exist.</p>
+
+<p>We are against the redesign that solved no problem. The dialog box that asked nothing. The notification that meant nothing. The onboarding flow that delayed the work. The empty state that suggested a tutorial instead of a button. The settings panel reorganized by a designer who did not use the product. The migration to the cloud that was a migration of ownership.</p>
+
+<h2>What we are for</h2>
+
+<p>Programs that start fast and finish. Files on disks you own. Formats older than the people using them. Tools that did not need a relaunch this year because they were correct the first time. Software you can read, fork, and bury in a time capsule with reasonable confidence it will compile when dug up.</p>
+
+<p>We are for the menu that has stayed in the same place since 2008. The keyboard shortcut that still works. The export button that produces something the program did not invent. The save file that is a directory of text files. The program that has no telemetry because it does not need to know.</p>
+
+<p>This is not nostalgia. The 1990s shipped plenty of bad software. We do not want the past back. We want the discipline back.</p>
+
+<hr>
+
+<h2>Frequently asked accusations</h2>
+
+<h3>You are romanticizing the past.</h3>
+<p>No. The past had Clippy and Real Player. We are romanticizing the constraints that produced the good parts of the past, not the parts that crashed your computer at the photo plant. Keep the discipline. Drop the bugs.</p>
+
+<h3>This will not scale.</h3>
+<p>Correct. Some things should not. A diary does not scale. A pocket knife does not scale. A favorite restaurant does not scale. Software is allowed to be a favorite restaurant.</p>
+
+<h3>Users want convenience.</h3>
+<p>Users want their work to still exist tomorrow. The convenience that costs them their archive is not convenience. It is debt with a friendly interface.</p>
+
+<h3>How will anyone get paid?</h3>
+<p>By selling the program. By supporting it. By being hired for knowing it. By teaching it. By writing the next one. People got paid for software long before subscriptions existed. They can do it again.</p>
+
+<h3>What about security updates?</h3>
+<p>Ship them. Announce them. Let the user install them. A security patch is not a redesign and should not arrive bundled with one.</p>
+
+<h3>What about AI?</h3>
+<p>The same rules apply. Run the model on the user's machine when possible. Save outputs as plain text. Do not condition the tool on a remote service that may be deprecated. The novelty of the technology does not exempt it from the obligations of the craft.</p>
+
+<hr>
+
+<h2>A short test</h2>
+
+<p>Before shipping, ask the following questions. If the answer to any of them is no, the work is not finished.</p>
+
+<ul class="plain">
+<li>If the company vanishes tomorrow, can the user still open their files?</li>
+<li>If the network is down, can the user still do the work?</li>
+<li>If the user does not pay next month, does the archive remain readable?</li>
+<li>Can the user export everything in a format another program can read?</li>
+<li>Has any update in the last year removed a feature someone relied on?</li>
+<li>Does the program ask before changing itself?</li>
+<li>Could a curious person read the source in an afternoon?</li>
+<li>Is the file format documented somewhere outside the source code?</li>
+</ul>
+
+<p>These are not aspirational questions. They are minimums. Treat them as such.</p>
+
+<hr>
+
+<h2 id="sign">Signers</h2>
+
+<p>The following people put their names to this document. They are not speaking for their employers. They are speaking as people who have written software, used software, lost software, and would prefer not to lose any more.</p>
+
+<ul class="signers">
+<li>Anders Holm, Stockholm</li>
+<li>Mei Tanaka, Kyoto</li>
+<li>Carlos Mwangi, Nairobi</li>
+<li>Priya Iyer, Bangalore</li>
+<li>Sofia Reinhardt, Leipzig</li>
+<li>Tomasz Wojcik, Krakow</li>
+<li>Leila Haddad, Beirut</li>
+<li>Ines Carvalho, Lisbon</li>
+<li>Joon-ho Park, Busan</li>
+<li>Rosa Aguilar, Mexico City</li>
+<li>Daniel Okafor, Lagos</li>
+<li>Hannah Bergman, Minneapolis</li>
+<li>Yuki Halvorsen, Tromso</li>
+<li>Pablo Restrepo, Medellin</li>
+</ul>
+
+<p class="meta">To add your name: copy this file. Edit the list. Host it yourself. There is no central registry. There is no signup form. There is no newsletter.</p>
+
+<hr>
+
+<h2>How to read this page</h2>
+
+<p>This page is one file. It loads no fonts, calls no servers, runs no scripts, and sets no cookies. If you save it to disk it will work offline forever. If you open it on a phone in a basement in 2050 it will render. If you print it on paper it will fit. The form is the argument.</p>
+
+<p>The CSS is under sixty lines. The HTML is plain. There is no build step. View source. That is the documentation.</p>
+
+<h2>License</h2>
+
+<p>This manifesto is in the public domain. Copy it. Fork it. Mirror it. Translate it. Disagree with it in writing. Strike out the points you reject and ship your own version. The only thing you cannot do is take it down for everyone else.</p>
+
+<hr class="hair">
+
+<footer>
+<p>Manifest first published 27 May 2026, version 1.0. This page is 12kb. It will work in 2050.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Climate Change in 7 Key Charts</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #ffffff;
+    color: #222;
+    line-height: 1.6;
+  }
+  h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+    color: #1a3a6c;
+  }
+  h2 {
+    font-size: 1.4em;
+    margin-top: 40px;
+    margin-bottom: 8px;
+    color: #1a3a6c;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 6px;
+  }
+  p.intro {
+    font-size: 1.1em;
+    color: #444;
+  }
+  p.caption {
+    font-size: 0.9em;
+    color: #777;
+    font-style: italic;
+    margin-top: 6px;
+  }
+  .chart {
+    margin: 20px 0;
+    padding: 16px;
+    background: #f7f9fc;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+    font-size: 0.85em;
+  }
+  .bar-label {
+    width: 60px;
+    text-align: right;
+    padding-right: 10px;
+    color: #555;
+  }
+  .bar {
+    height: 18px;
+    background: #2a73c2;
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+  .bar-value {
+    color: #333;
+    font-size: 0.85em;
+  }
+  .bar.warm { background: #d9534f; }
+  .bar.cool { background: #5bc0de; }
+  .bar.ice  { background: #6fa8dc; }
+  .bar.sea  { background: #3a86b3; }
+  .bar.co2  { background: #555a66; }
+  .bar.emit { background: #b85c00; }
+  .bar.disaster { background: #c0392b; }
+  svg {
+    display: block;
+    margin: 10px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+  }
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    font-size: 0.85em;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<h1>Climate Change in 7 Key Charts</h1>
+<p class="intro">A quick visual tour of the most important indicators showing how Earth's climate is changing. All figures are real-world approximations drawn from sources such as NOAA, NASA GISS, IPCC, and the NSIDC.</p>
+
+<!-- Chart 1: CO2 -->
+<h2>1. Atmospheric CO<sub>2</sub> Levels (Mauna Loa, 1958–2024)</h2>
+<div class="chart">
+  <div class="bar-row"><div class="bar-label">1958</div><div class="bar co2" style="width: 50%;"></div><span class="bar-value">315 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">1970</div><div class="bar co2" style="width: 52%;"></div><span class="bar-value">325 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">1980</div><div class="bar co2" style="width: 55%;"></div><span class="bar-value">338 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">1990</div><div class="bar co2" style="width: 59%;"></div><span class="bar-value">354 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">2000</div><div class="bar co2" style="width: 62%;"></div><span class="bar-value">370 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">2010</div><div class="bar co2" style="width: 65%;"></div><span class="bar-value">389 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">2020</div><div class="bar co2" style="width: 69%;"></div><span class="bar-value">414 ppm</span></div>
+  <div class="bar-row"><div class="bar-label">2024</div><div class="bar co2" style="width: 71%;"></div><span class="bar-value">425 ppm</span></div>
+</div>
+<p class="caption">CO<sub>2</sub> has risen from 315 ppm to about 425 ppm — a 35% increase in just 66 years, and a level not seen on Earth for over 3 million years. Source: NOAA Mauna Loa.</p>
+
+<!-- Chart 2: Temperature anomaly -->
+<h2>2. Global Temperature Anomaly (1880–2024)</h2>
+<div class="chart">
+  <svg viewBox="0 0 600 220" width="100%" height="220">
+    <line x1="40" y1="180" x2="580" y2="180" stroke="#999" stroke-width="1"/>
+    <line x1="40" y1="20"  x2="40"  y2="180" stroke="#999" stroke-width="1"/>
+    <line x1="40" y1="140" x2="580" y2="140" stroke="#ccc" stroke-dasharray="3,3"/>
+    <text x="5" y="144" font-size="10" fill="#666">0.0</text>
+    <text x="5" y="104" font-size="10" fill="#666">+0.5</text>
+    <text x="5" y="64"  font-size="10" fill="#666">+1.0</text>
+    <text x="5" y="24"  font-size="10" fill="#666">+1.5°C</text>
+    <text x="40"  y="200" font-size="10" fill="#666">1880</text>
+    <text x="180" y="200" font-size="10" fill="#666">1920</text>
+    <text x="320" y="200" font-size="10" fill="#666">1960</text>
+    <text x="460" y="200" font-size="10" fill="#666">2000</text>
+    <text x="555" y="200" font-size="10" fill="#666">2024</text>
+    <polyline fill="none" stroke="#d9534f" stroke-width="2"
+      points="40,148 80,150 120,146 160,144 200,142 240,138 280,134 320,130 360,118 400,108 440,92 480,76 520,52 560,28 580,24"/>
+  </svg>
+</div>
+<p class="caption">Earth's average surface temperature is now about +1.2°C above the 1880 baseline, with most warming occurring after 1975. Source: NASA GISTEMP.</p>
+
+<!-- Chart 3: Sea level rise -->
+<h2>3. Global Mean Sea Level Rise (1993–2024)</h2>
+<div class="chart">
+  <div class="bar-row"><div class="bar-label">1993</div><div class="bar sea" style="width: 2%;"></div><span class="bar-value">0 cm (baseline)</span></div>
+  <div class="bar-row"><div class="bar-label">2000</div><div class="bar sea" style="width: 18%;"></div><span class="bar-value">+2.2 cm</span></div>
+  <div class="bar-row"><div class="bar-label">2005</div><div class="bar sea" style="width: 30%;"></div><span class="bar-value">+3.7 cm</span></div>
+  <div class="bar-row"><div class="bar-label">2010</div><div class="bar sea" style="width: 42%;"></div><span class="bar-value">+5.2 cm</span></div>
+  <div class="bar-row"><div class="bar-label">2015</div><div class="bar sea" style="width: 56%;"></div><span class="bar-value">+6.9 cm</span></div>
+  <div class="bar-row"><div class="bar-label">2020</div><div class="bar sea" style="width: 72%;"></div><span class="bar-value">+8.8 cm</span></div>
+  <div class="bar-row"><div class="bar-label">2024</div><div class="bar sea" style="width: 82%;"></div><span class="bar-value">+10.1 cm</span></div>
+</div>
+<p class="caption">Satellite altimetry shows global sea level has risen about 10 cm since 1993, and the rate of rise is accelerating (~4.5 mm/year today). Source: NASA Sea Level Change Portal.</p>
+
+<!-- Chart 4: Arctic sea ice -->
+<h2>4. Arctic Sea Ice Minimum Extent (1980–2024)</h2>
+<div class="chart">
+  <div class="bar-row"><div class="bar-label">1980</div><div class="bar ice" style="width: 88%;"></div><span class="bar-value">7.7 M km²</span></div>
+  <div class="bar-row"><div class="bar-label">1990</div><div class="bar ice" style="width: 78%;"></div><span class="bar-value">6.2 M km²</span></div>
+  <div class="bar-row"><div class="bar-label">2000</div><div class="bar ice" style="width: 72%;"></div><span class="bar-value">6.3 M km²</span></div>
+  <div class="bar-row"><div class="bar-label">2007</div><div class="bar ice" style="width: 52%;"></div><span class="bar-value">4.3 M km²</span></div>
+  <div class="bar-row"><div class="bar-label">2012</div><div class="bar ice" style="width: 42%;"></div><span class="bar-value">3.4 M km² (record)</span></div>
+  <div class="bar-row"><div class="bar-label">2020</div><div class="bar ice" style="width: 48%;"></div><span class="bar-value">3.9 M km²</span></div>
+  <div class="bar-row"><div class="bar-label">2024</div><div class="bar ice" style="width: 50%;"></div><span class="bar-value">4.0 M km²</span></div>
+</div>
+<p class="caption">September Arctic sea ice extent has declined ~40% since satellite records began in 1979. Source: NSIDC.</p>
+
+<!-- Chart 5: Annual CO2 emissions by region -->
+<h2>5. Annual CO<sub>2</sub> Emissions by Region (2023)</h2>
+<div class="chart">
+  <div class="bar-row"><div class="bar-label">China</div><div class="bar emit" style="width: 80%;"></div><span class="bar-value">11.9 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">USA</div><div class="bar emit" style="width: 34%;"></div><span class="bar-value">5.0 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">India</div><div class="bar emit" style="width: 21%;"></div><span class="bar-value">3.1 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">EU-27</div><div class="bar emit" style="width: 18%;"></div><span class="bar-value">2.6 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">Russia</div><div class="bar emit" style="width: 12%;"></div><span class="bar-value">1.8 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">Japan</div><div class="bar emit" style="width: 7%;"></div><span class="bar-value">1.0 Gt</span></div>
+  <div class="bar-row"><div class="bar-label">Other</div><div class="bar emit" style="width: 60%;"></div><span class="bar-value">8.8 Gt</span></div>
+</div>
+<p class="caption">Global energy-related CO<sub>2</sub> emissions reached ~37.4 Gt in 2023, a new record. Source: Global Carbon Project.</p>
+
+<!-- Chart 6: Ocean heat content -->
+<h2>6. Ocean Heat Content (0–2000m, 1960–2024)</h2>
+<div class="chart">
+  <svg viewBox="0 0 600 200" width="100%" height="200">
+    <line x1="40" y1="170" x2="580" y2="170" stroke="#999" stroke-width="1"/>
+    <line x1="40" y1="20"  x2="40"  y2="170" stroke="#999" stroke-width="1"/>
+    <text x="5"  y="174" font-size="10" fill="#666">0</text>
+    <text x="5"  y="100" font-size="10" fill="#666">200</text>
+    <text x="5"  y="30"  font-size="10" fill="#666">400 ZJ</text>
+    <text x="40"  y="190" font-size="10" fill="#666">1960</text>
+    <text x="180" y="190" font-size="10" fill="#666">1980</text>
+    <text x="340" y="190" font-size="10" fill="#666">2000</text>
+    <text x="500" y="190" font-size="10" fill="#666">2024</text>
+    <polyline fill="none" stroke="#3a86b3" stroke-width="2.5"
+      points="40,168 100,166 160,160 220,152 280,140 340,118 400,92 460,68 520,44 580,28"/>
+  </svg>
+</div>
+<p class="caption">More than 90% of excess heat trapped by greenhouse gases has been absorbed by the oceans, with content rising ~400 zettajoules since 1960. Source: NOAA NCEI.</p>
+
+<!-- Chart 7: Climate-related disasters -->
+<h2>7. Billion-Dollar Weather &amp; Climate Disasters (U.S., per year)</h2>
+<div class="chart">
+  <div class="bar-row"><div class="bar-label">1980s avg</div><div class="bar disaster" style="width: 12%;"></div><span class="bar-value">3.3 events/yr</span></div>
+  <div class="bar-row"><div class="bar-label">1990s avg</div><div class="bar disaster" style="width: 22%;"></div><span class="bar-value">5.7 events/yr</span></div>
+  <div class="bar-row"><div class="bar-label">2000s avg</div><div class="bar disaster" style="width: 27%;"></div><span class="bar-value">6.7 events/yr</span></div>
+  <div class="bar-row"><div class="bar-label">2010s avg</div><div class="bar disaster" style="width: 52%;"></div><span class="bar-value">13.1 events/yr</span></div>
+  <div class="bar-row"><div class="bar-label">2020</div><div class="bar disaster" style="width: 88%;"></div><span class="bar-value">22 events</span></div>
+  <div class="bar-row"><div class="bar-label">2023</div><div class="bar disaster" style="width: 112%;"></div><span class="bar-value">28 events (record)</span></div>
+</div>
+<p class="caption">The U.S. now averages over 20 billion-dollar disasters per year, up from ~3 in the 1980s (CPI-adjusted). Source: NOAA NCEI.</p>
+
+<footer>
+  <p>Charts approximate published values from NOAA, NASA GISS, NSIDC, IPCC AR6, and the Global Carbon Project. Generated as a static HTML summary — for authoritative figures consult the original sources.</p>
+</footer>
+
+</body>
+</html>

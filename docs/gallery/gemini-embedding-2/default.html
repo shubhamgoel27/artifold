@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini Embedding 2 — Explainer</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+  .hero {
+    background: linear-gradient(135deg, #4285F4 0%, #9b72cb 50%, #d96570 100%);
+    color: white;
+    padding: 60px 40px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 10px 0;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.95;
+    margin: 0;
+  }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px 24px;
+  }
+  h2 {
+    color: #1a73e8;
+    border-bottom: 2px solid #e8eaed;
+    padding-bottom: 6px;
+    margin-top: 40px;
+  }
+  h3 {
+    color: #333;
+    margin-bottom: 6px;
+  }
+  .meta {
+    background: #f8f9fa;
+    border-left: 4px solid #1a73e8;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 0.95rem;
+    border-radius: 4px;
+  }
+  .meta p {
+    margin: 4px 0;
+  }
+  .authors {
+    color: #555;
+    font-style: italic;
+  }
+  ul {
+    padding-left: 22px;
+  }
+  li {
+    margin-bottom: 8px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e8eaed;
+  }
+  th {
+    background: #f1f3f4;
+    color: #202124;
+    font-weight: 600;
+  }
+  tr:hover {
+    background: #fafafa;
+  }
+  .score {
+    font-weight: 600;
+    color: #1a73e8;
+  }
+  .use-cases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .use-case {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #e8eaed;
+  }
+  .use-case h4 {
+    margin: 0 0 8px 0;
+    color: #1a73e8;
+  }
+  .use-case p {
+    margin: 0;
+    font-size: 0.93rem;
+    color: #555;
+  }
+  .arxiv-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: #1a73e8;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  .arxiv-link:hover {
+    background: #155ab6;
+  }
+  footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    padding: 20px;
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Gemini Embedding 2</h1>
+  <p class="subtitle">A Native Multimodal Embedding Model from Gemini</p>
+</div>
+
+<div class="container">
+
+  <div class="meta">
+    <p><strong>arXiv:</strong> 2605.27295</p>
+    <p><strong>Submitted:</strong> May 26, 2026</p>
+    <p class="authors"><strong>Authors:</strong> Madhuri Shanbhogue, Zhe Li, Shanfeng Zhang, Gustavo Hernández Ábrego, Shih-Cheng Huang, et al. (88 total)</p>
+  </div>
+
+  <h2>Abstract</h2>
+  <p>
+    Gemini Embedding 2 is a <strong>native multimodal embedding model</strong> built on top of Gemini that
+    embeds <strong>video, audio, image, and text</strong> into a single unified representation space.
+    Trained with large-scale contrastive learning in a multi-task, multi-stage setup, it achieves
+    state-of-the-art results on a wide range of retrieval benchmarks and demonstrates strong
+    zero-shot transfer to specialized domains such as astronomy, bioscience, fine arts, and culinary.
+  </p>
+
+  <h2>Key Contributions</h2>
+  <ul>
+    <li>
+      <strong>Unified multimodal embedding space:</strong> A single model that encodes video, audio,
+      image, and text into the same vector space, enabling cross-modal retrieval out of the box.
+    </li>
+    <li>
+      <strong>Built on Gemini:</strong> Leverages the Gemini foundation model, inheriting its native
+      multimodal understanding rather than bolting modalities on after the fact.
+    </li>
+    <li>
+      <strong>Multi-task, multi-stage training:</strong> Uses large-scale contrastive learning across
+      a diverse mix of tasks and stages to produce robust, general-purpose embeddings.
+    </li>
+    <li>
+      <strong>State-of-the-art retrieval performance:</strong> Top results across image-text, video-text,
+      multilingual, and code retrieval benchmarks.
+    </li>
+    <li>
+      <strong>Strong zero-shot domain transfer:</strong> Generalizes well to specialized domains
+      (astronomy, bioscience, fine arts, culinary) without domain-specific fine-tuning.
+    </li>
+  </ul>
+
+  <h2>Key Benchmark Results</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Benchmark</th>
+        <th>Modality / Task</th>
+        <th>Metric</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>MSCOCO</td>
+        <td>Image &harr; Text retrieval</td>
+        <td>R@1</td>
+        <td class="score">62.9</td>
+      </tr>
+      <tr>
+        <td>Vatex</td>
+        <td>Video &harr; Text retrieval</td>
+        <td>NDCG@10</td>
+        <td class="score">68.8</td>
+      </tr>
+      <tr>
+        <td>MTEB (Multilingual)</td>
+        <td>Text retrieval (many languages)</td>
+        <td>Avg score</td>
+        <td class="score">69.9</td>
+      </tr>
+      <tr>
+        <td>MTEB (Code)</td>
+        <td>Code retrieval</td>
+        <td>Avg score</td>
+        <td class="score">84.0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Potential Use Cases</h2>
+  <div class="use-cases">
+    <div class="use-case">
+      <h4>Retrieval-Augmented Generation</h4>
+      <p>Power RAG pipelines with high-quality multimodal retrieval over text, images, audio, and video.</p>
+    </div>
+    <div class="use-case">
+      <h4>Recommendation</h4>
+      <p>Build content and product recommenders that reason across modalities in a shared embedding space.</p>
+    </div>
+    <div class="use-case">
+      <h4>Search</h4>
+      <p>Enable semantic search where queries and documents can be any combination of modalities.</p>
+    </div>
+    <div class="use-case">
+      <h4>Specialized Domains</h4>
+      <p>Zero-shot deployment in domains like astronomy, bioscience, fine arts, and culinary.</p>
+    </div>
+  </div>
+
+  <h2>Read the Paper</h2>
+  <p>For full details, methodology, and additional results, check out the paper on arXiv:</p>
+  <a class="arxiv-link" href="https://arxiv.org/abs/2605.27295" target="_blank" rel="noopener noreferrer">
+    View on arXiv &rarr;
+  </a>
+
+</div>
+
+<footer>
+  Explainer generated for arXiv:2605.27295 &mdash; Gemini Embedding 2
+</footer>
+
+</body>
+</html>

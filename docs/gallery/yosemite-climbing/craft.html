@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yosemite — A Field Guide to Ten Storied Routes</title>
+<meta name="artifold:intent" content="Field-guide to ten famous Yosemite trad, multi-pitch, and aid climbing routes">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:prompt" content="A guide to ~10 of Yosemite's most famous trad / multi-pitch / aid climbing routes — field-guide mode, enthusiast voice.">
+<meta name="artifold:design-mode" content="field-guide">
+<meta name="artifold:voice-register" content="enthusiast">
+<style>
+  /* palette — ivory NOT cream, four formation colors */
+  :root{
+    --paper:#f9f6ef; --paper-2:#f3efe4; --ink:#1a1a17; --ink-2:#2c2a24;
+    --muted:#6b6657; --rule:#d9d2c0; --rule-soft:#e6e0cf;
+    --elcap:#b8915a; --halfdome:#4a6741; --wacol:#5b6c8a; --cathedral:#a04f3b;
+    --serif:"Charter","Source Serif Pro","Iowan Old Style","Georgia",ui-serif,serif;
+    --sans:"Inter Tight","Inter","Helvetica Neue","Helvetica","Arial",ui-sans-serif,sans-serif;
+    --mono:"JetBrains Mono","SF Mono","Menlo","Consolas",ui-monospace,monospace;
+  }
+  html,body{ background:var(--paper); }
+  body{ margin:0; color:var(--ink); font-family:var(--serif); font-size:14px; line-height:1.55;
+        font-feature-settings:"onum","liga","kern"; -webkit-font-smoothing:antialiased; }
+  .page{ max-width:1100px; margin:0 auto; padding:56px 64px 96px; background:var(--paper); }
+
+  /* masthead */
+  .mast{ border-top:2px solid var(--ink); border-bottom:1px solid var(--ink); padding:18px 0 22px;
+         display:grid; grid-template-columns:1fr auto; align-items:end; gap:24px; }
+  .mast h1{ font-family:var(--sans); font-weight:600; font-stretch:condensed; font-size:34px;
+            line-height:1.05; letter-spacing:-0.01em; margin:0; color:var(--ink); }
+  .mast h1 .amp{ color:var(--muted); font-weight:400; }
+  .mast .sub{ font-style:italic; color:var(--muted); font-size:14px; margin-top:6px; }
+  .mast .meta{ font-family:var(--sans); font-size:11px; font-variant:small-caps;
+               letter-spacing:0.06em; color:var(--muted); text-align:right; line-height:1.4; }
+  .mast .meta strong{ color:var(--ink-2); font-weight:600; }
+
+  /* lede + map */
+  .lede-row{ display:grid; grid-template-columns:1.35fr 1fr; gap:48px; padding:28px 0 8px;
+             border-bottom:1px solid var(--rule); }
+  .lede{ font-size:15px; line-height:1.6; color:var(--ink-2); }
+  .lede .dropcap{ float:left; font-weight:700; font-size:46px; line-height:0.86;
+                  padding:6px 8px 0 0; color:var(--ink); }
+  .lede p{ margin:0 0 10px; }
+
+  .map{ position:relative; height:260px; border:1px solid var(--rule);
+        background: linear-gradient(transparent 0 95%, var(--rule-soft) 95% 100%) 0 0/22px 22px,
+                    linear-gradient(90deg, transparent 0 95%, var(--rule-soft) 95% 100%) 0 0/22px 22px,
+                    var(--paper-2); }
+  .map svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .map .scale, .map .compass, .map .valley{
+    position:absolute; font-family:var(--sans); font-size:9px; letter-spacing:0.08em;
+    color:var(--muted); text-transform:uppercase; }
+  .map .scale{ bottom:8px; right:10px; }
+  .map .compass{ top:8px; right:10px; line-height:1.1; text-align:center; }
+  .map .compass .n{ display:block; font-weight:700; color:var(--ink); font-size:11px; }
+  .map .valley{ top:8px; left:10px; letter-spacing:0.18em; }
+  .map .lbl{ position:absolute; font-family:var(--sans); font-size:10px; font-weight:600;
+             letter-spacing:0.04em; color:var(--ink); background:var(--paper); padding:2px 6px;
+             border:1px solid var(--ink); text-transform:uppercase; }
+  .map .lbl::before{ content:""; display:inline-block; width:7px; height:7px; margin-right:6px;
+                     transform:translateY(1px); border:1px solid var(--ink-2); }
+  .lbl.elcap{ left:6%;  top:32%; }    .lbl.elcap::before{ background:var(--elcap); }
+  .lbl.hd   { right:6%;  top:18%; }   .lbl.hd::before   { background:var(--halfdome); }
+  .lbl.wac  { right:30%; top:62%; }   .lbl.wac::before  { background:var(--wacol); }
+  .lbl.cat  { left:24%;  bottom:10%; } .lbl.cat::before { background:var(--cathedral); }
+  .map .river{ position:absolute; font-style:italic; font-size:10px; color:var(--wacol);
+               left:38%; top:43%; }
+
+  /* legend + key */
+  .legend{ display:grid; grid-template-columns:repeat(4,1fr); margin:22px 0 8px;
+           border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
+  .legend .item{ padding:10px 14px; border-right:1px solid var(--rule);
+                 display:flex; align-items:center; gap:10px; }
+  .legend .item:last-child{ border-right:none; }
+  .legend .swatch{ width:14px; height:14px; flex:0 0 14px; border:1px solid var(--ink-2); }
+  .legend .nm{ font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:0.04em;
+               text-transform:uppercase; color:var(--ink); }
+  .legend .ct{ font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:auto; }
+  .key{ display:flex; gap:22px; flex-wrap:wrap; padding:10px 0 22px;
+        font-family:var(--sans); font-size:11px; color:var(--muted);
+        border-bottom:1px solid var(--rule); margin-bottom:20px; }
+  .key b{ color:var(--ink); font-weight:600; font-variant:small-caps;
+          letter-spacing:0.04em; margin-right:6px; }
+  .glyph{ display:inline-block; width:14px; text-align:center; color:var(--ink); }
+
+  /* route entry */
+  .route{ display:grid; grid-template-columns:24px 1fr; gap:22px; padding:26px 0 28px;
+          border-top:1px solid var(--rule); page-break-inside:avoid; }
+  .route:first-of-type{ border-top:1px solid var(--ink); }
+  .band{ background:var(--band, var(--elcap)); position:relative; }
+  .band::after{ content:attr(data-num); position:absolute; top:0; left:50%;
+                transform:translate(-50%,0); writing-mode:vertical-rl;
+                font-family:var(--sans); font-size:9px; letter-spacing:0.18em;
+                color:var(--paper); padding:6px 0; font-weight:700; text-transform:uppercase; }
+  .body{ display:grid; grid-template-columns:38% 62%; gap:30px; }
+
+  .col-l .name{ font-family:var(--sans); font-weight:600; font-stretch:condensed; font-size:22px;
+                line-height:1.08; letter-spacing:-0.005em; color:var(--ink); margin:0 0 4px; }
+  .col-l .scientific{ font-style:italic; color:var(--muted); font-size:12.5px; margin-bottom:10px; }
+  .badge{ display:inline-flex; align-items:center; gap:6px; font-family:var(--sans);
+          font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+          color:var(--ink); padding:3px 8px 3px 6px; border:1px solid var(--ink);
+          background:var(--paper); }
+  .badge .sw{ width:9px; height:9px; background:var(--band, var(--elcap));
+              border:1px solid var(--ink-2); }
+
+  table.stats{ width:100%; margin-top:14px; border-collapse:collapse; font-size:12.5px; }
+  table.stats th, table.stats td{ text-align:left; padding:5px 0;
+                                   border-bottom:1px dotted var(--rule); vertical-align:top; }
+  table.stats th{ font-family:var(--sans); font-weight:500; font-size:10.5px;
+                  letter-spacing:0.05em; text-transform:uppercase; color:var(--muted);
+                  width:42%; padding-right:12px; }
+  table.stats td{ color:var(--ink-2); font-variant-numeric:tabular-nums oldstyle-nums; }
+  table.stats td .mono{ font-family:var(--mono); font-size:11.5px; color:var(--ink); }
+
+  .col-r .beta{ font-size:13.5px; line-height:1.62; color:var(--ink-2); margin:0 0 12px; }
+  .col-r p + p{ margin-top:8px; }
+  .term{ color:var(--muted); font-style:italic; font-size:0.92em; }
+  .term::before{ content:" ("; } .term::after{ content:")"; }
+
+  .gear{ margin-top:10px; padding:10px 12px 11px; background:var(--paper-2);
+         border-left:2px solid var(--band, var(--elcap));
+         font-size:12.5px; line-height:1.55; }
+  .gear .lbl{ display:block; font-family:var(--sans); font-size:10px;
+              letter-spacing:0.08em; text-transform:uppercase; color:var(--ink);
+              font-weight:700; margin-bottom:3px; }
+  .gear b{ color:var(--ink); font-weight:600; }
+
+  .season{ margin-top:14px; display:grid; grid-template-columns:auto 1fr;
+           gap:10px; align-items:center; }
+  .season .lab{ font-family:var(--sans); font-size:10px; font-weight:600;
+                letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); }
+  .strip{ display:grid; grid-template-columns:repeat(12,1fr); gap:2px;
+          border:1px solid var(--rule); padding:2px; background:var(--paper); }
+  .strip .m{ height:14px; background:var(--paper-2); font-family:var(--sans);
+             font-size:8px; color:var(--muted); text-align:center;
+             line-height:14px; letter-spacing:0.02em; }
+  .strip .m.go{ background:var(--band, var(--elcap)); color:var(--paper); font-weight:700; }
+  .strip .m.shoulder{ background:color-mix(in srgb, var(--band, var(--elcap)) 35%, var(--paper-2));
+                      color:var(--ink-2); }
+
+  .fa{ margin-top:10px; font-size:12px; color:var(--muted); font-style:italic;
+       border-top:1px solid var(--rule); padding-top:8px; }
+  .fa b{ font-style:normal; color:var(--ink-2); font-weight:600; }
+
+  /* closing note */
+  .coda{ margin-top:48px; padding:24px 26px 26px; background:var(--paper-2);
+         border:1px solid var(--rule); border-left:4px solid var(--ink);
+         display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  .coda h2{ grid-column:1/-1; font-family:var(--sans); font-stretch:condensed; font-weight:600;
+            font-size:18px; margin:0 0 4px; letter-spacing:-0.005em; }
+  .coda h2 .small{ font-family:var(--serif); font-style:italic; font-weight:400;
+                   color:var(--muted); font-size:13px; margin-left:8px; }
+  .coda h3{ font-family:var(--sans); font-size:10.5px; letter-spacing:0.08em;
+            text-transform:uppercase; color:var(--ink); margin:6px 0 6px; font-weight:700; }
+  .coda p{ margin:0 0 8px; font-size:13px; line-height:1.58; color:var(--ink-2); }
+  .coda .contact{ grid-column:1/-1; border-top:1px dotted var(--rule); padding-top:10px;
+                  font-family:var(--mono); font-size:11px; color:var(--muted);
+                  display:flex; gap:24px; flex-wrap:wrap; }
+  .coda .contact b{ color:var(--ink); font-weight:700; }
+
+  .colophon{ margin-top:40px; padding-top:14px; border-top:1px solid var(--ink);
+             display:flex; justify-content:space-between; align-items:baseline;
+             font-family:var(--sans); font-size:10px; letter-spacing:0.06em;
+             text-transform:uppercase; color:var(--muted); }
+  .colophon .l b{ color:var(--ink); font-weight:600; }
+
+  @media (max-width:820px){
+    .page{ padding:24px 18px 60px; }
+    .body, .lede-row, .coda, .mast{ grid-template-columns:1fr; }
+    .lede-row{ gap:24px; } .body{ gap:18px; }
+    .legend{ grid-template-columns:repeat(2,1fr); }
+    .mast .meta{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============== MASTHEAD ============== -->
+  <header class="mast">
+    <div>
+      <h1>Yosemite Valley <span class="amp">·</span> A Field Guide to Ten Storied Routes</h1>
+      <div class="sub">Trad, multi&#8209;pitch, and big&#8209;wall lines on the granite of the Sierra Nevada</div>
+    </div>
+    <div class="meta">
+      <strong>Vol. I · No. 1</strong><br>
+      Compiled May 2026<br>
+      Yosemite National Park, California
+    </div>
+  </header>
+
+  <!-- ============== LEDE + MAP ============== -->
+  <section class="lede-row">
+    <div class="lede">
+      <p><span class="dropcap">Y</span>osemite did not invent American rock climbing, but the Valley is where the modern game was forged. Between 1957 and 1975 a handful of dirtbags living out of Camp 4 worked out a vocabulary — sustained crack technique, hammered pitons, jumar ascents on fixed lines, eventually clean protection and bold free climbing — that the rest of the climbing world is still translating.</p>
+      <p>The ten routes that follow are not a "best of" list. They are the lines a thoughtful visiting climber should know: the audacious first ascents, the rite-of-passage moderates, the modern free testpieces, and the casual day-out that introduces ten thousand people each summer to multi-pitch granite. Each entry collects the standard beta <span class="term">the working knowledge a climber carries to a route</span> plus the gear, season, and historical notes a guidebook tends to bury.</p>
+      <p>Grades are YDS technical (5.x) paired with an aid grade (C# for clean, A# for hammered) and, where useful, the NCCS commitment grade. Times are guidebook estimates for a competent party in good conditions — your party may be neither.</p>
+    </div>
+
+    <div class="map" aria-label="Schematic map of four climbing formations in Yosemite Valley">
+      <div class="valley">Yosemite Valley · schematic</div>
+      <svg viewBox="0 0 400 260" preserveAspectRatio="none">
+        <!-- merced river -->
+        <path d="M 10 150 Q 120 130 180 160 T 390 145" stroke="#5b6c8a" stroke-width="1.4" fill="none" stroke-dasharray="0"/>
+        <!-- trail from cathedral to half dome -->
+        <path d="M 110 215 Q 200 180 300 80" stroke="#1a1a17" stroke-width="0.7" fill="none" stroke-dasharray="2 3"/>
+        <!-- el cap to washington col -->
+        <path d="M 70 110 Q 160 130 250 175" stroke="#1a1a17" stroke-width="0.7" fill="none" stroke-dasharray="2 3"/>
+        <!-- formation rectangles -->
+        <rect x="30"  y="90"  width="100" height="40" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
+        <rect x="270" y="50"  width="100" height="40" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
+        <rect x="200" y="155" width="80"  height="34" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
+        <rect x="90"  y="200" width="80"  height="30" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
+      </svg>
+      <span class="lbl elcap">El Capitan</span>
+      <span class="lbl hd">Half Dome</span>
+      <span class="lbl wac">Washington Col.</span>
+      <span class="lbl cat">Cathedral Pk.</span>
+      <span class="river">Merced R.</span>
+      <div class="compass"><span class="n">N</span>↑</div>
+      <div class="scale">≈ 6 mi / 10 km W&ndash;E</div>
+    </div>
+  </section>
+
+  <!-- ============== LEGEND ============== -->
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:#b8915a"></span><span class="nm">El Capitan</span><span class="ct">4 routes</span></div>
+    <div class="item"><span class="swatch" style="background:#4a6741"></span><span class="nm">Half Dome</span><span class="ct">2 routes</span></div>
+    <div class="item"><span class="swatch" style="background:#5b6c8a"></span><span class="nm">Wash. Column &amp; Arches</span><span class="ct">3 routes</span></div>
+    <div class="item"><span class="swatch" style="background:#a04f3b"></span><span class="nm">Cathedral / High Country</span><span class="ct">1 route</span></div>
+  </div>
+
+  <!-- ============== KEY ============== -->
+  <div class="key">
+    <span><b>Grade</b><span class="glyph">◆</span> YDS technical · C/A aid</span>
+    <span><b>Pitches</b><span class="glyph">▤</span> distinct rope-lengths</span>
+    <span><b>Season</b><span class="glyph">☀</span> filled = prime · half = shoulder</span>
+    <span><b>Protection</b><span class="glyph">✕</span> R = runout · X = ground-fall</span>
+    <span><b>FA</b><span class="glyph">★</span> First ascent party &amp; year</span>
+  </div>
+
+  <!-- =========================================================
+       ROUTE 01 — THE NOSE
+       ========================================================= -->
+  <article class="route" style="--band:var(--elcap);">
+    <div class="band" data-num="01 · El Capitan"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">The Nose</div>
+        <div class="scientific">El Capitan, southwest prow</div>
+        <span class="badge"><span class="sw"></span>El Capitan</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.9 C2</span> <span class="term">5.14a if freed</span></td></tr>
+          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
+          <tr><th>Pitches</th>         <td>31</td></tr>
+          <tr><th>Length</th>          <td>≈ 2,900 ft / 880 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>3–5 days (in a day: 1.5–24 hr)</td></tr>
+          <tr><th>Approach</th>        <td>10 min from El Cap Meadow</td></tr>
+          <tr><th>Descent</th>         <td>East Ledges raps + walk-off</td></tr>
+          <tr><th>Style</th>           <td>Big-wall aid; rare free attempts</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta"><b>The Nose</b> is the most famous rock climb in the world, and it earns the reputation. Warren Harding's audacious sustained 47-day siege, completed November 1958, established the line up the unbroken prow that splits El Capitan into a south and southeast face — a feature so obvious it had to be climbed once climbers believed it could be. Modern parties typically blast <span class="term">push hard and fast, often with fixed lines</span> the first 11 pitches to Sickle Ledge, then commit to the headwall above Dolt Tower.</p>
+        <p class="beta">The crux for a competent aid party is rarely technical — it is the King Swing (a wild pendulum off Boot Flake), routefinding through the Great Roof, and the sustained pin-scarred <span class="term">cracks widened and pocketed by decades of piton placement</span> seams on Pancake Flake and the Glowering Spot. Two parties on the route is normal; four is a traffic jam; six is a war story.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Aid:</b> single set of cams to #4 with doubles in finger sizes, full nut set, 2–3 sets of offset nuts and offset cams (essential in pin scars), aiders, daisies, ascenders, haulbag, portaledge for 3+ day parties. <b>Fixed gear is reliable</b> on the standard line — the bolt ladders on Boot Flake, Pancake, and the Great Roof are in good shape as of recent reports.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
+            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
+            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Warren Harding, Wayne Merry, George Whitmore · Nov 1958 · <b>FFA</b> Lynn Hill, 1993 (and in a day, 1994).</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 02 — HALF DOME NW REGULAR
+       ========================================================= -->
+  <article class="route" style="--band:var(--halfdome);">
+    <div class="band" data-num="02 · Half Dome"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Regular Northwest Face</div>
+        <div class="scientific">Half Dome, northwest face</div>
+        <span class="badge"><span class="sw"></span>Half Dome</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.9 C1</span> (5.12 if freed)</td></tr>
+          <tr><th>Commitment</th>      <td>NCCS V</td></tr>
+          <tr><th>Pitches</th>         <td>23</td></tr>
+          <tr><th>Length</th>          <td>≈ 2,000 ft / 610 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>1–3 days</td></tr>
+          <tr><th>Approach</th>        <td>4–6 hr from Mirror Lake</td></tr>
+          <tr><th>Descent</th>         <td>Cables route (south side)</td></tr>
+          <tr><th>Style</th>           <td>Wall route; mostly free with C1</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">The first Grade VI in North America. Royal Robbins, Mike Sherrick, and Jerry Gallwas climbed the Regular Route over five days in June 1957 — a leap in commitment so far beyond what had been attempted that the climbing establishment took years to absorb it. The line follows the natural weakness up the left side of the imposing northwest face, threading a series of corner systems, the Robbins Traverse, and the Zigzags to the Visor.</p>
+        <p class="beta">As a moderate big wall it is a near-perfect introduction — sustained but rarely desperate, with bivy ledges (Big Sandy, Thank God Ledge) at sensible intervals. The traverse across Thank God Ledge is the photograph everyone has seen; it is also genuinely runout <span class="term">long stretches with no protection between pieces</span> if you don't fiddle in small cams behind the flake. Bring extra water — the descent down the cables in afternoon thunderstorm season is its own adventure.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Mixed free/aid:</b> double cams .3–#3, single #4, full nut set, offset nuts useful, 12 alpine draws, two ropes (60 m) for the rappel descent if bailing. Helmet mandatory — the route catches rockfall from parties above. Haul one bag if going in 2 days; carry-over possible for fast strong parties.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
+            <div class="m shoulder">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
+            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Royal Robbins, Mike Sherrick, Jerry Gallwas · June 1957 — North America's first Grade VI.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 03 — ASTROMAN
+       ========================================================= -->
+  <article class="route" style="--band:var(--wacol);">
+    <div class="band" data-num="03 · Wash. Column"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Astroman</div>
+        <div class="scientific">Washington Column, east face</div>
+        <span class="badge"><span class="sw"></span>Washington Column</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.11c</span></td></tr>
+          <tr><th>Commitment</th>      <td>NCCS V</td></tr>
+          <tr><th>Pitches</th>         <td>11</td></tr>
+          <tr><th>Length</th>          <td>≈ 1,100 ft / 335 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>6–10 hr car-to-car</td></tr>
+          <tr><th>Approach</th>        <td>1 hr from North Pines</td></tr>
+          <tr><th>Descent</th>         <td>North Dome Gully (loose, attentive)</td></tr>
+          <tr><th>Style</th>           <td>Free; the Valley's first 5.11c link-up</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">When John Bachar, Ron Kauk, and John Long freed the East Face of Washington Column in 1975 — link-up of the Enduro Corner, the Harding Slot, and the Boulder Problem pitch — they did not just establish a hard route. They announced that the Valley's old aid lines were now free terrain, and the standards-of-the-day jumped a full grade. Astroman remains, fifty years on, the metric by which a Yosemite free climber is measured.</p>
+        <p class="beta">Eleven pitches of sustained 5.10 and 5.11 in immaculate corner systems, capped by the Harding Slot — an off-width <span class="term">crack too wide for hands, too narrow for a body</span> body-jam that has demoralized stronger climbers than you. The route faces east and bakes in summer; September mornings are the sweet spot. Don't underestimate the descent, which has killed more parties than the climbing.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Free rack:</b> doubles .3–#3, single #4, full nuts, several long slings. <b>No #5 needed</b> — the Harding Slot eats bodies, not cams. Approach shoes for the descent. Bring a 70 m rope; one rap on the descent is full-length.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m shoulder">A</div>
+            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
+            <div class="m go">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FFA</b> John Bachar, Ron Kauk, John Long · 1975 (original aid line: Warren Harding, Glen Denny, Chuck Pratt, 1959).</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 04 — SNAKE DIKE
+       ========================================================= -->
+  <article class="route" style="--band:var(--halfdome);">
+    <div class="band" data-num="04 · Half Dome"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Snake Dike</div>
+        <div class="scientific">Half Dome, southwest face</div>
+        <span class="badge"><span class="sw"></span>Half Dome</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.7 R</span></td></tr>
+          <tr><th>Pitches</th>         <td>8</td></tr>
+          <tr><th>Length</th>          <td>≈ 800 ft of climbing (16 mi day)</td></tr>
+          <tr><th>Guidebook time</th>  <td>12–16 hr car-to-car</td></tr>
+          <tr><th>Approach</th>        <td>4 hr / 6 mi from Happy Isles</td></tr>
+          <tr><th>Descent</th>         <td>Cables route + Mist/JMT</td></tr>
+          <tr><th>Style</th>           <td>Friction &amp; the famous dike</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">Snake Dike's 5.7 grade is among Yosemite's most generous — but the R rating is honest. The route follows an improbable raised dike of harder rock that snakes up the southwest shoulder of Half Dome, with stretches of 60-foot runouts on low-angle slab between bolts. Climbers comfortable on the grade move easily; climbers at their limit experience a long, quiet kind of attention.</p>
+        <p class="beta">The real adventure is the day: 16 miles round trip, 4,800 ft of elevation gain, and an exposed cables descent in afternoon thunderstorm season. Start by 5 AM in summer. The dike itself is so featured it can be climbed in approach shoes by the bold, and the summit experience — sharing the Visor with the day-hiker crowd you just out-flanked — is unmatched in the Valley.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Minimal:</b> a single set of nuts, a few small to mid cams (.4–#2), 8 alpine draws, 60 m rope. Bring a pack with descent shoes, 3+ L water, headlamp, and rain shell. Gloves for the cables. <b>The bolts</b> on the dike are old-school 1/4" replaced by newer hardware on most pitches — verify before committing.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
+            <div class="m shoulder">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
+            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Eric Beck, Jim Bridwell, Chris Fredericks · 1965.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 05 — ROYAL ARCHES
+       ========================================================= -->
+  <article class="route" style="--band:var(--wacol);">
+    <div class="band" data-num="05 · Royal Arches"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Royal Arches</div>
+        <div class="scientific">North wall, behind Ahwahnee</div>
+        <span class="badge"><span class="sw"></span>Washington Column</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.7 A0</span> <span class="term">5.9 if freed</span></td></tr>
+          <tr><th>Pitches</th>         <td>16</td></tr>
+          <tr><th>Length</th>          <td>≈ 1,500 ft / 460 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>6–9 hr</td></tr>
+          <tr><th>Approach</th>        <td>15 min from Ahwahnee Hotel</td></tr>
+          <tr><th>Descent</th>         <td>Fixed-rope rappels (route)</td></tr>
+          <tr><th>Style</th>           <td>Easy multi-pitch w/ pendulum</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">The Valley's most-climbed long route, and for good reason: 16 pitches of moderate corners, slabs, and ledges with one notorious feature — the Pendulum Pitch, a fixed rope <span class="term">A0 means you pull on the rope or gear rather than free climb a move</span> swing that is either delightful or terrifying depending on the leader's notion of dignity. The original line goes free at 5.9 but the A0 pendulum is what most parties use, and what the grade reflects.</p>
+        <p class="beta">Best treated as a long single-day outing rather than a wall: most parties go light, with a single rack and one rope, and rappel the line on the well-established fixed anchors. The route is north-facing and stays cool in summer, which makes it the rare Valley moderate that is sensible in July. The Rotten Log traverse — a leaning, polished cedar wedged across a chimney — is exactly as alarming as it sounds; it has been there since the 1930s and shows no inclination to leave.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Light:</b> single rack cams .3–#3, half set of nuts, 10 draws, two 60 m ropes (recommended for descent — single 70 m possible but tight on two raps). Approach shoes clipped to harness; the upper traverses go better in sticky rubber. Helmet for the popular-route rockfall risk.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
+            <div class="m go">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
+            <div class="m go">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Morgan Harris, Ken Davis, Kenneth Adam · October 1936 — predating the modern Valley era.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 06 — SALATHE WALL
+       ========================================================= -->
+  <article class="route" style="--band:var(--elcap);">
+    <div class="band" data-num="06 · El Capitan"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Salathé Wall</div>
+        <div class="scientific">El Capitan, southwest face</div>
+        <span class="badge"><span class="sw"></span>El Capitan</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.9 C2</span> · <span class="mono">5.13b</span> free</td></tr>
+          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
+          <tr><th>Pitches</th>         <td>35</td></tr>
+          <tr><th>Length</th>          <td>≈ 3,000 ft / 915 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>4–6 days (aid); 2–4 (push)</td></tr>
+          <tr><th>Approach</th>        <td>30 min via Heart Ledges fixed lines</td></tr>
+          <tr><th>Descent</th>         <td>East Ledges</td></tr>
+          <tr><th>Style</th>           <td>Big wall; the aesthete's El Cap line</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">If the Nose is the obvious line, the Salathé is the elegant one. Royal Robbins, Tom Frost, and Chuck Pratt's 1961 ascent introduced a new ethic — capsule style, minimum bolts, no fixed lines past Heart Ledges — and the resulting route remains the proudest piece of climbing on El Capitan. The line threads features no one quite believes will connect: the Hollow Flake, the Ear, the Roof, and the splitter <span class="term">a perfectly parallel-sided crack, the platonic ideal</span> headwall finger crack visible from El Cap Meadow.</p>
+        <p class="beta">Free-climbed by Todd Skinner and Paul Piana in 1988, refined by the Huber brothers, and now sometimes linked with Free Rider in a single day by the genuinely gifted. Most ascents are still aid or French-free hybrids; the Headwall pitch (5.13b free, C2 with aiders) is the single most photographed pitch on El Cap. Bring patience and a tolerance for fixed pin scars that take only the most precise micro-cams.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Aid rack:</b> triples in finger cams, doubles to #3, one #4 and one #5 (Hollow Flake), full nut set with two sets of offsets, offset cams essential, 6–10 cam hooks. Haulbag, portaledge. <b>Water:</b> 1 gallon per person per day, minimum. Fixed lines on Heart go in and out — verify before relying.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
+            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
+            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Royal Robbins, Tom Frost, Chuck Pratt · September 1961 · <b>FFA</b> Todd Skinner, Paul Piana, 1988.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 07 — FREERIDER
+       ========================================================= -->
+  <article class="route" style="--band:var(--elcap);">
+    <div class="band" data-num="07 · El Capitan"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Freerider</div>
+        <div class="scientific">El Capitan, southwest face variation</div>
+        <span class="badge"><span class="sw"></span>El Capitan</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.13a</span></td></tr>
+          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
+          <tr><th>Pitches</th>         <td>33</td></tr>
+          <tr><th>Length</th>          <td>≈ 3,000 ft / 915 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>2–5 days; record &lt; 4 hr (solo)</td></tr>
+          <tr><th>Approach</th>        <td>30 min, base of Salathé start</td></tr>
+          <tr><th>Descent</th>         <td>East Ledges</td></tr>
+          <tr><th>Style</th>           <td>Free wall, sustained at the grade</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">The Hubers' 1998 variation of the Salathé that bypasses the 5.13b Headwall via the Teflon Corner and Round Table, bringing the grade down to a more attainable (if you can call it that) 5.13a. Made globally famous by Alex Honnold's June 2017 free solo, documented in the film of the same name — a feat so far outside the bell curve of human performance that the climbing community has largely declined to integrate it.</p>
+        <p class="beta">For mortals, Freerider is a multi-day free push: the Boulder Problem (5.13a) and the Enduro Corner are the named cruxes <span class="term">the hardest move or section of a pitch or route</span>, but the route is sustained 5.11+ for the entire upper half. Most parties redpoint individual pitches over a season before attempting a ground-up push. The Monster Off-Width on pitch 17 is genuinely awful; this is normal.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Free rack:</b> triples small cams, doubles to #3, single #4, two #5 and one #6 for the Monster, full nuts, 16 alpine draws. Bring tape gloves and a knee pad. <b>Sustainability:</b> most teams establish a basecamp at El Cap Spire or Long Ledge and work pitches over days.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m shoulder">A</div>
+            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
+            <div class="m shoulder">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FFA</b> Alexander &amp; Thomas Huber · 1998 · Free solo: Alex Honnold, June 3, 2017.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 08 — SERENITY CRACK to SONS OF YESTERDAY
+       ========================================================= -->
+  <article class="route" style="--band:var(--wacol);">
+    <div class="band" data-num="08 · Royal Arches"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Serenity Crack to Sons of Yesterday</div>
+        <div class="scientific">Royal Arches apron, linked route</div>
+        <span class="badge"><span class="sw"></span>Washington Column</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.10d</span></td></tr>
+          <tr><th>Pitches</th>         <td>3 (Serenity) + 4 (Sons) = 7</td></tr>
+          <tr><th>Length</th>          <td>≈ 700 ft / 215 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>4–6 hr</td></tr>
+          <tr><th>Approach</th>        <td>15 min from Ahwahnee</td></tr>
+          <tr><th>Descent</th>         <td>Rappel the route (double 60s)</td></tr>
+          <tr><th>Style</th>           <td>Pin-scar fingers; the Valley classic</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">The quintessential Valley free-climbing link-up — and a brutal sandbag <span class="term">a route graded easier than it climbs</span> for anyone whose finger crack technique was learned anywhere other than Yosemite. The first three pitches (Serenity Crack, 5.10d) ascend a continuously thinning seam pocked with old pin scars that demand precise small-cam and offset placements; the upper four pitches (Sons of Yesterday, 5.10a) widen progressively to hands and fists for one of the most aesthetic finishes in the Valley.</p>
+        <p class="beta">North-facing, shaded most of the day, possible nearly year-round when the Valley is dry. Expect a line at the base on weekends. The crux <span class="term">already defined above; here referring to the third pitch's thin section</span> third pitch of Serenity will humble climbers who onsight 5.11 elsewhere; the trick is to trust the small gear and keep moving rather than over-fiddle placements.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Free rack:</b> doubles .2–#2, single #3, full set of nuts, full set of offset nuts and 4–5 offset cams (Metolius or Totem). Two 60 m ropes for the descent. Tape gloves. Skip the larger gear — nothing above #3 sees daylight.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m shoulder">F</div><div class="m go">M</div><div class="m go">A</div>
+            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m shoulder">A</div>
+            <div class="m go">S</div><div class="m go">O</div><div class="m go">N</div><div class="m shoulder">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Serenity Crack: Bob Kamps &amp; Tom Higgins, 1965 · Sons of Yesterday: John Bachar &amp; Ron Kauk, 1977.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 09 — LURKING FEAR
+       ========================================================= -->
+  <article class="route" style="--band:var(--elcap);">
+    <div class="band" data-num="09 · El Capitan"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Lurking Fear</div>
+        <div class="scientific">El Capitan, far west face</div>
+        <span class="badge"><span class="sw"></span>El Capitan</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.7 C2</span></td></tr>
+          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
+          <tr><th>Pitches</th>         <td>19</td></tr>
+          <tr><th>Length</th>          <td>≈ 2,000 ft / 610 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>2–4 days</td></tr>
+          <tr><th>Approach</th>        <td>40 min west of El Cap Meadow</td></tr>
+          <tr><th>Descent</th>         <td>East Ledges (long carry-over)</td></tr>
+          <tr><th>Style</th>           <td>Beginner-friendly El Cap wall</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">The first-time El Cap aspirant's route. Lurking Fear takes the far west edge of the Captain — sun-baked, lower-angle, and (by the standards of the place) reasonable. The aid is straightforward C2, the bolt ladders are friendly, and most of the wall offers ledges or near-ledges for hauling and bivying. Parties who would be shut down on the Salathé or even the Nose's middle pitches routinely succeed here.</p>
+        <p class="beta">That doesn't make it casual. 19 pitches of vertical-ish granite still demand competence with the full aid system — short-fixing, hauling, ascending lines, managing a portaledge in wind. Use it as the training wall it is. The descent off the top is the longest of the El Cap walk-offs; budget half a day, carry water, and know the East Ledges raps.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Aid rack:</b> single cams to #4, doubles in finger sizes, full nut set, single set of offsets, 6 cam hooks, aiders, ascenders, full haul system. <b>Water heavy</b> — west face bakes in afternoon sun; 1.5 gal/person/day in shoulder season. Helmet for rockfall from above parties on adjacent routes.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
+            <div class="m go">M</div><div class="m">J</div><div class="m">J</div><div class="m">A</div>
+            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA</b> Jim Bridwell, Jim Pettigrew, Kim Schmitz · 1970 · An early statement that El Cap had moderate lines too.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- =========================================================
+       ROUTE 10 — CATHEDRAL PEAK SE BUTTRESS
+       ========================================================= -->
+  <article class="route" style="--band:var(--cathedral);">
+    <div class="band" data-num="10 · Cathedral"></div>
+    <div class="body">
+      <div class="col-l">
+        <div class="name">Southeast Buttress</div>
+        <div class="scientific">Cathedral Peak, Tuolumne Meadows</div>
+        <span class="badge"><span class="sw"></span>Cathedral Peak</span>
+
+        <table class="stats">
+          <tr><th>Grade</th>           <td><span class="mono">5.6</span></td></tr>
+          <tr><th>Pitches</th>         <td>5</td></tr>
+          <tr><th>Length</th>          <td>≈ 700 ft / 215 m</td></tr>
+          <tr><th>Guidebook time</th>  <td>3–5 hr on route</td></tr>
+          <tr><th>Approach</th>        <td>1.5 hr from Cathedral Lakes TH</td></tr>
+          <tr><th>Descent</th>         <td>3rd-class scramble + walk</td></tr>
+          <tr><th>Style</th>           <td>Alpine-feeling moderate, 10,900 ft</td></tr>
+        </table>
+      </div>
+
+      <div class="col-r">
+        <p class="beta">John Muir soloed Cathedral in 1869 in hobnailed boots, calling it "the most exquisitely finished and most sublime peak I ever saw." That endorsement still holds. The Southeast Buttress is the standard line — five pitches of clean knobby <span class="term">protruding feldspar crystals that form positive holds and chickenheads</span> granite at a generous 5.6, with one short crux pitch and a summit block that takes three climbers at a squeeze.</p>
+        <p class="beta">The alpine setting — 10,940 ft, panoramic Sierra view, glacial-polish meadows below — makes this the most-photographed easy multi-pitch in California. Afternoon thunderstorms are not a possibility, they are a schedule: be off the summit by 1 PM in July and August. Tioga Pass opens in late May or June depending on snowpack; closes with the first heavy storm in October.</p>
+        <div class="gear">
+          <span class="lbl">Gear &amp; rack</span>
+          <b>Light rack:</b> single cams .3–#3, single set of nuts, 8 alpine draws, 60 m rope. Approach shoes for the summit downclimb. Helmet. Rain shell is mandatory equipment, not optional, given the afternoon storm pattern.
+        </div>
+        <div class="season">
+          <div class="lab">Season</div>
+          <div class="strip">
+            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
+            <div class="m">M</div><div class="m shoulder">J</div><div class="m go">J</div><div class="m go">A</div>
+            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
+          </div>
+        </div>
+        <div class="fa"><b>FA (technical)</b> Charles Michael, 1920 · <b>First ascent (any style)</b> John Muir, solo, September 1869.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============== CODA / RANGER NOTE ============== -->
+  <section class="coda">
+    <h2>Climbing in Yosemite <span class="small">a brief note on the things you cannot put on a topo</span></h2>
+
+    <div>
+      <h3>Camp 4 &amp; the dirtbag inheritance</h3>
+      <p>Camp 4 — listed on the National Register of Historic Places in 2003 — is the spiritual home of American rock climbing. The first-come walk-up system still works; arrive before 7 AM in season. The boulders behind the campground (Midnight Lightning, the Wave) are where Bachar and Kauk trained in the 1970s and where everyone since has paid their respects.</p>
+
+      <h3>Fixed lines &amp; the politics</h3>
+      <p>The Park has tolerated, restricted, and re-tolerated fixed lines on El Cap and the Column for half a century. Current policy: fixed lines may stay in place for up to seven consecutive days; abandoned lines are cut by rangers. Do not be the party that gets a line cut and ruins the relationship for everyone behind you.</p>
+    </div>
+
+    <div>
+      <h3>Leave No Trace, vertical edition</h3>
+      <p>Pack out all human waste from walls — wag bags are required equipment, available free from the Search &amp; Rescue cache near Camp 4. Pack out tape, energy gel wrappers, and especially abandoned fixed gear. The Valley's cleanliness is downstream of every party's individual discipline.</p>
+
+      <h3>Season &amp; weather</h3>
+      <p>Prime Valley season is April–May and September–November. June and July bake the south- and west-facing walls; afternoon thunderstorms are a near-daily feature in the high country (Cathedral, Half Dome). Winter climbing exists for the dedicated. Tioga Road typically opens late May–June, closes November.</p>
+    </div>
+
+    <div class="contact">
+      <span><b>Permits &amp; SAR</b> — Yosemite Search &amp; Rescue: (209) 372-0480</span>
+      <span><b>Wilderness Center</b> — required for overnight bivouacs above Valley rim</span>
+      <span><b>Big-wall permits</b> — not required; self-register at SAR for safety</span>
+      <span><b>Climbing rangers</b> — daily coffee at Camp 4 kiosk, spring &amp; fall</span>
+    </div>
+  </section>
+
+  <!-- ============== COLOPHON ============== -->
+  <footer class="colophon">
+    <div class="l"><b>Yosemite Field Guide</b> · Vol. I, No. 1 · Ten Storied Routes</div>
+    <div class="r">Set in Charter &amp; Inter Tight · Printed on ivory · 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>

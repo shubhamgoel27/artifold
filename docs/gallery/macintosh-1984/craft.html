@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="artifold:design-mode" content="museum-label">
+    <meta name="artifold:voice-register" content="encyclopedic">
+    <meta name="artifold:tool" content="claude">
+    <title>Apple Macintosh, Model M0001 — Object 84.1.001a–c</title>
+    <style>
+        /* ------------------------------------------------------------------
+           Object label stylesheet
+           Reference: MoMA online collection, Cooper Hewitt artifact pages,
+           Victoria & Albert Museum object catalog.
+           Monochrome. No accents. No shadows. No icons. No gradients.
+           ------------------------------------------------------------------ */
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background: #f5f3ee;
+            color: #2a2a2a;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont,
+                         'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.65;
+            font-weight: 400;
+            letter-spacing: 0.005em;
+            padding: 120px 24px;
+            min-height: 100vh;
+        }
+
+        main {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ---------- Object header ---------- */
+
+        .object-header {
+            margin-bottom: 36px;
+        }
+
+        .object-header h1 {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            letter-spacing: 0;
+            color: #2a2a2a;
+            margin-bottom: 18px;
+        }
+
+        .object-header .meta {
+            font-size: 14px;
+            line-height: 1.65;
+            color: #2a2a2a;
+        }
+
+        .object-header .meta div {
+            display: block;
+        }
+
+        .object-number {
+            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
+                         'Liberation Mono', monospace;
+            font-size: 12px;
+            color: #999999;
+            letter-spacing: 0.01em;
+        }
+
+        .object-header .object-number {
+            display: block;
+            margin-top: 18px;
+        }
+
+        /* ---------- Hairline rule ----------
+           Only two hairlines appear in the document: one beneath the
+           object header, and one above the acquisition footer. No
+           other rules, dividers, or boxes are permitted. */
+
+        .hairline {
+            border: 0;
+            border-top: 0.5px solid #2a2a2a;
+            background: none;
+            height: 0;
+            margin: 0 0 48px 0;
+            width: 100%;
+        }
+
+        .hairline.before-footer {
+            margin: 64px 0 36px 0;
+        }
+
+        /* ---------- Section spacing ---------- */
+
+        section {
+            margin-bottom: 56px;
+        }
+
+        section:last-of-type {
+            margin-bottom: 0;
+        }
+
+        h2.section-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: #2a2a2a;
+            margin-bottom: 20px;
+            text-transform: none;
+        }
+
+        /* ---------- Curatorial note ----------
+           The single passage of italic serif in the document. All other
+           prose is set in the system sans of the body. */
+
+        .curatorial-note p {
+            font-family: 'EB Garamond', 'Hoefler Text', 'Garamond',
+                         Georgia, serif;
+            font-style: italic;
+            font-size: 17px;
+            line-height: 1.55;
+            color: #2a2a2a;
+            letter-spacing: 0.002em;
+        }
+
+        /* ---------- Technical specification ----------
+           A two-column tabular definition list. Terms in small-caps at
+           body weight; values in monospaced figures, right-aligned, so
+           that the decimal columns of the metric values agree. */
+
+        dl.specs {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            row-gap: 10px;
+            column-gap: 24px;
+            align-items: baseline;
+        }
+
+        dl.specs dt {
+            font-variant-caps: all-small-caps;
+            font-feature-settings: "smcp" 1, "c2sc" 1;
+            font-weight: 400;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            color: #2a2a2a;
+        }
+
+        dl.specs dd {
+            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
+                         'Liberation Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+            color: #2a2a2a;
+            letter-spacing: 0;
+        }
+
+        /* ---------- Body paragraphs (provenance, conservation) ---------- */
+
+        .body-text p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #2a2a2a;
+        }
+
+        .body-text p + p {
+            margin-top: 14px;
+        }
+
+        /* ---------- Catalog cross-references ----------
+           Item entries comprise a mono object-number on one line and a
+           prose description beneath. No bullets, no enumeration. */
+
+        ul.related {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.related li {
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 10px 0;
+            border: 0;
+            color: #2a2a2a;
+        }
+
+        ul.related li + li {
+            padding-top: 14px;
+        }
+
+        ul.related li .ref-number {
+            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
+                         'Liberation Mono', monospace;
+            font-size: 12px;
+            color: #999999;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 0.01em;
+        }
+
+        ul.related li .ref-desc {
+            font-size: 13px;
+            color: #2a2a2a;
+            display: block;
+            line-height: 1.55;
+        }
+
+        /* ---------- Acquisition footer ---------- */
+
+        .acquisition {
+            font-size: 12px;
+            color: #2a2a2a;
+            letter-spacing: 0.01em;
+            line-height: 1.6;
+        }
+
+        /* ---------- Selection ----------
+           A neutral, low-contrast selection that does not introduce
+           chromatic accents to the otherwise monochrome composition. */
+
+        ::selection {
+            background: #e5e2da;
+            color: #2a2a2a;
+        }
+
+        /* ---------- Responsive ----------
+           At narrow viewports the two-column specification list folds
+           into a single column with the value beneath its term, the
+           form taken by printed object cards in the V&A reading room. */
+
+        @media (max-width: 640px) {
+            body {
+                padding: 72px 22px;
+            }
+            .curatorial-note p {
+                font-size: 16px;
+            }
+            dl.specs {
+                grid-template-columns: 1fr;
+                row-gap: 4px;
+            }
+            dl.specs dd {
+                text-align: left;
+                padding-bottom: 10px;
+            }
+            dl.specs dt {
+                padding-top: 6px;
+            }
+        }
+
+        /* ---------- Print ----------
+           When the page is reproduced on paper the background returns
+           to white and margins are reduced to those of a standard
+           archival object sheet. */
+
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 40px;
+            }
+
+            .object-number,
+            ul.related li .ref-number {
+                color: #6a6a6a;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+
+        <header class="object-header">
+            <h1>Apple Macintosh, Model M0001</h1>
+            <div class="meta">
+                <div>Apple Computer, Inc., Cupertino, California</div>
+                <div>Introduced January 24, 1984</div>
+                <span class="object-number">Object number 84.1.001a&ndash;c</span>
+            </div>
+        </header>
+
+        <hr class="hairline">
+
+        <section class="curatorial-note" aria-labelledby="curatorial-label">
+            <h2 id="curatorial-label" class="section-label">Curatorial Note</h2>
+            <p>
+                The Macintosh consolidated, in a single moulded enclosure intended for a domestic desk,
+                research into bitmapped display, the graphical user interface, and the hand-held pointing
+                device that had been undertaken across the previous decade, principally at the Xerox Palo
+                Alto Research Center. Its housing was conceived as an object of furniture rather than of
+                office equipment, with a vertical orientation that obscured the cathode-ray tube and
+                presented the screen at the approximate scale of a printed page. The object enters the
+                collection as a complete unit: central processing enclosure, detachable keyboard, and
+                single-button mouse. It is exhibited in a stable resting state, powered off, with the
+                screen aperture facing the viewer.
+            </p>
+        </section>
+
+        <section aria-labelledby="specs-label">
+            <h2 id="specs-label" class="section-label">Technical Specification</h2>
+            <dl class="specs">
+                <dt>Processor</dt>
+                <dd>Motorola 68000, 7.83 MHz</dd>
+
+                <dt>Memory</dt>
+                <dd>128 KB RAM, 64 KB ROM</dd>
+
+                <dt>Display</dt>
+                <dd>9-inch monochrome CRT, 512 &times; 342 px</dd>
+
+                <dt>Storage</dt>
+                <dd>400 KB single-sided 3.5-inch floppy</dd>
+
+                <dt>Input</dt>
+                <dd>Single-button mouse, 58-key keyboard</dd>
+
+                <dt>Audio</dt>
+                <dd>8-bit, 22 kHz</dd>
+
+                <dt>Dimensions</dt>
+                <dd>13.6 &times; 9.7 &times; 10.9 in</dd>
+
+                <dt>Mass</dt>
+                <dd>7.5 kg</dd>
+
+                <dt>Launch price</dt>
+                <dd>$2,495 USD ($7,500 in 2024 dollars)</dd>
+            </dl>
+        </section>
+
+        <section class="body-text" aria-labelledby="provenance-label">
+            <h2 id="provenance-label" class="section-label">Provenance</h2>
+            <p>
+                Industrial design by Jerry Manock and Terry Oyama. System software developed by Andy
+                Hertzfeld, Bill Atkinson, and Bud Tribble. System bitmaps and the original screen
+                typefaces &mdash; including Chicago, Geneva, Monaco, and New York &mdash; designed by
+                Susan Kare. Project leadership by Steven P. Jobs, succeeding Jef Raskin, who originated
+                the Macintosh project at Apple Computer, Inc. in 1979 and conceived its name. Launch
+                marketing included the one-minute television advertisement titled
+                <span style="font-style: italic;">1984</span>, directed by Ridley Scott and broadcast
+                during Super Bowl XVIII on January 22, 1984.
+            </p>
+        </section>
+
+        <section class="body-text" aria-labelledby="conservation-label">
+            <h2 id="conservation-label" class="section-label">Conservation Note</h2>
+            <p>
+                The cathode-ray tube remains an analog component and is subject to gradual loss of
+                cathode emission; the original deflection circuitry has not been operated in display
+                conditions since accession. The polyvinyl chloride housing, originally specified in the
+                manufacturer&rsquo;s &ldquo;Fog&rdquo; finish, is undergoing progressive oxidative
+                yellowing under ambient ultraviolet exposure, a behaviour common to brominated flame-
+                retardant ABS and PVC enclosures of the period; the object is stored at 18&deg;C and
+                40 percent relative humidity, with ultraviolet-filtered illumination during exhibition.
+                The accompanying 3.5-inch floppy disks are subject to magnetic decay and binder
+                hydrolysis of the oxide layer; the disks have been imaged to archival storage and are
+                no longer mounted for read access. Restoration to operating condition is not
+                anticipated.
+            </p>
+        </section>
+
+        <section aria-labelledby="related-label">
+            <h2 id="related-label" class="section-label">Related Objects</h2>
+            <ul class="related">
+                <li>
+                    <span class="ref-number">84.1.022</span>
+                    <span class="ref-desc">Susan Kare, design sketches for system bitmaps, ink on graph paper, gift of the artist, 2009.</span>
+                </li>
+                <li>
+                    <span class="ref-number">84.1.047</span>
+                    <span class="ref-desc">Apple Macintosh single-button mouse, Model M0100, injection-moulded ABS and steel, 1984.</span>
+                </li>
+                <li>
+                    <span class="ref-number">79.4.003</span>
+                    <span class="ref-desc">Jef Raskin, internal memorandum &ldquo;Computers by the Millions,&rdquo; typescript with manuscript annotations, 1979.</span>
+                </li>
+                <li>
+                    <span class="ref-number">84.7.011</span>
+                    <span class="ref-desc">Chiat&sol;Day for Apple Computer, Inc., <span style="font-style: italic;">1984</span>, 35&thinsp;mm film transfer to digital video, 60 seconds, directed by Ridley Scott.</span>
+                </li>
+            </ul>
+        </section>
+
+        <hr class="hairline before-footer">
+
+        <footer class="acquisition">
+            Gift of the estate of Steven P. Jobs, 2012.
+        </footer>
+
+    </main>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Manifesto for Slow, File-Based, Anti-Bloat Software</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: linear-gradient(135deg, #2c3e50, #4a6789);
+    color: #fff;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 12px;
+    font-size: 2.4em;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    font-size: 1.15em;
+    opacity: 0.9;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+  .intro {
+    font-size: 1.05em;
+    color: #444;
+    border-left: 4px solid #4a6789;
+    padding: 12px 18px;
+    background: #f7f9fc;
+    margin-bottom: 40px;
+  }
+  .point {
+    margin-bottom: 32px;
+  }
+  .point h2 {
+    font-size: 1.25em;
+    margin: 0 0 8px;
+    color: #2c3e50;
+  }
+  .point h2 span {
+    display: inline-block;
+    color: #4a6789;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .point p {
+    margin: 0;
+    color: #333;
+  }
+  footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+    padding: 30px 20px;
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>A Manifesto for Slow, File-Based, Anti-Bloat Software</h1>
+  <p>In defense of tools that load fast, store plainly, and respect your time.</p>
+</header>
+<main>
+  <p class="intro">
+    Software has gotten heavy. It syncs constantly, demands accounts, hides your data behind APIs, and ships a browser inside a browser. This is a manifesto for the other path: small programs, plain files, and the patience to build things that last.
+  </p>
+
+  <div class="point">
+    <h2><span>1.</span>Your data belongs in a file.</h2>
+    <p>A file you can see, copy, email, back up, and open in twenty years. Not a row in someone's database. Not an opaque blob synced to a cloud. If the company disappears tomorrow, your work should still exist on your disk.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>2.</span>Plain text outlasts everything.</h2>
+    <p>Markdown, CSV, JSON, YAML, SQLite. These formats have outlived a thousand proprietary apps and will outlive a thousand more. Prefer them. They are readable by humans, by scripts, and by tools that haven't been invented yet.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>3.</span>Local first, network second.</h2>
+    <p>An app should work on a plane. It should work when the wifi is bad. It should work when the vendor's servers go down. Cloud sync is a feature, not a foundation. Build for the offline case and the online case becomes free.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>4.</span>Startup time is a moral issue.</h2>
+    <p>Every second of cold-start latency is a second stolen from your user. A note-taking app should open faster than you can blink. If your launcher needs a splash screen, you have failed. Respect the clock.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>5.</span>Do one thing. Compose the rest.</h2>
+    <p>The Unix philosophy still works. Small tools that do one job well, joined together by pipes and files, beat monolithic suites every time. Stop trying to be a platform. Be a verb.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>6.</span>No account required.</h2>
+    <p>Why does a text editor need to know my email address? Why does a calculator want me to "sign in to sync"? Defaults matter. If your software demands an identity before it draws a single pixel, it is not serving the user — it is serving the funnel.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>7.</span>Ship in megabytes, not gigabytes.</h2>
+    <p>A chat app does not need 400MB of disk. A music player does not need a Chromium runtime. The bloat is not a law of nature. It is a choice — usually one made for the developer's convenience at the user's expense.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>8.</span>Configuration is a text file.</h2>
+    <p>Settings should live in a file you can read, version-control, copy between machines, and edit with any tool. GUI preference panes are fine. Hidden binary preference blobs are not. Configuration is documentation.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>9.</span>Backwards compatibility is a feature.</h2>
+    <p>Files written by version 1 should open in version 10. The user did not consent to a rewrite. If you must change formats, provide migration tools and keep the old reader around. Forever is a long time, but it is the right target.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>10.</span>Updates are opt-in, not ambushes.</h2>
+    <p>The software the user installed yesterday should be the software they use today. Auto-updates that move buttons, remove features, or change defaults overnight are a betrayal of trust. Stability is a deliverable.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>11.</span>The filesystem is the API.</h2>
+    <p>If your app stores its data as files in a folder, every other tool on the system can read, search, sync, and back it up for free. You do not need to build an integration with Dropbox. Dropbox already exists. So does grep.</p>
+  </div>
+
+  <div class="point">
+    <h2><span>12.</span>Slow software is patient software.</h2>
+    <p>Slow does not mean sluggish. It means deliberate. It means refusing to chase the next framework, the next paradigm, the next funding round. It means building something today that you will be proud of in ten years — and that your users will still be using.</p>
+  </div>
+</main>
+<footer>
+  Written in plain HTML. No trackers. No fonts. No JavaScript.
+</footer>
+</body>
+</html>

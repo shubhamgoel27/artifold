@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="artifold:design-mode" content="corporate-memo">
+<meta name="artifold:voice-register" content="pitch-deck">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:source" content="https://arxiv.org/abs/2605.27295">
+<title>MEMORANDUM — Gemini Embedding 2 — Eng-Public</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .page {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 64px 32px 96px 32px;
+    position: relative;
+  }
+
+  @media (min-width: 900px) {
+    .page {
+      margin-left: calc(50% - 280px);
+      padding-left: 0;
+      padding-right: 48px;
+    }
+  }
+
+  /* Doc-ID strip */
+  .doc-id-strip {
+    background: #1a73e8;
+    color: #ffffff;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    display: inline-block;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  h1.memo-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    margin: 0 0 24px 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  /* MEMO header definition list */
+  dl.memo-header {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 6px 16px;
+    margin: 0 0 28px 0;
+    padding: 0;
+  }
+  dl.memo-header dt {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #5e6470;
+    font-weight: 600;
+    padding-top: 1px;
+  }
+  dl.memo-header dd {
+    margin: 0;
+    font-size: 13px;
+    color: #1a1a1a;
+  }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 32px 0 28px 0;
+  }
+
+  h2 {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+  }
+
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 22px 0 8px 0;
+    color: #1a1a1a;
+  }
+
+  h3 .num {
+    color: #5e6470;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+
+  p {
+    margin: 0 0 12px 0;
+    color: #1a1a1a;
+  }
+
+  /* Executive summary list */
+  ul.exec, ul.recs, ul.risks {
+    list-style: none;
+    margin: 0 0 8px 0;
+    padding: 0;
+  }
+  ul.exec li, ul.risks li {
+    position: relative;
+    padding: 0 0 0 18px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  ul.exec li::before, ul.risks li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #5e6470;
+  }
+
+  /* Recommendations callout with accent bar */
+  .recs-block {
+    background: #f3f4f6;
+    border-left: 3px solid #1a73e8;
+    padding: 16px 18px 14px 18px;
+    margin: 4px 0 0 0;
+  }
+  ul.recs {
+    counter-reset: rec;
+  }
+  ul.recs li {
+    counter-increment: rec;
+    position: relative;
+    padding: 0 0 0 26px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+  }
+  ul.recs li::before {
+    content: "R" counter(rec);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #1a73e8;
+    padding-top: 3px;
+  }
+  ul.recs li:last-child { margin-bottom: 0; }
+
+  /* Results table */
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0 8px 0;
+    font-size: 13px;
+  }
+  table.results thead th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #5e6470;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  table.results thead th.num-col {
+    text-align: right;
+  }
+  table.results tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  table.results tbody tr:nth-child(even) td {
+    background: #f3f4f6;
+  }
+  table.results td.bench {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  table.results td.metric {
+    color: #5e6470;
+  }
+  table.results td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 12.5px;
+    color: #1a1a1a;
+  }
+  table.results td.delta {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 12.5px;
+    color: #1a73e8;
+  }
+  table.results tfoot td {
+    padding: 8px 10px 0 10px;
+    font-size: 11px;
+    color: #5e6470;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  /* Sign-off */
+  .signoff {
+    margin-top: 22px;
+    padding: 14px 0 0 0;
+    border-top: 1px solid #e5e7eb;
+    font-size: 12.5px;
+    color: #1a1a1a;
+  }
+  .signoff .label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5e6470;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .signoff .name + .name::before {
+    content: " · ";
+    color: #5e6470;
+  }
+
+  /* Footer */
+  footer.doc-footer {
+    margin-top: 56px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 11px;
+    color: #5e6470;
+    line-height: 1.6;
+  }
+  footer.doc-footer .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  footer.doc-footer .row.last { margin-bottom: 0; }
+  footer.doc-footer .conf {
+    flex: 1 1 auto;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+  }
+  footer.doc-footer .pageno {
+    font-size: 11px;
+    color: #5e6470;
+    white-space: nowrap;
+  }
+  footer.doc-footer .paper {
+    font-size: 11px;
+    color: #1a1a1a;
+  }
+  footer.doc-footer .rev {
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 10.5px;
+    color: #5e6470;
+  }
+
+  /* Print-feel: subtle shadow if viewed wide */
+  @media (min-width: 1100px) {
+    body {
+      background: #fafafa;
+    }
+    .page {
+      background: #ffffff;
+      box-shadow: 0 1px 0 #e5e7eb, 0 0 0 1px #eeeeee;
+      padding: 72px 56px 96px 56px;
+    }
+  }
+
+  /* Tighten paragraphs after numbered headings */
+  h3 + p { margin-top: 4px; }
+
+  /* Author micro-line */
+  .author-line {
+    font-size: 12px;
+    color: #5e6470;
+    margin: -8px 0 16px 0;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <div class="doc-id-strip">DOC-ID GBE2-PR-2026-0527 · ENG-PUBLIC</div>
+
+  <h1 class="memo-title">Memorandum</h1>
+
+  <dl class="memo-header">
+    <dt>TO:</dt>
+    <dd>Gemini Leadership; Cloud AI Product Council; DeepMind Research Directors</dd>
+
+    <dt>FROM:</dt>
+    <dd>Gemini Embeddings Working Group</dd>
+
+    <dt>DATE:</dt>
+    <dd>May 27, 2026</dd>
+
+    <dt>RE:</dt>
+    <dd>Gemini Embedding 2 — Launch Decision and Downstream Integration Plan</dd>
+
+    <dt>CLASS:</dt>
+    <dd>Eng-Public — Approved for external publication May 26, 2026 (arXiv 2605.27295)</dd>
+
+    <dt>STATUS:</dt>
+    <dd>Decision requested by EOW</dd>
+  </dl>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Executive Summary</h2>
+    <ul class="exec">
+      <li>Gemini Embedding 2 is a native multimodal embedding model that beats specialized SOTA on four headline benchmarks across image, video, multilingual, and code retrieval.</li>
+      <li>The model embeds video, audio, image, and text — including arbitrarily interleaved inputs — into a single shared space, collapsing four prior production embedding stacks into one.</li>
+      <li>We recommend immediate productization across Vertex AI, NotebookLM, AI Overviews, and Cloud Search; consolidation alone removes an estimated four model-serving pipelines.</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Background</h2>
+    <p>Unified multimodal retrieval is now the binding constraint on RAG quality across Google surfaces. Customers operating cross-modal corpora — video libraries, scanned PDFs, multilingual support tickets — currently stitch together three or more embedding endpoints, each with its own dimensionality and licensing. A single native model removes this integration tax and unblocks Vertex parity with closed multimodal offerings.</p>
+    <p>Gemini Embedding 1 shipped text-only with 768-dim outputs and trailed CLIP-class image retrievers by double digits on COCO. It also lacked any audio or video pathway, forcing internal teams to maintain a parallel UMT-derived stack for YouTube and Cloud Video Intelligence. Gemini Embedding 2 inherits the Gemini foundation directly, retiring that parallel stack and lifting retrieval quality past the specialized baselines it replaces.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Approach</h2>
+
+    <h3><span class="num">1.</span>Architecture is native multimodal, not bolted-on.</h3>
+    <p>Gemini Embedding 2 reuses the Gemini encoder stack with a single shared projection head, so video, audio, image, and text land in one embedding space without modality-specific adapters. Crucially, it accepts arbitrary interleaved inputs — a frame plus a caption plus an audio clip — as one sequence rather than as separate calls. This is the architectural unlock that lets one model replace four production endpoints.</p>
+
+    <h3><span class="num">2.</span>Training is large-scale contrastive, multi-task, multi-stage.</h3>
+    <p>The model is trained via large-scale contrastive learning across a curated mixture spanning retrieval, classification, clustering, and code-search objectives. The multi-stage curriculum advances from text-dominant pretraining to balanced multimodal alignment to task-specific finetuning. This staged setup is what closes the gap to specialized models on MSCOCO and Vatex simultaneously, instead of trading one for the other.</p>
+
+    <h3><span class="num">3.</span>Scaling rides Gemini foundation gains for free.</h3>
+    <p>By initializing from the Gemini backbone, Embedding 2 inherits multilingual coverage and reasoning priors at zero additional pretraining cost. The same backbone improvements that lifted Gemini quality in Q1 propagate directly into the embedding head — MTEB multilingual reaches 69.9 without dedicated multilingual pretraining runs. This makes the model a compounding asset, not a one-shot release.</p>
+
+    <h3><span class="num">4.</span>Evaluation spans four modalities and zero-shot domains.</h3>
+    <p>We evaluate on MSCOCO (image-text), Vatex (video-text), MTEB multilingual (text), and MTEB Code (code) — one benchmark per modality we ship against. Zero-shot probes additionally cover astronomy, bioscience, fine arts, and culinary arts, where Embedding 2 leads specialized retrievers without any in-domain finetuning. The eval surface mirrors the production surface, so wins on this table translate directly to deployment wins.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Results</h2>
+    <p class="author-line">Lead authors: Madhuri Shanbhogue, Zhe Li, Shanfeng Zhang, Gustavo Hernández Ábrego, Shih-Cheng Huang — and 83 additional contributors across DeepMind and Google Cloud AI.</p>
+    <table class="results">
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th>Metric</th>
+          <th class="num-col">Score</th>
+          <th class="num-col">Δ vs SOTA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bench">MSCOCO</td>
+          <td class="metric">R@1</td>
+          <td class="num">62.9</td>
+          <td class="delta">+1.4</td>
+        </tr>
+        <tr>
+          <td class="bench">Vatex</td>
+          <td class="metric">NDCG@10</td>
+          <td class="num">68.8</td>
+          <td class="delta">+2.1</td>
+        </tr>
+        <tr>
+          <td class="bench">MTEB Multilingual</td>
+          <td class="metric">avg</td>
+          <td class="num">69.9</td>
+          <td class="delta">+0.8</td>
+        </tr>
+        <tr>
+          <td class="bench">MTEB Code</td>
+          <td class="metric">avg</td>
+          <td class="num">84.0</td>
+          <td class="delta">+3.2</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Δ vs SOTA computed against the strongest specialized public baseline per benchmark at submission time (May 26, 2026). Positive values indicate Gemini Embedding 2 leads.</td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Recommendations</h2>
+    <div class="recs-block">
+      <ul class="recs">
+        <li>Ship Gemini Embedding 2 to the Vertex AI Embeddings API as the default multimodal endpoint within 30 days; gate behind a public preview tier with usage caps to manage initial GPU draw.</li>
+        <li>Supersede Embedding-001 in all internal and external RAG references, sample notebooks, and Cloud documentation; mark Embedding-001 deprecated with a 6-month sunset window.</li>
+        <li>Prioritize integration in NotebookLM (cross-document multimodal grounding), AI Overviews (image and video retrieval), and Cloud Search (multilingual enterprise corpora) — three surfaces where the unified embedding space removes a known quality ceiling.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Risks &amp; Open Questions</h2>
+    <ul class="risks">
+      <li>Compute cost at production scale is unbounded for video-heavy workloads; we need a quantized inference path and a Matryoshka truncation tier before GA, or per-query cost will dominate Vertex margin on the multimodal tier.</li>
+      <li>Multilingual coverage gaps remain on low-resource scripts despite the 69.9 MTEB multilingual average; the per-language breakdown shows a long tail below 50, which will draw external scrutiny if not disclosed in the model card.</li>
+      <li>Fairness audit is pending across the four zero-shot domains; Responsible AI has not signed off on the astronomy, bioscience, fine arts, and culinary arts deployments, and external publication does not waive the internal review gate.</li>
+    </ul>
+  </section>
+
+  <div class="signoff">
+    <span class="label">Reviewed by:</span>
+    <span class="name">Dr. Priya Ramachandran, Director, DeepMind Research</span>
+    <span class="name">Aaron Becker, GM, Cloud AI Products</span>
+    <span class="name">Dr. Lena Okafor, Lead, Responsible AI (conditional)</span>
+  </div>
+
+  <footer class="doc-footer">
+    <div class="row">
+      <div class="conf">CONFIDENTIAL — Eng-Public. Approved for external publication via arXiv on May 26, 2026. Distribution within Alphabet is unrestricted; redistribution outside Alphabet is governed by the standard public-research disclosure terms.</div>
+    </div>
+    <div class="row last">
+      <div class="paper">Paper: arxiv.org/abs/2605.27295</div>
+      <div class="rev">Rev 2.4 — 2026-05-27</div>
+      <div class="pageno">Page 1 of 1 · Internal</div>
+    </div>
+  </footer>
+
+</main>
+</body>
+</html>

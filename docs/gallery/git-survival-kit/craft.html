@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="artifold:design-mode" content="terminal-tui">
+<meta name="artifold:voice-register" content="spec-sheet">
+<meta name="artifold:tool" content="claude">
+<title>git-survival-kit — TUI</title>
+<style>
+  :root {
+    --bg:        #0d1117;
+    --bg-alt:    #161b22;
+    --bg-deep:   #010409;
+    --bg-row:    #1c2128;
+    --bg-sel:    #21262d;
+    --fg:        #c9d1d9;
+    --fg-dim:    #8b949e;
+    --fg-faint:  #484f58;
+    --cyan:      #79c0ff;
+    --cyan-2:    #56d4dd;
+    --green:     #56d364;
+    --yellow:    #e3b341;
+    --red:       #f85149;
+    --magenta:   #d2a8ff;
+    --border:    #30363d;
+    --border-2:  #21262d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg-deep);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    padding: 14px;
+    min-height: 100vh;
+  }
+
+  .term {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── chrome ─── */
+  .chrome {
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .chrome .dot { width: 11px; height: 11px; background: var(--border); display: inline-block; }
+  .chrome .dot.r { background: #f85149; }
+  .chrome .dot.y { background: #e3b341; }
+  .chrome .dot.g { background: #56d364; }
+  .chrome .title { margin-left: 10px; }
+  .chrome .right { margin-left: auto; color: var(--fg-faint); }
+
+  /* ─── status bar ─── */
+  .statusbar {
+    background: var(--cyan);
+    color: #0d1117;
+    padding: 3px 10px;
+    font-weight: 600;
+    display: flex;
+    gap: 18px;
+    font-size: 12px;
+  }
+  .statusbar .seg { display: flex; gap: 6px; }
+  .statusbar .k { opacity: 0.6; font-weight: 400; }
+  .statusbar .v { font-weight: 600; }
+  .statusbar .pipe { color: #0d1117; opacity: 0.35; }
+  .statusbar .right { margin-left: auto; }
+
+  /* ─── tabs ─── */
+  .tabs {
+    background: var(--bg);
+    padding: 4px 10px 0;
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--fg-dim);
+  }
+  .tab { padding: 3px 10px; cursor: default; }
+  .tab.active { color: var(--cyan); }
+  .tab .b { color: var(--fg-faint); }
+  .tab.active .b { color: var(--cyan); }
+  .tab-meta { margin-left: auto; color: var(--fg-faint); padding: 3px 10px; }
+
+  /* ─── main grid ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: var(--bg);
+  }
+  .main > .panel + .panel { border-left: 1px solid var(--border); }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .panel-head {
+    padding: 4px 10px;
+    background: var(--bg);
+    color: var(--fg-dim);
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .panel-head .lbl { color: var(--cyan); }
+  .panel-head .ct { color: var(--fg-faint); margin-left: auto; }
+  .panel-head .pre { color: var(--fg-faint); }
+
+  /* ─── row layout ─── */
+  .row {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    padding: 6px 10px 7px;
+    border-bottom: 1px dotted var(--border-2);
+    font-size: 12px;
+    gap: 0;
+  }
+  .row:last-child { border-bottom: none; }
+  .row.sel {
+    background: var(--bg-sel);
+  }
+  .row .bar {
+    color: transparent;
+    border-left: 2px solid transparent;
+  }
+  .row.sel .bar {
+    border-left-color: var(--cyan);
+  }
+  .row .body { min-width: 0; }
+
+  .row .line1 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+  .row .num { color: var(--fg-faint); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+  .row .cmd { color: var(--cyan); font-weight: 600; }
+  .row .desc { color: var(--fg); flex: 1; }
+  .row .tag {
+    font-size: 10px;
+    padding: 0 5px;
+    border: 1px solid currentColor;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag.safe   { color: var(--green); }
+  .tag.read   { color: var(--cyan-2); }
+  .tag.write  { color: var(--yellow); }
+  .tag.danger { color: var(--red); }
+
+  .row .meta {
+    margin-left: 32px;
+    color: var(--fg-dim);
+    font-size: 11.5px;
+  }
+  .row .meta .k {
+    color: var(--fg-faint);
+    display: inline-block;
+    width: 64px;
+  }
+  .row .meta .v.ex {
+    color: var(--green);
+  }
+  .row .meta .v.rec {
+    color: var(--yellow);
+  }
+  .row .meta .prompt {
+    color: var(--magenta);
+    margin-right: 4px;
+  }
+  .row .meta .pfx {
+    color: var(--fg-faint);
+    margin-right: 4px;
+  }
+
+  /* ─── fire panel ─── */
+  .fire {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .fire-head {
+    padding: 5px 10px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    color: var(--red);
+    font-size: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .fire-head .marquee { color: var(--fg-faint); margin-left: auto; font-size: 11px; }
+  .fire-head .blink {
+    color: var(--red);
+    animation: blink 1.2s steps(2, end) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0.25; } }
+
+  .fire-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .fire-cell {
+    padding: 8px 12px 10px;
+    border-right: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .fire-cell:last-child { border-right: none; }
+  .fire-cell .h {
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .fire-cell .h .sigil { color: var(--red); }
+  .fire-cell .h .name { color: var(--cyan); font-weight: 600; }
+  .fire-cell .d {
+    color: var(--fg-dim);
+    font-size: 11.5px;
+    margin-bottom: 6px;
+    line-height: 1.35;
+  }
+  .fire-cell .ex {
+    color: var(--green);
+    background: var(--bg-deep);
+    border-left: 2px solid var(--green);
+    padding: 3px 6px;
+    font-size: 11.5px;
+  }
+  .fire-cell .ex .p { color: var(--magenta); margin-right: 4px; }
+  .fire-cell .note {
+    color: var(--fg-faint);
+    font-size: 10.5px;
+    margin-top: 5px;
+    line-height: 1.3;
+  }
+
+  /* ─── right side widgets ─── */
+  .widget {
+    border-bottom: 1px solid var(--border);
+    padding: 7px 10px 8px;
+    font-size: 11.5px;
+  }
+  .widget:last-child { border-bottom: none; }
+  .widget .wh {
+    color: var(--cyan);
+    margin-bottom: 4px;
+    font-size: 11px;
+  }
+  .widget .wh .b { color: var(--fg-faint); }
+
+  .reflog .e {
+    display: grid;
+    grid-template-columns: 64px 80px 1fr;
+    gap: 8px;
+    color: var(--fg-dim);
+    font-size: 11px;
+    padding: 1px 0;
+  }
+  .reflog .e .sha { color: var(--yellow); }
+  .reflog .e .op  { color: var(--cyan-2); }
+  .reflog .e .msg { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reflog .e.cur .msg::after { content: ' ← HEAD'; color: var(--green); }
+
+  .diff pre {
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--fg-dim);
+    overflow-x: auto;
+  }
+  .diff .add { color: var(--green); background: rgba(86,211,100,0.06); }
+  .diff .del { color: var(--red);   background: rgba(248,81,73,0.06); }
+  .diff .hdr { color: var(--magenta); }
+  .diff .ctx { color: var(--fg-faint); }
+  .diff .at  { color: var(--cyan-2); }
+
+  .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 12px;
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .legend .sw { display: inline-block; width: 10px; text-align: center; }
+
+  .keymap .k {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    color: var(--fg-dim);
+    font-size: 11px;
+    padding: 1px 0;
+  }
+  .keymap .k .kc { color: var(--yellow); }
+
+  .gauge {
+    display: grid;
+    grid-template-columns: 90px 1fr 50px;
+    gap: 8px;
+    align-items: center;
+    color: var(--fg-dim);
+    font-size: 11px;
+    padding: 2px 0;
+  }
+  .gauge .bar {
+    background: var(--bg-deep);
+    height: 9px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .gauge .bar .fill {
+    background: var(--cyan);
+    height: 100%;
+  }
+  .gauge .bar .fill.g { background: var(--green); }
+  .gauge .bar .fill.y { background: var(--yellow); }
+  .gauge .bar .fill.r { background: var(--red); }
+  .gauge .v { color: var(--fg); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .branchtree {
+    color: var(--fg-dim);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+  .branchtree .g { color: var(--green); }
+  .branchtree .y { color: var(--yellow); }
+  .branchtree .c { color: var(--cyan); }
+  .branchtree .m { color: var(--magenta); }
+  .branchtree .f { color: var(--fg-faint); }
+  .branchtree .hd { color: var(--red); }
+
+  /* ─── bottom help bar ─── */
+  .helpbar {
+    background: var(--bg-alt);
+    border-top: 1px solid var(--border);
+    color: var(--fg-dim);
+    padding: 4px 10px;
+    font-size: 11px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .helpbar .kb { color: var(--yellow); }
+  .helpbar .right {
+    margin-left: auto;
+    color: var(--fg-faint);
+    display: flex;
+    gap: 14px;
+  }
+  .helpbar .blink-c::after {
+    content: '█';
+    color: var(--cyan);
+    animation: blink 1s steps(2, end) infinite;
+    margin-left: 2px;
+  }
+
+  /* ─── command palette overlay (visual only) ─── */
+  .palette {
+    position: relative;
+    margin: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 4px 10px;
+    color: var(--fg-dim);
+    font-size: 11.5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .palette .p { color: var(--magenta); }
+  .palette .q { color: var(--fg); }
+  .palette .hint { margin-left: auto; color: var(--fg-faint); }
+
+  ::selection { background: var(--cyan); color: var(--bg); }
+</style>
+</head>
+<body>
+
+<div class="term">
+
+  <!-- terminal chrome -->
+  <div class="chrome">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="title">git-survival-kit — zsh — 188×54</span>
+    <span class="right">pid 48217 · tty s001 · uptime 04:12:38</span>
+  </div>
+
+  <!-- status bar (inverted) -->
+  <div class="statusbar">
+    <span class="seg"><span class="v">~/projects/web-app</span></span>
+    <span class="pipe">│</span>
+    <span class="seg"><span class="k">branch:</span><span class="v">main</span></span>
+    <span class="pipe">│</span>
+    <span class="seg"><span class="v">↑3 ↓0</span></span>
+    <span class="pipe">│</span>
+    <span class="seg"><span class="k">staged:</span><span class="v">0</span></span>
+    <span class="pipe">│</span>
+    <span class="seg"><span class="k">modified:</span><span class="v">2</span></span>
+    <span class="pipe">│</span>
+    <span class="seg"><span class="k">untracked:</span><span class="v">1</span></span>
+    <span class="right">
+      <span class="seg"><span class="k">git</span><span class="v">2.44.0</span></span>
+    </span>
+  </div>
+
+  <!-- tabs -->
+  <div class="tabs">
+    <span class="tab active"><span class="b">[</span> Basics <span class="b">]</span></span>
+    <span class="tab">  Branching  </span>
+    <span class="tab">  Stashing  </span>
+    <span class="tab">  Recovery  </span>
+    <span class="tab">  Config  </span>
+    <span class="tab-meta">12/12 cmds · loaded in 0.04s</span>
+  </div>
+
+  <!-- main two-col -->
+  <div class="main">
+
+    <!-- LEFT PANEL: commands 1–6 -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">┌─</span>
+        <span class="lbl">SURVIVAL · BASICS</span>
+        <span class="pre">─</span>
+        <span style="color:var(--fg-faint)">use first. break least.</span>
+        <span class="ct">6 cmds ─┐</span>
+      </div>
+
+      <!-- 01 status -->
+      <div class="row sel">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">01</span>
+            <span class="cmd">git status</span>
+            <span class="desc">Lists tracked, staged, modified files.</span>
+            <span class="tag read">read</span>
+          </div>
+          <div class="meta"><span class="k">when</span> before every other git command.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git status -sb</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. cannot mutate repo.</span></div>
+        </div>
+      </div>
+
+      <!-- 02 add -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">02</span>
+            <span class="cmd">git add</span>
+            <span class="desc">Stages changes for next commit.</span>
+            <span class="tag write">stage</span>
+          </div>
+          <div class="meta"><span class="k">when</span> after editing, before commit.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git add -p src/api.ts</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git restore --staged &lt;file&gt;</span></div>
+        </div>
+      </div>
+
+      <!-- 03 commit -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">03</span>
+            <span class="cmd">git commit</span>
+            <span class="desc">Snapshots staged changes to local history.</span>
+            <span class="tag write">write</span>
+          </div>
+          <div class="meta"><span class="k">when</span> logical unit of work done.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git commit -m "fix: null guard in parser"</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git commit --amend  (last commit only)</span></div>
+        </div>
+      </div>
+
+      <!-- 04 push -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">04</span>
+            <span class="cmd">git push</span>
+            <span class="desc">Uploads local commits to remote branch.</span>
+            <span class="tag danger">remote</span>
+          </div>
+          <div class="meta"><span class="k">when</span> sharing work. opening PR.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git push -u origin feat/auth</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git push --force-with-lease  (never plain --force)</span></div>
+        </div>
+      </div>
+
+      <!-- 05 pull / fetch -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">05</span>
+            <span class="cmd">git pull --rebase</span>
+            <span class="desc">Fetches remote then replays your commits.</span>
+            <span class="tag write">sync</span>
+          </div>
+          <div class="meta"><span class="k">when</span> teammate pushed. before push.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git fetch origin && git pull --rebase</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git rebase --abort  (during conflict)</span></div>
+        </div>
+      </div>
+
+      <!-- 06 log -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">06</span>
+            <span class="cmd">git log</span>
+            <span class="desc">Prints commit history. one-line form best.</span>
+            <span class="tag read">read</span>
+          </div>
+          <div class="meta"><span class="k">when</span> auditing. blame hunting. lost?</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git log --oneline --graph --decorate -n 20</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. press q to exit pager.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: commands 7-12 -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">┌─</span>
+        <span class="lbl">SURVIVAL · BRANCHING + RECOVERY</span>
+        <span class="pre">─</span>
+        <span style="color:var(--fg-faint)">history surgery. handle with care.</span>
+        <span class="ct">6 cmds ─┐</span>
+      </div>
+
+      <!-- 07 diff -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">07</span>
+            <span class="cmd">git diff</span>
+            <span class="desc">Shows unstaged changes. line by line.</span>
+            <span class="tag read">read</span>
+          </div>
+          <div class="meta"><span class="k">when</span> review before staging or commit.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git diff --staged           # what'll commit</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. pager only.</span></div>
+        </div>
+      </div>
+
+      <!-- 08 branch -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">08</span>
+            <span class="cmd">git branch</span>
+            <span class="desc">Lists, creates, deletes branches.</span>
+            <span class="tag safe">local</span>
+          </div>
+          <div class="meta"><span class="k">when</span> new feature. cleanup stale heads.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git branch -vv          # show tracking</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git branch &lt;name&gt; &lt;sha-from-reflog&gt;</span></div>
+        </div>
+      </div>
+
+      <!-- 09 switch / checkout -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">09</span>
+            <span class="cmd">git switch</span>
+            <span class="desc">Changes active branch. modern checkout.</span>
+            <span class="tag write">move</span>
+          </div>
+          <div class="meta"><span class="k">when</span> hop between features. start fresh.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git switch -c feat/login origin/main</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git switch -            # back to prev</span></div>
+        </div>
+      </div>
+
+      <!-- 10 merge -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">10</span>
+            <span class="cmd">git merge</span>
+            <span class="desc">Joins another branch into current. preserves history.</span>
+            <span class="tag write">write</span>
+          </div>
+          <div class="meta"><span class="k">when</span> integrating feature. updating local main.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git merge --no-ff feat/auth</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git merge --abort  /  git reset --hard ORIG_HEAD</span></div>
+        </div>
+      </div>
+
+      <!-- 11 rebase -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">11</span>
+            <span class="cmd">git rebase</span>
+            <span class="desc">Replays commits onto new base. rewrites SHAs.</span>
+            <span class="tag danger">rewrites</span>
+          </div>
+          <div class="meta"><span class="k">when</span> linear history. before merging PR.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git rebase -i origin/main</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git rebase --abort  /  git reset --hard ORIG_HEAD</span></div>
+        </div>
+      </div>
+
+      <!-- 12 stash -->
+      <div class="row">
+        <span class="bar">▌</span>
+        <div class="body">
+          <div class="line1">
+            <span class="num">12</span>
+            <span class="cmd">git stash</span>
+            <span class="desc">Shelves dirty changes. clean tree restored.</span>
+            <span class="tag safe">save</span>
+          </div>
+          <div class="meta"><span class="k">when</span> urgent switch with work in progress.</div>
+          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git stash push -m "wip: parser refactor"</span></div>
+          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git stash list && git stash pop stash@{0}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- command palette / search bar (fake but consistent) -->
+  <div class="palette">
+    <span class="p">:</span><span class="q">filter</span>
+    <span style="color:var(--fg-faint)">─</span>
+    <span style="color:var(--fg)">git&nbsp;</span><span style="color:var(--cyan)">█</span>
+    <span class="hint">3 matches · ↑↓ to navigate · enter to expand · esc to clear</span>
+  </div>
+
+  <!-- secondary widgets row -->
+  <div class="main" style="grid-template-columns: 1.2fr 1fr 0.9fr;">
+
+    <!-- reflog widget -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">├─</span>
+        <span class="lbl">REFLOG</span>
+        <span class="pre">─</span>
+        <span style="color:var(--fg-faint)">git reflog · last 8 entries</span>
+        <span class="ct">~/.git/logs/HEAD</span>
+      </div>
+      <div class="widget reflog" style="border-bottom:none; padding-top:5px;">
+        <div class="e cur"><span class="sha">a4f1c0e</span><span class="op">HEAD@{0}</span><span class="msg">commit: fix: null guard in parser</span></div>
+        <div class="e"><span class="sha">9d3b21a</span><span class="op">HEAD@{1}</span><span class="msg">rebase (finish): returning to refs/heads/main</span></div>
+        <div class="e"><span class="sha">6e0fa12</span><span class="op">HEAD@{2}</span><span class="msg">rebase (pick): refactor: extract token cache</span></div>
+        <div class="e"><span class="sha">2bc81d4</span><span class="op">HEAD@{3}</span><span class="msg">rebase (start): checkout origin/main</span></div>
+        <div class="e"><span class="sha">f7a09cb</span><span class="op">HEAD@{4}</span><span class="msg">commit: feat: add SSO callback handler</span></div>
+        <div class="e"><span class="sha">11e4d8f</span><span class="op">HEAD@{5}</span><span class="msg">reset: moving to HEAD~1</span></div>
+        <div class="e"><span class="sha">5a92c3b</span><span class="op">HEAD@{6}</span><span class="msg">commit: chore: bump deps</span></div>
+        <div class="e"><span class="sha">3df02e8</span><span class="op">HEAD@{7}</span><span class="msg">checkout: moving from feat/auth to main</span></div>
+      </div>
+    </div>
+
+    <!-- diff preview -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">├─</span>
+        <span class="lbl">DIFF · PREVIEW</span>
+        <span class="pre">─</span>
+        <span style="color:var(--fg-faint)">src/parser.ts</span>
+        <span class="ct">+4 -1</span>
+      </div>
+      <div class="widget diff" style="border-bottom:none; padding-top:5px;">
+<pre><span class="hdr">diff --git a/src/parser.ts b/src/parser.ts</span>
+<span class="hdr">index 8c41a2..a4f1c0e 100644</span>
+<span class="hdr">--- a/src/parser.ts</span>
+<span class="hdr">+++ b/src/parser.ts</span>
+<span class="at">@@ -42,7 +42,10 @@ function parseToken(s) {</span>
+<span class="ctx">   const t = s.trim();</span>
+<span class="del">-  return t.split('.')[1];</span>
+<span class="add">+  if (!t || t.indexOf('.') &lt; 0) {</span>
+<span class="add">+    return null;</span>
+<span class="add">+  }</span>
+<span class="add">+  return t.split('.')[1] ?? null;</span>
+<span class="ctx"> }</span></pre>
+      </div>
+    </div>
+
+    <!-- branch tree + gauges -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">├─</span>
+        <span class="lbl">BRANCH TREE</span>
+        <span class="pre">─</span>
+        <span style="color:var(--fg-faint)">local · remote</span>
+      </div>
+      <div class="widget branchtree" style="padding-top:5px;">
+<pre style="font-family:inherit; font-size:11px; line-height:1.45; margin:0;"><span class="g">* main</span>                <span class="f">a4f1c0e</span> <span class="m">[origin/main: ↑3]</span>
+<span class="f">│</span>  feat/auth          <span class="f">f7a09cb</span> <span class="m">[origin/feat/auth]</span>
+<span class="f">│</span>  feat/login         <span class="f">2bc81d4</span> <span class="m">[gone]</span>
+<span class="f">│</span>  fix/parser-null    <span class="f">a4f1c0e</span>
+<span class="f">│</span>  chore/deps         <span class="f">5a92c3b</span> <span class="hd">⚠ 14 days stale</span>
+<span class="f">└─</span> <span class="c">remotes/origin/HEAD → main</span></pre>
+      </div>
+      <div class="widget">
+        <div class="wh">REPO HEALTH <span class="b">─────────────</span></div>
+        <div class="gauge">
+          <span>working tree</span>
+          <span class="bar"><span class="fill g" style="width:78%"></span></span>
+          <span class="v" style="color:var(--green)">clean</span>
+        </div>
+        <div class="gauge">
+          <span>commits ahead</span>
+          <span class="bar"><span class="fill y" style="width:32%"></span></span>
+          <span class="v">3</span>
+        </div>
+        <div class="gauge">
+          <span>conflicts</span>
+          <span class="bar"><span class="fill" style="width:0%"></span></span>
+          <span class="v">0</span>
+        </div>
+        <div class="gauge">
+          <span>stash entries</span>
+          <span class="bar"><span class="fill y" style="width:18%"></span></span>
+          <span class="v">2</span>
+        </div>
+        <div class="gauge">
+          <span>reflog size</span>
+          <span class="bar"><span class="fill" style="width:54%"></span></span>
+          <span class="v">274</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRE PANEL -->
+  <div class="fire">
+    <div class="fire-head">
+      <span class="blink">◆</span>
+      <span style="color:var(--red); font-weight:600;">WHEN EVERYTHING IS ON FIRE</span>
+      <span style="color:var(--fg-faint)">─ destructive ops can be undone. nothing is lost while in reflog.</span>
+      <span class="marquee">ttl 90 days · gc.reflogExpire=90d</span>
+    </div>
+
+    <div class="fire-grid">
+
+      <!-- fire 1 -->
+      <div class="fire-cell">
+        <div class="h">
+          <span class="sigil">●</span><span class="name">git reflog</span>
+          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 1 · audit</span>
+        </div>
+        <div class="d">Shows all HEAD movements. including ones you thought were lost.</div>
+        <div class="ex"><span class="p">$</span>git reflog --date=iso | head -40</div>
+        <div class="note">▸ exits 0 always. SHAs in column 1 are recoverable. copy one.</div>
+      </div>
+
+      <!-- fire 2 -->
+      <div class="fire-cell">
+        <div class="h">
+          <span class="sigil">●</span><span class="name">git reset --hard ORIG_HEAD</span>
+          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 2 · revert</span>
+        </div>
+        <div class="d">Undoes last destructive op. merge, rebase, reset.</div>
+        <div class="ex"><span class="p">$</span>git reset --hard ORIG_HEAD</div>
+        <div class="note">▸ ORIG_HEAD set automatically before merge/rebase/reset. one-shot.</div>
+      </div>
+
+      <!-- fire 3 -->
+      <div class="fire-cell">
+        <div class="h">
+          <span class="sigil">●</span><span class="name">git cherry-pick &lt;sha&gt;</span>
+          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 3 · graft</span>
+        </div>
+        <div class="d">Recovers a single commit by SHA from reflog. onto current branch.</div>
+        <div class="ex"><span class="p">$</span>git cherry-pick 6e0fa12</div>
+        <div class="note">▸ conflict? --abort to bail, --continue when resolved.</div>
+      </div>
+    </div>
+
+    <!-- escalation ladder -->
+    <div style="border-top:1px solid var(--border); padding:6px 12px; font-size:11px; color:var(--fg-dim); display:flex; gap:14px; flex-wrap:wrap;">
+      <span style="color:var(--fg-faint);">escalation ladder ▸</span>
+      <span><span style="color:var(--green)">L1</span> git status</span>
+      <span style="color:var(--fg-faint)">→</span>
+      <span><span style="color:var(--cyan)">L2</span> git diff</span>
+      <span style="color:var(--fg-faint)">→</span>
+      <span><span style="color:var(--yellow)">L3</span> git reflog</span>
+      <span style="color:var(--fg-faint)">→</span>
+      <span><span style="color:var(--yellow)">L4</span> git reset --hard ORIG_HEAD</span>
+      <span style="color:var(--fg-faint)">→</span>
+      <span><span style="color:var(--red)">L5</span> git cherry-pick &lt;sha&gt;</span>
+      <span style="color:var(--fg-faint)">→</span>
+      <span><span style="color:var(--red)">L6</span> ask a senior. paste reflog.</span>
+    </div>
+  </div>
+
+  <!-- legend strip -->
+  <div class="main" style="grid-template-columns: 1fr 1fr;">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">├─</span><span class="lbl">LEGEND</span><span class="pre">─</span>
+        <span style="color:var(--fg-faint)">command classification</span>
+      </div>
+      <div class="widget legend" style="border-bottom:none;">
+        <div><span class="sw" style="color:var(--green)">●</span> <span style="color:var(--green)">safe</span>      &nbsp;cannot mutate remote</div>
+        <div><span class="sw" style="color:var(--cyan-2)">●</span> <span style="color:var(--cyan-2)">read</span>      &nbsp;no writes to .git</div>
+        <div><span class="sw" style="color:var(--yellow)">●</span> <span style="color:var(--yellow)">write</span>     &nbsp;local history changes</div>
+        <div><span class="sw" style="color:var(--red)">●</span> <span style="color:var(--red)">destructive</span> &nbsp;reflog is your seatbelt</div>
+        <div><span class="sw">▌</span> selected row</div>
+        <div><span class="sw">█</span> cursor</div>
+        <div><span class="sw">◆</span> alert</div>
+        <div><span class="sw">▸</span> recovery hint</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="pre">├─</span><span class="lbl">KEYMAP</span><span class="pre">─</span>
+        <span style="color:var(--fg-faint)">vim-style. emacs unbound.</span>
+      </div>
+      <div class="widget keymap" style="border-bottom:none;">
+        <div class="k"><span class="kc">k / j</span><span>move up / down one row</span></div>
+        <div class="k"><span class="kc">g / G</span><span>jump first / last command</span></div>
+        <div class="k"><span class="kc">enter</span><span>expand row · show man page</span></div>
+        <div class="k"><span class="kc">/</span><span>incremental search</span></div>
+        <div class="k"><span class="kc">y</span><span>yank example to clipboard</span></div>
+        <div class="k"><span class="kc">r</span><span>refresh status bar</span></div>
+        <div class="k"><span class="kc">?</span><span>open this help</span></div>
+        <div class="k"><span class="kc">q · esc</span><span>quit / back one level</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom help bar (the one the user asked for) -->
+  <div class="helpbar">
+    <span><span class="kb">q</span> quit</span>
+    <span><span class="kb">?</span> help</span>
+    <span><span class="kb">/</span> search</span>
+    <span><span class="kb">enter</span> expand</span>
+    <span><span class="kb">esc</span> back</span>
+    <span><span class="kb">k/j</span> navigate</span>
+    <span><span class="kb">y</span> yank</span>
+    <span><span class="kb">r</span> refresh</span>
+    <span class="right">
+      <span>git 2.44.0</span>
+      <span>survival-kit v1.0</span>
+      <span class="blink-c">READY</span>
+    </span>
+  </div>
+
+</div>
+
+</body>
+</html>
