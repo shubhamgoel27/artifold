@@ -12,6 +12,7 @@ Cloudflare Pages backend is planned (v0.3-beta) for users without `gh`.
 """
 from __future__ import annotations
 
+import hashlib
 import subprocess
 import sys
 import time
@@ -19,7 +20,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import provenance
+from . import bundle, provenance
 from .paths import CACHE_DIR, ensure_dirs
 
 SHARE_REPO_NAME = "artifold-share"
@@ -197,7 +198,21 @@ def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
     if not user:
         print("  ! couldn't determine your github user via gh"); return None
 
-    sha = provenance.sha1_of(file)
+    # For multi-file projects (HTML + sibling CSS/JS/images), inline siblings
+    # into a single self-contained file so the shared URL works standalone.
+    # Single-file artifacts pass through unchanged.
+    if bundle.has_local_refs(file):
+        bundled_bytes, warnings = bundle.bundle_html(file)
+        for w in warnings:
+            print(f"  ! bundle: {w}")
+        publish_bytes = bundled_bytes
+        # Hash the BUNDLED content so re-sharing the same multi-file artifact
+        # is still idempotent, and so sibling-only changes produce a new URL.
+        sha = hashlib.sha1(bundled_bytes).hexdigest()
+        print(f"  bundled {file.name} + siblings → {len(bundled_bytes):,} bytes")
+    else:
+        publish_bytes = file.read_bytes()
+        sha = provenance.sha1_of(file)
     entry = provenance.get(sha) or {}
     short_id = sha[:8]
     expected_url = f"https://{user}.github.io/{SHARE_REPO_NAME}/{short_id}.html"
@@ -222,7 +237,7 @@ def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
         return None
 
     dest = repo_dir / f"{short_id}.html"
-    dest.write_bytes(file.read_bytes())
+    dest.write_bytes(publish_bytes)
     _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",
          "add", f"{short_id}.html", cwd=repo_dir)
     _git("-c", "user.email=artifold@local", "-c", "user.name=Artifold",

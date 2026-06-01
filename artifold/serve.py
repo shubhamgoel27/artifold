@@ -10,9 +10,11 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import mimetypes
 import queue
+import re
 import sys
 import threading
 import time
@@ -27,9 +29,32 @@ from .paths import CACHE_DIR, DATA
 
 DEBOUNCE = 2.0
 
+# Safe asset types — served alongside an HTML artifact via /asset/<token>/<rel>.
+# Anything not in this set 404s, so secrets like .env / .key / .pem / .py can
+# never leak even from a configured root.
+ALLOWED_ASSET_EXTS = {
+    # Markup / data
+    ".html", ".htm", ".xml", ".json", ".txt", ".md", ".csv", ".tsv",
+    # Styles / scripts
+    ".css", ".js", ".mjs", ".map",
+    # Images / vectors
+    ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".bmp",
+    # Fonts
+    ".woff", ".woff2", ".ttf", ".otf", ".eot",
+    # Media (occasional)
+    ".mp4", ".webm", ".ogg", ".mp3", ".wav",
+}
+
 _subscribers: set[queue.Queue] = set()
 _sub_lock = threading.Lock()
 _rescan_lock = threading.Lock()
+
+# Map of short hash → resolved Path of the artifact's containing dir.
+# Populated lazily when /file?p=<html> is served. Persists for the server's
+# lifetime; cleared on restart (which is fine — dashboard requests will
+# re-populate by re-loading the iframe).
+_dir_tokens: dict[str, Path] = {}
+_dir_tokens_lock = threading.Lock()
 
 
 def _broadcast(event: str, data: str = "ok") -> None:
@@ -77,6 +102,46 @@ def _allowed_path(p: Path) -> bool:
         except ValueError:
             continue
     return False
+
+
+def _token_for_dir(d: Path) -> str:
+    """Register `d` and return a stable 12-char hash used in /asset/<token>/…
+    URLs. Same dir → same token across calls."""
+    d = d.resolve()
+    tok = hashlib.sha1(str(d).encode("utf-8")).hexdigest()[:12]
+    with _dir_tokens_lock:
+        _dir_tokens[tok] = d
+    return tok
+
+
+_HEAD_OPEN_RE     = re.compile(rb"<head\b[^>]*>", re.I)
+_HTML_OPEN_RE     = re.compile(rb"<html\b[^>]*>", re.I)
+_BASE_EXISTS_RE   = re.compile(rb"<base\b[^>]*>", re.I)
+# Tolerate utf-8 BOM and leading whitespace before <!doctype>
+_DOCTYPE_RE       = re.compile(rb"<!doctype[^>]*>", re.I)
+
+
+def _inject_base_href(html_bytes: bytes, base_url: str) -> bytes:
+    """Inject `<base href="<base_url>">` into <head> if not already present.
+    Fails open: if the HTML has no recognisable structure, return unchanged."""
+    if _BASE_EXISTS_RE.search(html_bytes[:8192]):
+        return html_bytes  # respect existing base
+    tag = f'<base href="{base_url}">'.encode("utf-8")
+    m = _HEAD_OPEN_RE.search(html_bytes)
+    if m:
+        idx = m.end()
+        return html_bytes[:idx] + tag + html_bytes[idx:]
+    # No <head> — try inserting after <html> opening
+    m = _HTML_OPEN_RE.search(html_bytes)
+    if m:
+        idx = m.end()
+        return html_bytes[:idx] + b"<head>" + tag + b"</head>" + html_bytes[idx:]
+    # No <html> — try inserting after <!doctype> or at very top
+    m = _DOCTYPE_RE.search(html_bytes)
+    if m:
+        idx = m.end()
+        return html_bytes[:idx] + b"\n<head>" + tag + b"</head>" + html_bytes[idx:]
+    return tag + html_bytes  # last resort — still valid HTML, browser will tolerate
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -155,12 +220,26 @@ class Handler(SimpleHTTPRequestHandler):
                 data = target.read_bytes()
             except Exception:
                 self.send_error(404); return
+            # For HTML artifacts, register the containing dir and inject
+            # `<base href="/asset/<token>/">` so relative sibling refs
+            # (./styles.css, ./app.js, ./img/foo.png) resolve via /asset/.
+            if (mime or "").startswith("text/html"):
+                tok = _token_for_dir(target.parent)
+                data = _inject_base_href(data, f"/asset/{tok}/")
+                mime = "text/html; charset=utf-8"
             self.send_response(200)
             self.send_header("Content-Type", mime or "application/octet-stream")
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
             self.wfile.write(data)
             return
+
+        # /asset/<token>/<rel> — siblings of an HTML artifact under a dir
+        # previously registered by /file. The token scheme means the URL
+        # alone doesn't reveal the actual server-side path; we still
+        # double-check the resolved path against configured roots.
+        if path.path.startswith("/asset/"):
+            return self._handle_asset(path)
 
         # /designs/<sha>?format=css|skeleton|template
         if path.path.startswith("/designs/"):
@@ -170,6 +249,58 @@ class Handler(SimpleHTTPRequestHandler):
         if path.path == "/":
             self.path = "/index.html"
         return super().do_GET()
+
+    def _handle_asset(self, path):
+        """Serve a sibling asset for an HTML artifact.
+
+        URL shape:  /asset/<12-hex-token>/<relative/path/to/file.ext>
+        Rules:
+          - <token> must be in `_dir_tokens` (registered by /file?p=…)
+          - <relative> must not escape the registered dir (no `..`)
+          - resolved path must still be under a configured root
+          - extension must be in ALLOWED_ASSET_EXTS
+        """
+        # Strip prefix, split off token
+        rest = path.path[len("/asset/"):]
+        if "/" not in rest:
+            return self.send_error(404)
+        token, _, rel = rest.partition("/")
+        if not re.fullmatch(r"[0-9a-f]{12}", token):
+            return self.send_error(400, "bad token")
+        with _dir_tokens_lock:
+            base = _dir_tokens.get(token)
+        if not base:
+            # Token expired (server restarted) — tell the browser
+            return self.send_error(404, "asset token unknown - reload the page")
+        # urldecode the relative path; reject anything trying to escape
+        rel = urllib.parse.unquote(rel)
+        if not rel or rel.startswith("/"):
+            return self.send_error(400, "bad relative path")
+        # Resolve and validate containment
+        try:
+            target = (base / rel).resolve(strict=True)
+            target.relative_to(base)
+        except (ValueError, OSError):
+            return self.send_error(404)
+        if not target.is_file():
+            return self.send_error(404)
+        if target.suffix.lower() not in ALLOWED_ASSET_EXTS:
+            return self.send_error(404, "asset type not allowed")
+        if not _allowed_path(target):
+            return self.send_error(403, "asset outside configured roots")
+        mime, _ = mimetypes.guess_type(str(target))
+        try:
+            data = target.read_bytes()
+        except Exception:
+            return self.send_error(500)
+        self.send_response(200)
+        self.send_header("Content-Type", mime or "application/octet-stream")
+        self.send_header("Content-Length", str(len(data)))
+        # Long cache for assets — they're content-addressed by token (which
+        # changes when the source dir path changes)
+        self.send_header("Cache-Control", "public, max-age=300")
+        self.end_headers()
+        self.wfile.write(data)
 
     def _handle_designs(self, path):
         from . import design as design_mod, provenance

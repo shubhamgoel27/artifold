@@ -96,8 +96,17 @@ async def shoot(projects: list[dict], concurrency: int = 5) -> None:
                 page = await browser.new_page(viewport={"width": 1280, "height": 800},
                                               device_scale_factor=1)
                 try:
-                    await page.goto(path.as_uri(), wait_until="load", timeout=20000)
-                    await page.wait_for_timeout(900)
+                    # `networkidle` catches CDN font/CSS loads that `load`
+                    # misses (matters for multi-file projects referencing
+                    # Google Fonts etc). Fall back to `load` if networkidle
+                    # stalls — some pages have long-poll sockets.
+                    try:
+                        await page.goto(path.as_uri(),
+                                        wait_until="networkidle", timeout=12000)
+                    except Exception:
+                        await page.goto(path.as_uri(),
+                                        wait_until="load", timeout=20000)
+                    await page.wait_for_timeout(1500)  # JS hydration settle
                     await page.screenshot(path=str(THUMBS / f"{k}.jpg"), type="jpeg",
                                           quality=72,
                                           clip={"x": 0, "y": 0, "width": 1280, "height": 800})
