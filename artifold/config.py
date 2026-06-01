@@ -99,3 +99,36 @@ def remove_root(path: str | Path) -> tuple[bool, str]:
 
 def roots() -> list[Path]:
     return [Path(r) for r in (load().get("roots") or [])]
+
+
+def add_allow_repo(name: str) -> tuple[bool, str]:
+    """Add a directory NAME to the allow-list so its .git contents are
+    scanned (default behavior is to skip top-level subdirs that are git
+    repos, since most are cloned code rather than your artifacts)."""
+    name = name.strip().strip("/")
+    if not name or "/" in name:
+        return False, "pass a directory name only (no slashes)"
+    cfg = load()
+    allow = list(cfg.get("allow_repos") or [])
+    if name in allow:
+        return False, f"already allow-listed: {name}"
+    allow.append(name)
+    cfg["allow_repos"] = sorted(allow)
+    save(cfg)
+    return True, name
+
+
+def remove_allow_repo(name: str) -> tuple[bool, str]:
+    name = name.strip().strip("/")
+    cfg = load()
+    allow = list(cfg.get("allow_repos") or [])
+    if name not in allow:
+        return False, f"not allow-listed: {name}"
+    allow.remove(name)
+    cfg["allow_repos"] = allow
+    save(cfg)
+    return True, name
+
+
+def allow_repos() -> list[str]:
+    return list(load().get("allow_repos") or [])

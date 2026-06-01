@@ -48,6 +48,11 @@ ALLOWED_ASSET_EXTS = {
 _subscribers: set[queue.Queue] = set()
 _sub_lock = threading.Lock()
 _rescan_lock = threading.Lock()
+# When an event arrives while a scan is already in-flight, instead of
+# dropping it we set this flag. The in-flight scan checks it on completion
+# and fires one follow-up — so changes made during long scans aren't lost.
+_rescan_pending = False
+_rescan_pending_lock = threading.Lock()
 
 # Map of short hash → resolved Path of the artifact's containing dir.
 # Populated lazily when /file?p=<html> is served. Persists for the server's
@@ -67,9 +72,18 @@ def _broadcast(event: str, data: str = "ok") -> None:
 
 
 def _run_scan(reason: str) -> bool:
-    """Synchronous scan → shoot → build, one at a time. Returns success."""
+    """Synchronous scan → shoot → build, one at a time. Returns success.
+
+    Concurrency: when called during another scan, sets a 'pending' flag
+    instead of dropping the request. The active scan checks the flag on
+    completion and spawns a follow-up, so events that arrived during the
+    scan window are never lost.
+    """
+    global _rescan_pending
     if not _rescan_lock.acquire(blocking=False):
-        print(f"  (scan already running; skipping {reason})")
+        with _rescan_pending_lock:
+            _rescan_pending = True
+        print(f"  (scan in progress; queued follow-up for [{reason}])")
         return False
     try:
         from . import scan as scan_mod, shoot as shoot_mod, build as build_mod
@@ -87,6 +101,14 @@ def _run_scan(reason: str) -> bool:
         return True
     finally:
         _rescan_lock.release()
+        # If anything was queued while we held the lock, fire one follow-up.
+        # Doing this in a daemon thread keeps _run_scan synchronous for callers.
+        with _rescan_pending_lock:
+            should_followup = _rescan_pending
+            _rescan_pending = False
+        if should_followup:
+            threading.Thread(target=_run_scan, args=("queued-follow-up",),
+                             daemon=True).start()
 
 
 def _allowed_path(p: Path) -> bool:
@@ -367,9 +389,12 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
-IGNORE_NAMES = {"node_modules", ".git", ".next", "dist", "build", "__pycache__",
-                ".venv", "venv", "out", "coverage", ".cache",
-                "templates", "site-packages", ".tox", "migrations", "vendor"}
+# Use scan.py's SKIP_DIRS as the single source of truth so the watcher and
+# the scanner agree about what to ignore. Previously these drifted: the
+# watcher was firing scans for changes inside `artifold/` itself (in
+# SKIP_DIRS) and the scanner then ignored them — wasting a ~9.5s scan per
+# event and blocking real changes via the in-flight lock.
+from .scan import SKIP_DIRS as _SKIP_DIRS
 
 
 def _start_watcher():
@@ -400,17 +425,37 @@ def _start_watcher():
         def on_any_event(self, ev):
             if ev.is_directory:
                 return
-            p = Path(getattr(ev, "src_path", ""))
-            if not p.name.endswith(".html"):
-                return
-            try:
-                if CACHE_DIR in p.parents:
-                    return
-            except Exception:
-                pass
-            if any(part in IGNORE_NAMES for part in p.parts):
-                return
-            schedule()
+            # For atomic-write rename patterns (editor saves as foo.html.tmp
+            # then `mv foo.html.tmp foo.html`), the move event's src_path is
+            # the .tmp file which would be filtered out. Check dest_path too.
+            paths = [getattr(ev, "src_path", "")]
+            dest = getattr(ev, "dest_path", "")  # only set on FileMovedEvent
+            if dest:
+                paths.append(dest)
+            for sp in paths:
+                if not sp:
+                    continue
+                p = Path(sp)
+                if not p.name.lower().endswith(".html"):
+                    continue
+                try:
+                    if CACHE_DIR in p.parents:
+                        continue
+                except Exception:
+                    pass
+                if any(part in _SKIP_DIRS for part in p.parts):
+                    continue
+                # Survived all filters — schedule a debounced scan and log it
+                # so the operator can see the watcher is alive and working.
+                try:
+                    rel = p.relative_to(Path.home())
+                    label = f"~/{rel}"
+                except ValueError:
+                    label = str(p)
+                kind = type(ev).__name__.replace("File", "").replace("Event", "").lower()
+                print(f"  • watch: {kind} {label}  (scan in {DEBOUNCE:.0f}s)")
+                schedule()
+                return  # one schedule per event is enough
 
     obs = Observer()
     for r in roots:

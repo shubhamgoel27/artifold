@@ -16,6 +16,7 @@ Heuristics (in order):
 from __future__ import annotations
 
 import html
+import os
 import re
 from pathlib import Path
 
@@ -79,19 +80,45 @@ def _classify(stem: str) -> tuple[str, str, int]:
 
 
 def _find_html(root: Path, max_depth: int):
-    for p in root.rglob("*.html"):
-        rel = p.relative_to(root)
-        if any(part in SKIP_DIRS for part in rel.parts):
-            continue
-        if len(rel.parts) > max_depth:
-            continue
+    """Walk `root`, pruning SKIP_DIRS at the *directory* level (so we never
+    descend into .venv/node_modules/.git/etc.) and capping at max_depth.
+    Yields HTML files past the Django/Jinja template-tag filter.
+
+    Was: rglob('*.html') + post-filter — walks EVERY dir under root then
+    discards. On ~/work that means walking 45,000+ dirs (most inside
+    .venv/node_modules/etc.) only to throw them away. ~10x slowdown.
+
+    Now: os.scandir-based recursion that skips SKIP_DIRS before descending,
+    cutting the walk to the dirs that could plausibly contain artifacts.
+    """
+    def walk(d: str, depth: int):
+        if depth > max_depth:
+            return
         try:
-            head = p.read_text(encoding="utf-8", errors="ignore")[:4000]
-        except Exception:
-            continue
-        if TEMPLATE_RE.search(head):
-            continue
-        yield p
+            entries = list(os.scandir(d))
+        except (PermissionError, OSError):
+            return
+        for e in entries:
+            try:
+                is_dir = e.is_dir(follow_symlinks=False)
+            except OSError:
+                continue
+            if is_dir:
+                if e.name in SKIP_DIRS:
+                    continue
+                yield from walk(e.path, depth + 1)
+                continue
+            if not e.name.lower().endswith(".html"):
+                continue
+            p = Path(e.path)
+            try:
+                head = p.read_text(encoding="utf-8", errors="ignore")[:4000]
+            except Exception:
+                continue
+            if TEMPLATE_RE.search(head):
+                continue
+            yield p
+    yield from walk(str(root), 1)
 
 
 def _extract_meta(path: Path) -> dict:

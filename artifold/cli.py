@@ -146,6 +146,28 @@ def _cmd_roots(_args):
         print(r)
 
 
+def _cmd_allow_repo(args):
+    """Add or list dir names with their own .git that should be scanned anyway.
+    Default behavior is to skip these (most are cloned source code)."""
+    if not args.name:
+        allow = config.allow_repos()
+        if not allow:
+            print("(no repos allow-listed; git-repo subdirs are excluded by default)")
+        else:
+            for n in allow:
+                print(n)
+        return 0
+    ok, msg = config.add_allow_repo(args.name)
+    print(("allow-listed: " if ok else "! ") + msg)
+    return 0 if ok else 1
+
+
+def _cmd_disallow_repo(args):
+    ok, msg = config.remove_allow_repo(args.name)
+    print(("removed from allow-list: " if ok else "! ") + msg)
+    return 0 if ok else 1
+
+
 def _cmd_scan(args):
     from . import scan, shoot, build
     rs = config.roots()
@@ -471,6 +493,17 @@ def main(argv=None) -> int:
     r.add_argument("path"); r.set_defaults(fn=_cmd_remove)
 
     sub.add_parser("roots", help="list configured roots").set_defaults(fn=_cmd_roots)
+
+    al = sub.add_parser("allow-repo",
+                        help="include a git-repo subdir in scans (no arg = list)")
+    al.add_argument("name", nargs="?",
+                    help="subdir name to allow-list (e.g. `frontier-lab-prep`)")
+    al.set_defaults(fn=_cmd_allow_repo)
+
+    da = sub.add_parser("disallow-repo",
+                        help="remove a name from the allow-list")
+    da.add_argument("name")
+    da.set_defaults(fn=_cmd_disallow_repo)
 
     s = sub.add_parser("scan", help="scan + screenshot + build dashboard")
     s.add_argument("--no-shoot", action="store_true",

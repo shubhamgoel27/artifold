@@ -139,6 +139,43 @@ def check_anthropic_extra() -> Check:
                      fix="pip install 'artifold[intent]'")
 
 
+def check_excluded_repos() -> Check:
+    """Surface top-level subdirs of any root that have their own .git and
+    aren't allow-listed. By default these are silently excluded from the
+    scan (because most are cloned code, not artifacts). Often the user has
+    no idea why their stuff isn't showing up."""
+    from .scan import SKIP_DIRS
+    cfg = config.load()
+    roots = config.roots()
+    allow = set(cfg.get("allow_repos") or [])
+    excluded: list[Path] = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        try:
+            entries = list(root.iterdir())
+        except OSError:
+            continue
+        for sub in entries:
+            if not sub.is_dir():
+                continue
+            if sub.name in SKIP_DIRS:
+                continue
+            if sub.name in allow:
+                continue
+            if (sub / ".git").is_dir():
+                excluded.append(sub)
+    if not excluded:
+        return Check("excluded repos", "ok",
+                     "no git-repo subdirs being silently excluded")
+    sample = ", ".join(d.name for d in excluded[:4])
+    more = f" + {len(excluded)-4} more" if len(excluded) > 4 else ""
+    return Check("excluded repos", "info",
+                 f"{len(excluded)} git-repo subdir(s) excluded by default: {sample}{more}",
+                 fix=f"include one with: artifold allow-repo <name>   "
+                     f"(or all of them via the config file)")
+
+
 def check_anthropic_key() -> Check:
     cfg = config.load()
     enabled = bool(cfg.get("enable_intent"))
@@ -157,6 +194,7 @@ def check_anthropic_key() -> Check:
 
 ALL_CHECKS = [
     check_version, check_config, check_cache, check_roots,
+    check_excluded_repos,
     check_playwright, check_chromium,
     check_gh, check_gh_auth,
     check_anthropic_extra, check_anthropic_key,
