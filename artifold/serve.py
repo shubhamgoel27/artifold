@@ -177,6 +177,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self._handle_share()
         if path == "/import":
             return self._handle_import()
+        if path == "/export-pdf":
+            return self._handle_export_pdf()
         self.send_error(404)
 
     def _read_json(self) -> dict:
@@ -219,9 +221,34 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json({"ok": False, "error": "url required"}, 400)
         out = importer.import_url(url)
         if not out:
-            return self._json({"ok": False, "error": "import failed — see terminal"}, 500)
+            return self._json({"ok": False, "error": "import failed - see terminal"}, 500)
         threading.Thread(target=_run_scan, args=("import-followup",), daemon=True).start()
         return self._json({"ok": True, "path": str(out)})
+
+    def _handle_export_pdf(self):
+        from . import pdf as pdf_mod
+        body = self._read_json()
+        p = body.get("path")
+        if not p:
+            return self._json({"ok": False, "error": "path required"}, 400)
+        target = Path(p)
+        if not _allowed_path(target):
+            return self._json({"ok": False, "error": "path not under any configured root"}, 403)
+        try:
+            opts = {
+                "format": body.get("format") or "A4",
+                "landscape": bool(body.get("landscape")),
+                "print_backgrounds": body.get("print_backgrounds", True),
+                "margin": body.get("margin") or "12mm",
+            }
+            out = pdf_mod.export_pdf(target, **opts)
+        except ValueError as e:
+            return self._json({"ok": False, "error": str(e)}, 400)
+        except Exception as e:
+            return self._json({"ok": False, "error": f"export failed: {e}"}, 500)
+        # Re-scan in the background so provenance update lands in the UI
+        threading.Thread(target=_run_scan, args=("export-followup",), daemon=True).start()
+        return self._json({"ok": True, "path": str(out), "size": out.stat().st_size})
 
     def do_GET(self):
         path = urllib.parse.urlsplit(self.path)
@@ -262,6 +289,12 @@ class Handler(SimpleHTTPRequestHandler):
         # double-check the resolved path against configured roots.
         if path.path.startswith("/asset/"):
             return self._handle_asset(path)
+
+        # /open?p=…   open a file with the system default app (macOS: `open`)
+        # /reveal?p=… reveal a file in Finder (macOS: `open -R`)
+        # Both refuse paths outside any configured root.
+        if path.path in ("/open", "/reveal"):
+            return self._handle_system_action(path)
 
         # /designs/<sha>?format=css|skeleton|template
         if path.path.startswith("/designs/"):
@@ -323,6 +356,51 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "public, max-age=300")
         self.end_headers()
         self.wfile.write(data)
+
+    def _handle_system_action(self, path):
+        """Open or reveal a local file. Used by the dashboard's PDF-exported
+        toast: 'Open' (opens in default PDF viewer) / 'Reveal in Finder'.
+        Only files under a configured root are honoured (no arbitrary disk)."""
+        import subprocess
+        import platform
+        qs = urllib.parse.parse_qs(path.query)
+        p = (qs.get("p") or [""])[0]
+        if not p:
+            return self.send_error(400)
+        target = Path(p)
+        # PDFs live next to source HTML inside roots, OR in ~/Downloads.
+        # Allow both: root-relative OR ~/Downloads/ files we wrote ourselves.
+        downloads = (Path.home() / "Downloads").resolve()
+        try:
+            target_r = target.resolve(strict=True)
+        except OSError:
+            return self.send_error(404)
+        under_downloads = False
+        try:
+            target_r.relative_to(downloads)
+            under_downloads = True
+        except ValueError:
+            pass
+        if not (under_downloads or _allowed_path(target)):
+            return self.send_error(403)
+        sys_name = platform.system().lower()
+        try:
+            if sys_name == "darwin":
+                args = (["open", "-R", str(target_r)] if path.path == "/reveal"
+                        else ["open", str(target_r)])
+            elif sys_name == "linux":
+                args = ["xdg-open", str(target_r.parent if path.path == "/reveal" else target_r)]
+            elif sys_name == "windows":
+                if path.path == "/reveal":
+                    args = ["explorer", "/select,", str(target_r)]
+                else:
+                    args = ["explorer", str(target_r)]
+            else:
+                return self.send_error(501, "unsupported platform")
+            subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as e:
+            return self.send_error(500, f"open failed: {e}")
+        return self._json({"ok": True})
 
     def _handle_designs(self, path):
         from . import design as design_mod, provenance

@@ -181,6 +181,53 @@ The design-mode and voice-register tags are critical — they're how future /cra
 
 ---
 
+## Step 5.5: Add print-ready CSS
+
+Every artifact must include `@media print { ... }` rules so it exports to PDF cleanly. The user can hit "Export PDF" in artifold's UI (or `artifold export-pdf <file>`) and get a result that matches the screen view, not the AI-default broken-margins-and-missing-backgrounds Cmd+P result.
+
+**Always include this base block in `<head>`:**
+
+```html
+<style>
+@media print {
+  /* Preserve every design choice — Chrome strips backgrounds by default */
+  *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { margin: 0; }
+  /* Don't split logical units across pages */
+  section, article, figure, table, .card, .row { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  /* Eliminate noise */
+  nav, .nav, .sidebar, button, [role="button"], video, audio { display: none !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #666; }
+}
+</style>
+```
+
+**Per-mode print rules to ADD on top of the base:**
+
+| Mode | Print-specific rule | Why |
+|---|---|---|
+| `terminal-tui` | Invert: `body { background: white !important; color: black !important; } .term, .panel { background: white !important; color: black !important; border-color: #000 !important; }` | TUI prints terribly in dark — invert for paper |
+| `monochrome-poster` | Keep as-is; backgrounds already exact | The black IS the design |
+| `museum-label` | Keep as-is | Already paper-like |
+| `handwritten-journal` | Add: `body { background-color: #fefef9 !important; }` if peach background; keep otherwise | Pastel fridge-chart prints fine |
+| `data-dashboard` | `.sparkline { stroke-width: 1.5 !important; }` for ink-on-paper clarity | Default thin strokes vanish on print |
+| `magazine-fashion` | Keep; full-bleed becomes a printed bleed (designed for it) | — |
+| `field-guide` | Add page-break hints on each route entry: `.route { break-after: page; }` if route count ≤ 8, else `break-inside: avoid` only | Multi-page field guide is the whole point |
+| `swiss-grid` | Keep; designed to print | — |
+| `technical-blueprint` | `.diagram svg { max-width: 100% !important; height: auto !important; }` | SVG diagrams must scale to page width |
+| `editorial-newsprint` | Keep; print is its native medium | — |
+| `brutalist-web` | Keep; ascii-grade already | — |
+| `corporate-memo` | Keep; designed as a printable doc | — |
+| `zine-photocopy` | Keep; print is the whole vibe | — |
+| `retro-90s-web` | `.bevel { box-shadow: none !important; border: 2px solid #000 !important; }` | Beveled UI doesn't print; flatten |
+| `softpop-pastel` | Keep pastel via color-adjust:exact above | — |
+
+Self-check: open the artifact's HTML in a browser, hit Cmd+P (preview only), confirm the print view matches the screen view in spirit. If it doesn't, add per-mode rules to fix it BEFORE delivering.
+
+---
+
 ## Step 6: Self-check before delivering
 
 1. Did I pick a **design mode** explicitly, and is it appropriate to the format convention from Step 1?
@@ -193,6 +240,7 @@ The design-mode and voice-register tags are critical — they're how future /cra
 8. Did I embed all 5 `<meta name="artifold:*">` tags?
 9. Could a designer point at ONE distinctive choice and say "that's intentional"?
 10. Could someone read just the headlines and immediately know which voice register I picked?
+11. Did I include the `@media print` base block + any per-mode print rules from Step 5.5?
 
 If any fail, iterate.
 

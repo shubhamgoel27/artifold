@@ -463,8 +463,17 @@ body {
   color: var(--text); padding: 10px 14px; border-radius: 6px;
   font-size: 13px; display: none; z-index: 80;
   box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-  max-width: 380px;
+  max-width: 480px;
+  align-items: center; gap: 10px;
 }
+.toast.show { display: flex; }
+.toast-act {
+  background: transparent; border: 1px solid var(--line-2);
+  color: var(--text); padding: 4px 10px; border-radius: 4px;
+  font: 500 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  cursor: pointer; transition: background .12s, border-color .12s;
+}
+.toast-act:hover { background: var(--accent); border-color: var(--accent); color: white; }
 /* button flash for ephemeral success/error feedback */
 .btn.flash-ok { background: var(--ok); border-color: var(--ok); color: white; }
 .btn.flash-err { background: #c84c4c; border-color: #c84c4c; color: white; }
@@ -666,6 +675,8 @@ body {
     <select id="d-version" class="select-styled" style="display:none" data-tip="Switch version"></select>
     <button class="icon-btn" id="d-share"
             data-tip="Share publicly (~30–60s on first share)"></button>
+    <button class="icon-btn" id="d-pdf"
+            data-tip="Export to PDF (renders with @media print rules)"></button>
     <button class="icon-btn" id="d-open"
             data-tip="Open in a new tab"></button>
     <button class="icon-btn" id="d-close"
@@ -747,6 +758,7 @@ const ICON = {
   copy:     `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>`,
   check:    `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>`,
   download: `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 13.5h11"/></svg>`,
+  pdf:      `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h5l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 2v3h3"/><text x="5.2" y="12.4" font-size="3.6" font-family="ui-monospace" font-weight="700" fill="currentColor" stroke="none">PDF</text></svg>`,
   themeMorph: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><mask id="m"><rect width="24" height="24" fill="#fff"/><circle class="bite" cx="18" cy="6" r="6" fill="#000"/></mask><circle class="orb" cx="12" cy="12" r="5" fill="currentColor" mask="url(#m)" stroke="none"/><g class="rays"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.5" y1="4.5" x2="6" y2="6"/><line x1="18" y1="18" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6" y2="18"/><line x1="18" y1="6" x2="19.5" y2="4.5"/></g></svg>`,
 };
 const ic = name => ICON[name] || '';
@@ -1129,6 +1141,66 @@ function renderActions() {
     } catch(e) { flashButton(b, '✗ failed', 'err', 2200); }
   };
   $('act-open').onclick = () => openVer && openInNewTab(reportURL(openVer.path));
+
+  // PDF export button (wired even before SSE re-render so first click works)
+  const pdfBtn = $('d-pdf');
+  pdfBtn.innerHTML = ic('pdf');
+  pdfBtn.style.color = '';
+  pdfBtn.onclick = () => doExportPDF(openProj);
+}
+
+// --- PDF export ---
+async function doExportPDF(p) {
+  if (!SERVED) return toast('Run artifold serve to enable PDF export');
+  const btn = $('d-pdf');
+  const restore = btn.innerHTML;
+  btn.disabled = true;
+  btn.classList.add('spinning');
+  btn.innerHTML = ic('refresh');
+  btn.dataset.tip = 'Rendering PDF...';
+  toast('Rendering PDF...');
+  try {
+    const r = await fetch('/export-pdf', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ path: p.primary.path }),
+    });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'export failed');
+    const kb = (j.size / 1024).toFixed(0);
+    const name = j.path.split('/').pop();
+    // Toast with two actions: Open + Reveal in Finder
+    showActionToast(`Exported ${name} (${kb} KB)`, [
+      { label: 'Open',   onclick: () => fetch('/open?p='   + encodeURIComponent(j.path)) },
+      { label: 'Finder', onclick: () => fetch('/reveal?p=' + encodeURIComponent(j.path)) },
+    ]);
+  } catch (e) {
+    toast('PDF export failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('spinning');
+    btn.innerHTML = restore;
+    btn.dataset.tip = 'Export to PDF (renders with @media print rules)';
+  }
+}
+
+// Toast variant with clickable actions — used for "PDF exported" success.
+// Uses inline `display:flex` (rather than the class hook) to coexist with
+// the basic toast() function which still uses display:block.
+function showActionToast(msg, actions) {
+  const t = $('toast');
+  t.innerHTML = `<span>${escape(msg)}</span>` + (actions || []).map((a, i) =>
+    `<button class="toast-act" data-i="${i}">${escape(a.label)}</button>`).join('');
+  t.style.display = 'flex';
+  t.querySelectorAll('.toast-act').forEach(b => {
+    b.onclick = () => {
+      const a = actions[+b.dataset.i];
+      if (a && a.onclick) a.onclick();
+      t.style.display = 'none';
+    };
+  });
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.style.display = 'none', 6000);
 }
 
 // --- share ---

@@ -389,6 +389,39 @@ def _cmd_doctor(_args):
     return 0 if fails == 0 else 1
 
 
+def _cmd_export_pdf(args):
+    """Render an HTML artifact to PDF via headless chromium."""
+    from . import pdf as pdf_mod
+    src = Path(args.path).expanduser().resolve()
+    if not src.is_file():
+        print(f"  ! not a file: {src}")
+        return 1
+    out = Path(args.out).expanduser().resolve() if args.out else None
+    try:
+        result = pdf_mod.export_pdf(
+            src,
+            out=out,
+            format=args.format,
+            landscape=args.landscape,
+            print_backgrounds=not args.no_backgrounds,
+            margin=args.margin,
+        )
+    except ValueError as e:
+        print(f"  ! {e}")
+        return 1
+    except Exception as e:
+        print(f"  ! export failed: {type(e).__name__}: {e}")
+        return 1
+    sz = result.stat().st_size
+    print(f"  ✓ {result}  ({sz:,} bytes)")
+    if args.open:
+        import platform, subprocess
+        if platform.system().lower() == "darwin":
+            subprocess.Popen(["open", str(result)],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return 0
+
+
 def _cmd_share(args):
     from . import share
     if args.list:
@@ -525,6 +558,21 @@ def main(argv=None) -> int:
 
     sub.add_parser("open", help="open the dashboard in your browser").set_defaults(fn=_cmd_open)
     sub.add_parser("doctor", help="check setup; show fixes for anything missing").set_defaults(fn=_cmd_doctor)
+
+    ep = sub.add_parser("export-pdf",
+                        help="render an HTML artifact to PDF (next to source by default)")
+    ep.add_argument("path", help="path to the .html file")
+    ep.add_argument("--out", help="output path (default: <source-dir>/<stem>.pdf)")
+    ep.add_argument("--format", default="A4",
+                    choices=["A4", "Letter", "Legal", "Tabloid", "A3", "A5"])
+    ep.add_argument("--landscape", action="store_true", help="landscape orientation")
+    ep.add_argument("--margin", default="12mm",
+                    help="page margin (e.g. 12mm, 0.5in, 0) — applies to all sides")
+    ep.add_argument("--no-backgrounds", action="store_true",
+                    help="print without background colors/images (smaller, may break design)")
+    ep.add_argument("--open", action="store_true",
+                    help="open the PDF in the system default viewer after export")
+    ep.set_defaults(fn=_cmd_export_pdf)
 
     ib = sub.add_parser("inbox",
         help="print the canonical path for a new artifact (date-prefixed slug)")
