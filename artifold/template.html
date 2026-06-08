@@ -677,6 +677,8 @@ body {
             data-tip="Share publicly (~30–60s on first share)"></button>
     <button class="icon-btn" id="d-pdf"
             data-tip="Export to PDF (renders with @media print rules)"></button>
+    <button class="icon-btn" id="d-trash"
+            data-tip="Move this version to Trash (recoverable)"></button>
     <button class="icon-btn" id="d-open"
             data-tip="Open in a new tab"></button>
     <button class="icon-btn" id="d-close"
@@ -733,6 +735,27 @@ body {
   </div>
 </div>
 
+<!-- trash confirmation modal -->
+<div class="modal" id="modal-trash">
+  <div class="box">
+    <div class="head">Move to Trash?</div>
+    <div class="body">
+      <div style="margin-bottom:8px;">
+        <b id="trash-name" style="color:var(--text)"></b>
+      </div>
+      <code id="trash-path"></code>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-dim)" id="trash-note"></div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text-dim)">
+        Recoverable from Finder &rarr; Trash &rarr; right-click &rarr; Put Back.
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn" id="trash-cancel">Cancel</button>
+      <button class="btn-primary btn" id="trash-go" style="background:#c84c4c;border-color:#c84c4c">Move to Trash</button>
+    </div>
+  </div>
+</div>
+
 <!-- share result toast -->
 <div class="toast" id="toast"></div>
 <div class="live" id="live"><i></i><span id="live-msg">Library updated</span></div>
@@ -759,6 +782,7 @@ const ICON = {
   check:    `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3.5 3.5L13 5"/></svg>`,
   download: `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 13.5h11"/></svg>`,
   pdf:      `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h5l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 2v3h3"/><text x="5.2" y="12.4" font-size="3.6" font-family="ui-monospace" font-weight="700" fill="currentColor" stroke="none">PDF</text></svg>`,
+  trash:    `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4h11M6 4V2.8A.8.8 0 0 1 6.8 2h2.4a.8.8 0 0 1 .8.8V4M4 4v9.2a.8.8 0 0 0 .8.8h6.4a.8.8 0 0 0 .8-.8V4M6.5 7v5M9.5 7v5"/></svg>`,
   themeMorph: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><mask id="m"><rect width="24" height="24" fill="#fff"/><circle class="bite" cx="18" cy="6" r="6" fill="#000"/></mask><circle class="orb" cx="12" cy="12" r="5" fill="currentColor" mask="url(#m)" stroke="none"/><g class="rays"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.5" y1="4.5" x2="6" y2="6"/><line x1="18" y1="18" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6" y2="18"/><line x1="18" y1="6" x2="19.5" y2="4.5"/></g></svg>`,
 };
 const ic = name => ICON[name] || '';
@@ -1147,6 +1171,65 @@ function renderActions() {
   pdfBtn.innerHTML = ic('pdf');
   pdfBtn.style.color = '';
   pdfBtn.onclick = () => doExportPDF(openProj);
+
+  // Trash button — destructive but recoverable (sends to system Trash)
+  const trashBtn = $('d-trash');
+  trashBtn.innerHTML = ic('trash');
+  trashBtn.style.color = '';
+  trashBtn.onclick = () => confirmTrash(openVer || openProj.primary);
+}
+
+// --- trash (move to system Trash) ---
+function confirmTrash(version) {
+  if (!SERVED) return toast('Run artifold serve to enable trash');
+  if (!version || !version.path) return toast('No version selected');
+  const path = version.path;
+  const name = path.split('/').pop();
+  // Approximate file size from the version meta (if we have it)
+  const sz = version.size || (version.mtime ? '' : '');
+  const m = $('modal-trash');
+  $('trash-name').textContent = name;
+  $('trash-path').textContent = path;
+  const versCount = (openProj && openProj.versions || []).length;
+  $('trash-note').textContent = versCount > 1
+    ? `This project has ${versCount} versions — the others will remain.`
+    : 'This is the only version of the project; the project will fall out of the library.';
+  m.classList.add('on');
+  $('trash-cancel').onclick = () => m.classList.remove('on');
+  $('trash-go').onclick = async () => {
+    m.classList.remove('on');
+    await doTrash(path);
+  };
+}
+
+async function doTrash(path) {
+  const btn = $('d-trash');
+  const restore = btn.innerHTML;
+  btn.disabled = true;
+  btn.classList.add('spinning');
+  btn.innerHTML = ic('refresh');
+  toast('Moving to Trash...');
+  try {
+    const r = await fetch('/trash', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ path }),
+    });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'trash failed');
+    toast('Moved to Trash — recover from Finder if needed');
+    // Close the detail pane if the trashed version was the only one;
+    // otherwise stay open — the SSE update will refresh the version list.
+    const remaining = (openProj && openProj.versions || []).filter(v => v.path !== path);
+    if (remaining.length === 0) close();
+    // SSE 'updated' event will re-render the library shortly.
+  } catch (e) {
+    toast('Trash failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('spinning');
+    btn.innerHTML = restore;
+  }
 }
 
 // --- PDF export ---

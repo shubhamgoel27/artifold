@@ -389,6 +389,29 @@ def _cmd_doctor(_args):
     return 0 if fails == 0 else 1
 
 
+def _cmd_trash(args):
+    """Move an HTML artifact to the system Trash (recoverable)."""
+    from . import trash as trash_mod
+    src = Path(args.path).expanduser().resolve()
+    if not args.yes:
+        # Bare confirmation — show what we're about to do, ask y/N
+        sz = src.stat().st_size if src.is_file() else 0
+        print(f"  move to Trash: {src}  ({sz:,} bytes)")
+        try:
+            ans = input("  proceed? [y/N] ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            ans = "n"
+        if ans not in ("y", "yes"):
+            print("  cancelled.")
+            return 1
+    ok, msg = trash_mod.trash_file(src)
+    if not ok:
+        print(f"  ! {msg}")
+        return 1
+    print(f"  ✓ trashed: {src}")
+    return 0
+
+
 def _cmd_export_pdf(args):
     """Render an HTML artifact to PDF via headless chromium."""
     from . import pdf as pdf_mod
@@ -558,6 +581,13 @@ def main(argv=None) -> int:
 
     sub.add_parser("open", help="open the dashboard in your browser").set_defaults(fn=_cmd_open)
     sub.add_parser("doctor", help="check setup; show fixes for anything missing").set_defaults(fn=_cmd_doctor)
+
+    tr = sub.add_parser("trash",
+                        help="move an HTML artifact to the system Trash (recoverable)")
+    tr.add_argument("path", help="path to the .html file")
+    tr.add_argument("-y", "--yes", action="store_true",
+                    help="skip confirmation prompt")
+    tr.set_defaults(fn=_cmd_trash)
 
     ep = sub.add_parser("export-pdf",
                         help="render an HTML artifact to PDF (next to source by default)")

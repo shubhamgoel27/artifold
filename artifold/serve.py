@@ -179,6 +179,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self._handle_import()
         if path == "/export-pdf":
             return self._handle_export_pdf()
+        if path == "/trash":
+            return self._handle_trash()
         self.send_error(404)
 
     def _read_json(self) -> dict:
@@ -224,6 +226,23 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json({"ok": False, "error": "import failed - see terminal"}, 500)
         threading.Thread(target=_run_scan, args=("import-followup",), daemon=True).start()
         return self._json({"ok": True, "path": str(out)})
+
+    def _handle_trash(self):
+        from . import trash as trash_mod
+        body = self._read_json()
+        p = body.get("path")
+        if not p:
+            return self._json({"ok": False, "error": "path required"}, 400)
+        target = Path(p)
+        if not _allowed_path(target):
+            return self._json({"ok": False, "error": "path not under any configured root"}, 403)
+        ok, msg = trash_mod.trash_file(target)
+        if not ok:
+            return self._json({"ok": False, "error": msg}, 500)
+        # Watchdog will catch the deletion and trigger a debounced rescan,
+        # but that's a 2s wait. Fire one immediately so the UI updates fast.
+        threading.Thread(target=_run_scan, args=("trash-followup",), daemon=True).start()
+        return self._json({"ok": True, "trashed": msg})
 
     def _handle_export_pdf(self):
         from . import pdf as pdf_mod
