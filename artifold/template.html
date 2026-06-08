@@ -270,7 +270,27 @@ body {
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
   padding: 3px 7px; border-radius: 3px;
   backdrop-filter: blur(4px);
+  transition: opacity .12s;
 }
+/* On hover, the action icons take over the corners — fade the tool pill */
+.card:hover .thumb .corner { opacity: 0; }
+.card .card-acts {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: 0; transition: opacity .12s; z-index: 2;
+}
+.card:hover .card-acts { opacity: 1; }
+.card-acts button {
+  position: absolute; pointer-events: auto;
+  background: rgba(10,13,18,0.85); color: white;
+  border: 0; border-radius: 4px;
+  width: 28px; height: 28px;
+  display: grid; place-items: center; cursor: pointer;
+  backdrop-filter: blur(4px); transition: background .1s, transform .1s;
+}
+.card-acts button:hover { background: rgba(10,13,18,1); transform: scale(1.06); }
+.card-acts .ca-open  { top: 8px; right: 8px; }
+.card-acts .ca-trash { bottom: 8px; right: 8px; }
+.card-acts .ca-trash:hover { background: #c84c4c; }
 .card .body { padding: 10px 12px 12px; min-height: 0; }
 .card .title { font-size: 13px; font-weight: 550; letter-spacing: -0.005em;
                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -735,6 +755,29 @@ body {
   </div>
 </div>
 
+<!-- bulk trash modal (from card hover icon — trashes ALL files of a project) -->
+<div class="modal" id="modal-trash-bulk">
+  <div class="box">
+    <div class="head">Move project to Trash?</div>
+    <div class="body">
+      <div style="margin-bottom:8px;">
+        <b id="trash-bulk-name" style="color:var(--text)"></b>
+      </div>
+      <div style="margin-bottom:8px;color:var(--text-dim);font-size:12px;">
+        Will move <b id="trash-bulk-count" style="color:var(--text)"></b> to the system Trash:
+      </div>
+      <div id="trash-bulk-list" style="background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:8px 10px;font:11.5px ui-monospace,Menlo,monospace;color:var(--text-dim);max-height:160px;overflow:auto"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-dim);">
+        Recoverable from Finder &rarr; Trash &rarr; right-click &rarr; Put Back.
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn" id="trash-bulk-cancel">Cancel</button>
+      <button class="btn-primary btn" id="trash-bulk-go" style="background:#c84c4c;border-color:#c84c4c">Move to Trash</button>
+    </div>
+  </div>
+</div>
+
 <!-- trash confirmation modal -->
 <div class="modal" id="modal-trash">
   <div class="box">
@@ -947,7 +990,9 @@ function render() {
   $('results').innerHTML = list.map(state.view === 'list' ? rowHTML : cardHTML).join('');
   Array.from($('results').children).forEach((el, i) => {
     el.onclick = (e) => {
+      // Don't open the detail pane when clicking on hover-action icons
       if (e.target.closest('.quick-acts')) return;
+      if (e.target.closest('.card-acts')) return;
       open(list[i]);
     };
   });
@@ -985,9 +1030,17 @@ function cardHTML(p) {
   const prov = provenance(p);
   const tool = prov.tool ? TOOL_LABELS[prov.tool] || prov.tool : '';
   const ver = p.version_count > 1 ? `<span style="margin-left:4px;color:var(--text-dim);font-size:11px">v${p.current_version}</span>` : '';
+  const pid = JSON.stringify(p.id);
+  const primaryURL = reportURL(p.primary.path);
   return `<div class="card" data-id="${p.id}" style="--c:${catColor(p.category)}">
     ${p.thumb ? `<div class="thumb"><img src="${p.thumb}" loading="lazy" alt="">${tool ? `<span class="corner">${tool}</span>` : ''}</div>`
               : `<div class="thumb ph">no preview${tool ? `<span class="corner">${tool}</span>` : ''}</div>`}
+    <div class="card-acts">
+      <button class="ca-open" title="Open in new tab"
+              onclick='event.stopPropagation();openInNewTab("${primaryURL}")'>${ic('arrowUR')}</button>
+      <button class="ca-trash" title="Move to Trash"
+              onclick='event.stopPropagation();confirmTrashProject(${pid})'>${ic('trash')}</button>
+    </div>
     <div class="body">
       <div class="title">${escape(p.name)}${ver}</div>
       <div class="meta">
@@ -1210,25 +1263,82 @@ async function doTrash(path) {
   btn.innerHTML = ic('refresh');
   toast('Moving to Trash...');
   try {
-    const r = await fetch('/trash', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ path }),
-    });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || 'trash failed');
+    await postJSON('/trash', { path });
     toast('Moved to Trash — recover from Finder if needed');
-    // Close the detail pane if the trashed version was the only one;
-    // otherwise stay open — the SSE update will refresh the version list.
     const remaining = (openProj && openProj.versions || []).filter(v => v.path !== path);
     if (remaining.length === 0) close();
-    // SSE 'updated' event will re-render the library shortly.
   } catch (e) {
     toast('Trash failed: ' + e.message);
   } finally {
     btn.disabled = false;
     btn.classList.remove('spinning');
     btn.innerHTML = restore;
+  }
+}
+
+// --- shared POST helper with non-JSON-tolerant errors ---
+// If the server returns an HTML error page (common cause: stale `artifold
+// serve` process started before this endpoint existed), surface a useful
+// message instead of "Unexpected token '<'".
+async function postJSON(url, body) {
+  const r = await fetch(url, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body),
+  });
+  const text = await r.text();
+  let j;
+  try { j = JSON.parse(text); }
+  catch (e) {
+    throw new Error(`Server returned ${r.status} (non-JSON). ` +
+                    `Restart your \`artifold serve\` to pick up new endpoints.`);
+  }
+  if (!j.ok) throw new Error(j.error || `request failed (${r.status})`);
+  return j;
+}
+
+// --- project-level trash (from the homepage card hover icon) ---
+// Trashes ALL files of a project (primary + versions + variants). The
+// detail-pane trash button is per-version; this is the bulk variant for
+// "remove this whole thing from my library".
+function confirmTrashProject(projectId) {
+  if (!SERVED) return toast('Run artifold serve to enable trash');
+  const p = (D.projects || []).find(x => x.id === projectId);
+  if (!p) return toast('Project not found');
+  // Gather every distinct path (primary may also appear in versions[])
+  const allPaths = new Set([p.primary.path]);
+  (p.versions || []).forEach(v => v.path && allPaths.add(v.path));
+  (p.variants || []).forEach(v => v.path && allPaths.add(v.path));
+  const paths = [...allPaths];
+  const m = $('modal-trash-bulk');
+  $('trash-bulk-name').textContent = p.name;
+  $('trash-bulk-count').textContent = paths.length === 1
+    ? '1 file' : `${paths.length} files`;
+  $('trash-bulk-list').innerHTML = paths.slice(0, 5).map(pa =>
+    `<div class="trash-bulk-row">${escape(pa)}</div>`).join('')
+    + (paths.length > 5
+       ? `<div style="color:var(--text-dim);font-size:11px;margin-top:6px">+ ${paths.length - 5} more</div>`
+       : '');
+  m.classList.add('on');
+  $('trash-bulk-cancel').onclick = () => m.classList.remove('on');
+  $('trash-bulk-go').onclick = async () => {
+    m.classList.remove('on');
+    await doTrashBulk(paths, p.name);
+  };
+}
+
+async function doTrashBulk(paths, projectName) {
+  toast(`Trashing ${paths.length} file(s)...`);
+  let ok = 0, fail = 0, lastErr = '';
+  for (const path of paths) {
+    try { await postJSON('/trash', { path }); ok++; }
+    catch (e) { fail++; lastErr = e.message; }
+  }
+  if (fail === 0) {
+    toast(`Trashed ${ok} file(s) from "${projectName}"`);
+  } else if (ok === 0) {
+    toast(`Trash failed: ${lastErr}`);
+  } else {
+    toast(`Trashed ${ok} of ${paths.length}; ${fail} failed (${lastErr})`);
   }
 }
 
