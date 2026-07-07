@@ -402,9 +402,13 @@ def _cmd_search(args):
 
 
 def _cmd_install_skill(args):
-    """Copy the bundled /craft Claude Code skill into ~/.claude/skills/."""
+    """Copy the bundled /craft Claude Code skill into ~/.claude/skills/.
+
+    The skill is SKILL.md (the procedure) plus references/*.md (the layout /
+    mode / device / font / recipe catalogs it reads at compose time) — all
+    of them install together or the skill runs blind."""
     from importlib import resources
-    src = resources.files("artifold.skills.craft").joinpath("SKILL.md")
+    pkg = resources.files("artifold.skills.craft")
     dest_dir = Path(args.dest).expanduser() if args.dest else \
                Path.home() / ".claude" / "skills" / "craft"
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -413,8 +417,19 @@ def _cmd_install_skill(args):
         print(f"  ! already installed at {dest}")
         print(f"    pass --force to overwrite")
         return 1
-    dest.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
-    print(f"  installed /craft skill → {dest}")
+    dest.write_text(pkg.joinpath("SKILL.md").read_text(encoding="utf-8"),
+                    encoding="utf-8")
+    refs = pkg.joinpath("references")
+    n_refs = 0
+    if refs.is_dir():
+        (dest_dir / "references").mkdir(exist_ok=True)
+        for f in refs.iterdir():
+            if f.name.endswith(".md"):
+                (dest_dir / "references" / f.name).write_text(
+                    f.read_text(encoding="utf-8"), encoding="utf-8")
+                n_refs += 1
+    print(f"  installed /craft skill → {dest}"
+          + (f"  (+{n_refs} reference catalogs)" if n_refs else ""))
     print()
     print("  Try it in Claude Code:")
     print("    /craft a 30-day strength tracker for a beginner")

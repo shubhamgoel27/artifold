@@ -49,6 +49,8 @@ packages = ["artifold"]
 [tool.hatch.build.targets.wheel.force-include]
 "artifold/template.html" = "artifold/template.html"
 "artifold/skills/craft/SKILL.md" = "artifold/skills/craft/SKILL.md"
+# references/*.md ride along automatically (plain files inside the package
+# tree); force-including them here would double-add and fail the build.
 
 [tool.hatch.build.targets.sdist]
 # Demo assets (docs/) and dev notes (tasks/) don't belong in the sdist.
