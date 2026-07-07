@@ -28,6 +28,10 @@ SKIP_DIRS = {"node_modules", ".git", ".next", "dist", "build", "__pycache__",
 
 # Versions: `name-v2`, `name_v3`, `name (1)` at end of stem.
 VERSION_END_RE = re.compile(r"^(.+?)[-_ ](?:v(\d+)|\((\d+)\))$", re.I)
+# Date prefix from `artifold inbox` slugs (2026-06-09-dsa-bible). The date is
+# provenance, not identity: two dated files with the same trailing slug are
+# iterations of one project, so strip it before computing the logical stem.
+DATE_PREFIX_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})[-_ ]+")
 # Variants: export forms (print/onepage/mobile/...) or `vN-` prefix.
 VARIANT_RE = re.compile(
     r"(^|[-_])(print|printable|one[-_ ]?page|onepager|mobile|amp|draft|"
@@ -58,6 +62,15 @@ def _slugify(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-") or "x"
 
 
+def _strip_date(stem: str) -> tuple[str, str]:
+    """Return (date_str, stem_without_date_prefix). date_str = '' if none."""
+    m = DATE_PREFIX_RE.match(stem)
+    if not m:
+        return "", stem
+    rest = stem[m.end():]
+    return (m.group(1), rest) if rest else ("", stem)
+
+
 def _parse_version(stem: str) -> tuple[str, int]:
     """Return (logical_stem, version_number). Version 1 = no suffix."""
     m = VERSION_END_RE.match(stem)
@@ -71,12 +84,13 @@ def _parse_version(stem: str) -> tuple[str, int]:
 
 def _classify(stem: str) -> tuple[str, str, int]:
     """('version'|'variant'|'main', base_stem, version_num)."""
-    base, v = _parse_version(stem)
+    _date, logical = _strip_date(stem)
+    base, v = _parse_version(logical)
     if v != 1:
         return "version", base, v
-    if VARIANT_RE.search(stem):
-        return "variant", stem, 1
-    return "main", stem, 1
+    if VARIANT_RE.search(logical):
+        return "variant", logical, 1
+    return "main", logical, 1
 
 
 def _find_html(root: Path, max_depth: int):
@@ -159,7 +173,11 @@ def _prov_for(f: Path) -> tuple[str | None, dict | None]:
         sha = provenance.sha1_of(f)
     except Exception:
         return None, None
-    return sha, provenance.get(sha)
+    entry = provenance.get(sha)
+    if entry is None:
+        # In-place edit: same path, new content hash. Migrate the metadata.
+        entry = provenance.carry_forward(sha, f)
+    return sha, entry
 
 
 def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
@@ -174,12 +192,17 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
 
     fields: dict = {}
 
-    # 1. embedded artifold:* meta tags (strongest signal)
-    if not (entry.get("tool") and entry.get("intent_source") in ("user", "embedded")):
-        embedded = detect.extract_embedded_meta(content)
+    # 1. embedded artifold:* meta tags (strongest signal). Re-extract even
+    # for already-enriched entries so newly-recognised tags backfill on the
+    # next scan, but never clobber a field the user set by hand.
+    embedded = detect.extract_embedded_meta(content)
+    if embedded:
+        if entry.get("intent_source") == "user":
+            embedded = {k: v for k, v in embedded.items() if k not in entry}
         if embedded:
             fields.update(embedded)
-            fields["intent_source"] = "embedded"
+            if entry.get("intent_source") != "user":
+                fields["intent_source"] = "embedded"
 
     # 2. source-tool fingerprinting from HTML markers
     if not fields.get("tool") and not entry.get("tool"):
@@ -193,6 +216,11 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
         fields["design"] = design.extract(content)
     except Exception:
         pass
+
+    # 4. remember where this content lives so carry_forward() can find the
+    # entry after an in-place edit changes the hash
+    if entry.get("path") != str(f):
+        fields["path"] = str(f)
 
     if not fields:
         return entry
@@ -220,11 +248,15 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
     root_slug = _slugify(root.name) or "root"
     intent_on = intent.enabled(cfg)
 
+    # Top-level files share ONE group per root (was: one group per file,
+    # which meant `report.html` + `report-v2.html` at root level, and any
+    # two date-prefixed inbox iterations, could never collapse into
+    # versions of the same project).
     groups: dict[str, list[Path]] = {}
     for p in _find_html(root, max_depth):
         rel = p.relative_to(root)
-        key = rel.parts[0] if len(rel.parts) > 1 else f"__top__/{rel.name}"
-        if (not key.startswith("__top__/") and key not in allow
+        key = rel.parts[0] if len(rel.parts) > 1 else "__top__"
+        if (key != "__top__" and key not in allow
                 and (root / key / ".git").is_dir()):
             continue
         groups.setdefault(key, []).append(p)
@@ -246,17 +278,28 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
 
         if not buckets:                       # all files were variants
             f = variants_loose.pop(0)
-            buckets[f.stem] = [(f, 1)]
+            buckets[_strip_date(f.stem)[1]] = [(f, 1)]
 
         # Attach loose variants to bucket with the longest stem-prefix match.
+        # Compare date-stripped stems so `2026-06-12-foo-print` matches `foo`.
         attach_v: dict[str, list[Path]] = {b: [] for b in buckets}
         for v in variants_loose:
-            best = max(buckets, key=lambda b: _common_prefix(b.lower(), v.stem.lower()))
+            v_logical = _strip_date(v.stem)[1].lower()
+            best = max(buckets, key=lambda b: _common_prefix(b.lower(), v_logical))
             attach_v[best].append(v)
 
-        single_bucket = len(buckets) == 1
+        single_bucket = len(buckets) == 1 and dir_key != "__top__"
 
         for base, version_pairs in buckets.items():
+            # Same-slug iterations (dated inbox files) all parse as v1:
+            # renumber duplicates chronologically (filename date, then mtime)
+            # so v1 is the oldest and the newest wins primary.
+            if len({v for _, v in version_pairs}) < len(version_pairs):
+                version_pairs.sort(
+                    key=lambda fp: (_strip_date(fp[0].stem)[0],
+                                    metas[fp[0]]["mtime"]))
+                version_pairs = [(f, i + 1)
+                                 for i, (f, _) in enumerate(version_pairs)]
             # Sort versions descending (highest version first; mtime tiebreak)
             version_pairs.sort(key=lambda fp: (fp[1], metas[fp[0]]["mtime"]),
                                reverse=True)
@@ -264,13 +307,16 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
             attached_variants = attach_v[base]
             all_files = [f for f, _ in version_pairs] + attached_variants
 
-            if dir_key.startswith("__top__/"):
+            if dir_key == "__top__":
                 proj_dir = primary.parent.relative_to(root).as_posix() or "."
             else:
                 proj_dir = dir_key
             proj_name = (metas[primary]["title"]
                          or primary.stem.replace("-", " ").replace("_", " ").title())
-            haystack = f"{dir_key} {metas[primary]['title']} {metas[primary]['heading']}"
+            # Include the filename stem: with top-level files sharing one
+            # group, dir_key alone no longer carries the name signal.
+            haystack = (f"{dir_key} {primary.stem} "
+                        f"{metas[primary]['title']} {metas[primary]['heading']}")
             uid = f"{root_slug}/{dir_key}" if single_bucket else f"{root_slug}/{dir_key}/{base}"
 
             primary_sha, primary_prov = _prov_for(primary)
@@ -341,6 +387,7 @@ def scan_all(roots: list[Path] | None = None,
     if intent_override is not None:           # CLI flag wins over config
         cfg = {**cfg, "enable_intent": intent_override}
     cats = config.categories(cfg)
+    full_scan = roots is None                 # partial scans must not GC
     roots = roots if roots is not None else config.roots()
 
     intent_jobs: dict[str, tuple[str, str, Path]] = {}
@@ -369,6 +416,16 @@ def scan_all(roots: list[Path] | None = None,
             for v in proj.get("versions") or []:
                 if v.get("sha1"):
                     v["provenance"] = provenance.get(v["sha1"])
+
+    # Reconcile the provenance store against what this scan actually saw:
+    # unseen entries get orphan-stamped and eventually dropped (they'd
+    # otherwise surface as name:"?" rows in `artifold designs` forever).
+    if full_scan:
+        active = {v.get("sha1")
+                  for proj in out
+                  for v in [proj["primary"], *(proj.get("versions") or [])]
+                  if v.get("sha1")}
+        provenance.gc(active)
 
     out.sort(key=lambda p: p["latest_mtime"], reverse=True)
     return out

@@ -251,6 +251,11 @@ def _cmd_designs(args):
             d = entry.get("design") or {}
             if not d:
                 continue
+            # Superseded = an in-place edit migrated this entry to a new
+            # hash; orphaned = the content vanished. Either way it isn't a
+            # live artifact; listing it produced the name:"?" rows.
+            if entry.get("superseded_by") or entry.get("orphaned_at"):
+                continue
             info = by_sha.get(sha, {})
             rows.append({
                 "id": sha[:8],
@@ -261,13 +266,15 @@ def _cmd_designs(args):
                 "fonts": d.get("fonts", []),
                 "flags": {k: bool(d.get(k)) for k in
                           ("themed", "gradient", "glass", "animated", "shadowed")},
-                # Critical for /craft: lets the next invocation read the design
-                # mode + voice register used by recent /craft outputs and avoid
-                # repeating them (key fix for the convergence problem).
-                "design_mode":    entry.get("design_mode"),
-                "voice_register": entry.get("voice_register"),
-                "tool":           entry.get("tool"),
-                "added_at":       entry.get("added_at"),
+                # Critical for /craft: all four composition axes of recent
+                # outputs, so the next invocation can rotate every axis
+                # from one call instead of grepping inbox files.
+                "design_mode":      entry.get("design_mode"),
+                "voice_register":   entry.get("voice_register"),
+                "layout_archetype": entry.get("layout_archetype"),
+                "signature_device": entry.get("signature_device"),
+                "tool":             entry.get("tool"),
+                "added_at":         entry.get("added_at"),
             })
         # Sort recent-first so the skill can grab "last 3 /craft" trivially.
         rows.sort(key=lambda r: r.get("added_at") or "", reverse=True)
@@ -311,6 +318,86 @@ def _cmd_designs(args):
     entry = provenance.get(target_sha) or {}
     d = entry.get("design") or {}
     print(json.dumps({"sha1": target_sha, **info, **d}, indent=2))
+    return 0
+
+
+def _cmd_search(args):
+    """Search the library by keyword. The main consumer is automation
+    (/craft's "does this already exist?" check before generating a new
+    artifact), so --json is a stable contract: a JSON array of
+    {id, name, path, dir, category, intent, version_count, mtime, score},
+    best match first. Terms are ANDed; each must hit at least one field.
+    """
+    import json
+    from datetime import datetime
+    from .paths import DATA
+
+    if not DATA.exists():
+        msg = "no scan data yet; run `artifold scan`"
+        print(json.dumps({"error": msg}) if args.json else f"! {msg}")
+        return 1
+    d = json.loads(DATA.read_text())
+    terms = [t.lower() for t in args.query if t.strip()]
+    if not terms:
+        print("! pass one or more search words")
+        return 1
+
+    # field weight: identity > curation > content > prompt
+    WEIGHTS = (("name", 5), ("meta", 3), ("intent", 3),
+               ("content", 2), ("prompt", 1))
+
+    def fields_of(p: dict) -> dict[str, str]:
+        prov = (p.get("primary") or {}).get("provenance") or {}
+        return {
+            "name":    p.get("name", ""),
+            "meta":    " ".join([p.get("dir", ""), p.get("category") or "",
+                                 *(prov.get("tags") or []),
+                                 *(prov.get("topic") or [])]),
+            "intent":  prov.get("intent") or "",
+            "content": p.get("search_text", ""),
+            "prompt":  prov.get("prompt") or "",
+        }
+
+    hits = []
+    for p in d.get("projects") or []:
+        fs = {k: v.lower() for k, v in fields_of(p).items()}
+        score = 0
+        for t in terms:
+            t_score = sum(w for k, w in WEIGHTS if t in fs[k])
+            if t_score == 0:
+                score = 0
+                break
+            score += t_score
+        if score:
+            hits.append((score, p))
+    hits.sort(key=lambda sp: (-sp[0], -sp[1].get("latest_mtime", 0)))
+    hits = hits[:args.limit]
+
+    if args.json:
+        out = [{
+            "id": p["id"],
+            "name": p["name"],
+            "path": p["primary"]["path"],
+            "dir": p.get("dir", ""),
+            "category": p.get("category"),
+            "intent": ((p.get("primary") or {}).get("provenance") or {}).get("intent"),
+            "version_count": p.get("version_count", 1),
+            "mtime": p.get("latest_mtime"),
+            "score": s,
+        } for s, p in hits]
+        print(json.dumps(out, indent=2))
+        return 0 if out else 1
+    if not hits:
+        print(f"(no matches for {' '.join(terms)!r})")
+        return 1
+    for s, p in hits:
+        when = datetime.fromtimestamp(p.get("latest_mtime", 0)).strftime("%Y-%m-%d")
+        vers = f"  ({p['version_count']} versions)" if p.get("version_count", 1) > 1 else ""
+        print(f"  {p['name'][:56]:<58}{when}{vers}")
+        intent = ((p.get("primary") or {}).get("provenance") or {}).get("intent")
+        if intent:
+            print(f"    {intent}")
+        print(f"    {p['primary']['path']}")
     return 0
 
 
@@ -616,6 +703,14 @@ def main(argv=None) -> int:
                                      "(default: ~/.claude/skills/craft/)")
     isk.add_argument("--force", action="store_true", help="overwrite if present")
     isk.set_defaults(fn=_cmd_install_skill)
+
+    se = sub.add_parser("search",
+        help="search the library by keyword (title, content, intent, tags)")
+    se.add_argument("query", nargs="+", help="search words (ANDed)")
+    se.add_argument("--json", action="store_true",
+                    help="machine-readable JSON output (stable contract for scripts/skills)")
+    se.add_argument("--limit", type=int, default=10, help="max results (default 10)")
+    se.set_defaults(fn=_cmd_search)
 
     dg = sub.add_parser("designs", help="list or dump design fingerprints (style + skeleton)")
     dg.add_argument("id", nargs="?", help="artifact id prefix (from `artifold designs`)")

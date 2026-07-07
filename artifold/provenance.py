@@ -93,3 +93,69 @@ def annotate_path(path: Path, **fields) -> tuple[str, dict]:
 
 def all_items() -> dict[str, dict]:
     return dict(_load_raw()["items"])
+
+
+def carry_forward(new_sha: str, path: Path) -> dict | None:
+    """A file was edited in place: its content hash changed, so the old
+    entry no longer matches. Copy the old entry (found by `path`, recorded
+    at scan time) onto the new hash so source/prompt/tags/shares survive
+    edits, not just moves. The old entry is marked superseded (GC'd later,
+    so a Trash-restore of the old content still reattaches within the TTL).
+    Returns the new entry, or None if there was nothing to carry."""
+    d = _load_raw()
+    items = d["items"]
+    if new_sha in items:
+        return items[new_sha]
+    p = str(path)
+    old_sha = next((s for s, e in items.items()
+                    if e.get("path") == p and not e.get("superseded_by")), None)
+    if not old_sha:
+        return None
+    fresh = dict(items[old_sha])
+    fresh.pop("superseded_by", None)
+    fresh.pop("orphaned_at", None)
+    fresh["previous_sha"] = old_sha
+    items[new_sha] = fresh
+    items[old_sha]["superseded_by"] = new_sha
+    _save_raw(d)
+    return fresh
+
+
+ORPHAN_TTL_DAYS = 30
+
+
+def gc(active_shas: set[str]) -> int:
+    """Reconcile the store against a full scan. Entries whose hash wasn't
+    seen get stamped `orphaned_at` (and dropped after ORPHAN_TTL_DAYS);
+    entries seen again get the stamp cleared (Trash restore, git checkout).
+    Returns the number of entries deleted."""
+    d = _load_raw()
+    items = d["items"]
+    now = datetime.now(timezone.utc)
+    deleted = 0
+    for sha in list(items):
+        e = items[sha]
+        if sha in active_shas:
+            e.pop("orphaned_at", None)   # re-seen: un-orphan
+            continue
+        # Not in the scan, but its file still exists and no newer content
+        # took over the path (variants, depth-excluded or hand-linked
+        # files land here). Leave them alone.
+        p = e.get("path")
+        if p and not e.get("superseded_by") and Path(p).is_file():
+            e.pop("orphaned_at", None)
+            continue
+        stamp = e.get("orphaned_at")
+        if not stamp:
+            e["orphaned_at"] = now.isoformat(timespec="seconds")
+            continue
+        try:
+            age = now - datetime.fromisoformat(stamp)
+        except ValueError:
+            e["orphaned_at"] = now.isoformat(timespec="seconds")
+            continue
+        if age.days >= ORPHAN_TTL_DAYS:
+            del items[sha]
+            deleted += 1
+    _save_raw(d)
+    return deleted

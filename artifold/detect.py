@@ -26,14 +26,16 @@ def _meta(tag: str) -> re.Pattern:
         rf'<meta\s+name=["\'](?:artifold|folio):{tag}["\']\s+content=["\']([^"\']+)["\']',
         re.I)
 
-META_INTENT         = _meta("intent")
-META_TOOL           = _meta("tool")
-META_MODEL          = _meta("model")
-META_SOURCE         = _meta("source")
-META_PROMPT         = _meta("prompt")
-META_DESIGN_MODE    = _meta("design-mode")
-META_VOICE_REGISTER = _meta("voice-register")
-META_STYLE_FROM     = _meta("style-from")
+META_INTENT           = _meta("intent")
+META_TOOL             = _meta("tool")
+META_MODEL            = _meta("model")
+META_SOURCE           = _meta("source")
+META_PROMPT           = _meta("prompt")
+META_DESIGN_MODE      = _meta("design-mode")
+META_VOICE_REGISTER   = _meta("voice-register")
+META_LAYOUT_ARCHETYPE = _meta("layout-archetype")
+META_SIGNATURE_DEVICE = _meta("signature-device")
+META_STYLE_FROM       = _meta("style-from")
 
 
 def detect_tool(html: str) -> str | None:
@@ -50,14 +52,16 @@ def extract_embedded_meta(html: str) -> dict:
     head = html[:8000]   # meta tags are in <head>
     out: dict = {}
     fields = [
-        ("intent",         META_INTENT),
-        ("tool",           META_TOOL),
-        ("model",          META_MODEL),
-        ("source",         META_SOURCE),
-        ("prompt",         META_PROMPT),
-        ("design_mode",    META_DESIGN_MODE),
-        ("voice_register", META_VOICE_REGISTER),
-        ("style_from",     META_STYLE_FROM),
+        ("intent",            META_INTENT),
+        ("tool",              META_TOOL),
+        ("model",             META_MODEL),
+        ("source",            META_SOURCE),
+        ("prompt",            META_PROMPT),
+        ("design_mode",       META_DESIGN_MODE),
+        ("voice_register",    META_VOICE_REGISTER),
+        ("layout_archetype",  META_LAYOUT_ARCHETYPE),
+        ("signature_device",  META_SIGNATURE_DEVICE),
+        ("style_from",        META_STYLE_FROM),
     ]
     for key, pat in fields:
         m = pat.search(head)

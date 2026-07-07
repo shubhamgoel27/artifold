@@ -693,6 +693,8 @@ body {
   <div class="detail-head">
     <div class="t"><div class="n" id="d-name"></div><div class="d" id="d-meta"></div></div>
     <select id="d-version" class="select-styled" style="display:none" data-tip="Switch version"></select>
+    <button class="icon-btn" id="d-diff" style="display:none"
+            data-tip="Compare with the previous version (what changed?)"></button>
     <button class="icon-btn" id="d-share"
             data-tip="Share publicly (~30–60s on first share)"></button>
     <button class="icon-btn" id="d-pdf"
@@ -826,6 +828,7 @@ const ICON = {
   download: `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 13.5h11"/></svg>`,
   pdf:      `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h5l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 2v3h3"/><text x="5.2" y="12.4" font-size="3.6" font-family="ui-monospace" font-weight="700" fill="currentColor" stroke="none">PDF</text></svg>`,
   trash:    `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4h11M6 4V2.8A.8.8 0 0 1 6.8 2h2.4a.8.8 0 0 1 .8.8V4M4 4v9.2a.8.8 0 0 0 .8.8h6.4a.8.8 0 0 0 .8-.8V4M6.5 7v5M9.5 7v5"/></svg>`,
+  diff:     `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 2v12"/><path d="M4 6.5v3M2.5 8h3"/><path d="M10.5 8h3"/></svg>`,
   themeMorph: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><mask id="m"><rect width="24" height="24" fill="#fff"/><circle class="bite" cx="18" cy="6" r="6" fill="#000"/></mask><circle class="orb" cx="12" cy="12" r="5" fill="currentColor" mask="url(#m)" stroke="none"/><g class="rays"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.5" y1="4.5" x2="6" y2="6"/><line x1="18" y1="18" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6" y2="18"/><line x1="18" y1="6" x2="19.5" y2="4.5"/></g></svg>`,
 };
 const ic = name => ICON[name] || '';
@@ -1096,6 +1099,20 @@ function setVersion(v) {
   openVer = v;
   $('d-frame').src = reportURL(v.path);
   $('d-meta').textContent = `${openProj.dir} · ${openProj.category} · v${v.version} · ${fmt(v.mtime)}`;
+  // Diff button: compare the selected version against the next-older one.
+  // versions[] is newest → oldest; hide on the oldest (nothing to compare).
+  const vs = openProj.versions || [];
+  const idx = vs.findIndex(x => x.path === v.path);
+  const older = idx >= 0 ? vs[idx + 1] : null;
+  const db = $('d-diff');
+  if (older && SERVED) {
+    db.style.display = '';
+    db.innerHTML = ic('diff');
+    db.onclick = () => openInNewTab('/diff?a=' + encodeURIComponent(older.path)
+                                    + '&b=' + encodeURIComponent(v.path));
+  } else {
+    db.style.display = 'none';
+  }
 }
 function close_() {
   $('detail').classList.remove('on'); $('scrim').classList.remove('on');
@@ -1138,7 +1155,13 @@ function renderProvenance() {
   if (prov.voice) rows.push(['Voice', escape(prov.voice)]);
   if (prov.prompt) rows.push(['Prompt', `<div class="prompt">${escape(prov.prompt)}</div>`]);
   if (prov.tags && prov.tags.length) rows.push(['Tags', prov.tags.map(t => `<span class="tag">${escape(t)}</span>`).join('')]);
+  if (prov.notes) rows.push(['Notes', escape(prov.notes)]);
   if (prov.added_at) rows.push(['Added', new Date(prov.added_at).toLocaleString()]);
+  if (prov.exports && prov.exports.length) {
+    rows.push(['Exports', prov.exports.map(x =>
+      `<div><code style="font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:var(--text-mut)">${escape((x.path || '').split('/').pop())}</code> <span style="color:var(--text-dim);font-size:11px">· ${escape(x.format || 'pdf')} · ${x.created_at ? new Date(x.created_at).toLocaleDateString() : ''}</span></div>`
+    ).join('')]);
+  }
   const path = openProj.primary.path;
   rows.push(['Path', `<code style="font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:var(--text-mut)">${escape(path)}</code>`]);
   rows.push(['SHA1', `<code style="font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:var(--text-mut)">${(openProj.primary.sha1 || '').slice(0,16)}…</code>`]);
@@ -1161,8 +1184,18 @@ function renderDesign() {
     ['gradient', d.gradient], ['glass', d.glass], ['themed', d.themed],
     ['animated', d.animated], ['shadowed', d.shadowed],
   ];
+  // /craft composition axes (embedded artifold:* meta tags, when present)
+  const axes = [
+    ['layout', prov.layout_archetype], ['mode', prov.design_mode],
+    ['voice', prov.voice_register], ['device', prov.signature_device],
+  ].filter(([,v]) => v);
+  const axesRow = axes.length
+    ? `<dt>Craft axes</dt><dd><div class="flag-row">${axes.map(([n,v]) =>
+        `<span class="flag yes" title="${n}">${escape(v)}</span>`).join('')}</div></dd>`
+    : '';
   c.innerHTML = `
     <dl class="kv">
+      ${axesRow}
       <dt>Palette</dt><dd><div class="palette">${swatches}</div></dd>
       <dt>Fonts</dt><dd>${(d.fonts || []).map(f => `<span class="tag" style="font-family:${f}">${escape(f)}</span>`).join('') || '<span style="color:var(--text-dim)">none detected</span>'}</dd>
       <dt>Mood</dt><dd><div class="flag-row">${flags.map(([n,v]) => `<span class="flag ${v?'yes':''}">${v?'✓':'·'} ${n}</span>`).join('')}</div></dd>

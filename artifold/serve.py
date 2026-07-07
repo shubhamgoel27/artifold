@@ -319,6 +319,10 @@ class Handler(SimpleHTTPRequestHandler):
         if path.path.startswith("/designs/"):
             return self._handle_designs(path)
 
+        # /diff?a=<old_abs_path>&b=<new_abs_path>  version comparison page
+        if path.path == "/diff":
+            return self._handle_diff(path)
+
         # bare "/" → index.html in cache dir
         if path.path == "/":
             self.path = "/index.html"
@@ -420,6 +424,31 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as e:
             return self.send_error(500, f"open failed: {e}")
         return self._json({"ok": True})
+
+    def _handle_diff(self, path):
+        """Side-by-side + text diff of two versions of an artifact."""
+        from . import diff as diff_mod
+        qs = urllib.parse.parse_qs(path.query)
+        a = (qs.get("a") or [""])[0]     # old
+        b = (qs.get("b") or [""])[0]     # new
+        if not a or not b:
+            return self.send_error(400, "need a= (old) and b= (new) paths")
+        old, new = Path(a), Path(b)
+        if not (_allowed_path(old) and _allowed_path(new)):
+            return self.send_error(403, "path not under any configured root")
+        try:
+            page = diff_mod.render_diff_page(
+                old, new,
+                old_url="/file?p=" + urllib.parse.quote(str(old)),
+                new_url="/file?p=" + urllib.parse.quote(str(new)))
+        except OSError:
+            return self.send_error(404)
+        body = page.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def _handle_designs(self, path):
         from . import design as design_mod, provenance
