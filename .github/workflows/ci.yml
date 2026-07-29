@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install
+        # No `playwright install` here on purpose: the tests never launch a
+        # browser, and downloading chromium would add minutes per matrix leg.
+        run: uv pip install --system -e ".[dev]"
+      - name: Test
+        run: pytest -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Build sdist + wheel
+        run: uv build
+      - name: Check metadata
+        run: uvx twine check dist/*
+      - name: Verify the bundled /craft skill ships in the wheel
+        # The skill is data, not code — easy to lose to a packaging change
+        # and invisible until someone runs `artifold install-skill`.
+        run: |
+          python - <<'EOF'
+          import glob, sys, zipfile
+          whl = glob.glob("dist/*.whl")[0]
+          names = set(zipfile.ZipFile(whl).namelist())
+          need = [
+              "artifold/template.html",
+              "artifold/skills/craft/SKILL.md",
+              "artifold/skills/craft/references/modes.md",
+              "artifold/skills/craft/references/layouts.md",
+              "artifold/skills/craft/references/devices.md",
+              "artifold/skills/craft/references/fonts.md",
+              "artifold/skills/craft/references/motion.md",
+              "artifold/skills/craft/references/craft-recipes.md",
+          ]
+          missing = [n for n in need if n not in names]
+          if missing:
+              sys.exit("missing from wheel: " + ", ".join(missing))
+          print(f"{whl}: all {len(need)} data files present")
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/

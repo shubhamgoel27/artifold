@@ -4,7 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "artifold"
-version = "0.7.0"
+# Single source of truth is artifold/__init__.py — `artifold --version`
+# reads __version__, so a second literal here just drifts out of sync.
+dynamic = ["version"]
 description = "Local-first library for your AI-generated HTML artifacts (Claude, ChatGPT, v0, …)."
 readme = "README.md"
 license = { text = "MIT" }
@@ -32,6 +34,7 @@ dependencies = [
 # Smart layer: LLM-derived intent metadata for search & generation.
 # Pure local-only Artifold works without this. Opt in only if you want it.
 intent = ["anthropic>=0.40"]
+dev = ["pytest>=8.0"]
 
 [project.scripts]
 artifold = "artifold.cli:main"
@@ -41,7 +44,10 @@ Homepage      = "https://github.com/shubhamgoel27/artifold"
 Repository    = "https://github.com/shubhamgoel27/artifold"
 Issues        = "https://github.com/shubhamgoel27/artifold/issues"
 Documentation = "https://github.com/shubhamgoel27/artifold#readme"
-Changelog     = "https://github.com/shubhamgoel27/artifold/blob/main/tasks/"
+Changelog     = "https://github.com/shubhamgoel27/artifold/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "artifold/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["artifold"]

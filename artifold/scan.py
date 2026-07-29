@@ -50,10 +50,68 @@ def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _categorize(haystack: str, cats: dict[str, list[str]]) -> str:
-    h = haystack.lower()
+WORD_RE = re.compile(r"[a-z0-9]+")
+
+# How much a field is trusted to say what an artifact is *about*. The path is
+# the one field a human chose deliberately (and /craft writes it from the
+# topic slug), so it dominates; the recorded intent comes next; body text is
+# noisiest. Prose reaches for analogies the subject doesn't own — a health
+# explainer "with engineering analogies" is still health, and a health plan
+# that compares Airbnb's coverage is still a health plan. Weighting the path
+# highest is what keeps `resume/resume.html` out of Engineering.
+FIELD_WEIGHTS = {"name": 3.0, "intent": 1.5, "body": 1.0}
+
+
+def _kw_weight(kw_tokens: list[str]) -> float:
+    """Longer, more specific keywords count for more. A two-letter token
+    like 'ml' is real signal but weak; 'infrastructure' is decisive."""
+    n = sum(len(t) for t in kw_tokens)
+    base = 1.0 if n <= 2 else 1.5 if n <= 4 else 2.5 if n <= 7 else 3.5
+    return base + (1.0 if len(kw_tokens) > 1 else 0.0)   # phrases are specific
+
+
+def _occurrences(tokens: list[str], kw_tokens: list[str]) -> int:
+    """Count whole-word (or whole-phrase) hits of kw_tokens inside tokens."""
+    n = len(kw_tokens)
+    if not n or n > len(tokens):
+        return 0
+    return sum(1 for i in range(len(tokens) - n + 1)
+               if tokens[i:i + n] == kw_tokens)
+
+
+def _categorize(fields: dict[str, str], cats: dict[str, list[str]]) -> str:
+    """Score every category over the weighted fields; best total wins.
+
+    Was: first category in dict order containing any keyword as a bare
+    substring. That filed 'ml engineer' under Engineering before Career's
+    'resume' could be considered, and matched 'ai' inside "airbnb", 'rl'
+    inside "ctrl". Now keywords match whole words, repeats and specificity
+    both add weight, and the winner is the strongest signal rather than the
+    earliest dict key.
+    """
+    toks = {f: WORD_RE.findall((fields.get(f) or "").lower())
+            for f in FIELD_WEIGHTS}
+    scores: dict[str, float] = {}
     for cat, kws in cats.items():
-        if any(k in h for k in kws):
+        total = 0.0
+        for kw in kws:
+            kw_tokens = WORD_RE.findall(kw.lower())
+            if not kw_tokens:
+                continue
+            w = _kw_weight(kw_tokens)
+            for field, fw in FIELD_WEIGHTS.items():
+                hits = _occurrences(toks[field], kw_tokens)
+                if hits:
+                    # Repeats reinforce, with diminishing returns — a word
+                    # said twice means it's the subject; ten times is a tic.
+                    total += w * fw * (1 + 0.5 * min(hits - 1, 3))
+        if total:
+            scores[cat] = total
+    if not scores:
+        return "Other"
+    best = max(scores.values())
+    for cat in cats:                      # dict order breaks exact ties
+        if scores.get(cat) == best:
             return cat
     return "Other"
 
@@ -313,10 +371,6 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                 proj_dir = dir_key
             proj_name = (metas[primary]["title"]
                          or primary.stem.replace("-", " ").replace("_", " ").title())
-            # Include the filename stem: with top-level files sharing one
-            # group, dir_key alone no longer carries the name signal.
-            haystack = (f"{dir_key} {primary.stem} "
-                        f"{metas[primary]['title']} {metas[primary]['heading']}")
             uid = f"{root_slug}/{dir_key}" if single_bucket else f"{root_slug}/{dir_key}/{base}"
 
             primary_sha, primary_prov = _prov_for(primary)
@@ -326,6 +380,19 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                         not primary_prov or not primary_prov.get("intent")):
                     intent_jobs[primary_sha] = (
                         metas[primary]["title"], _body_text(primary), primary)
+
+            # Categorization fields, weighted by how much each is trusted to
+            # say what the artifact is *about*. `intent` and `conceit` are
+            # written by the generator itself and are the sharpest topic
+            # signal we have — 77 of 90 artifacts in a real library carry one.
+            _pp = primary_prov or {}
+            cat_fields = {
+                # dir_key alone stopped carrying the name signal once
+                # top-level files shared one group; the stem restores it.
+                "name":   f"{dir_key} {primary.stem}",
+                "intent": f"{_pp.get('intent') or ''} {_pp.get('conceit') or ''}",
+                "body":   f"{metas[primary]['title']} {metas[primary]['heading']}",
+            }
 
             versions_payload = []
             for f, vn in version_pairs:
@@ -350,7 +417,7 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                 "name": proj_name,
                 "dir": proj_dir,
                 "root": str(root),
-                "category": _categorize(haystack, cats),
+                "category": _categorize(cat_fields, cats),
                 "primary": {
                     "path": primary.resolve().as_posix(),
                     "rel": primary.relative_to(root).as_posix(),

@@ -35,6 +35,8 @@ META_DESIGN_MODE      = _meta("design-mode")
 META_VOICE_REGISTER   = _meta("voice-register")
 META_LAYOUT_ARCHETYPE = _meta("layout-archetype")
 META_SIGNATURE_DEVICE = _meta("signature-device")
+META_CONCEIT          = _meta("conceit")
+META_SCALE            = _meta("scale")
 META_STYLE_FROM       = _meta("style-from")
 
 
@@ -61,6 +63,13 @@ def extract_embedded_meta(html: str) -> dict:
         ("voice_register",    META_VOICE_REGISTER),
         ("layout_archetype",  META_LAYOUT_ARCHETYPE),
         ("signature_device",  META_SIGNATURE_DEVICE),
+        # The conceit is the one-line fiction the page commits to — the most
+        # human thing the generator records, and the best browse label there
+        # is. `scale` is the glance/read/experience tier, so intensity can
+        # rotate like the other axes. Both were emitted by /craft and dropped
+        # on the floor here until v0.8.
+        ("conceit",           META_CONCEIT),
+        ("scale",             META_SCALE),
         ("style_from",        META_STYLE_FROM),
     ]
     for key, pat in fields:

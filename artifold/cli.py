@@ -221,6 +221,7 @@ def _cmd_designs(args):
 
     Stable contracts for the /craft skill (and any other automation):
       artifold designs --json              → JSON array of {id,name,dir,category,palette,fonts,flags...}
+      artifold designs --axes --limit 12   → slim rows: just the five rotation axes
       artifold designs <id>                → JSON fingerprint object (always JSON; default)
       artifold designs <id> --template     → raw text (CSS + skeleton); paste into LLM
       artifold designs <id> --css          → raw CSS only
@@ -273,12 +274,27 @@ def _cmd_designs(args):
                 "voice_register":   entry.get("voice_register"),
                 "layout_archetype": entry.get("layout_archetype"),
                 "signature_device": entry.get("signature_device"),
+                "scale":            entry.get("scale"),
+                "conceit":          entry.get("conceit"),
                 "tool":             entry.get("tool"),
                 "added_at":         entry.get("added_at"),
             })
         # Sort recent-first so the skill can grab "last 3 /craft" trivially.
         rows.sort(key=lambda r: r.get("added_at") or "", reverse=True)
+        if getattr(args, "limit", 0):
+            rows = rows[:args.limit]
         if args.json:
+            # --axes: the projection /craft actually consumes. The full rows
+            # carry a palette and flag block per artifact, which on a real
+            # library (90+ artifacts, growing ~37/month) meant ~62 KB of JSON
+            # read into context on every single invocation just to answer
+            # "what did the last few pages look like?". This keeps that call
+            # flat in size as the library grows.
+            if getattr(args, "axes", False):
+                keys = ("id", "name", "scale", "layout_archetype",
+                        "design_mode", "voice_register", "signature_device",
+                        "conceit", "added_at")
+                rows = [{k: r.get(k) for k in keys} for r in rows]
             print(json.dumps(rows, indent=2))
             return 0
         if not rows:
@@ -731,6 +747,11 @@ def main(argv=None) -> int:
     dg.add_argument("id", nargs="?", help="artifact id prefix (from `artifold designs`)")
     dg.add_argument("--json", action="store_true",
                     help="machine-readable JSON output (stable contract for scripts/skills)")
+    dg.add_argument("--limit", type=int, default=0, metavar="N",
+                    help="only the N most recent artifacts (0 = all)")
+    dg.add_argument("--axes", action="store_true",
+                    help="slim rows: just the rotation axes, no palette/flags "
+                         "(what /craft needs; ~95%% smaller)")
     dg_g = dg.add_mutually_exclusive_group()
     dg_g.add_argument("--template", action="store_true",
                       help="dump CSS + body skeleton (paste into Claude as style example)")

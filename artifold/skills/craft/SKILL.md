@@ -73,12 +73,14 @@ A beautifully set page of bloated prose is still bloated. Do this BEFORE composi
 
 ## Step 2: Compose the four axes
 
-**First, read what's recent** so you can rotate off it. If artifold ≥0.7 is installed, one call returns all four axes for every artifact, newest first:
+**First, read what's recent** so you can rotate off it. If artifold ≥0.8 is installed, one call returns every rotation axis for the last dozen artifacts, newest first:
 
 ```bash
-artifold designs --json   # rows carry layout_archetype, design_mode, voice_register, signature_device
+artifold designs --json --axes --limit 12   # scale, layout_archetype, design_mode, voice_register, signature_device, conceit
 ```
-Fallback (no artifold): `ls -t ~/artifold-inbox/*.html | head -6`, then grep each for the `artifold:layout-archetype`, `design-mode`, `voice-register`, `signature-device` meta tags. Now you know the last few values on each axis.
+Use `--axes --limit`, not bare `--json`. The full form carries a palette and flag block per artifact — on a library of any age that is tens of KB of context spent to answer "what did the last few pages look like?", and it grows every time you ship one. (On artifold ≥0.7 but <0.8, `artifold designs --json` works and returns four axes without `scale` or `conceit`.)
+
+Fallback (no artifold): `ls -t ~/artifold-inbox/*.html | head -6`, then grep each for the `artifold:layout-archetype`, `design-mode`, `voice-register`, `signature-device`, `scale` meta tags. Now you know the last few values on each axis.
 
 **Then read `references/layouts.md` and `references/modes.md`** (and skim `references/devices.md`). Pick one value per axis:
 
@@ -300,7 +302,7 @@ Don't dump the HTML in chat — the file is the deliverable. Briefly note the on
 1. **Understand**: topic, audience, format anchor, real-subject grounding; verify every fact against a live source.
 2. **Scale tier**: glance / read / experience — elaboration is budgeted here.
 3. **Edit the content**: one-thing test, cut ~40 %, chunk, choose each piece's representation (table/chart/diagram/figure/prose).
-4. **Read recents** (`artifold designs --json`) so every axis can rotate.
+4. **Read recents** (`artifold designs --json --axes --limit 12`) so every axis can rotate.
 5. **Conceit** (or a defended `none`).
 6. **Axes**: layout → mode → voice → device; remix if the obvious pick is stale.
 7. **Lock tokens**: font pairing, type/space scales, layered shadow, borrowed palette.

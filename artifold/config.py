@@ -16,24 +16,81 @@ from pathlib import Path
 from .paths import CONFIG_FILE, ensure_dirs
 
 # Sensible generic defaults — broad enough to cover most AI-generated artifacts.
+#
+# Two rules learned the hard way (see tasks/v0.8-usage-fixes.md):
+#
+#   1. No format words. "tracker", "guide", "notes", "card", "review",
+#      "report", "story" describe an artifact's *shape*, not its subject.
+#      They filed a scalp-care routine under Finance ("card") and a job
+#      application tracker under Health ("tracker").
+#   2. Ambiguous short words earn their keep only as phrases. Bare "credit"
+#      is a tax term, a course unit, and a movie footer; "credit card" is
+#      unambiguous. Keywords are matched on whole-word boundaries, so the
+#      two-letter entries ("ml", "rl", "ai") are safe — they no longer fire
+#      inside "html", "ctrl" or "airbnb".
+#
+# Order matters only for exact score ties: specific domains come before the
+# catch-all Engineering bucket, which shares vocabulary with everything else.
 DEFAULT_CATEGORIES = {
-    "Engineering": ["code", "api", "agent", "ml ", "model", "pipeline", "algo",
-                    "engineer", "system", "architecture", "infra", "devops",
-                    "deploy", "kubernetes", "rl", "llm", "ai"],
-    "Health":      ["health", "fitness", "workout", "training", "diet",
-                    "nutrition", "medical", "wellness", "exercise", "tracker",
-                    "sleep", "mental"],
-    "Finance":     ["finance", "tax", "money", "budget", "invest", "credit",
-                    "card", "loan", "retirement", "stock", "crypto", "portfolio"],
+    "Health":      ["health", "fitness", "workout", "workouts", "exercise",
+                    "diet", "nutrition", "medical", "medicine", "wellness",
+                    "sleep", "mental health", "therapy", "supplement",
+                    "supplements", "vitamin", "vitamins", "protein",
+                    "calories", "gym", "strength training", "cardio",
+                    "injury", "physio", "doctor", "symptom",
+                    "symptoms", "medication", "dosage", "scalp", "hair",
+                    "dermatology", "psoriasis", "greying", "graying",
+                    "bloodwork", "cholesterol"],
+    # Deliberately absent: "cv" (collides with computer vision), bare
+    # "offer" and "application" (ordinary English, and "application layer"
+    # is Engineering) — the phrase forms carry the meaning instead.
+    "Career":      ["resume", "interview", "interviews", "career",
+                    "job", "jobs", "hiring", "recruiter", "recruiting",
+                    "promotion", "performance review", "salary",
+                    "compensation", "job offer", "offer letter", "onboarding",
+                    "job application", "referral", "linkedin",
+                    "portfolio site", "competency", "hiring manager",
+                    "behavioral", "phone screen", "star answers"],
+    "Housing":     ["apartment", "apartments", "rent", "rental", "lease",
+                    "real estate", "mortgage", "house", "housing",
+                    "neighborhood", "neighbourhood", "landlord", "sublet",
+                    "listing", "listings", "square feet"],
     "Travel":      ["trip", "travel", "itinerary", "vacation", "flight",
-                    "hotel", "guide", "city-guide", "road-trip"],
-    "Career":      ["resume", "interview", "career", "job", "hiring",
-                    "promotion", "review", "salary"],
-    "Education":   ["course", "lesson", "tutorial", "study", "learn",
-                    "explainer", "primer", "notes", "syllabus"],
+                    "flights", "hotel", "hostel", "road trip", "city guide",
+                    "sightseeing", "packing list", "passport", "layover",
+                    "airbnb"],
+    "Finance":     ["finance", "financial", "tax", "taxes", "money",
+                    "budget", "invest", "investing", "investment",
+                    "credit card", "debit card", "loan", "retirement",
+                    "401k", "roth", "stock", "stocks", "crypto",
+                    "portfolio", "savings", "expense", "expenses",
+                    "income", "equity", "rsu", "net worth"],
+    # "explainer" is deliberately absent: it's the shape of roughly half of
+    # all /craft output, not a subject. An explainer about inference belongs
+    # in Engineering.
+    "Education":   ["course", "courses", "lesson", "lessons", "tutorial",
+                    "study", "learn", "primer", "syllabus", "curriculum",
+                    "flashcards", "revision", "textbook", "coursework",
+                    "lecture"],
     "Personal":    ["family", "wedding", "birthday", "anniversary", "gift",
-                    "party", "letter", "story"],
-    "Housing":     ["apartment", "rent", "lease", "real-estate", "mortgage", "house"],
+                    "gifts", "party", "recipe", "recipes", "cooking",
+                    "kitchen", "holiday", "christmas", "diwali", "photos",
+                    "love letter"],
+    "Engineering": ["code", "coding", "api", "agent", "agents", "ml",
+                    "mlops", "model", "models", "pipeline", "algorithm",
+                    "algorithms", "engineer", "engineering", "system",
+                    "architecture", "infra", "infrastructure", "devops",
+                    "deploy", "deployment", "kubernetes", "docker", "rl",
+                    "llm", "llms", "ai", "dataset", "datasets", "embedding",
+                    "embeddings", "transformer", "transformers",
+                    "inference", "fine tuning", "benchmark", "eval",
+                    "evals", "recsys", "ranking", "retrieval", "latency",
+                    "throughput", "gpu", "database", "sql", "python",
+                    "git", "compiler", "distributed", "ocr", "vlm",
+                    "computer vision", "neural", "gradient descent",
+                    "backprop", "backpropagation", "classifier",
+                    "regression", "baseline", "labeling", "labeler",
+                    "annotation", "failure analysis"],
 }
 
 DEFAULTS = {

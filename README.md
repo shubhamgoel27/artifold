@@ -177,6 +177,7 @@ artifold link <file> --tool claude --source URL --prompt "..."
 artifold info <file>      # show provenance for a file
 
 artifold designs                     # list design fingerprints
+artifold designs --json --axes --limit 12   # recent rotation axes, slim (what /craft reads)
 artifold designs <id> --template     # dump CSS + skeleton (paste into Claude)
 
 artifold inbox [topic]    # print the canonical path for a new artifact
