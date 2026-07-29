@@ -11,7 +11,7 @@ Rules:
 ---
 
 ### 1. `hero-dataviz` — a custom SVG chart/diagram
-A bespoke chart built for this data: a slope chart, a small-multiples grid, a custom bar/bullet, a node graph. Not a generic library chart. *Best for: results, comparisons, trends.*
+A bespoke chart built for this data: a slope chart, a small-multiples grid, a custom bar/bullet, a node graph. Not a generic library chart, and it must obey the chart grammar in `craft-recipes.md` §18 (right form, zero-baseline bars, sorted, direct labels, takeaway annotated). *Best for: results, comparisons, trends.*
 
 ### 2. `margin-apparatus` — a running rail beside the content
 A persistent left/right margin carrying footnotes, a mini-timeline, a progress ticker, citations, or running stats — like a scholarly edition or a film strip. *Best for: dense reference, chronologies.*
@@ -63,6 +63,9 @@ A small end-block that breaks the fourth wall: who this was made for, when, in w
 
 ### 18. `red-string` — connections drawn as string
 An SVG overlay of taut or slightly-sagging lines (with pin dots) connecting related items across the page, conspiracy-board style. The connections must be REAL relationships in the content, labeled where useful. *Best for: corkboard-scatter layout, investigations, "how X relates to Y."*
+
+### 19. `scroll-scene` — one pinned, scrubbed transformation
+A single section pins while scroll scrubs a real transformation: a chart assembling bar by bar, a diagram exploding, a before→after morph, a pipeline lighting up stage by stage. Scroll position IS the timeline, so the reader controls the pace. Rules: **one per page**, `experience` tier only, built per `motion.md` (ScrollTrigger pin+scrub or CSS scroll-driven), and it must degrade to the *completed* state with JS off or reduced-motion on. *Best for: papers with one big mechanism, product stories, anything where the transformation is the point.*
 
 ---
 

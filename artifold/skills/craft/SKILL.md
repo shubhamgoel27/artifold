@@ -1,6 +1,6 @@
 ---
 name: craft
-description: Use whenever the user asks for a "report", "dashboard", "one-pager", "explainer", "tracker", "guide", "itinerary", or any HTML artifact where the output is a single styled page. Opens with a conceit (the one-line fiction the page commits to), then composes four independent axes — Layout Archetype (page skeleton), Design Mode (skin), Voice Register (tone), and Signature Device (the one built thing) — rotating each so no two outputs share bones. Every page carries warmth (it knows who it's for) and one weird thing (a deliberate, tasteful rule-break). Refuses named AI-slop signatures including its own past convergence and sterile competence. Copy avoids LLM-ese, typesetting uses real characters, and every figure carries captions and sources. Locks design tokens before building, then renders headless for a defect hunt plus a scored art-director pass (squint test, six-dimension rubric). If Artifold is installed, reads recent outputs to avoid repeating any axis.
+description: Use whenever the user asks for a "report", "dashboard", "one-pager", "explainer", "tracker", "guide", "itinerary", or any HTML artifact where the output is a single styled page. First picks a scale tier (glance / read / experience) so utility artifacts stay calm and fast while showpieces go all out — elaboration is budgeted, quality never is. Edits content before styling it: the one-thing test, hard cuts, and matching each piece of information to its right representation (table, chart with integrity rules, diagram, or prose). Then opens with a conceit (the one-line fiction the page commits to) and composes four independent axes — Layout Archetype (page skeleton), Design Mode (skin), Voice Register (tone), and Signature Device (the one built thing) — rotating each so no two outputs share bones. Read/experience pages carry warmth (they know who they're for) and one weird thing (a deliberate, tasteful rule-break). Refuses named AI-slop signatures including its own past convergence and sterile competence. Copy avoids LLM-ese, typesetting uses real characters, and every figure carries captions and sources. Motion is CSS-first and tier-gated (GSAP/Lenis via CDN only when choreography earns it), always reduced-motion-safe and complete with JS off. Locks design tokens before building, then renders headless for a defect hunt plus a scored art-director pass (squint test, six-dimension rubric). If Artifold is installed, reads recent outputs to avoid repeating any axis.
 ---
 
 # Craft
@@ -36,6 +36,39 @@ The fix: an artifact opens with a **conceit** (Step 2·0 — the one-line fictio
 
 If clear, proceed. Don't over-ask.
 
+## Step 1.5: Pick the scale — elaborate is a choice, not the default
+
+Every rule below this line *adds* something. This step decides how many of them apply. **A perfectly quiet page is not a lesser artifact** — Vignelli, Braun, and Muji built careers on nothing extra. Match the tier to the job:
+
+| Tier | When | What changes |
+|---|---|---|
+| `glance` | utility the user will *use*, not read: a reference card, checklist, quick table, cheat sheet, daily tracker | Conceit `none` by default · **no weird thing** · warmth = one quiet touch max (a good `<title>`, a `::selection`) · device optional and simple · minimal furniture · verify = one desktop + one mobile render, no AD pass. The win condition is *nothing extra*: one idea, executed cleanly, fast to scan. |
+| `read` | the default: reports, explainers, guides, recaps someone reads once or twice | Full standard pipeline: conceit considered (can be `none`), warmth required, weird thing optional (use if it serves), device required, full verify + AD pass. |
+| `experience` | showpieces: the user says "fun/amazing/go all out," it's public-facing, or it's a gift | Everything on: conceit required, weird thing required, full furniture, AD pass held to 4s-and-5s. |
+
+How to pick: the user's words first ("quick," "simple," "just a" → `glance`; "fun," "detailed," "beautiful" → up-tier), then **frequency of use** (opened daily → calm wins; opened once → performance is fine), then audience and stakes. When torn, ask which way the artifact *fails worse*: over-dressed utility is clutter; under-dressed showpiece is a shrug.
+
+**Never scales down, any tier:** real font pairing · type/space scales · typesetting (§16) · copy pass (3.6) · legibility floors · zero slop signatures. Quality is free; *elaboration* is what's being budgeted.
+
+**Intensity rotates too.** Record the tier in the meta tags and check recents: three `experience` pages in a row is its own kind of templating — sometimes the freshest thing /craft can ship is a dead-quiet one.
+
+## Step 1.7: Edit the content — design's first act is deciding what the page says
+
+A beautifully set page of bloated prose is still bloated. Do this BEFORE composing axes; it usually decides them.
+
+- **The one-thing test.** Write the single sentence the reader should remember. Every section serves it or gets cut. (That sentence is often your hero.)
+- **Cut hard.** First-draft prose runs ~40 % long: kill throat-clearing, hedges, restatements, and any fact you fetched but the reader doesn't need. Include-everything is a slop tell in itself.
+- **Inverted pyramid.** Strongest claim first, support after, caveats last — at page level and inside every section. Readers leave early; make every exit point safe.
+- **Chunk to capacity.** 3–5 items per group; more than that, group the groups (this grouping IS often the layout choice revealing itself).
+- **Match representation to content — prose is the last resort:**
+  - 3+ parallel things with shared attributes → **table/matrix**
+  - a trend, or magnitudes to compare → **chart** (grammar in `craft-recipes.md` §18)
+  - a process, dependency, or network → **diagram / timeline**
+  - one crucial number → **giant figure** + one context line
+  - either-or alternatives → **side-by-side split**
+  - appendix-grade detail → **progressive disclosure** (§19), not deletion
+- **Every number gets a companion.** A stat without a baseline, delta, or comparison doesn't land: "+5.21 %" means nothing until it's "vs the production baseline."
+
 ---
 
 ## Step 2: Compose the four axes
@@ -50,6 +83,8 @@ Fallback (no artifold): `ls -t ~/artifold-inbox/*.html | head -6`, then grep eac
 **Then read `references/layouts.md` and `references/modes.md`** (and skim `references/devices.md`). Pick one value per axis:
 
 ### 2·0 · Find the conceit — before any axis
+*(`glance` tier: default to `none` and move on — a cheat sheet doesn't need a fiction, it needs to be fast.)*
+
 One sentence naming the fiction the page commits to: *"This tax plan is a tarot reading."* *"This paper explainer is the Netflix homepage."* *"This apartment shortlist is a detective's corkboard."* The conceit is what makes an artifact feel **authored** rather than assembled — it's the difference between a themed page and a page with a theme slapped on.
 
 - Generate 3 candidate conceits, pick the one that **serves the content** (the metaphor must map: tarot works for decisions because cards = options; it fails for a bug report).
@@ -89,7 +124,7 @@ The tone. **Rotate: not in the last 2 registers.** Register drives headlines and
 | `bedtime-story` | gentle, once-upon-a-time cadence | "Once there was a matrix who wanted to be smaller." |
 
 ### 2d · Signature Device  → `references/devices.md`
-The one built thing. **Rotate: not in the last 2 device classes.** Must carry content and be genuinely built.
+The one built thing. **Rotate: not in the last 2 device classes.** Must carry content and be genuinely built. *(`glance` tier: optional, and if used keep it structural-and-quiet — a well-made table IS the device.)*
 
 ### Cross-check before building
 - All four axes chosen explicitly, each off-rotation? 
@@ -101,6 +136,7 @@ Read `references/fonts.md` and `references/craft-recipes.md`, then commit — in
 
 - **Fonts.** Never ship the bare system stack. Pick an intentional pairing from `fonts.md` (a distinctive heading face + a calm body face), load it via one Google-Fonts `<link>` with `display=swap` and a full fallback chain. Inter-as-the-only-font is itself a slop tell — rotate the pairing.
 - **Type scale.** One ratio (1.2 dense → 1.333 editorial), with line-heights. **Color.** Borrow a real ramp (Open Color / Radix) rather than inventing; declare a 60/30/10 dominance split; body text never pure `#000`. **Spacing.** One 4px-based scale. **Depth.** One *layered* shadow tier (never a single flat `0 4px 6px`), tinted toward the bg. **Radius.** One scale (or none).
+- **Motion.** If the tier allows animation (Step 1.5), read `references/motion.md` and pick from its CSS-first ladder; lock durations/easings as tokens (`--dur`, `--ease`, recipes §8). Three gates always: tier, `prefers-reduced-motion`, and the no-JS fail-safe (the page must be complete with JS off — never author `opacity:0` without the `.js` guard).
 - Honor the **mode's restraint budget** (Step 3): restrained modes stay quiet, expressive modes use the full range. Then reference only these tokens in the CSS.
 
 ### User reference override
@@ -127,9 +163,9 @@ Restraint is **per-mode, not global** — this is how expressive modes get to be
 
 Do not impose restraint on an expressive mode, and don't let a restrained mode go loud. Mode-specific overrides always beat the general invariants — note the override in a comment (e.g. `brutalist-web` keeps raw borders; `terminal-tui` uses phosphor-on-black).
 
-### 3.5 · Warmth & the one weird thing — required, not optional garnish
+### 3.5 · Warmth & the one weird thing — scaled by tier (Step 1.5)
 
-A page that passes every check above can still feel like nobody made it. Two more requirements:
+A page that passes every check above can still feel like nobody made it. Two more requirements — at `read`/`experience` tier; at `glance` tier warmth caps at one quiet touch and the weird thing is **off** (calm is the feature):
 
 **Warmth — the page knows who it's for.** Ship at least ONE human touch (recipes in `craft-recipes.md` §15, devices 13–17 in `devices.md`):
 - Address the reader directly where natural (the user's actual name/project/city if known from context — **never invented facts about them**).
@@ -152,6 +188,7 @@ A perfectly art-directed page with LLM prose still reads generated. The voice re
 - **Vary the rhythm.** Two adjacent sections with identical shape and length read generated. Some sections deserve one line; let them have one line.
 - **Concrete beats vague.** Numbers, names, dates, places. Cut every adjective that isn't earning its spot. Contractions are human; use them where the voice allows.
 - **Microcopy is content.** Alt text, captions, footnotes, `<title>`, empty-state text: all written in-voice, none boilerplate.
+- **Pages end, not stop.** The last element is written, not residual: a kicker, a callback to the opening, a P.S., a next step. A generic caveat block as the final element is a slop tell.
 
 ### 3.7 · Typographic finish — the strongest single human tell
 
@@ -169,7 +206,8 @@ Never ship: (1) purple-gradient centered hero; (2) identical bento cards w/ colo
 18. **Uppercase mono eyebrow + serif headline** paired — pick one.
 19. **The /craft skeleton (the big one).** This fingerprint, measured across past outputs, recurs regardless of mode: mono-uppercase eyebrow · numbered §-index sections · single `:root` accent ramp · `clamp()` hero headline · narrow single-column vertical scroll · mono-tabular stat block · mono caveat footer. **If 3+ co-occur, you are reskinning the same bones — change the LAYOUT ARCHETYPE, not the mode.** Different paint on the same skeleton is the failure this skill exists to stop.
 20. **Amateur-CSS tells** (see `references/craft-recipes.md` for the fixes): a single flat `0 4px 6px rgba(0,0,0,.1)` shadow · accent underline beneath every heading · uniform `0.5rem` radius on everything · gray `#ddd` borders as the default separator · pure-black body text · blue→purple gradient hero · containers nested more than 2 levels deep.
-21. **Sterile competence.** No conceit, no warmth, no weird thing — a page that could have been generated for anyone, about anything, by any tool. If nothing on the page could make the reader smile, pause, or feel seen, it fails even if every pixel is aligned. The inverse also fails: warmth that's *performed* (forced jokes, invented personal details, quirk on every element) is its own slop — one true touch beats five cute ones.
+21. **Motion slop** (full list in `references/motion.md`): fade-up-on-every-section (the animated bento) · parallax on everything · scroll-jacking · loader/intro screens on a document · autoplaying loops beside body text · WebGL background libraries as default decoration. One entrance moment per page; motion must orient, reveal, connect, or delight.
+22. **Sterile competence.** No conceit, no warmth, no weird thing — a page that could have been generated for anyone, about anything, by any tool. If nothing on the page could make the reader smile, pause, or feel seen, it fails even if every pixel is aligned. The inverse also fails: warmth that's *performed* (forced jokes, invented personal details, quirk on every element) is its own slop — one true touch beats five cute ones.
 
 Hard limits: uppercase-mono eyebrow only in `field-essay`/`editorial-newsprint`/`wire-news`; one decorative section-break ornament style per artifact, used sparingly (and never built from em dashes — house rule, see 3.6); never more than two font families (a third only for a mono-numeral or handwritten-annotation role).
 
@@ -177,11 +215,12 @@ Hard limits: uppercase-mono eyebrow only in `field-essay`/`editorial-newsprint`/
 
 ## Step 5: Embed Artifold provenance
 
-In `<head>` (all eight are required so future runs can rotate every axis):
+In `<head>` (all nine are required so future runs can rotate every axis, including intensity):
 ```html
 <meta name="artifold:intent" content="<10–15 word description>">
 <meta name="artifold:tool" content="claude">
 <meta name="artifold:prompt" content="<user's original prompt, ≤200 chars>">
+<meta name="artifold:scale" content="<glance | read | experience, from Step 1.5>">
 <meta name="artifold:conceit" content="<from Step 2·0, or 'none'>">
 <meta name="artifold:layout-archetype" content="<from Step 2a>">
 <meta name="artifold:design-mode" content="<from Step 2b>">
@@ -194,22 +233,25 @@ If the user referenced a past artifact, also add `<meta name="artifold:style-fro
 
 ## Step 6: Self-check before delivering
 
+0. **Scale test:** did I pick a tier deliberately (Step 1.5), and does the elaboration level match it? An over-dressed `glance` artifact fails this check the same way an under-dressed `experience` one does.
 1. Did I choose **all four axes** explicitly, and is each **off-rotation** vs recent outputs?
 2. **Structural-diff test:** if I swapped this output's colors + fonts, would its skeleton match my last output? If yes → wrong layout, redo Step 2a.
 3. Is the `(layout × mode)` pair fresh (not in the last 5)?
-4. Did I avoid the 20 anti-slop signatures — especially #19 and the amateur-CSS tells in #20?
+4. Did I avoid the 22 anti-slop signatures — especially the /craft skeleton (#19), the amateur-CSS tells (#20), and motion slop (#21)?
 5. Is the **signature device** genuinely hand-built and content-carrying (not a default component)?
 6. Did I **lock the build spec** (real font pairing loaded, type/space scales, layered shadow, borrowed palette) and reference only those tokens?
 7. Does the palette/type honor this **mode's** budget (restrained quiet, expressive loud)?
 8. **Legibility floors:** body ≥16px · measure 60–75ch · interactive targets ≥44px · body text ≥4.5:1 contrast on its background · not pure-black on white.
 9. **Accessibility:** headings in logical order · `:focus-visible` styles on interactive elements · all motion behind `prefers-reduced-motion` · `alt` on every image.
 10. Does the skeleton match what a designer at the **canonical reference** (Step 1) would build, and could someone name the voice register from the headlines alone?
-11. All eight `artifold:*` tags present, and one distinctive choice a designer would call intentional?
+11. All nine `artifold:*` tags present, and one distinctive choice a designer would call intentional?
 12. **Conceit test:** can you state the fiction in one sentence, and does every label/button/footnote live inside it? (Or did you consciously choose `none`?)
-13. **Warmth test:** is there at least one true human touch, and would the intended reader feel the page was made *for them*? Any personal detail used — is it real, from actual context?
-14. **Weird-thing test:** name the one deliberate rule-break. Is it exactly one, legible, reduced-motion-safe, and native to the conceit?
-15. **Copy pass:** headlines make claims, sentence case, zero banned LLM-ese, zero em dashes, section rhythm varies, microcopy in-voice?
-16. **Typesetting pass:** curly quotes/apostrophes throughout, real … × − –, no-break spaces on units, `tabular-nums` on figure columns, every figure captioned and every stat sourced?
+13. **Warmth test** (scaled to tier): is there at least one true human touch, and would the intended reader feel the page was made *for them*? Any personal detail used — is it real, from actual context?
+14. **Weird-thing test** (`read`/`experience` only): name the one deliberate rule-break. Is it exactly one, legible, reduced-motion-safe, and native to the conceit? At `glance` tier the correct answer is "there isn't one."
+15. **Content-edit test (Step 1.7):** can you state the one thing the reader should remember, and does the page's hierarchy match it? Is anything still prose that should be a table, chart, or diagram? Does every number have its companion (baseline/delta/comparison)?
+16. **Copy pass:** headlines make claims, sentence case, zero banned LLM-ese, zero em dashes, section rhythm varies, microcopy in-voice, the page *ends*?
+17. **Typesetting pass:** curly quotes/apostrophes throughout, real … × − –, no-break spaces on units, `tabular-nums` on figure columns, every figure captioned and every stat sourced?
+18. **Chart integrity (if any chart exists):** right form for the job, zero-baseline bars, sorted categories, direct labels, the takeaway annotated on the chart (§18)?
 
 If any fail, iterate.
 
@@ -219,6 +261,8 @@ If any fail, iterate.
 
 Your first render is almost never perfect. Treat this as a **bug hunt, not a confirmation step** — if you found zero issues, you weren't looking hard enough.
 
+*Tier gate (Step 1.5): `glance` = steps 1–4 only, at two widths (1440 + 375), skip the AD pass — a utility card doesn't need a jury, it needs to be correct. `read`/`experience` = the full loop below.*
+
 1. **Render headless and screenshot** at three widths — 1440, 768, 375:
    ```bash
    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
@@ -227,6 +271,9 @@ Your first render is almost never perfect. Treat this as a **bug hunt, not a con
    (Chrome path above is for this machine; fall back to any chrome/chromium. If no browser exists, skip this step gracefully and tell the user it wasn't visually verified.)
 2. **Actually look** — Read the screenshots back. Better: hand the images + the checklist to a **fresh-eyes subagent** (you'll see what you intended, not what's there).
 3. **Defect checklist:** overlapping elements · text clipped at edges · overflow · horizontal scroll at 375 · colliding footers/labels · uneven or cramped gaps · low-contrast text/icons · leftover `lorem`/placeholder text · broken/empty SVG · an element positioned for one line but the text wrapped to two.
+   **If the page animates**, two extra renders (both validated on this machine; `--virtual-time-budget` does NOT settle rAF/GSAP entrances — don't rely on it):
+   - `--force-prefers-reduced-motion` → must show the COMPLETE static page (this also proves the reduced-motion guard actually fires);
+   - a copy with all `<script>` tags stripped → must be missing nothing (proves the no-JS fail-safe; anything stuck at `opacity:0` here is a Blocker).
 4. **Triage** each finding Blocker / High / Medium / Nitpick. Fix every Blocker + High, re-render, re-check (one fix often spawns another). **Max 3 cycles** — if defects remain, ship and name them.
 
 5. **Art-director pass — judge the design, not just the bugs.** A page can be defect-free and still mediocre; this is where "looks amazing" gets enforced. After defects are clear:
@@ -245,3 +292,20 @@ After saving, tell the user in two lines:
 - *"Will show up in your Artifold dashboard within ~2 seconds. Layout `<archetype>` · mode `<mode>` · `<register>` voice · `<device>` device."*
 
 Don't dump the HTML in chat — the file is the deliverable. Briefly note the one or two key decisions (especially the layout choice and why), then stop. Don't pad, don't pre-narrate, don't apologize for design choices.
+
+---
+
+## The run order — hold this shape even if you skim everything else
+
+1. **Understand**: topic, audience, format anchor, real-subject grounding; verify every fact against a live source.
+2. **Scale tier**: glance / read / experience — elaboration is budgeted here.
+3. **Edit the content**: one-thing test, cut ~40 %, chunk, choose each piece's representation (table/chart/diagram/figure/prose).
+4. **Read recents** (`artifold designs --json`) so every axis can rotate.
+5. **Conceit** (or a defended `none`).
+6. **Axes**: layout → mode → voice → device; remix if the obvious pick is stale.
+7. **Lock tokens**: font pairing, type/space scales, layered shadow, borrowed palette.
+8. **Build**: skeleton first, then paint, then the device; add warmth + the weird thing per tier.
+9. **Finish**: copy pass → typeset pass → furniture (captions, sources, folios).
+10. **Verify**: defect hunt at 3 widths → squint test → art-director rubric (per tier); fix, re-render.
+11. **Provenance** (9 tags) and save via `artifold inbox`.
+12. **Hand off in two lines**, name the key decision, stop.

@@ -127,6 +127,6 @@ Take the grid/structure from one exemplar and the color/type from another in a *
 When to remix: the topic is generic, the obvious mode is on cooldown, or you want the "one non-obvious pairing" the skill rewards. State the remix in one line (and in the `design-mode` meta tag as `A×B`).
 
 ## Picking a mode
-1. **Format/topic → family.** Serious analysis → A/B · statement/announcement → C · personal/fun/kit → D · network/teardown/flow → E · nostalgic/playful-web → F · strong conceit ("the page IS a thing") → G · made-for-one-person, warm → H. **When torn between a professional family and G/H, lean G/H** — the corporate look is never under-represented in the library.
+1. **Format/topic → family.** Serious analysis → A/B · statement/announcement → C · personal/fun/kit → D · network/teardown/flow → E · nostalgic/playful-web → F · strong conceit ("the page IS a thing") → G · made-for-one-person, warm → H. **When torn between a professional family and G/H at `read`/`experience` tier, lean G/H** — the corporate look is never under-represented in the library. At **`glance` tier, lean A/B** and let flawless execution be the signature: a Vignelli-quiet reference card beats a themed one you have to decode while cooking.
 2. **Rotate** off the last 3 modes; don't repeat the last 5 `(layout × mode)` pairs; rotate exemplars too (don't always reach for Linear/Stripe).
 3. **Picture the exemplar, then build the triad into a full ramp** via `craft-recipes.md` (60/30/10 dominance, never pure-black body text). Honor the family's restraint budget.

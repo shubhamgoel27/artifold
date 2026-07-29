@@ -197,7 +197,30 @@ Human-made documents carry supporting apparatus; AI pages are furniture-poor. Ev
 
 Furniture must be real (true sources, honest dates), quiet (a step or two below body text), and consistent (one caption style, used everywhere). Two pieces of true furniture beat six decorative ones.
 
-## 18. Red string / connection overlay (corkboard layouts)
+## 18. Chart grammar — a wrong chart is worse than no chart
+Pick the form by the job, not by decoration:
+comparison → **sorted horizontal bars** · trend → **line** · part-of-whole → **stacked bar** (pie only ≤4 slices) · distribution → **dot plot / histogram** · relationship → **scatter** · one KPI → **big number** + context line · before/after pairs → **slope chart**.
+
+Integrity rules, non-negotiable:
+- **Bar axes start at 0.** (Line charts may zoom the axis — then say so on the chart.)
+- **Sort categories by value**, never alphabetically, unless order is inherent (time, stages).
+- **Label data directly** at the end of each bar/line; a legend is a failure of proximity (tolerate one only at 6+ series).
+- **One hue for data, gray for context, the accent for THE point.** Never rainbow categoricals.
+- **Annotate the takeaway on the chart itself** ("Norway 2–0: the upset") — the reader shouldn't have to derive it.
+- **Erase non-data ink** (Tufte): faint or no gridlines, no chart border, no background fill, no 3D, no dual y-axes.
+- Real data only — if a value is unknown, show the gap honestly, never invent a plausible bar.
+
+Hand-built inline SVG or CSS bars beat a library aesthetic: `--w: calc(var(--value) / var(--max) * 100%)` on a styled div, `tabular-nums` value labels, one `<text>` annotation.
+
+## 19. Earned interaction — progressive disclosure without tricks
+Interaction must pay rent: it hides complexity the first read doesn't need. It never hides core content (§15 egg rules apply).
+- **`<details>/<summary>`** for appendix-grade depth: zero JS, style the summary like a real element (marker, hover state), write the summary line so skipping it is safe.
+- **Tabs** only for true alternatives (plan A/B, platform X/Y) where the reader picks one lane: `aria-selected`, arrow-key support, or the radio-input CSS pattern.
+- **Sortable table** only past ~8 rows; tiny inline JS + `aria-sort`.
+- **State must be visible** — what's open, active, or sorted should be obvious in a screenshot.
+- **No hover-only meaning** (touch exists; hover may *enrich*, never *gate*). No scroll-hijacking, ever. If the page works with JS disabled, you built it right.
+
+## 20. Red string / connection overlay (corkboard layouts)
 Full-board SVG overlay, `pointer-events:none`, drawn AFTER layout is fixed. Sag the line with a quadratic curve; end each at a pin dot.
 ```html
 <svg class="strings" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">
