@@ -197,6 +197,11 @@ def _cmd_scan(args):
               f"{len(cached)} without preview")
     else:
         asyncio.run(shoot.shoot(projects, args.concurrency))
+    # Full scans only: the project list is the complete picture, so anything
+    # it does not reference is safe to drop.
+    gone, freed = shoot.gc_thumbs(projects)
+    if gone:
+        print(f"  cleaned {gone} stale thumbnail(s) ({freed / 1e6:.1f} MB)")
     build.build(projects, [str(r) for r in rs])
     print("done.")
 

@@ -40,6 +40,43 @@ def resolve_cached_thumbs(projects: list[dict]) -> list[tuple]:
     return missing
 
 
+def gc_thumbs(projects: list[dict]) -> tuple[int, int]:
+    """Delete thumbnails and manifest rows no project points at.
+
+    The cache key is sha1(path+mtime+size), so every edit writes a new
+    thumbnail and strands the old one. Nothing deleted them: after three
+    months a 133-project library held 513 files, 380 of them orphans, and
+    32 MB of the 44 MB total. Full scans only — a partial scan does not
+    know about the projects it did not look at.
+
+    Returns (files_deleted, bytes_freed).
+    """
+    ensure_dirs()
+    keep = {Path(p["thumb"]).name for p in projects if p.get("thumb")}
+    deleted = freed = 0
+    for f in THUMBS.glob("*.jpg"):
+        if f.name in keep:
+            continue
+        try:
+            size = f.stat().st_size
+            f.unlink()
+        except OSError:
+            continue
+        deleted += 1
+        freed += size
+
+    if MANIFEST.exists():
+        try:
+            manifest = json.loads(MANIFEST.read_text())
+        except Exception:
+            manifest = {}
+        ids = {p["id"] for p in projects}
+        pruned = {k: v for k, v in manifest.items() if k in ids}
+        if len(pruned) != len(manifest):
+            MANIFEST.write_text(json.dumps(pruned, indent=2))
+    return deleted, freed
+
+
 def ensure_chromium() -> bool:
     """Install playwright chromium-headless-shell if missing. Returns True on success.
 

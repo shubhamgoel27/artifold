@@ -297,6 +297,14 @@ body {
 .card .meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11.5px; margin-top: 3px; }
 .card .meta .cat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c, var(--text-dim)); }
 .card .shared-mark { color: var(--ok); }
+/* Usage badges. Deliberately quiet: they mark the few artifacts you keep
+   coming back to, so they must not shout on the ~90% that carry neither. */
+.card .revs {
+  font-variant-numeric: tabular-nums; font-size: 10.5px;
+  padding: 1px 5px; border-radius: 999px; white-space: nowrap;
+  color: var(--text-mut); background: var(--surface-2);
+  border: 1px solid var(--line);
+}
 
 /* === detail pane (slide-out right) ========================== */
 .scrim {
@@ -648,7 +656,7 @@ body {
         <div class="side-label">Category</div>
         <div id="cat-facets"></div>
       </div>
-      <div class="side-section">
+      <div class="side-section" id="sec-tool">
         <div class="side-label">Tool</div>
         <div id="tool-facets"></div>
       </div>
@@ -665,6 +673,7 @@ body {
         <span class="fb-spacer"></span>
         <select id="sort" class="select-styled">
           <option value="recent">Most recent</option>
+          <option value="used">Most used</option>
           <option value="oldest">Oldest</option>
           <option value="az">Title A→Z</option>
         </select>
@@ -884,6 +893,16 @@ const TOOL_LABELS = { claude:'Claude', chatgpt:'ChatGPT', v0:'v0', lovable:'Lova
                        bolt:'Bolt', gemini:'Gemini', cursor:'Cursor', manual:'Manual' };
 const catColor = c => CATCOL[c] || '#94a3b8';
 const provenance = p => (p.primary && p.primary.provenance) || {};
+// True only when the library was really made with more than one tool. Drives
+// both the tool facet and the per-card tool label — neither says anything
+// when every artifact came from the same place. Recomputed after a rescan.
+let MIXED_TOOLS = false;
+function computeMixedTools() {
+  const t = new Set();
+  (D.projects || []).forEach(p => { const v = provenance(p).tool; if (v) t.add(v); });
+  MIXED_TOOLS = t.size >= 2;
+}
+computeMixedTools();
 const isShared = p => ((provenance(p).shares || []).length > 0);
 const shareURL = p => { const s = provenance(p).shares || []; return s[s.length-1] && s[s.length-1].url; };
 
@@ -931,6 +950,12 @@ function buildSidebar() {
     const t = provenance(p).tool || '(unlabeled)';
     tools[t] = (tools[t] || 0) + 1;
   });
+  // A filter that cannot split the library is furniture. In a library made
+  // almost entirely with one tool this reads "claude 118 / unlabeled 15" and
+  // holds sidebar space forever. Hide it until a second real tool shows up.
+  $('sec-tool').style.display = MIXED_TOOLS ? '' : 'none';
+  // Never leave a filter applied that the user can no longer see or undo.
+  if (!MIXED_TOOLS && state.tools.size) state.tools.clear();
   const tf = $('tool-facets'); tf.innerHTML = '';
   Object.keys(tools).sort().forEach(t => {
     const el = document.createElement('div');
@@ -976,6 +1001,10 @@ function filteredProjects() {
   }).sort((a,b) => {
     if (state.sort === 'recent') return b.latest_mtime - a.latest_mtime;
     if (state.sort === 'oldest') return a.latest_mtime - b.latest_mtime;
+    // "Most used" ranks by what you return to, not what you made last.
+    // Opens are the real signal but start at zero, so revisions carry the
+    // sort until open data builds up: editing a page 17 times is use.
+    if (state.sort === 'used') return usage(b) - usage(a) || b.latest_mtime - a.latest_mtime;
     return a.name.localeCompare(b.name);
   });
 }
@@ -1029,18 +1058,26 @@ function rowHTML(p) {
   </div>`;
 }
 
+// One number for "how much do you use this". An open is worth more than a
+// revision: opening is reading, revising is building. Both beat neither.
+function usage(p) {
+  return (p.open_count || 0) * 3 + Math.max(0, (p.revision_count || 1) - 1);
+}
+
 function cardHTML(p) {
   const prov = provenance(p);
-  const tool = prov.tool ? TOOL_LABELS[prov.tool] || prov.tool : '';
+  // Same rule as the tool facet: a label that reads the same on almost every
+  // card carries no information. "Claude" stamped on 118 of 133 thumbnails
+  // is decoration, so it only appears once the library really is mixed.
+  const tool = (MIXED_TOOLS && prov.tool) ? TOOL_LABELS[prov.tool] || prov.tool : '';
   const ver = p.version_count > 1 ? `<span style="margin-left:4px;color:var(--text-dim);font-size:11px">v${p.current_version}</span>` : '';
   const pid = JSON.stringify(p.id);
-  const primaryURL = reportURL(p.primary.path);
   return `<div class="card" data-id="${p.id}" style="--c:${catColor(p.category)}">
     ${p.thumb ? `<div class="thumb"><img src="${p.thumb}" loading="lazy" alt="">${tool ? `<span class="corner">${tool}</span>` : ''}</div>`
               : `<div class="thumb ph">no preview${tool ? `<span class="corner">${tool}</span>` : ''}</div>`}
     <div class="card-acts">
       <button class="ca-open" title="Open in new tab"
-              onclick='event.stopPropagation();openInNewTab("${primaryURL}")'>${ic('arrowUR')}</button>
+              onclick='event.stopPropagation();openArtifactById(${pid})'>${ic('arrowUR')}</button>
       <button class="ca-trash" title="Move to Trash"
               onclick='event.stopPropagation();confirmTrashProject(${pid})'>${ic('trash')}</button>
     </div>
@@ -1049,6 +1086,8 @@ function cardHTML(p) {
       <div class="meta">
         <span class="cat-dot"></span><span>${p.category}</span>
         <span>·</span><span>${fmt(p.primary.mtime)}</span>
+        ${p.revision_count > 1 ? `<span class="revs" title="Edited in place ${p.revision_count - 1} time(s) since it was created">${p.revision_count}&#8202;rev</span>` : ''}
+        ${p.open_count ? `<span class="revs" title="Opened ${p.open_count} time(s)">${p.open_count}&#8202;&#x2197;</span>` : ''}
         ${isShared(p) ? `<span class="shared-mark" title="Shared">●</span>` : ''}
       </div>
     </div>
@@ -1134,7 +1173,26 @@ function openInNewTab(url) {
   a.click();
   setTimeout(() => a.remove(), 0);
 }
-$('d-open').onclick = () => openVer && openInNewTab(reportURL(openVer.path));
+// Opening an artifact is the one moment we learn that you use it. The tab
+// open never reaches the server on its own, so beacon it. Fire-and-forget:
+// a failed count must never stop the page from opening.
+function openArtifact(path) {
+  openInNewTab(reportURL(path));
+  if (!SERVED) return;                 // file:// has no server to tell
+  fetch('/opened', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({path})
+  }).catch(() => {});
+}
+// Card buttons pass the project id, never the path: ids are slugified and
+// safe to inline, while a path holding an apostrophe would end the
+// onclick attribute early.
+function openArtifactById(id) {
+  const p = D.projects.find(p => p.id === id);
+  if (p) openArtifact(p.primary.path);
+}
+$('d-open').onclick = () => openVer && openArtifact(openVer.path);
 
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
 function switchTab(name) {
@@ -1157,6 +1215,37 @@ function renderProvenance() {
   if (prov.tags && prov.tags.length) rows.push(['Tags', prov.tags.map(t => `<span class="tag">${escape(t)}</span>`).join('')]);
   if (prov.notes) rows.push(['Notes', escape(prov.notes)]);
   if (prov.added_at) rows.push(['Added', new Date(prov.added_at).toLocaleString()]);
+  if (prov.last_opened_at) {
+    rows.push(['Opened', `${openProj.open_count || 1}&#8202;time(s) · last ${new Date(prov.last_opened_at).toLocaleString()}`]);
+  }
+  // In-place edit history. The store keeps hashes, not bytes, so these
+  // cannot be diffed like filename versions — they record that the page
+  // changed, and (from v0.9 on) when.
+  const revs = openProj.revisions || [];
+  if (revs.length > 1) {
+    const note = `<div style="margin-top:5px;font-size:11px;color:var(--text-dim)">Only hashes are kept, not content, so revisions cannot be compared.</div>`;
+    const dated = revs.filter(r => r.revised_at);
+    let body;
+    if (!dated.length) {
+      // Every revision predates the timestamps added in v0.9. Listing 28
+      // rows that each read "time not recorded" is noise; the count is the
+      // only real information, so show just that.
+      body = `${revs.length} revisions of this file` +
+        `<div style="margin-top:4px;font-size:11px;color:var(--text-dim)">Recorded before revision times existed, so only the count survives.</div>`;
+    } else {
+      const shown = dated.slice().reverse().slice(0, 10);
+      const older = revs.length - shown.length;
+      body = `${revs.length} revisions of this file<div style="margin-top:5px">` +
+        shown.map(r =>
+          `<div style="font-size:11.5px;color:var(--text-mut)">` +
+          `<code style="font-family:ui-monospace,Menlo,monospace">${escape((r.sha1 || '').slice(0,8))}</code>` +
+          ` <span style="color:var(--text-dim)">· ${escape(new Date(r.revised_at).toLocaleString())}</span></div>`
+        ).join('') +
+        (older > 0 ? `<div style="font-size:11px;color:var(--text-dim)">+${older} earlier</div>` : '') +
+        `</div>`;
+    }
+    rows.push(['Revisions', body + note]);
+  }
   if (prov.exports && prov.exports.length) {
     rows.push(['Exports', prov.exports.map(x =>
       `<div><code style="font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:var(--text-mut)">${escape((x.path || '').split('/').pop())}</code> <span style="color:var(--text-dim);font-size:11px">· ${escape(x.format || 'pdf')} · ${x.created_at ? new Date(x.created_at).toLocaleDateString() : ''}</span></div>`
@@ -1666,7 +1755,7 @@ if (SERVED) {
     const es = new EventSource('/events');
     es.addEventListener('updated', () => {
       fetch('/data.json', { cache: 'no-store' }).then(r => r.json()).then(d => {
-        D = d; setStatusbar(); render();
+        D = d; computeMixedTools(); setStatusbar(); render();
         if (openProj) { const fresh = D.projects.find(p => p.id === openProj.id); if (fresh) open(fresh); }
         flashLive('Library updated');
       }).catch(() => {});

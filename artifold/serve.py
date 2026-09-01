@@ -126,6 +126,27 @@ def _allowed_path(p: Path) -> bool:
     return False
 
 
+def _count_open(target: Path) -> bool:
+    """Record that the user opened an artifact. Best effort, never fatal.
+
+    Creation time answers "what did I make?". It cannot answer "what do I
+    keep coming back to", and after a hundred artifacts that is the question
+    the dashboard needs. Refuses paths outside a root, like every other
+    handler here.
+    """
+    from . import provenance
+    try:
+        if not target or not _allowed_path(target):
+            return False
+        sha = provenance.sha_for_path(target.resolve())
+        if not sha:
+            return False
+        provenance.record_open(sha)
+        return True
+    except Exception:
+        return False
+
+
 def _token_for_dir(d: Path) -> str:
     """Register `d` and return a stable 12-char hash used in /asset/<token>/…
     URLs. Same dir → same token across calls."""
@@ -181,6 +202,13 @@ class Handler(SimpleHTTPRequestHandler):
             return self._handle_export_pdf()
         if path == "/trash":
             return self._handle_trash()
+        if path == "/opened":
+            # The dashboard beacons here when the user opens an artifact in a
+            # new tab. That open never touches the server otherwise, so
+            # without the beacon the only counted opens are system opens.
+            body = self._read_json()
+            ok = _count_open(Path(body.get("path") or ""))
+            return self._json({"ok": ok})
         self.send_error(404)
 
     def _read_json(self) -> dict:
@@ -423,6 +451,8 @@ class Handler(SimpleHTTPRequestHandler):
             subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
             return self.send_error(500, f"open failed: {e}")
+        if path.path == "/open":       # revealing in Finder is not a read
+            _count_open(target_r)
         return self._json({"ok": True})
 
     def _handle_diff(self, path):

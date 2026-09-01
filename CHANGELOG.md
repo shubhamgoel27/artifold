@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.9.0
+
+A second audit of a real library, five weeks and 43 artifacts after the
+first. At 133 projects the questions change: not "where is it" but "which
+of these do I actually use".
+
+### Your edit history was recorded, hidden, and expiring
+
+Artifold has always carried provenance across an in-place edit. It never
+showed the result. A real library held 128 of these superseded entries —
+16 artifacts with revisions, the longest chains 28 and 17 deep — while the
+version dropdown, which reads `-v2` filenames, matched 2 of 133 projects.
+
+Worse, the history was on a timer. A superseded entry's content hash is
+gone from disk by definition, so the orphan rule stamped every one of them
+for deletion 30 days out. All 128 were counting down.
+
+- `gc` now exempts revisions reachable from a live artifact, and clears the
+  stamp from ones already marked.
+- `carry_forward` stamps `revised_at` and `superseded_at`, so the chain has
+  time in it. `added_at` stays put: a revision is not a new artifact.
+- Cards show a revision badge; the detail pane lists the history.
+
+Revisions cannot be diffed — the store keeps hashes, not content — and the
+pane says so instead of offering a button that cannot work. Chains recorded
+before this release have no times, so that case shows the count alone.
+
+### Artifold now knows what you use, not just what you made
+
+Creation time cannot answer "what do I keep coming back to", and after a
+hundred artifacts that is the question.
+
+- Opening an artifact is counted, via `/open` and a `POST /opened` beacon
+  for new-tab opens. Previewing a card is not an open, and revealing in
+  Finder is not a read.
+- New "Most used" sort, ranking opens 3× revisions. Opens start at zero
+  everywhere, so revisions carry the sort until real data accrues.
+- Requires `artifold serve`; a `file://` dashboard has no server to tell.
+
+### Cache and clutter
+
+- **Thumbnails are garbage-collected** on a full scan. The cache key is
+  sha1(path+mtime+size), so every edit stranded the previous image and
+  nothing ever cleaned up: 513 files, 380 of them orphans, 32.4 MB of 44 MB.
+  A real library drops to 133 files and 12 MB. Stale manifest rows go too.
+- **The parsed provenance store is memoized.** One scan called `_load_raw`
+  670 times, re-reading 546 KB each time. Scans run in ~2.3 s where they
+  took ~3.2 s, despite doing more work.
+- **The tool filter and the per-card tool label hide** unless the library
+  really was made with more than one tool. Reading "Claude" on 118 of 133
+  cards is decoration, and a filter that cannot split anything is furniture.
+
 ## 0.8.0
 
 The first release driven by an audit of a real library rather than a

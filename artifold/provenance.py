@@ -44,9 +44,31 @@ def sha1_of(path: Path) -> str:
     return h.hexdigest()
 
 
+# Parsed-store memo, keyed on the file's identity. One scan of a 133-project
+# library called _load_raw 670 times; at a 546 KB store that is ~366 MB of
+# JSON parsed to answer per-file lookups. The key is (mtime_ns, size) so an
+# edit by another process still invalidates it.
+_CACHE: tuple[tuple[str, int, int], dict] | None = None
+
+
+def _store_key() -> tuple[str, int, int] | None:
+    """(path, mtime_ns, size). The path is part of the key because STORE is
+    reassignable — tests point it at a temp file, and two stores must never
+    share a cache entry."""
+    try:
+        st = STORE.stat()
+    except OSError:
+        return None
+    return (str(STORE), st.st_mtime_ns, st.st_size)
+
+
 def _load_raw() -> dict:
-    if not STORE.exists():
+    global _CACHE
+    key = _store_key()
+    if key is None:
         return {"version": SCHEMA, "items": {}}
+    if _CACHE is not None and _CACHE[0] == key:
+        return _CACHE[1]
     try:
         d = json.loads(STORE.read_text())
     except Exception:
@@ -55,12 +77,16 @@ def _load_raw() -> dict:
         # future migrations land here
         d.setdefault("items", {})
         d["version"] = SCHEMA
+    _CACHE = (key, d)
     return d
 
 
 def _save_raw(d: dict) -> None:
+    global _CACHE
     ensure_dirs()
     STORE.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
+    key = _store_key()
+    _CACHE = (key, d) if key else None
 
 
 def get(sha: str) -> dict | None:
@@ -115,28 +141,134 @@ def carry_forward(new_sha: str, path: Path) -> dict | None:
     fresh.pop("superseded_by", None)
     fresh.pop("orphaned_at", None)
     fresh["previous_sha"] = old_sha
+    # Stamp both ends of the link. `added_at` stays the original creation
+    # time — the artifact was made then, not re-made — so without these two
+    # stamps the whole chain claims one timestamp and the history has no
+    # time in it. Chains built before v0.9 stay time-blind; their length is
+    # still accurate.
+    now = _now()
+    fresh["revised_at"] = now
     items[new_sha] = fresh
     items[old_sha]["superseded_by"] = new_sha
+    items[old_sha]["superseded_at"] = now
     _save_raw(d)
     return fresh
 
 
+def chain_for(sha: str) -> list[dict]:
+    """The edit history of one artifact, oldest revision first.
+
+    Walks `previous_sha` back through the superseded entries. Each element
+    is {sha, revised_at, superseded_at, added_at}. The live entry is last.
+
+    Only records that the content changed and when. The store keeps hashes,
+    not bytes, so the old content is gone and these cannot be diffed.
+    """
+    items = _load_raw()["items"]
+    out: list[dict] = []
+    seen: set[str] = set()
+    cur: str | None = sha
+    while cur and cur in items and cur not in seen:
+        seen.add(cur)
+        e = items[cur]
+        out.append({
+            "sha1": cur,
+            "added_at": e.get("added_at"),
+            "revised_at": e.get("revised_at"),
+            "superseded_at": e.get("superseded_at"),
+        })
+        cur = e.get("previous_sha")
+    out.reverse()
+    return out
+
+
+def record_open(sha: str) -> dict | None:
+    """Count a deliberate open of an artifact.
+
+    Creation time says when the user made something. It never says what the
+    user comes back to, and at 130+ artifacts those are different questions.
+    Previewing a card does not count; only an explicit open does.
+    """
+    d = _load_raw()
+    e = d["items"].get(sha)
+    if e is None:
+        return None
+    e["open_count"] = int(e.get("open_count") or 0) + 1
+    e["last_opened_at"] = _now()
+    _save_raw(d)
+    return e
+
+
+def sha_for_path(path: str | Path) -> str | None:
+    """Find the live entry recorded at `path`. Lets the server count an open
+    from the path the dashboard already has, without re-hashing the file.
+
+    Compares resolved paths: the store writes the path seen during the walk,
+    while the server resolves symlinks first, so a raw string match misses
+    whenever a root is a symlink (/tmp on macOS, for one).
+    """
+    want = Path(path)
+    try:
+        want = want.resolve()
+    except OSError:
+        pass
+    for sha, e in _load_raw()["items"].items():
+        if e.get("superseded_by") or e.get("orphaned_at"):
+            continue
+        raw = e.get("path")
+        if not raw:
+            continue
+        if raw == str(path):
+            return sha
+        try:
+            if Path(raw).resolve() == want:
+                return sha
+        except OSError:
+            continue
+    return None
+
+
 ORPHAN_TTL_DAYS = 30
+# Revisions kept per artifact. Chains are a few small JSON objects each, so
+# this only exists to bound a pathological case; the longest real chain
+# observed in three months of use is 28.
+MAX_CHAIN = 50
+
+
+def _chain_ancestors(items: dict, heads: set[str]) -> set[str]:
+    """Every superseded revision reachable from a live artifact.
+
+    A superseded entry's content hash is gone from disk by definition, so
+    the plain orphan rule stamps all of them and deletes them 30 days on.
+    That put the whole edit history on a timer: it was being collected
+    before anything could show it. Ancestors of a live head are history,
+    not litter, and are kept for as long as the head lives.
+    """
+    keep: set[str] = set()
+    for head in heads:
+        cur, hops = items.get(head, {}).get("previous_sha"), 0
+        while cur and cur in items and cur not in keep and hops < MAX_CHAIN:
+            keep.add(cur)
+            cur = items[cur].get("previous_sha")
+            hops += 1
+    return keep
 
 
 def gc(active_shas: set[str]) -> int:
     """Reconcile the store against a full scan. Entries whose hash wasn't
     seen get stamped `orphaned_at` (and dropped after ORPHAN_TTL_DAYS);
     entries seen again get the stamp cleared (Trash restore, git checkout).
+    Revisions of a live artifact are exempt — see `_chain_ancestors`.
     Returns the number of entries deleted."""
     d = _load_raw()
     items = d["items"]
     now = datetime.now(timezone.utc)
+    history = _chain_ancestors(items, active_shas)
     deleted = 0
     for sha in list(items):
         e = items[sha]
-        if sha in active_shas:
-            e.pop("orphaned_at", None)   # re-seen: un-orphan
+        if sha in active_shas or sha in history:
+            e.pop("orphaned_at", None)   # re-seen, or part of a live history
             continue
         # Not in the scan, but its file still exists and no newer content
         # took over the path (variants, depth-excluded or hand-linked

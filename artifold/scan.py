@@ -385,6 +385,8 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
             # say what the artifact is *about*. `intent` and `conceit` are
             # written by the generator itself and are the sharpest topic
             # signal we have — 77 of 90 artifacts in a real library carry one.
+            revisions = provenance.chain_for(primary_sha) if primary_sha else []
+
             _pp = primary_prov or {}
             cat_fields = {
                 # dir_key alone stopped carrying the name signal once
@@ -429,6 +431,16 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                 "versions": versions_payload,        # newest → oldest
                 "version_count": len(versions_payload),
                 "current_version": primary_v,
+                # In-place edit history, distinct from filename versions.
+                # `-v2`/`(1)` filenames match ~2% of a real library; editing
+                # a file in place is what actually happens, and the chain
+                # records it. Revisions carry no content, so they cannot be
+                # diffed — they say the artifact changed, and when.
+                "revisions": revisions,
+                "revision_count": len(revisions),
+                "open_count": int(primary_prov.get("open_count") or 0)
+                              if primary_prov else 0,
+                "last_opened_at": (primary_prov or {}).get("last_opened_at"),
                 "variants": [
                     {
                         "path": f.resolve().as_posix(),
