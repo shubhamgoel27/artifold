@@ -217,9 +217,10 @@ Hard limits: uppercase-mono eyebrow only in `field-essay`/`editorial-newsprint`/
 
 ## Step 5: Embed Artifold provenance
 
-In `<head>` (all nine are required so future runs can rotate every axis, including intensity):
+In `<head>` (all ten are required so future runs can rotate every axis, including intensity):
 ```html
 <meta name="artifold:intent" content="<10–15 word description>">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
 <meta name="artifold:prompt" content="<user's original prompt, ≤200 chars>">
 <meta name="artifold:scale" content="<glance | read | experience, from Step 1.5>">
@@ -246,7 +247,7 @@ If the user referenced a past artifact, also add `<meta name="artifold:style-fro
 8. **Legibility floors:** body ≥16px · measure 60–75ch · interactive targets ≥44px · body text ≥4.5:1 contrast on its background · not pure-black on white.
 9. **Accessibility:** headings in logical order · `:focus-visible` styles on interactive elements · all motion behind `prefers-reduced-motion` · `alt` on every image.
 10. Does the skeleton match what a designer at the **canonical reference** (Step 1) would build, and could someone name the voice register from the headlines alone?
-11. All nine `artifold:*` tags present, and one distinctive choice a designer would call intentional?
+11. All ten `artifold:*` tags present, and one distinctive choice a designer would call intentional?
 12. **Conceit test:** can you state the fiction in one sentence, and does every label/button/footnote live inside it? (Or did you consciously choose `none`?)
 13. **Warmth test** (scaled to tier): is there at least one true human touch, and would the intended reader feel the page was made *for them*? Any personal detail used — is it real, from actual context?
 14. **Weird-thing test** (`read`/`experience` only): name the one deliberate rule-break. Is it exactly one, legible, reduced-motion-safe, and native to the conceit? At `glance` tier the correct answer is "there isn't one."
@@ -309,5 +310,5 @@ Don't dump the HTML in chat — the file is the deliverable. Briefly note the on
 8. **Build**: skeleton first, then paint, then the device; add warmth + the weird thing per tier.
 9. **Finish**: copy pass → typeset pass → furniture (captions, sources, folios).
 10. **Verify**: defect hunt at 3 widths → squint test → art-director rubric (per tier); fix, re-render.
-11. **Provenance** (9 tags) and save via `artifold inbox`.
+11. **Provenance** (10 tags) and save via `artifold inbox`.
 12. **Hand off in two lines**, name the key decision, stop.

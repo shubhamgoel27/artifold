@@ -20,7 +20,7 @@ import os
 import re
 from pathlib import Path
 
-from . import config, design, detect, intent, provenance
+from . import adapters, config, design, detect, intent, provenance
 
 SKIP_DIRS = {"node_modules", ".git", ".next", "dist", "build", "__pycache__",
              ".venv", "venv", "out", "coverage", ".cache", "artifold",
@@ -261,6 +261,18 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
             fields.update(embedded)
             if entry.get("intent_source") != "user":
                 fields["intent_source"] = "embedded"
+
+    # 1b. another skill's own marker. Ranked below Artifold's tags: a skill
+    # that states its intent outright beats anything inferred from a stamp.
+    # Only fills fields nobody above supplied, so /craft output is untouched.
+    foreign = adapters.extract(content, f)
+    if foreign:
+        for k, v in foreign.items():
+            if k not in fields and not entry.get(k):
+                fields[k] = v
+        if fields.get("intent") and not entry.get("intent_source") \
+                and not fields.get("intent_source"):
+            fields["intent_source"] = "adapter"
 
     # 2. source-tool fingerprinting from HTML markers
     if not fields.get("tool") and not entry.get("tool"):

@@ -38,6 +38,10 @@ META_SIGNATURE_DEVICE = _meta("signature-device")
 META_CONCEIT          = _meta("conceit")
 META_SCALE            = _meta("scale")
 META_STYLE_FROM       = _meta("style-from")
+# Which skill built this. `tool` is the model vendor (claude, gemini);
+# `generator` is the skill on top of it (craft, hallmark, taste-skill), so
+# a library can tell two skills apart when both ran on the same model.
+META_GENERATOR        = _meta("generator")
 
 
 def detect_tool(html: str) -> str | None:
@@ -70,6 +74,7 @@ def extract_embedded_meta(html: str) -> dict:
         # on the floor here until v0.8.
         ("conceit",           META_CONCEIT),
         ("scale",             META_SCALE),
+        ("generator",         META_GENERATOR),
         ("style_from",        META_STYLE_FROM),
     ]
     for key, pat in fields:

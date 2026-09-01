@@ -60,13 +60,47 @@ a new file in any watched folder and it appears within seconds.
 
 ![Command palette](docs/cmdk.png)
 
-### 3. 🎨 Generate new artifacts that match your style — `/craft` skill
+### 3. 🎨 Close the loop with whatever design skill you use
+
+Artifold indexes HTML. It does not care what wrote it — Claude Artifacts,
+ChatGPT Canvas, v0, Cursor, or any of the design skills people install on
+top of them. What changes between them is how much *meaning* survives.
+
+| Skill | Artifold reads |
+|---|---|
+| **`/craft`** (bundled, see below) | everything: intent, conceit, four rotation axes |
+| **[Hallmark](https://github.com/Nutlope/hallmark)** | layout, theme and brief, from its CSS stamp + `.hallmark/log.json` |
+| **[taste-skill](https://github.com/Leonxlnx/taste-skill)**, **[huashu-design](https://github.com/alchaincyf/huashu-design)**, anything else | palette, fonts, tokens, skeleton, thumbnail, full-text search |
+
+```bash
+artifold skills     # which of these you have, and what Artifold gets from each
+```
+
+The bottom row is not a consolation prize — it is most of the product.
+Fingerprinting is pure regex over the HTML and needs no cooperation at all.
+
+The top row exists because a page can just *say* what it is, in four lines
+of `<head>`. If you write a design skill, that convention is documented in
+**[docs/ARTIFACT-METADATA.md](docs/ARTIFACT-METADATA.md)** and it is not
+Artifold-specific. Skills that stamp their own format instead are read
+through adapters in [`artifold/adapters.py`](artifold/adapters.py); PRs for
+new ones are welcome.
+
+Worth knowing: of the three most-starred design skills, only Hallmark
+records anything between runs, and its log is per-repository. If your
+artifacts are scattered one-off files rather than one codebase, a
+machine-wide library is the only thing that can tell you what you already
+made.
+
+### The bundled `/craft` skill
 
 → **See [the side-by-side gallery](https://shubhamgoel27.github.io/artifold/)**:
 four prompts run through `claude-sonnet-4` *twice* — once plainly, once via
 `/craft`. Same model, same prompt, visibly different output.
 
-After installing the Claude Code skill, type `/craft a 30-day strength
+`/craft` is Artifold's reference implementation of a skill that instruments
+its own output. It is optional — use Hallmark or taste-skill instead if you
+prefer their look, and Artifold still works. Type `/craft a 30-day strength
 tracker for a beginner` in any session. The skill:
 
 - Reads your library to see styles you've used, then deliberately picks
@@ -141,8 +175,10 @@ library stays clean even when your folders aren't.
 
 **Source-aware** — fingerprints Claude / ChatGPT / v0 / Lovable / Bolt
 / Gemini artifacts from HTML markers, tags each card with the tool that
-made it. Also reads `<meta name="artifold:*">` tags (which the `/craft`
-skill emits) for zero-effort provenance.
+made it. Reads `<meta name="artifold:*">` tags from any skill that emits
+them ([the convention](docs/ARTIFACT-METADATA.md)), and reads other skills'
+own formats through [adapters](artifold/adapters.py) — Hallmark's CSS stamp
+and `.hallmark/log.json` today.
 
 **Visual** — every artifact gets a real screenshot thumbnail. Click a
 card → slide-out preview pane with tabs for Provenance (source URL,
@@ -181,7 +217,8 @@ artifold designs --json --axes --limit 12   # recent rotation axes, slim (what /
 artifold designs <id> --template     # dump CSS + skeleton (paste into Claude)
 
 artifold inbox [topic]    # print the canonical path for a new artifact
-artifold install-skill    # install /craft into ~/.claude/skills/
+artifold skills           # design skills, and what Artifold reads from each
+artifold install-skill    # install the bundled /craft into ~/.claude/skills/
 artifold doctor           # check setup; tells you exactly what to fix
 ```
 
@@ -248,6 +285,11 @@ doesn't appear.
 - **Not opinionated about where your files live.** Multi-root by
   design. Want it to watch `~/Downloads` + `~/Documents` +
   `~/work/reports`? Run `artifold add` three times.
+- **Not a design skill, and not competing with one.** That category is
+  crowded and good — Hallmark, taste-skill and huashu-design are all worth
+  installing. Artifold is the layer underneath: the place their output
+  lands, gets indexed, and becomes findable a month later. Pick whichever
+  skill you like the look of; the library is the same either way.
 - **Not trying to be everything for everyone.** Built for the specific
   pain of "where did I put that thing I generated last month."
 

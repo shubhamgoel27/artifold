@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.10.0
+
+Artifold is now the library for whatever design skill you use, not the app
+that goes with `/craft`.
+
+This came out of reading the competition properly. The design-skill
+category is crowded — taste-skill has 83.3k stars, Hallmark 27.7k,
+huashu-design 23.8k — and nothing at all indexes a local corpus of
+AI-generated HTML. More useful still: of those three, only Hallmark
+records anything between runs, and its log is per-repository. Remembering
+what you already made, across projects, is the thing none of them do.
+
+### A metadata convention anybody can emit
+
+[`docs/ARTIFACT-METADATA.md`](docs/ARTIFACT-METADATA.md) documents the
+`artifold:*` meta tags as a plain convention for design-skill authors. Four
+lines of `<head>` and a generated page can say what it is for. No
+dependency on Artifold to write them or to read them.
+
+New `artifold:generator` tag names the skill that built a page, separate
+from `tool`, which names the model vendor. `/craft` now emits it.
+
+### Adapters for skills that stamp their own format
+
+`artifold/adapters.py` reads other tools' markers. Hallmark ships first: its
+CSS stamp gives layout, theme, tone and hue, and `.hallmark/log.json` gives
+the brief, which lands as `intent`. Foreign vocabulary maps onto Artifold's
+fields — a macrostructure is not exactly a layout archetype, so the raw
+values are kept under `generator_native` rather than thrown away.
+
+Adapters rank below native tags: a skill that states its intent always
+beats one inferred from a stamp. They fail soft by design, because these
+are other people's formats and they move — an unparseable stamp yields no
+metadata, never an error.
+
+### `artifold skills`
+
+Shows which design skills you have installed and, honestly, how much
+Artifold recovers from each: `native` (everything), `adapter` (layout,
+theme, brief) or `fingerprint` (palette, fonts, tokens, skeleton, search).
+That last tier needs no cooperation and is most of the product.
+
+### Also
+
+- README reframed: `/craft` is the bundled reference implementation, not
+  the point. Hallmark and taste-skill are linked as real alternatives.
+
 ## 0.9.0
 
 A second audit of a real library, five weeks and 43 artifacts after the

@@ -462,6 +462,76 @@ def _cmd_install_skill(args):
     return 0
 
 
+# Design skills Artifold knows about. Artifold indexes the output of any of
+# them; this table is about how much *meaning* survives the handoff, which
+# depends entirely on whether the skill records anything at generation time.
+#
+# Star counts are a snapshot (Sept 2026) and only there to say "these are the
+# popular ones", not to rank them. Two of the three biggest write nothing
+# into their output and keep no memory between runs — which is precisely the
+# gap a library fills.
+KNOWN_SKILLS = [
+    {"name": "craft", "repo": "bundled with artifold", "stars": None,
+     "dir": "craft", "support": "native",
+     "note": "emits all 9 tags; full search, facets and axis rotation"},
+    {"name": "hallmark", "repo": "Nutlope/hallmark", "stars": "27.7k",
+     "dir": "hallmark", "support": "adapter",
+     "note": "CSS stamp + .hallmark/log.json read for layout, theme, brief"},
+    {"name": "taste-skill", "repo": "Leonxlnx/taste-skill", "stars": "83.3k",
+     "dir": "taste-skill", "support": "fingerprint",
+     "note": "writes no marker; palette/fonts/skeleton recovered from HTML"},
+    {"name": "huashu-design", "repo": "alchaincyf/huashu-design", "stars": "23.8k",
+     "dir": "huashu-design", "support": "fingerprint",
+     "note": "writes no marker; palette/fonts/skeleton recovered from HTML"},
+    {"name": "styleseed", "repo": "bitjaru/styleseed", "stars": "936",
+     "dir": "styleseed", "support": "fingerprint",
+     "note": "keeps STYLESEED.md for consistency, not per-run variety"},
+]
+
+SUPPORT_BLURB = {
+    "native":      "everything: intent, conceit, 4 axes, rotation",
+    "adapter":     "layout, theme and brief, read from its own stamp",
+    "fingerprint": "palette, fonts, tokens, skeleton, thumbnail, search",
+}
+
+
+def _cmd_skills(args):
+    """Show which design skills are installed and what Artifold recovers.
+
+    Artifold does not care which skill made a page — it indexes any HTML.
+    What differs is how much survives: a skill that states its intent gives
+    you a searchable library, one that states nothing gives you a pretty
+    grid. This command makes that difference visible before you pick.
+    """
+    skills_dir = Path.home() / ".claude" / "skills"
+    installed = {p.name for p in skills_dir.iterdir()} if skills_dir.is_dir() else set()
+
+    print("  Design skills — Artifold indexes output from any of them.")
+    print("  What changes is how much meaning survives the handoff.\n")
+    print(f"  {'':<2}{'skill':<16}{'stars':<8}{'artifold reads':<16}source")
+    print(f"  {'':<2}{'-'*15:<16}{'-'*7:<8}{'-'*15:<16}{'-'*28}")
+    for s in KNOWN_SKILLS:
+        mark = "✓" if s["dir"] in installed else " "
+        stars = s["stars"] or "—"
+        print(f"  {mark:<2}{s['name']:<16}{stars:<8}{s['support']:<16}{s['repo']}")
+    print()
+    for s in KNOWN_SKILLS:
+        if s["dir"] in installed:
+            print(f"  {s['name']}: {s['note']}")
+    if not installed & {s["dir"] for s in KNOWN_SKILLS}:
+        print("  None of these are installed yet.")
+    print()
+    print("  native      — " + SUPPORT_BLURB["native"])
+    print("  adapter     — " + SUPPORT_BLURB["adapter"])
+    print("  fingerprint — " + SUPPORT_BLURB["fingerprint"])
+    print()
+    print("  Install the bundled one:   artifold install-skill")
+    print("  Install any other:         npx skills add <repo>")
+    print("  Teach your own skill to record intent:")
+    print("    https://github.com/shubhamgoel27/artifold/blob/main/docs/ARTIFACT-METADATA.md")
+    return 0
+
+
 def _cmd_inbox(args):
     """Print the canonical path for a new artifact (date-prefixed slug).
 
@@ -732,6 +802,10 @@ def main(argv=None) -> int:
     ib.add_argument("topic", nargs="*",
                     help="topic words → filename slug (defaults to 'untitled')")
     ib.set_defaults(fn=_cmd_inbox)
+
+    sub.add_parser("skills",
+                   help="design skills Artifold works with, and what it reads "
+                        "from each").set_defaults(fn=_cmd_skills)
 
     isk = sub.add_parser("install-skill",
         help="install the /craft Claude Code skill into ~/.claude/skills/")
