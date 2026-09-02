@@ -1383,13 +1383,33 @@ async function doTrash(path) {
   btn.disabled = true;
   btn.classList.add('spinning');
   btn.innerHTML = ic('refresh');
-  toast('Moving to Trash...');
+
+  // Same reasoning as doTrashBulk: the file is gone when the request
+  // resolves, so update the view then rather than waiting ~2.5s for the
+  // rescan to confirm what we already know.
+  const proj = openProj;
+  const before = proj ? (proj.versions || []).slice() : [];
+  const wasLast = before.filter(v => v.path !== path).length === 0;
+  const idx = proj ? D.projects.findIndex(x => x.id === proj.id) : -1;
+
+  if (proj) {
+    proj.versions = before.filter(v => v.path !== path);
+    if (wasLast && idx >= 0) {
+      D.projects.splice(idx, 1);
+      close_();                 // NOT close() — that is window.close()
+    }
+    render();
+  }
+
   try {
     await postJSON('/trash', { path });
     toast('Moved to Trash — recover from Finder if needed');
-    const remaining = (openProj && openProj.versions || []).filter(v => v.path !== path);
-    if (remaining.length === 0) close();
   } catch (e) {
+    if (proj) {                 // nothing was deleted; undo the optimism
+      proj.versions = before;
+      if (wasLast && idx >= 0) D.projects.splice(Math.min(idx, D.projects.length), 0, proj);
+      render();
+    }
     toast('Trash failed: ' + e.message);
   } finally {
     btn.disabled = false;
@@ -1444,23 +1464,38 @@ function confirmTrashProject(projectId) {
   $('trash-bulk-cancel').onclick = () => m.classList.remove('on');
   $('trash-bulk-go').onclick = async () => {
     m.classList.remove('on');
-    await doTrashBulk(paths, p.name);
+    await doTrashBulk(paths, p.name, p.id);
   };
 }
 
-async function doTrashBulk(paths, projectName) {
-  toast(`Trashing ${paths.length} file(s)...`);
-  let ok = 0, fail = 0, lastErr = '';
-  for (const path of paths) {
-    try { await postJSON('/trash', { path }); ok++; }
-    catch (e) { fail++; lastErr = e.message; }
+async function doTrashBulk(paths, projectName, projectId) {
+  // Drop the card first. The server trashes in ~70ms and only then kicks a
+  // full rescan; waiting for that rescan to come back over SSE put ~2.5s
+  // between the click and the card leaving, which reads as a broken button.
+  // The files really are gone by the time the request resolves, so the scan
+  // is reconciliation, not confirmation — and if it fails we put the card
+  // back.
+  const idx = D.projects.findIndex(x => x.id === projectId);
+  const removed = idx >= 0 ? D.projects[idx] : null;
+  if (removed) {
+    D.projects.splice(idx, 1);
+    if (openProj && openProj.id === projectId) close_();
+    render();
   }
-  if (fail === 0) {
-    toast(`Trashed ${ok} file(s) from "${projectName}"`);
-  } else if (ok === 0) {
-    toast(`Trash failed: ${lastErr}`);
-  } else {
-    toast(`Trashed ${ok} of ${paths.length}; ${fail} failed (${lastErr})`);
+
+  try {
+    const r = await postJSON('/trash', { paths });
+    const n = (r.trashed || paths).length;
+    const failed = (r.errors || []).length;
+    toast(failed
+      ? `Trashed ${n} of ${paths.length} from "${projectName}"; ${failed} failed`
+      : `Trashed ${n} file(s) from "${projectName}"`);
+  } catch (e) {
+    if (removed) {                      // put it back; nothing was deleted
+      D.projects.splice(Math.min(idx, D.projects.length), 0, removed);
+      render();
+    }
+    toast(`Trash failed: ${e.message}`);
   }
 }
 

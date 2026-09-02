@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.10.1
+
+**Deleting an artifact is instant now: 2,480 ms → 19 ms.**
+
+The file was never the slow part. `POST /trash` returned in 70 ms with the
+file already in the Trash, then kicked a full rescan of the library and
+broadcast the result over SSE. The card only left the grid when that scan
+came back, about 2.5 seconds later, so a finished delete looked like a
+broken button.
+
+- The dashboard now removes the card as soon as the request resolves. The
+  rescan still runs, but as reconciliation rather than confirmation. If the
+  request fails, the card comes back and the toast says why.
+- `POST /trash` accepts `paths` (a list) as well as `path`. A project is
+  often several files, and one request per file meant one full library
+  scan per file — deleting a 3-file project scanned everything three times.
+  Three files now go in one 21 ms request and trigger one scan.
+- Fixed: the single-file delete path called `close()` when the last version
+  went, which resolves to `window.close()`, not the detail pane's `close_()`.
+  It silently did nothing instead of closing the pane.
+
 ## 0.10.0
 
 Artifold is now the library for whatever design skill you use, not the app

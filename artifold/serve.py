@@ -147,6 +147,29 @@ def _count_open(target: Path) -> bool:
         return False
 
 
+def _trash_paths(raw: list[str]) -> tuple[list[str], list[dict]]:
+    """Move each path to the system Trash. Returns (trashed, errors).
+
+    Refuses anything outside a configured root, and keeps going after a
+    failure so one bad path in a multi-file project does not strand the
+    rest. Recoverable by design — this is the Trash, not `rm`.
+    """
+    from . import trash as trash_mod
+    trashed: list[str] = []
+    errors: list[dict] = []
+    for p in raw:
+        target = Path(p)
+        if not _allowed_path(target):
+            errors.append({"path": p, "error": "path not under any configured root"})
+            continue
+        ok, msg = trash_mod.trash_file(target)
+        if ok:
+            trashed.append(msg)
+        else:
+            errors.append({"path": p, "error": msg})
+    return trashed, errors
+
+
 def _token_for_dir(d: Path) -> str:
     """Register `d` and return a stable 12-char hash used in /asset/<token>/…
     URLs. Same dir → same token across calls."""
@@ -256,21 +279,30 @@ class Handler(SimpleHTTPRequestHandler):
         return self._json({"ok": True, "path": str(out)})
 
     def _handle_trash(self):
-        from . import trash as trash_mod
+        """Trash one file (`path`) or a whole project (`paths`).
+
+        Accepts a list because a project is often several files, and one
+        request per file meant one full rescan per file — a 3-file project
+        cost three scans of the entire library to delete.
+        """
         body = self._read_json()
-        p = body.get("path")
-        if not p:
-            return self._json({"ok": False, "error": "path required"}, 400)
-        target = Path(p)
-        if not _allowed_path(target):
-            return self._json({"ok": False, "error": "path not under any configured root"}, 403)
-        ok, msg = trash_mod.trash_file(target)
-        if not ok:
-            return self._json({"ok": False, "error": msg}, 500)
-        # Watchdog will catch the deletion and trigger a debounced rescan,
-        # but that's a 2s wait. Fire one immediately so the UI updates fast.
+        raw = body.get("paths") or ([body["path"]] if body.get("path") else [])
+        if not raw:
+            return self._json({"ok": False, "error": "path or paths required"}, 400)
+
+        trashed, errors = _trash_paths(raw)
+
+        if not trashed:
+            status = 403 if all("root" in (e.get("error") or "") for e in errors) else 500
+            return self._json({"ok": False, "error": errors[0]["error"],
+                               "errors": errors}, status)
+
+        # The files are gone the moment this returns; the client removes the
+        # card straight away rather than waiting on the scan. Watchdog would
+        # catch the deletion too, but only after its 2s debounce, so fire one
+        # scan now to reconcile the library in the background.
         threading.Thread(target=_run_scan, args=("trash-followup",), daemon=True).start()
-        return self._json({"ok": True, "trashed": msg})
+        return self._json({"ok": True, "trashed": trashed, "errors": errors})
 
     def _handle_export_pdf(self):
         from . import pdf as pdf_mod
