@@ -112,16 +112,20 @@ async def shoot(projects: list[dict], concurrency: int = 5) -> None:
               file=sys.stderr)
         return
 
-    if not ensure_chromium():
-        return
-
+    # Work out what needs shooting *before* touching the browser. Most scans
+    # shoot nothing, and `ensure_chromium` spawns a `playwright install`
+    # subprocess every time it is called — paid on every rescan for nothing.
     ensure_dirs()
-    manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
     todo = resolve_cached_thumbs(projects)
 
     if not todo:
         print("  all thumbnails cached, nothing to shoot.")
         return
+
+    if not ensure_chromium():
+        return
+
+    manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
 
     print(f"  shooting {len(todo)} new/changed thumbnails (concurrency={concurrency})…")
     sem = asyncio.Semaphore(concurrency)

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -64,6 +65,11 @@ def _store_key() -> tuple[str, int, int] | None:
 
 def _load_raw() -> dict:
     global _CACHE
+    # Inside a batch the memo is the only copy of pending writes — the file
+    # on disk is deliberately behind. Trust it, including on a first-ever
+    # scan where the store does not exist yet and `_store_key()` is None.
+    if _batch_depth > 0 and _CACHE is not None:
+        return _CACHE[1]
     key = _store_key()
     if key is None:
         return {"version": SCHEMA, "items": {}}
@@ -81,12 +87,55 @@ def _load_raw() -> dict:
     return d
 
 
-def _save_raw(d: dict) -> None:
+# Deferred-write state. A scan enriches every file, and each enrichment used
+# to re-serialise the whole store: 273 writes of a 546 KB document in one
+# scan, which profiled at 75% of total scan time. Inside a batch, writes
+# accumulate in memory and land once at the end.
+_batch_depth = 0
+_batch_dirty = False
+
+
+def _write_now(d: dict) -> None:
     global _CACHE
     ensure_dirs()
     STORE.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
     key = _store_key()
     _CACHE = (key, d) if key else None
+
+
+def _save_raw(d: dict) -> None:
+    global _CACHE, _batch_dirty
+    if _batch_depth > 0:
+        # Keep the memo authoritative so reads inside the batch see the
+        # mutation, and defer the expensive serialise to the flush.
+        _CACHE = (_CACHE[0] if _CACHE else _store_key(), d)
+        _batch_dirty = True
+        return
+    _write_now(d)
+
+
+@contextmanager
+def batch():
+    """Collect provenance writes and flush once on exit.
+
+    Safe to lose: everything written during a scan is derived from files on
+    disk, so a crash mid-batch costs one scan's enrichment and the next scan
+    rebuilds it. `carry_forward` is self-healing the same way — an unwritten
+    link leaves the old entry un-superseded, and the next scan redoes it.
+
+    Re-entrant, so a caller can wrap a region without knowing whether an
+    outer batch is already open.
+    """
+    global _batch_depth, _batch_dirty
+    _batch_depth += 1
+    try:
+        yield
+    finally:
+        _batch_depth -= 1
+        if _batch_depth == 0 and _batch_dirty:
+            _batch_dirty = False
+            if _CACHE is not None:
+                _write_now(_CACHE[1])
 
 
 def get(sha: str) -> dict | None:
@@ -140,6 +189,12 @@ def carry_forward(new_sha: str, path: Path) -> dict | None:
     fresh = dict(items[old_sha])
     fresh.pop("superseded_by", None)
     fresh.pop("orphaned_at", None)
+    # The fingerprint describes the *old* bytes. Carrying it forward onto a
+    # new hash would hand the next scan a cache entry that looks current and
+    # is not — the file's palette and fonts would silently stay stale until
+    # the entry was evicted. Everything else here (source, prompt, tags,
+    # shares, open counts) is about the artifact, not its bytes, and stays.
+    fresh.pop("design", None)
     fresh["previous_sha"] = old_sha
     # Stamp both ends of the link. `added_at` stays the original creation
     # time — the artifact was made then, not re-made — so without these two

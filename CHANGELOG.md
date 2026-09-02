@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.11.0
+
+**Scans are 9× faster: 1.63 s → 0.18 s** on a 135-project library. Cards
+now say what an artifact is, not just when it was made.
+
+### The scan was rewriting the whole store 273 times
+
+Profiling found the cost was not the filesystem walk or the HTML parsing.
+Every file's enrichment called `set_`, and every `set_` re-serialised the
+entire 546 KB provenance store: 273 writes in one scan, 75% of total time.
+
+- Provenance writes are batched. A scan collects mutations in memory and
+  flushes once. Everything written during a scan is derived from files on
+  disk, so a crash mid-batch costs one scan and the next one rebuilds it.
+- Design fingerprints are cached by content hash instead of recomputed
+  every scan. They carry a `design.SCHEMA` version, so improving
+  `design.extract` later still rebuilds every fingerprint.
+- `shoot` decides what needs shooting before touching the browser. It was
+  spawning a `playwright install` subprocess on every scan, including the
+  overwhelmingly common case where nothing had changed.
+
+**Fixed a stale-fingerprint bug found while writing the tests for this.**
+`carry_forward` copied the whole entry onto the new content hash, including
+the design fingerprint describing the *old* bytes. Combined with the new
+cache, an edited artifact would have kept its previous palette and fonts
+indefinitely. The fingerprint is now dropped on carry-forward; source,
+prompt, shares and open counts still survive, because those describe the
+artifact rather than its bytes.
+
+### The grid now says what things are
+
+The list view has always shown each artifact's intent. The grid — the
+default view — showed only a category and a timestamp, so telling two cheat
+sheets apart meant opening both.
+
+- Cards carry the intent, clamped to two lines, with the space reserved
+  whether or not an artifact has one so the grid stays on one baseline.
+- Artifacts in the inbox no longer render a bare `.` as their directory.
+  That was roughly 90 of 135 rows showing a meaningless dot.
+- The per-row `Claude` pill in list view now follows the same rule as the
+  cards and the facet: it appears only when the library really was made
+  with more than one tool.
+
 ## 0.10.1
 
 **Deleting an artifact is instant now: 2,480 ms → 19 ms.**

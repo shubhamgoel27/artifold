@@ -281,11 +281,17 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
             fields["tool"] = t
             fields["detection_source"] = "auto"
 
-    # 3. design fingerprint (always recompute — cheap, reflects current file)
-    try:
-        fields["design"] = design.extract(content)
-    except Exception:
-        pass
+    # 3. design fingerprint. Entries are keyed by content hash, so an entry
+    # that already carries one describes exactly these bytes and cannot have
+    # gone stale — recomputing it every scan was ~0.3s of pure repeat work.
+    # The version check is what lets `design.extract` change later: bump
+    # design.SCHEMA and every cached fingerprint rebuilds on the next scan.
+    cached_design = entry.get("design") or {}
+    if cached_design.get("v") != design.SCHEMA:
+        try:
+            fields["design"] = design.extract(content)
+        except Exception:
+            pass
 
     # 4. remember where this content lives so carry_forward() can find the
     # entry after an in-place edit changes the hash
@@ -483,11 +489,15 @@ def scan_all(roots: list[Path] | None = None,
 
     intent_jobs: dict[str, tuple[str, str, Path]] = {}
     out: list[dict] = []
-    for r in roots:
-        if not r.is_dir():
-            print(f"  ! root does not exist, skipping: {r}")
-            continue
-        out.extend(_scan_root(r, cfg, cats, intent_jobs))
+    # One provenance write for the whole walk instead of one per file. Each
+    # enrichment used to re-serialise the entire store, so a 142-file library
+    # wrote a 546 KB document 273 times per scan.
+    with provenance.batch():
+        for r in roots:
+            if not r.is_dir():
+                print(f"  ! root does not exist, skipping: {r}")
+                continue
+            out.extend(_scan_root(r, cfg, cats, intent_jobs))
 
     # Batch the LLM calls *after* walking everything, so any embedded-meta
     # provenance set during enrichment already shows up.

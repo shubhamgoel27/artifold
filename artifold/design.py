@@ -100,11 +100,19 @@ def _skeleton(html: str, max_chars: int = 6000) -> str:
     return body[:max_chars]
 
 
+# Bump when the shape or meaning of a fingerprint field changes. Fingerprints
+# are cached per content hash and never recomputed while the bytes are
+# unchanged, so without this marker an improvement here would only reach
+# artifacts that happen to get edited afterwards.
+SCHEMA = 1
+
+
 def extract(html: str) -> dict:
     """Compact design fingerprint suitable for storing per-artifact."""
     styles = _all_styles(html)
     radii = [float(m.group(1)) for m in RADIUS_RE.finditer(styles)]
     return {
+        "v":            SCHEMA,
         "palette":      _palette(styles),
         "fonts":        _fonts(styles),
         "tokens":       _design_tokens(styles),
