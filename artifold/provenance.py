@@ -63,6 +63,61 @@ def _store_key() -> tuple[str, int, int] | None:
     return (str(STORE), st.st_mtime_ns, st.st_size)
 
 
+# Hash cache: path -> [mtime_ns, size, sha1]. A scan hashed every file every
+# time, which grows with the library's total bytes, not with what changed;
+# /craft pages now embed fonts and run to megabytes. An unchanged file is
+# answered from its stat alone. Lives beside STORE so tests that redirect
+# STORE redirect this too.
+_SHA_CACHE: tuple[str, dict] | None = None
+_SHA_DIRTY = False
+
+
+def _sha_cache_path() -> Path:
+    return STORE.with_name("shacache.json")
+
+
+def _sha_cache() -> dict:
+    global _SHA_CACHE
+    path = str(_sha_cache_path())
+    if _SHA_CACHE is None or _SHA_CACHE[0] != path:
+        try:
+            data = json.loads(Path(path).read_text())
+        except Exception:
+            data = {}
+        _SHA_CACHE = (path, data if isinstance(data, dict) else {})
+    return _SHA_CACHE[1]
+
+
+def sha1_cached(path: Path) -> str:
+    """sha1_of, answered from (mtime_ns, size) when the file is unchanged."""
+    global _SHA_DIRTY
+    st = path.stat()
+    cache = _sha_cache()
+    key = str(path)
+    hit = cache.get(key)
+    if hit and hit[0] == st.st_mtime_ns and hit[1] == st.st_size:
+        return hit[2]
+    sha = sha1_of(path)
+    cache[key] = [st.st_mtime_ns, st.st_size, sha]
+    _SHA_DIRTY = True
+    return sha
+
+
+def flush_sha_cache(prune_missing: bool = False) -> None:
+    """Persist the hash cache. A full scan passes prune_missing so entries
+    for deleted files do not accumulate."""
+    global _SHA_DIRTY
+    cache = _sha_cache()
+    if prune_missing:
+        for k in [k for k in cache if not Path(k).exists()]:
+            del cache[k]
+            _SHA_DIRTY = True
+    if _SHA_DIRTY:
+        ensure_dirs()
+        _sha_cache_path().write_text(json.dumps(cache))
+        _SHA_DIRTY = False
+
+
 def _load_raw() -> dict:
     global _CACHE
     # Inside a batch the memo is the only copy of pending writes — the file
@@ -195,6 +250,9 @@ def carry_forward(new_sha: str, path: Path) -> dict | None:
     # the entry was evicted. Everything else here (source, prompt, tags,
     # shares, open counts) is about the artifact, not its bytes, and stays.
     fresh.pop("design", None)
+    # Same for the enrichment stamp: it vouches for the old bytes having been
+    # read. Without dropping it, the new content's tags would never be read.
+    fresh.pop("enrich_v", None)
     fresh["previous_sha"] = old_sha
     # Stamp both ends of the link. `added_at` stays the original creation
     # time — the artifact was made then, not re-made — so without these two
@@ -320,38 +378,41 @@ def gc(active_shas: set[str]) -> int:
     now = datetime.now(timezone.utc)
     history = _chain_ancestors(items, active_shas)
     deleted = 0
+    changed = False   # only rewrite the store if something moved
     for sha in list(items):
         e = items[sha]
         if sha in active_shas or sha in history:
-            e.pop("orphaned_at", None)   # re-seen, or part of a live history
+            changed |= e.pop("orphaned_at", None) is not None   # re-seen, or part of a live history
             continue
         # A share is a fact about a URL that is live on the public internet.
         # It is not a fact about a byte sequence, so it must not die with one.
         # Losing it silently is the worst outcome here: the artifact stays
-        # published and the library stops being able to say so. (This is how
-        # 11 real shares went missing — the entries that held them were
-        # superseded by an edit, orphaned, and TTL'd out.)
+        # published and the library stops being able to say so.
         if e.get("shares"):
-            e.pop("orphaned_at", None)
+            changed |= e.pop("orphaned_at", None) is not None
             continue
         # Not in the scan, but its file still exists and no newer content
         # took over the path (variants, depth-excluded or hand-linked
         # files land here). Leave them alone.
         p = e.get("path")
         if p and not e.get("superseded_by") and Path(p).is_file():
-            e.pop("orphaned_at", None)
+            changed |= e.pop("orphaned_at", None) is not None
             continue
         stamp = e.get("orphaned_at")
         if not stamp:
             e["orphaned_at"] = now.isoformat(timespec="seconds")
+            changed = True
             continue
         try:
             age = now - datetime.fromisoformat(stamp)
         except ValueError:
             e["orphaned_at"] = now.isoformat(timespec="seconds")
+            changed = True
             continue
         if age.days >= ORPHAN_TTL_DAYS:
             del items[sha]
             deleted += 1
-    _save_raw(d)
+            changed = True
+    if changed:
+        _save_raw(d)
     return deleted

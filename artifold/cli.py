@@ -191,7 +191,7 @@ def _cmd_scan(args):
     print(f"  found {len(projects)} projects "
           f"({sum(p['file_count'] for p in projects)} html files)")
     if args.no_shoot:
-        cached = shoot.resolve_cached_thumbs(projects)
+        cached, _ = shoot.resolve_cached_thumbs(projects)
         kept = len(projects) - len(cached)
         print(f"  --no-shoot: reused {kept} cached thumbnails, "
               f"{len(cached)} without preview")

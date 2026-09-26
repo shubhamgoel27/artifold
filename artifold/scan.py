@@ -50,6 +50,10 @@ def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+# Bump when _enrich_provenance learns something new (a meta tag, an adapter,
+# a detector), so every entry is read once more and picks it up.
+ENRICH_V = 1
+
 WORD_RE = re.compile(r"[a-z0-9]+")
 
 # How much a field is trusted to say what an artifact is *about*. The path is
@@ -79,6 +83,28 @@ def _occurrences(tokens: list[str], kw_tokens: list[str]) -> int:
                if tokens[i:i + n] == kw_tokens)
 
 
+_COMPILED: tuple[dict, tuple] | None = None
+
+
+def _compile_cats(cats: dict[str, list[str]]):
+    """Tokenize and weight every keyword once per categories dict (one per
+    scan), not once per project per keyword. Returns (compiled, longest)."""
+    global _COMPILED
+    if _COMPILED is not None and _COMPILED[0] is cats:
+        return _COMPILED[1]
+    compiled, longest = [], 1
+    for cat, kws in cats.items():
+        row = []
+        for kw in kws:
+            toks = tuple(WORD_RE.findall(kw.lower()))
+            if toks:
+                row.append((toks, _kw_weight(list(toks))))
+                longest = max(longest, len(toks))
+        compiled.append((cat, row))
+    _COMPILED = (cats, (compiled, longest))
+    return compiled, longest
+
+
 def _categorize(fields: dict[str, str], cats: dict[str, list[str]]) -> str:
     """Score every category over the weighted fields; best total wins.
 
@@ -89,18 +115,26 @@ def _categorize(fields: dict[str, str], cats: dict[str, list[str]]) -> str:
     both add weight, and the winner is the strongest signal rather than the
     earliest dict key.
     """
-    toks = {f: WORD_RE.findall((fields.get(f) or "").lower())
-            for f in FIELD_WEIGHTS}
+    compiled, longest = _compile_cats(cats)
+    # Count every 1..n-gram of each field once; each keyword is then a dict
+    # lookup instead of a slide across the field. Same counts as
+    # _occurrences (overlapping windows included), same summation order, so
+    # scores are bit-identical to the old loop and ties still break the same.
+    grams: dict[str, dict] = {}
+    for f in FIELD_WEIGHTS:
+        t = WORD_RE.findall((fields.get(f) or "").lower())
+        c: dict[tuple, int] = {}
+        for n in range(1, longest + 1):
+            for i in range(len(t) - n + 1):
+                g = tuple(t[i:i + n])
+                c[g] = c.get(g, 0) + 1
+        grams[f] = c
     scores: dict[str, float] = {}
-    for cat, kws in cats.items():
+    for cat, kws in compiled:
         total = 0.0
-        for kw in kws:
-            kw_tokens = WORD_RE.findall(kw.lower())
-            if not kw_tokens:
-                continue
-            w = _kw_weight(kw_tokens)
+        for kw_tokens, w in kws:
             for field, fw in FIELD_WEIGHTS.items():
-                hits = _occurrences(toks[field], kw_tokens)
+                hits = grams[field].get(kw_tokens, 0)
                 if hits:
                     # Repeats reinforce, with diminishing returns — a word
                     # said twice means it's the subject; ten times is a tic.
@@ -149,6 +183,37 @@ def _classify(stem: str) -> tuple[str, str, int]:
     if VARIANT_RE.search(logical):
         return "variant", logical, 1
     return "main", logical, 1
+
+
+def _in_skipped_repo(rel: Path, root: Path, allow: set[str]) -> bool:
+    """True if `rel` sits in a top-level subdir that is its own git repo and
+    is not allow-listed. Cloned code, not artifacts."""
+    if len(rel.parts) < 2 or rel.parts[0] in allow:
+        return False
+    return (root / rel.parts[0] / ".git").is_dir()
+
+
+def is_library_path(p: Path, roots: list[Path], cfg: dict) -> bool:
+    """Could a change to `p` alter the library? The scanner's own rules,
+    applied to one path, so the file watcher rejects exactly what a scan
+    would ignore. Without it, about half the HTML under a typical ~/work
+    (build output nested too deep, docs inside cloned repos) woke the
+    watcher for a full scan that could never find anything new."""
+    if not p.name.lower().endswith(".html"):
+        return False
+    max_depth = int(cfg.get("max_depth") or 3)
+    allow = set(cfg.get("allow_repos") or [])
+    for root in roots:
+        try:
+            rel = p.relative_to(root)
+        except ValueError:
+            continue
+        if any(part in SKIP_DIRS for part in rel.parts[:-1]):
+            return False
+        if len(rel.parts) > max_depth:        # _find_html's depth cap
+            return False
+        return not _in_skipped_repo(rel, root, allow)
+    return False
 
 
 def _find_html(root: Path, max_depth: int):
@@ -228,7 +293,7 @@ def _common_prefix(a: str, b: str) -> int:
 
 def _prov_for(f: Path) -> tuple[str | None, dict | None]:
     try:
-        sha = provenance.sha1_of(f)
+        sha = provenance.sha1_cached(f)
     except Exception:
         return None, None
     entry = provenance.get(sha)
@@ -241,8 +306,16 @@ def _prov_for(f: Path) -> tuple[str | None, dict | None]:
 def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
     """Run zero-cost enrichment on a file: embedded artifold:* meta tags,
     source fingerprinting, and lightweight design extraction.
-    User-asserted tool/intent fields are preserved."""
+    User-asserted tool/intent fields are preserved.
+
+    Entries are keyed by content hash, so one stamped with the current
+    ENRICH_V at this path has already been read and cannot have changed.
+    Returning early is what keeps a steady-state scan from re-reading and
+    re-regexing every byte of the library (12.7 MB and growing)."""
     entry = entry or {}
+    if (entry.get("enrich_v") == ENRICH_V and entry.get("path") == str(f)
+            and (entry.get("design") or {}).get("v") == design.SCHEMA):
+        return entry
     try:
         content = f.read_text(encoding="utf-8", errors="ignore")
     except Exception:
@@ -298,8 +371,7 @@ def _enrich_provenance(f: Path, sha: str, entry: dict | None) -> dict | None:
     if entry.get("path") != str(f):
         fields["path"] = str(f)
 
-    if not fields:
-        return entry
+    fields["enrich_v"] = ENRICH_V
     return provenance.set_(sha, **fields)
 
 
@@ -332,8 +404,7 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
     for p in _find_html(root, max_depth):
         rel = p.relative_to(root)
         key = rel.parts[0] if len(rel.parts) > 1 else "__top__"
-        if (key != "__top__" and key not in allow
-                and (root / key / ".git").is_dir()):
+        if _in_skipped_repo(rel, root, allow):
             continue
         groups.setdefault(key, []).append(p)
 
@@ -527,6 +598,9 @@ def scan_all(roots: list[Path] | None = None,
                   for v in [proj["primary"], *(proj.get("versions") or [])]
                   if v.get("sha1")}
         provenance.gc(active)
+        provenance.flush_sha_cache(prune_missing=True)
+    else:
+        provenance.flush_sha_cache()
 
     out.sort(key=lambda p: p["latest_mtime"], reverse=True)
     return out

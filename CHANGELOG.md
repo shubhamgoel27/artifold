@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.13.0
+
+Lighter on the machine. Idle cost was already near zero (32 MB, no CPU), so
+this is about what happens when a file changes.
+
+- **Thumbnails wait for edits to settle.** The thumbnail key includes the
+  file's mtime, so every save of an artifact launched Chromium again; one
+  artifact had 44 revisions, which was 44 browser runs. Under `serve`, a
+  changed artifact keeps its previous thumbnail until it has been quiet for
+  30 seconds, then is shot once. Card, search and metadata still update on
+  every save. New artifacts are shot at once. `artifold scan` shoots
+  everything immediately, as before.
+- **The watcher uses the scanner's rules.** 312 HTML files under a real
+  `~/work` woke the watcher; 153 of them (too deep, or inside cloned repos)
+  can never enter the library, and each change ran a full scan for nothing.
+  One shared function, `scan.is_library_path`, now decides for both.
+- **Half-size thumbnails.** Captured at 640x400 instead of 1280x800: 23 KB
+  instead of 66 KB each, still sharp on Retina at card size. A real cache
+  went from 14 MB to 4.7 MB. Existing thumbnails regenerate once.
+- **No install subprocess per shoot.** `ensure_chromium` spawned
+  `playwright install` every time to confirm the browser exists. It now
+  checks the directory, and falls back to the installer if launch fails.
+- **Scans skip unchanged files.** File hashes are cached by
+  (path, mtime, size), and each provenance entry records the enrichment
+  version it was read with. An unchanged file now costs one `stat` instead
+  of a full read, a hash and a set of regex passes; the library had grown to
+  12.7 MB, so this was the bulk of scan time. Scan CPU went from 0.40 s to
+  0.08 s, wall time from 3.3 s to 0.7 s, with byte-identical results.
+- **Categorizer rewritten as lookups.** It slid 214 keywords across every
+  field of every artifact; it now counts n-grams once per field. Scores are
+  bit-identical, checked against the old implementation as an oracle.
+- **The provenance store is only rewritten when something changed.**
+- `serve` now also sweeps stale thumbnails after each scan.
+
+Restart `artifold serve` after upgrading: a running server keeps the old
+code in memory.
+
 ## 0.12.1
 
 **Share records were being lost. Eleven real published pages had no record

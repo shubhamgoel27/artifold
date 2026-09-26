@@ -28,6 +28,10 @@ from . import config
 from .paths import CACHE_DIR, DATA
 
 DEBOUNCE = 2.0
+# How long an edited artifact must sit untouched before its thumbnail is
+# reshot. The card and search update on every save; only the Chromium run
+# waits, so a burst of edits costs one browser launch instead of one each.
+THUMB_SETTLE = 30.0
 
 # Safe asset types — served alongside an HTML artifact via /asset/<token>/<rel>.
 # Anything not in this set 404s, so secrets like .env / .key / .pem / .py can
@@ -71,6 +75,21 @@ def _broadcast(event: str, data: str = "ok") -> None:
                 pass
 
 
+_settle_timer: threading.Timer | None = None
+
+
+def _arm_settle_rescan() -> None:
+    """One rescan after THUMB_SETTLE, to shoot thumbnails deferred while
+    their artifacts were being edited. Re-arming replaces the pending timer,
+    so continuous editing keeps pushing it back rather than stacking scans."""
+    global _settle_timer
+    if _settle_timer:
+        _settle_timer.cancel()
+    _settle_timer = threading.Timer(THUMB_SETTLE + 1, _run_scan, args=("thumb-settle",))
+    _settle_timer.daemon = True
+    _settle_timer.start()
+
+
 def _run_scan(reason: str) -> bool:
     """Synchronous scan → shoot → build, one at a time. Returns success.
 
@@ -91,8 +110,11 @@ def _run_scan(reason: str) -> bool:
         t0 = time.time()
         try:
             projects = scan_mod.scan_all()
-            asyncio.run(shoot_mod.shoot(projects))
+            deferred = asyncio.run(shoot_mod.shoot(projects, settle=THUMB_SETTLE))
+            shoot_mod.gc_thumbs(projects)     # full scan, so safe to sweep
             build_mod.build(projects, [str(r) for r in config.roots()])
+            if deferred:
+                _arm_settle_rescan()
         except Exception as e:
             print(f"  scan FAILED: {e}")
             return False
@@ -577,12 +599,6 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
-# Use scan.py's SKIP_DIRS as the single source of truth so the watcher and
-# the scanner agree about what to ignore. Previously these drifted: the
-# watcher was firing scans for changes inside `artifold/` itself (in
-# SKIP_DIRS) and the scanner then ignored them — wasting a ~9.5s scan per
-# event and blocking real changes via the in-flight lock.
-from .scan import SKIP_DIRS as _SKIP_DIRS
 
 
 def _start_watcher():
@@ -631,7 +647,12 @@ def _start_watcher():
                         continue
                 except Exception:
                     pass
-                if any(part in _SKIP_DIRS for part in p.parts):
+                # Same rules as a scan (depth cap, cloned repos, skip dirs).
+                # Config is re-read so `artifold allow-repo` takes effect
+                # without a restart; cheap, and only reached for .html paths.
+                from . import scan as _scan
+                if not _scan.is_library_path(
+                        p, [r.resolve() for r in config.roots()], config.load()):
                     continue
                 # Survived all filters — schedule a debounced scan and log it
                 # so the operator can see the watcher is alive and working.
