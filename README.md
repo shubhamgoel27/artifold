@@ -4,11 +4,21 @@
 [![Python](https://img.shields.io/pypi/pyversions/artifold?style=flat-square&color=666)](https://pypi.org/project/artifold/)
 [![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](LICENSE)
 
-**Your AI artifacts have a home now.** Index, search, preview, **share with one click**, and use your past work as the style guide for your next one.
+**A library for the HTML you make with AI.** Artifold finds every page on
+your disk, keeps its history, and makes it easy to find again and share.
 
 ![Artifold demo](docs/demo.gif)
 
----
+## Why this exists
+
+I made a 30-day workout tracker for my partner with Claude. A few weeks
+later I couldn't find it. It was somewhere in a pile of project folders
+and downloads, so I asked for it again and got a worse one.
+
+That keeps happening once you start asking AI for HTML instead of text:
+reports, trackers, explainers, itineraries, one-off tools. Each one is
+useful, and each one lands wherever the session happened to be running.
+Thariq on the Claude Code team described the same thing:
 
 > *"I've started preferring HTML as an output format instead of Markdown.
 > The added expressiveness means I get overall better output, and the chance
@@ -17,117 +27,110 @@
 > through my code folder and find all the HTML files I've generated, group
 > and categorize them …"*
 >
-> — Thariq, *[The Unreasonable Effectiveness of HTML](https://x.com/trq212/status/2052809885763747935)* (Claude Code team)
+> Thariq, *[The Unreasonable Effectiveness of HTML](https://x.com/trq212/status/2052809885763747935)*
 
-**Artifold is that library.** If you're shifting from Markdown to HTML for
-specs, reports, designs, prototypes, throwaway editors — the way Thariq
-describes — Artifold is where they live.
+Artifold does that grouping and categorizing for you, continuously, on
+your own machine.
 
-You've been making a lot of HTML with AI lately: Claude Artifacts,
-ChatGPT Canvas, v0, Lovable, Cursor. They land in `~/Downloads` or some
-project folder, you bookmark a tab, you mean to come back to that ROI
-calculator you made three weeks ago — and you can't find it.
+## What it does
 
-That's the whole reason this exists. I made a 30-day workout tracker
-for my partner, lost it in a maze of folders, regenerated a worse
-version, and decided to just build the index myself.
+### Finds everything
 
-Local-first, fast, runs entirely on your machine. Plus the part where,
-when you *do* want to share an artifact, it's one click to a permanent
-public URL.
+Point it at a few folders and it indexes every HTML file in them. Each
+artifact gets a screenshot thumbnail, a category, and a one-line
+description of what it is for, so two similar cheat sheets are easy to
+tell apart at a glance. Search covers titles, headings, opening text,
+prompts and intents. `⌘K` jumps to anything.
 
-## Three things you can do
-
-### 1. ✨ Share any artifact in seconds → public URL anyone can open
-
-Click any card → hit the share icon → in ~30 seconds you get back a
-permanent URL like `https://you.github.io/artifold-share/abc12345.html`
-that you can paste into iMessage, Slack, email, anywhere. URL is copied
-to your clipboard automatically.
-
-Free forever (uses your GitHub Pages quota — no Artifold infrastructure,
-no sign-up, no per-share fees, no expiry). Anyone with the link sees
-the fully-rendered report; recipient needs nothing installed.
-
-![Share flow in detail pane](docs/share-detail.png)
-
-### 2. 📚 Browse everything you've made, in one place
-
-Sidebar filters by tool, status (shared / local), category, date.
-⌘K palette to jump to anything by name, prompt, or intent. Click → in-app
-preview pane, no tab spam. Dark/light themes. Live auto-rescan — drop
-a new file in any watched folder and it appears within seconds.
+It leaves out what isn't yours: `node_modules`, build output, cloned git
+repos, server templates, and anything nested too deep.
 
 ![Command palette](docs/cmdk.png)
 
-### 3. 🎨 Close the loop with whatever design skill you use
+### Keeps the history
 
-Artifold indexes HTML. It does not care what wrote it — Claude Artifacts,
-ChatGPT Canvas, v0, Cursor, or any of the design skills people install on
-top of them. What changes between them is how much *meaning* survives.
+Files named `report-v2.html` or `report (1).html`, or dated copies of the
+same page, collapse into one card with a version picker and a diff view.
+Pages you edit in place keep a revision history too, and a card shows
+how many times you have revised or opened it. "Most used" sorts by that,
+so the trackers you open every day stay near the top instead of sinking
+under last week's one-offs.
 
-| Skill | Artifold reads |
+### Shares in one click
+
+Click share on any card and, usually within a minute, you get a permanent link
+like `https://you.github.io/artifold-share/abc12345.html`, copied to your
+clipboard. It publishes to your own GitHub Pages: free, no expiry, and
+the person you send it to needs nothing installed. You can also export
+any artifact to PDF.
+
+![Share flow in detail pane](docs/share-detail.png)
+
+### Works with any design skill
+
+Artifold indexes HTML. It does not matter what wrote it: Claude, ChatGPT
+Canvas, v0, Cursor, or one of the design skills people install on top of
+them. What differs is how much Artifold can learn about each page.
+
+| Made with | Artifold knows |
 |---|---|
-| **`/craft`** (bundled, see below) | everything: intent, conceit, four rotation axes |
-| **[Hallmark](https://github.com/Nutlope/hallmark)** | layout, theme and brief, from its CSS stamp + `.hallmark/log.json` |
-| **[taste-skill](https://github.com/Leonxlnx/taste-skill)**, **[huashu-design](https://github.com/alchaincyf/huashu-design)**, anything else | palette, fonts, tokens, skeleton, thumbnail, full-text search |
+| **`/craft`** (bundled, see below) | everything: intent, the layout and style chosen, and the history of those choices |
+| **[Hallmark](https://github.com/Nutlope/hallmark)** | layout, theme and brief, read from Hallmark's own stamp and log |
+| **[taste-skill](https://github.com/Leonxlnx/taste-skill)**, **[huashu-design](https://github.com/alchaincyf/huashu-design)**, anything else | palette, fonts, design tokens, page structure, thumbnail, full-text search |
 
-```bash
-artifold skills     # which of these you have, and what Artifold gets from each
-```
+The last row needs nothing from the page and covers most of what Artifold
+does. The first two rows exist because a page can say what it is in a few
+lines of `<head>`. If you build a design skill, that format is documented
+in [docs/ARTIFACT-METADATA.md](docs/ARTIFACT-METADATA.md), and nothing in
+it is specific to Artifold. Skills with their own format are read through
+[adapters](artifold/adapters.py); pull requests for new ones are welcome.
 
-The bottom row is not a consolation prize — it is most of the product.
-Fingerprinting is pure regex over the HTML and needs no cooperation at all.
+Run `artifold skills` to see which of these you have installed.
 
-The top row exists because a page can just *say* what it is, in four lines
-of `<head>`. If you write a design skill, that convention is documented in
-**[docs/ARTIFACT-METADATA.md](docs/ARTIFACT-METADATA.md)** and it is not
-Artifold-specific. Skills that stamp their own format instead are read
-through adapters in [`artifold/adapters.py`](artifold/adapters.py); PRs for
-new ones are welcome.
+### Stays out of the way
 
-Worth knowing: of the three most-starred design skills, only Hallmark
-records anything between runs, and its log is per-repository. If your
-artifacts are scattered one-off files rather than one codebase, a
-machine-wide library is the only thing that can tell you what you already
-made.
+A running `artifold serve` uses about 30 MB of memory and no CPU while
+nothing changes. When a file changes, a rescan takes well under a second,
+because unchanged files are recognized from their size and modification
+time and never reread. While you are iterating on a page, its thumbnail
+waits until you stop editing, so a burst of saves launches the headless
+browser once instead of once per save.
 
-### The bundled `/craft` skill
+## The bundled `/craft` skill
 
-→ **See [the side-by-side gallery](https://shubhamgoel27.github.io/artifold/)**:
-four prompts run through `claude-sonnet-4` *twice* — once plainly, once via
-`/craft`. Same model, same prompt, visibly different output.
+`/craft` is a Claude Code skill for making single-page HTML artifacts that
+don't look like every other AI-generated page. It is optional: Artifold
+works the same with Hallmark, taste-skill, or no skill at all.
 
-`/craft` is Artifold's reference implementation of a skill that instruments
-its own output. It is optional — use Hallmark or taste-skill instead if you
-prefer their look, and Artifold still works. Type `/craft a 30-day strength
-tracker for a beginner` in any session. The skill:
+Type `/craft a 30-day strength tracker for a beginner` and it:
 
-- Reads your library to see styles you've used, then deliberately picks
-  a *different* direction so your next artifact doesn't look like the
-  last one (the "all AI output looks the same" problem, actively fought)
-- OR inherits a specific style: `/craft a poker probability explainer,
-  like dobble` — pulls dobble's actual CSS as the design baseline
-- Applies 12 opinionated design principles distilled from Refactoring UI,
-  Linear, and Vercel/Geist (every one cited)
-- Avoids 15 specific AI-slop signatures (purple-gradient hero, identical
-  bento cards, decorative emoji on every list item, glassmorphism, etc.)
-- Saves to `~/artifold-inbox/2026-05-26-<topic>.html` — auto-indexed in
-  Artifold within ~2 seconds
+- decides how much design the job needs, so a daily checklist stays quiet
+  and a gift or a public page gets the full treatment
+- edits the content before styling it: what the reader should remember,
+  what to cut, and what belongs in a table or chart instead of prose
+- picks a layout, a visual style, a tone of voice and one hand-built detail
+  for this subject, and reads your library first so the new page doesn't
+  repeat your last few
+- avoids a long list of named AI-design habits (the purple gradient hero,
+  identical cards, emoji bullets)
+- renders the page in a headless browser and fixes what it finds
+- saves it to `~/artifold-inbox/`, where it shows up in Artifold within
+  seconds, and publishes it to a private claude.ai page you can share later
 
-Your past work becomes your style guide for the next one. The loop closes.
+You can also point it at something you made before: `/craft a poker odds
+explainer, like dobble` starts from that page's actual CSS.
+
+To see the difference, the [gallery](https://shubhamgoel27.github.io/artifold/)
+runs eleven prompts through Claude twice, once plainly and once with an
+earlier version of `/craft`.
 
 ## Install
 
-### 🪄 Easiest: ask Claude Code to do it
+### Let Claude Code do it
 
-If you have [Claude Code](https://claude.com/claude-code), paste this
-prompt — Claude figures out the rest, installs everything, and walks
-you through first-run:
+If you use [Claude Code](https://claude.com/claude-code), paste this:
 
 > [!TIP]
-> **Copy this into Claude Code:**
->
 > ```
 > Install Artifold from https://github.com/shubhamgoel27/artifold using pipx
 > (or pip if pipx isn't installed). Then run `artifold init` and help me
@@ -136,133 +139,93 @@ you through first-run:
 > to try first.
 > ```
 
-That's the whole install. No terminal commands to memorize, no
-dependencies to debug — Claude handles the awkward parts.
-
-### Or do it yourself
-
-If you'd rather drive:
+### Or by hand
 
 ```bash
-pipx install artifold          # or: pip install artifold
-artifold init                     # interactive wizard
-artifold                          # serves dashboard + opens browser
-artifold install-skill            # adds /craft to ~/.claude/skills/
+pipx install artifold        # or: pip install artifold
+artifold init                # pick the folders to watch
+artifold                     # scan, then open the dashboard
+artifold install-skill       # optional: add /craft to Claude Code
 ```
 
-Don't have `pipx`? Run `brew install pipx` (mac) or `python -m pip
-install --user pipx` (anywhere), then the above.
+No `pipx`? `brew install pipx` on a Mac, or `python -m pip install --user
+pipx` anywhere. Restart Claude Code once after `install-skill` so it picks
+up the skill.
 
-### After install, in Claude Code
+The first scan downloads a headless Chromium (about 170 MB) for
+thumbnails. After that only new or changed pages are captured.
 
-```
-/craft a one-pager comparing three SF apartments
-/craft a 30-day strength tracker, like my last one
-/craft a probability explainer for poker, in the style of dobble
-```
-
-(Restart Claude Code once after `artifold install-skill` so the skill loads.)
-
-The first run installs Playwright's headless Chromium (~170 MB) for
-artifact thumbnails. After that, only new/changed files re-shoot.
-
-## What it actually does
-
-**Auto-indexes** every `*.html` in your watched folders. Groups
-`-v2`, ` (1)`, `print` variants into one card with a version dropdown.
-Skips templates, `.git` repos, and anything buried 3 levels deep — your
-library stays clean even when your folders aren't.
-
-**Source-aware** — fingerprints Claude / ChatGPT / v0 / Lovable / Bolt
-/ Gemini artifacts from HTML markers, tags each card with the tool that
-made it. Reads `<meta name="artifold:*">` tags from any skill that emits
-them ([the convention](docs/ARTIFACT-METADATA.md)), and reads other skills'
-own formats through [adapters](artifold/adapters.py) — Hallmark's CSS stamp
-and `.hallmark/log.json` today.
-
-**Visual** — every artifact gets a real screenshot thumbnail. Click a
-card → slide-out preview pane with tabs for Provenance (source URL,
-prompt, model, tags) and Design (palette swatches, fonts, mood flags).
-
-**Live** — `artifold serve` watches your folders. Drop in a new artifact
-and it appears in the dashboard within ~2 seconds, no refresh.
-
-**Searchable** — ⌘K palette runs across titles, prompts, intents, and
-exposed actions (toggle theme, switch view, rescan, import). Linear /
-Raycast pattern.
-
-![Detail — Preview](docs/detail-preview.png)
-![Detail — Design](docs/detail-design.png)
-
-## All commands
+## Commands
 
 ```bash
-artifold                  # default: scan + serve + open browser
-artifold init             # interactive setup wizard
-artifold add <dir>        # watch another folder
-artifold roots            # list watched folders
-artifold scan             # one-shot rescan
-artifold open             # open the existing dashboard
+artifold                     # serve the dashboard and open it
+artifold init                # setup wizard
+artifold add <dir>           # watch another folder
+artifold remove <dir>        # stop watching one
+artifold roots               # list watched folders
+artifold allow-repo <name>   # include a folder that is its own git repo
+artifold scan                # rescan and rebuild the dashboard
+artifold serve --no-open     # dashboard with live rescans, no browser tab
+artifold open                # open the dashboard
+artifold search <words>      # search from the terminal
+artifold doctor              # check the setup and say what to fix
 
-artifold share <file>     # publish to public URL + copy to clipboard
-artifold share --list     # all shares
-artifold share --reconcile   # rebuild records from what is actually published
-artifold share --revoke <id>   # take a public share down
+artifold share <file>        # publish to your GitHub Pages
+artifold share --list        # everything you have shared
+artifold share --revoke <id> # take a share down
+artifold share --reconcile   # rebuild share records from what is published
+artifold export-pdf <file>   # render an artifact to PDF
+artifold trash <file>        # move an artifact to the system Trash
 
-artifold import <url>     # fetch a public Claude/v0/Lovable share URL
+artifold import <url>        # save a public share (Claude, ChatGPT, v0, Lovable, …)
 artifold link <file> --tool claude --source URL --prompt "..."
-artifold info <file>      # show provenance for a file
+artifold info <file>         # show what Artifold knows about a file
 
-artifold designs                     # list design fingerprints
-artifold designs --json --axes --limit 12   # recent rotation axes, slim (what /craft reads)
-artifold designs <id> --template     # dump CSS + skeleton (paste into Claude)
-
-artifold inbox [topic]    # print the canonical path for a new artifact
-artifold skills           # design skills, and what Artifold reads from each
-artifold install-skill    # install the bundled /craft into ~/.claude/skills/
-artifold doctor           # check setup; tells you exactly what to fix
+artifold designs             # list design fingerprints
+artifold designs <id> --template   # a page's CSS and structure, to reuse
+artifold skills              # design skills, and what Artifold reads from each
+artifold install-skill       # install /craft into Claude Code
+artifold inbox [topic]       # the path where a new artifact should go
+artifold config [key] [value]  # read or change a setting
 ```
 
-## Config
+## Settings
 
-`~/Library/Application Support/artifold/config.json` on macOS,
-`~/.config/artifold/config.json` on Linux:
+`artifold config` lists them; `artifold config <key> <value>` changes one.
+The file lives at `~/Library/Application Support/artifold/config.json` on
+macOS and `~/.config/artifold/config.json` on Linux:
 
 ```jsonc
 {
   "roots": ["/Users/me/Downloads", "/Users/me/work"],
-  "allow_repos": [],          // dirs with their own .git to include anyway
-  "max_depth": 3,
-  "drop_dir": null,           // where `artifold import` saves (default ~/artifold-inbox)
-  "enable_intent": false,     // opt-in LLM intent metadata (Claude Haiku)
-  "categories": {             // extend the auto-tag keywords
+  "allow_repos": [],        // folders with their own .git to include anyway
+  "max_depth": 3,           // how deep to look inside each watched folder
+  "publish": true,          // /craft publishes a private claude.ai link
+  "enable_intent": false,   // optional AI descriptions, see below
+  "categories": {           // add your own category keywords
     "Research": ["paper", "experiment", "ablation"]
   }
 }
 ```
 
-Cache (thumbnails, manifest, dashboard, Playwright Chromium) lives
-under `~/Library/Caches/artifold/`. Wiping it just regenerates everything
-from your real files — cache is replaceable, your source files are sacred.
+Thumbnails, the dashboard and the browser live in
+`~/Library/Caches/artifold/`. Deleting that folder is safe; the next scan
+rebuilds it from your files.
 
 ## Keyboard
 
-| Key             | What |
-|-----------------|------|
-| `⌘K` / `Ctrl+K` | palette (actions + artifact search) |
-| `↵`             | open selected in preview / run action |
-| `⇧↵`            | open selected in new tab |
-| `Esc`           | close palette / preview |
-| `/`             | focus the search box |
-| Click card      | open in preview pane (in-app, no tab spam) |
-| `⌘`/`Ctrl`-click | open in a new browser tab |
+| Key | Does |
+|---|---|
+| `⌘K` / `Ctrl+K` | open the palette: search artifacts and run actions |
+| `/` | focus the search box |
+| `↑` `↓` then `↵` | pick a result in the palette |
+| `Esc` | close the palette or the preview |
 
-## Optional: AI intent layer
+## Optional: AI descriptions
 
-Artifold's core is **fully local — no LLM, no network, no API key required**.
-
-If you want richer metadata (a one-line intent per artifact, topic tags,
-audience detection — used for smarter search):
+Artifold works without any AI or network access. Pages made with `/craft`
+or Hallmark already describe themselves. For everything else, you can have
+Claude Haiku write a one-line description of each artifact:
 
 ```bash
 pipx install 'artifold[intent]'
@@ -270,92 +233,52 @@ export ANTHROPIC_API_KEY=sk-ant-...
 artifold scan --intent
 ```
 
-~$0.003 per artifact with Claude Haiku, cached forever by content hash
-so re-scans are free. ~$0.05 for 15 artifacts. Toggle off with
-`artifold scan --no-intent`. Skip the extra and the feature simply
-doesn't appear.
+Each artifact costs at most about a third of a cent, and runs once: the
+result is stored by content, so later scans reuse it until the page changes.
 
-## What Artifold is not
+## What leaves your machine
 
-- **Not a cloud product.** There's no sign-up, no account, no Artifold
-  server somewhere. Your library is `~/artifold-inbox/` and the dirs you
-  pointed it at — that's it. Artifold itself never uploads anything: it has
-  no credentials for anywhere.
+Artifold has no server and no account, and the CLI holds no credentials
+for anything. Your library is the folders you pointed it at.
 
-  Two things can send an artifact off your machine, both of them yours to
-  trigger. `artifold share` publishes to *your* GitHub Pages, explicitly,
-  one artifact at a time. And the bundled `/craft` skill publishes each new
-  artifact to claude.ai as it makes it — a page private to you until you
-  share it from its header — so it has a link when you want one. That
-  second one is on by default; turn it off with:
+Two things can send an artifact elsewhere, and both are yours to control:
 
-  ```bash
-  artifold config publish off
-  ```
-- **Not a replacement for git** or your existing organization. It's a
-  *lens* on whatever you already have.
-- **Not opinionated about where your files live.** Multi-root by
-  design. Want it to watch `~/Downloads` + `~/Documents` +
-  `~/work/reports`? Run `artifold add` three times.
-- **Not a design skill, and not competing with one.** That category is
-  crowded and good — Hallmark, taste-skill and huashu-design are all worth
-  installing. Artifold is the layer underneath: the place their output
-  lands, gets indexed, and becomes findable a month later. Pick whichever
-  skill you like the look of; the library is the same either way.
-- **Not trying to be everything for everyone.** Built for the specific
-  pain of "where did I put that thing I generated last month."
+- `artifold share` publishes one artifact to your own GitHub Pages when
+  you ask it to.
+- `/craft` publishes each new artifact to claude.ai as it makes it. That
+  page is private to you until you share it from the page itself. To turn
+  it off, run `artifold config publish off`.
 
-## Why "Artifold"
+## What it isn't
 
-A artifold is a working collection of pages that informs your next piece
-of work. Your past artifacts become the reference set for the next one.
-It's not an archive (cold storage), it's a working library.
-
-The PyPI package is `artifold` because `artifold` was taken. CLI command is
-`artifold`. Same pattern as `open-interpreter` / `interpreter`.
+- **A replacement for git or your folders.** It reads what is already
+  there and moves nothing.
+- **A design tool.** Hallmark, taste-skill and huashu-design are all good;
+  Artifold is where their output ends up and stays findable.
+- **Tied to one folder.** Watch `~/Downloads`, `~/Documents` and a project
+  folder at once.
 
 ## Status
 
-**v0.5.2, alpha — live on PyPI.** Tested on macOS Sequoia; Linux should
-work; Windows untested. Single-developer project made in evenings —
-issues + PRs welcome, but I'm shipping what I personally use rather than
-what's broadly polished. The [`/craft` gallery](https://shubhamgoel27.github.io/artifold/)
-shows side-by-side outputs (default Claude vs `/craft`) on four prompts
-through Opus 4.7 — if you want to see what the skill actually does
-before installing, start there.
-
-If you try it and something feels off, [open an issue](../../issues/new) —
-even one line is helpful, "the X button is confusing" is exactly the
-feedback that improves things.
+Version 0.13, alpha. I use it every day on macOS; Linux should work;
+Windows is untested. There are 175 tests and CI on Python 3.10 to 3.13.
+It is a one-person project, so I build what I need first, but issues and
+pull requests are welcome. If something is confusing, [open an
+issue](../../issues/new); one line is enough.
 
 ## Roadmap
 
-In rough priority order:
-
-- [ ] **Mobile dashboard** — currently breaks below 760px
-- [ ] **`artifold adopt <file>`** — opt-in consolidation into `~/artifold-inbox/`
-      for existing files (keeping multi-root for those who want it)
-- [ ] **Cloudflare Pages backend** for `artifold share` (alternative to GH
-      Pages for users without `gh` CLI)
-- [ ] **`artifold generate --like <id>`** — direct one-command generation,
-      opt-in via `[intent]` extra
-- [ ] **Markdown rendering** — first-class support for `*.md`
-- [ ] **Semantic search** — when you remember the gist but not the title
-- [ ] **Version diff view** — when you iterate v1/v2/v3, see what changed
-- [ ] **A real test suite** — currently human-tested
+- [ ] A layout that works well on a phone
+- [ ] `artifold adopt <file>` to move existing files into the inbox
+- [ ] Cloudflare Pages as a sharing option for people without the `gh` CLI
+- [ ] First-class Markdown files
+- [ ] Search by meaning, for when you remember the gist but not the title
 
 ## Made by
 
-[@shubhamgoel27](https://github.com/shubhamgoel27) — built because I
-genuinely needed it. If you find it useful, **starring the repo is the
-single best thing you can do** so other people building with AI find it.
-
-The `/craft` skill took real research to make non-generic — the 12
-design principles trace to Refactoring UI chapters, Linear's
-[Method](https://linear.app/method/introduction), Vercel's
-[Geist](https://vercel.com/geist), and a couple of recent AI-slop
-critique articles. If you ship cool reports with it, tag me — I love
-seeing what people make.
+[@shubhamgoel27](https://github.com/shubhamgoel27), because I needed it.
+If it's useful to you, a star helps other people find it. If you make
+something good with `/craft`, I'd like to see it.
 
 ## License
 
