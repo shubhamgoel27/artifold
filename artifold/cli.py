@@ -498,9 +498,8 @@ SUPPORT_BLURB = {
 def _cmd_config(args):
     """Read or write a scalar setting.
 
-    `artifold config publish` prints `on`/`off` — the form /craft calls before
-    deciding whether to publish an artifact. Booleans print as on/off rather
-    than True/False so a shell test reads naturally.
+    Booleans print as on/off rather than True/False so a shell test reads
+    naturally.
     """
     def show(v):
         return ("on" if v else "off") if isinstance(v, bool) else \
@@ -858,7 +857,7 @@ def main(argv=None) -> int:
     ib.set_defaults(fn=_cmd_inbox)
 
     cf = sub.add_parser("config", help="read or write a setting (no args lists them)")
-    cf.add_argument("key", nargs="?", help="e.g. publish")
+    cf.add_argument("key", nargs="?", help="e.g. enable_intent")
     cf.add_argument("value", nargs="?", help="omit to read; on/off for switches")
     cf.set_defaults(fn=_cmd_config)
 

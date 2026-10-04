@@ -1,12 +1,11 @@
-"""Tests for the published-artifact link and the `publish` setting.
+"""Tests for the `artifold:published` link, the scalar config command, and
+the durability of share records.
 
-Artifold cannot publish anything — publishing needs a claude.ai session and
-the CLI has none. What it does is *record* a link the `/craft` skill wrote,
-because the skill runs inside Claude Code where that session exists.
-
-The distinction these tests protect: **published is not shared**. A claude.ai
-artifact is private to its author until they share it from the page header,
-so a published URL must never light up the "shared publicly" state.
+Artifold publishes nothing to claude.ai. It reads an `artifold:published`
+tag if a generator wrote one, because that tag is part of the public
+metadata format. The distinction these tests protect: **published is not
+shared**. A published page may be private to its author, so the link must
+never light up the "shared publicly" state.
 """
 import pytest
 
@@ -71,8 +70,8 @@ def test_link_backfills_if_it_is_stamped_after_saving(tmp_path):
     """Stamping the tag onto an already-saved file still works — but note the
     cost this documents: the edit is a second content hash, so the artifact
     gains a revision it did not earn, inflating its badge and its "Most used"
-    rank. That is why the skill publishes from the temp path and writes the
-    inbox copy once, with the tag already in it."""
+    rank. A generator that writes the tag should write it in the same save as
+    the rest of the page."""
     f = tmp_path / "a.html"
     cfg, cats = {"allow_repos": [], "max_depth": 3}, {}
     f.write_text(page())
@@ -85,18 +84,7 @@ def test_link_backfills_if_it_is_stamped_after_saving(tmp_path):
     assert second["revision_count"] == 2      # same artifact, not a new one
 
 
-# --- the setting -----------------------------------------------------------
-
-def test_publish_defaults_on(tmp_path, monkeypatch):
-    monkeypatch.setattr(config, "CONFIG_FILE", tmp_path / "c.json")
-    assert config.get("publish") is True
-
-
-def test_publish_can_be_turned_off(tmp_path, monkeypatch):
-    monkeypatch.setattr(config, "CONFIG_FILE", tmp_path / "c.json")
-    assert config.set_("publish", "off") is False
-    assert config.get("publish") is False
-
+# --- the config command -----------------------------------------------------------
 
 @pytest.mark.parametrize("raw,expected", [
     ("on", True), ("true", True), ("yes", True), ("1", True),
@@ -105,13 +93,13 @@ def test_publish_can_be_turned_off(tmp_path, monkeypatch):
 ])
 def test_switch_accepts_the_obvious_spellings(tmp_path, monkeypatch, raw, expected):
     monkeypatch.setattr(config, "CONFIG_FILE", tmp_path / "c.json")
-    assert config.set_("publish", raw) is expected
+    assert config.set_("enable_intent", raw) is expected
 
 
 def test_a_nonsense_value_is_rejected_not_coerced(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CONFIG_FILE", tmp_path / "c.json")
     with pytest.raises(ValueError):
-        config.set_("publish", "maybe")
+        config.set_("enable_intent", "maybe")
 
 
 def test_unknown_keys_are_rejected(tmp_path, monkeypatch):
@@ -130,8 +118,8 @@ def test_int_and_str_keys_coerce(tmp_path, monkeypatch):
 
 def test_setting_survives_a_reload(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CONFIG_FILE", tmp_path / "c.json")
-    config.set_("publish", "off")
-    assert config.load()["publish"] is False
+    config.set_("enable_intent", "on")
+    assert config.load()["enable_intent"] is True
 
 
 # --- share records must be durable -----------------------------------------

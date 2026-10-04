@@ -102,18 +102,12 @@ DEFAULTS = {
     "intent_model": "claude-haiku-4-5",
     "intent_concurrency": 5,
     "drop_dir": None,          # where `artifold import <url>` saves fetched artifacts
-    # Whether /craft publishes each new artifact to claude.ai and records the
-    # link. Artifold itself never publishes — it has no claude.ai session —
-    # so this is a preference the skill reads, not something the CLI acts on.
-    # Published artifacts are private to their author until shared.
-    "publish": True,
 }
 
 # Config keys `artifold config` may read or write. Roots and allow-lists have
 # their own commands because they are lists with validation; this is for the
 # plain scalar switches.
 SETTABLE = {
-    "publish": bool,
     "enable_intent": bool,
     "intent_model": str,
     "intent_concurrency": int,

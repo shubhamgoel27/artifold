@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.13.1
+
+`/craft` no longer publishes artifacts to claude.ai.
+
+The step depended on the skill remembering to do it near the end of a long
+run, and in practice it fired for 2 of 14 artifacts. Artifold cannot publish
+on its own (claude.ai publishing needs a signed-in Claude Code session), so
+there was no way to make it reliable from here.
+
+- The bundled skill is updated from daily use and ends at saving to the
+  inbox.
+- The `publish` setting is removed. `artifold config publish` now reports
+  an unknown key; an old `"publish"` entry in `config.json` is ignored.
+- The README no longer says `/craft` publishes. `artifold share` to your
+  GitHub Pages is the only thing that sends an artifact anywhere.
+- Artifold still reads an `artifold:published` tag if a generator writes
+  one. It is part of the public metadata format, and pages that already
+  carry one keep their link.
+
 ## 0.13.0
 
 Lighter on the machine. Idle cost was already near zero (32 MB, no CPU), so

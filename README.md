@@ -115,7 +115,7 @@ Type `/craft a 30-day strength tracker for a beginner` and it:
   identical cards, emoji bullets)
 - renders the page in a headless browser and fixes what it finds
 - saves it to `~/artifold-inbox/`, where it shows up in Artifold within
-  seconds, and publishes it to a private claude.ai page you can share later
+  seconds
 
 You can also point it at something you made before: `/craft a poker odds
 explainer, like dobble` starts from that page's actual CSS.
@@ -200,7 +200,6 @@ macOS and `~/.config/artifold/config.json` on Linux:
   "roots": ["/Users/me/Downloads", "/Users/me/work"],
   "allow_repos": [],        // folders with their own .git to include anyway
   "max_depth": 3,           // how deep to look inside each watched folder
-  "publish": true,          // /craft publishes a private claude.ai link
   "enable_intent": false,   // optional AI descriptions, see below
   "categories": {           // add your own category keywords
     "Research": ["paper", "experiment", "ablation"]
@@ -241,13 +240,8 @@ result is stored by content, so later scans reuse it until the page changes.
 Artifold has no server and no account, and the CLI holds no credentials
 for anything. Your library is the folders you pointed it at.
 
-Two things can send an artifact elsewhere, and both are yours to control:
-
-- `artifold share` publishes one artifact to your own GitHub Pages when
-  you ask it to.
-- `/craft` publishes each new artifact to claude.ai as it makes it. That
-  page is private to you until you share it from the page itself. To turn
-  it off, run `artifold config publish off`.
+The only thing that sends an artifact anywhere is `artifold share`, which
+publishes the one artifact you pick to your own GitHub Pages.
 
 ## What it isn't
 
