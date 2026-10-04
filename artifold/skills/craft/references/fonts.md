@@ -1,12 +1,11 @@
-# Fonts — never ship the bare system stack
+# Fonts: never ship the bare system stack
 
-System-font-only output is the single fastest "this is cheap/AI" tell. One `<link>` fixes it. **Inter-as-the-only-font is now itself a slop signature** — it's fine as a body workhorse but vary the display face and pick intentionally.
+System-font-only output is the single fastest "this is cheap/AI" tell. One `<link>` fixes it. **Inter-as-the-only-font is now itself a slop signature**, it's fine as a body workhorse but vary the display face and pick intentionally.
 
 Rules:
-- Load via Google Fonts `<link>` in `<head>` with `display=swap` and a **complete fallback chain ending in `system-ui`**. (For true offline self-containment, base64 a WOFF2 instead — only when the file must work with no network.)
+- Load via Google Fonts `<link>` in `<head>` with `display=swap` and a **complete fallback chain ending in `system-ui`**. (For true offline self-containment, base64 a WOFF2 instead, only when the file must work with no network.)
 - Prefer **variable fonts** (one URL, all weights + optical sizes).
-- Pair a **distinctive display/heading face** with a **calm, readable body face**. Don't use the display face for body.
-- Tighten large display (`letter-spacing:-0.02em`); add tracking to ALL-CAPS labels (`letter-spacing:.06–.1em`).
+- Pair a **distinctive display/heading face** with a **calm, readable body face**. Don't use the display face for body. (Tracking/tightening rules: `craft-recipes.md` §10.)
 
 ## Pairings by mood → mode family
 
@@ -35,6 +34,14 @@ Rules:
 | Retro terminal / teletext (G) | **VT323** | Space Mono | `family=VT323&family=Space+Mono:wght@400;700` |
 | Wes-Anderson symmetric (H) | **Jost** | Karla | `family=Jost:wght@500;600;700&family=Karla:wght@400;500;700` |
 | Gentle pastoral (H) | **Fraunces** (soft axis) | Nunito | `family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600` |
+| Art-deco gala (I) | **Limelight** | Jost | `family=Limelight&family=Jost:wght@400;500;600` |
+| Agitprop / diagonal poster (I) | **Oswald** | Inter | `family=Oswald:wght@500;700&family=Inter:wght@400;500;700` |
+| Illuminated manuscript (I, display ≥24px only) | **UnifrakturMaguntia** | EB Garamond | `family=UnifrakturMaguntia&family=EB+Garamond:wght@400;500;600` |
+| Woodblock / classic Japanese (I) | **Zen Antique** | Karla | `family=Zen+Antique&family=Karla:wght@400;500;700` |
+| Y2K gloss (I) | **Exo 2** | Inter | `family=Exo+2:wght@500;700&family=Inter:wght@400;500` |
+| Memphis / rounded play (I, J) | **Baloo 2** | Nunito | `family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700` |
+| Desi display (J) | **Yatra One** | Baloo 2 | `family=Yatra+One&family=Baloo+2:wght@500;700` |
+| Formal gold-foil (J) | **Cinzel** | EB Garamond | `family=Cinzel:wght@500;700&family=EB+Garamond:wght@400;500` |
 
 ## Copy-paste head block
 ```html
@@ -51,8 +58,8 @@ Rules:
 ```
 
 ## Notes
-- Optical-size axis (`opsz`) on Fraunces / Newsreader / Source Serif 4 / Bricolage = use large for display, small for body — automatically "designed."
+- Optical-size axis (`opsz`) on Fraunces / Newsreader / Source Serif 4 / Bricolage = use large for display, small for body, automatically "designed."
 - Restrained modes: cap display weight (e.g. 500–700, never 800+ for body). Expressive modes: go heavy (Anton, Archivo 900) for the giant-typographic-figure device.
-- **Handwriting fonts are seasoning, not the meal:** Caveat / Homemade Apple / Shantell Sans for headings, margin notes, and annotations only — never paragraphs of body text. Pixel fonts (Press Start 2P, VT323) never below 18px and never for body.
+- **Handwriting fonts are seasoning, not the meal:** Caveat / Homemade Apple / Shantell Sans for headings, margin notes, and annotations only, never paragraphs of body text. Pixel fonts (Press Start 2P, VT323) never below 18px and never for body. Blackletter (UnifrakturMaguntia) is display-only at ≥24px, one title, maybe drop caps, nothing else.
 - Don't load more than **two families** (a third only for a mono numeral/field role). More = slow + incoherent.
-- Rotate the pairing like every other axis — don't reach for Fraunces/Inter every time just because it's first in the table.
+- Rotate the pairing like every other axis, don't reach for Fraunces/Inter every time just because it's first in the table.

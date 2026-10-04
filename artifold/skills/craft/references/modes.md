@@ -1,14 +1,14 @@
-# Design Modes — the skin (fonts · color · texture)
+# Design Modes: the skin (fonts · color · texture)
 
-Mode controls *paint only* — typefaces, palette, texture, ornament — not page architecture (that's the Layout Archetype). A mode renders under many skeletons. Rotate: don't reuse a mode from the last 3 outputs, and don't repeat the `(layout × mode)` pair from the last 5.
+Mode controls *paint only*, typefaces, palette, texture, ornament, never page architecture. A mode renders under many skeletons. Fit first; freshness breaks ties (SKILL.md section 4).
 
-**Each mode now has a real exemplar + a concrete hex triad** so it's a *target*, not an adjective. The triad is `bg · ink · accent` — a **starting point to adapt and expand into a full ramp** (see `references/craft-recipes.md`), not an official brand value. Honor each family's restraint budget. Font column = a pairing from `references/fonts.md`.
+**Each mode now has a real exemplar + a concrete hex triad** so it's a *target*, not an adjective. The triad is `bg · ink · accent`, a **starting point to adapt and expand into a full ramp** (see `references/craft-recipes.md`), not an official brand value. Honor each family's restraint budget. Font column = a pairing from `references/fonts.md`.
 
-> **Use the exemplar.** "swiss-grid" is vague; "render like Linear — `#5E6AD2` on near-black, Inter Tight, 8px grid" is not. Picture the exemplar's actual product/page before writing CSS.
+> **Use the exemplar.** "swiss-grid" is vague; "render like Linear, `#5E6AD2` on near-black, Inter Tight, 8px grid" is not. Picture the exemplar's actual product/page before writing CSS.
 
 ---
 
-## Family A — Restrained / editorial · *budget: ≤2 hues, ≤6 sizes, color = meaning*
+## Family A: Restrained / editorial · *budget: ≤2 hues, ≤6 sizes, color = meaning*
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -19,7 +19,7 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `technical-blueprint` | Distill.pub / Observable | `#f3f0e7 · #0d2b45 · #0a7e9e` | Newsreader / JetBrains Mono | ML/math/CS explainers, specs |
 | `data-dashboard` | Grafana / Vercel Analytics | `#0b0d12 · #e6e6e6 · #11d1a3` (+signal `#f0506b`) | Inter Tight / JetBrains Mono | KPI views, monitoring |
 
-## Family B — Document-pro · *budget: ≤2 hues + 1 stamp/spot, dense, serious*
+## Family B: Document-pro · *budget: ≤2 hues + 1 stamp/spot, dense, serious*
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -30,7 +30,7 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `annual-report` | Apple / Pentagram report | `#ffffff · #111111 · #0071e3` | Inter Tight / Source Serif 4 | year-in-review, org summaries |
 | `patent-filing` | USPTO drawing / Dieter Rams | `#ffffff · #111111 · #1b4f8a` | IBM Plex Mono / IBM Plex Sans | how-it-works, invention framing |
 
-## Family C — Expressive-graphic · *budget: full palettes, dramatic size jumps, color may delight*
+## Family C: Expressive-graphic · *budget: full palettes, dramatic size jumps, color may delight*
 
 | Mode | Exemplar | Triad `bg · ink · accents` | Fonts | Good for |
 |---|---|---|---|---|
@@ -41,7 +41,7 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `protest-broadside` | Shepard Fairey / Barbara Kruger | `#f2ead8 · #111 · #d7261e` (Kruger: `#e3001b·#fff·#000`) | Anton / Work Sans | calls to action, strong opinions |
 | `infographic-pop` | Information is Beautiful / Nigel Holmes | `#fffdf7 · #16242e · #2ec4b6 #ff9f1c #e71d36` | Plus Jakarta Sans / Inter | stats for general audiences |
 
-## Family D — Playful-tactile · *budget: 3–4 hues, object-like; pairs with single-object / grid-of-tiles*
+## Family D: Playful-tactile · *budget: 3–4 hues, object-like; pairs with single-object / grid-of-tiles*
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -52,7 +52,7 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `comic-panel` | Marvel/DC / Chris Ware | `#fffef5 · #111 · #ff4136 #2c6e9b` | Bricolage Grotesque / Inter | narratives, before/after, steps |
 | `board-game-box` | Ticket to Ride / Catan | `#1d3a2a · #f5ecd6 · #d4a017` | Syne / Plus Jakarta Sans | systems, game-like processes |
 
-## Family E — Spatial-diagrammatic · *budget: 2–6 line/band colors, layout-as-content; pairs with radial / split-screen*
+## Family E: Spatial-diagrammatic · *budget: 2–6 line/band colors, layout-as-content; pairs with radial / split-screen*
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -61,8 +61,10 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `gallery-wall` | Tate / Gagosian salon hang | `#ece9e2 · #1c1c1c · #6b1f2a` | Cormorant Garamond / Work Sans | collections, portfolios |
 | `annotated-schematic` | engineer's notebook / Tufte | `#faf8f2 · #1a1a1a · #d6261f` | Newsreader / JetBrains Mono | teardowns, explainers over a figure |
 | `sankey-flow` | NYT flow viz / financial Sankey | `#ffffff · #16242e · bands #4e79a7 #f28e2b #59a14f` | Inter Tight / Inter | budgets, conversions, where-it-goes |
+| `periodic-table` | Mendeleev wall chart | `#f4f1e8 · #1c1c1c · category fills #7fb8a4 #e8a87c #a4c2e8` | Inter Tight / JetBrains Mono | element-grids of anything, taxonomies with properties |
+| `topographic-map` | USGS quad / Swiss hiking map | `#f2efe4 · #4a3f2f · contour #b08d57 water #7ba7bc` | Jost / Karla | terrain of a topic, difficulty gradients, expeditions |
 
-## Family F — Web-native / nostalgic · *budget varies per mode (noted)*
+## Family F: Web-native / nostalgic · *budget varies per mode (noted)*
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -76,9 +78,9 @@ Mode controls *paint only* — typefaces, palette, texture, ornament — not pag
 | `handwritten-journal` | Moleskine / Field Notes / bullet journal | `#fbfaf5 · #1d3a8a · #c0392b` (lined bg) | Caveat / Inter | logs, recipes, casual notes |
 | `zine-photocopy` | punk flyer / Xerox zine | `#ededed · #111 · #ff2e63` (high-contrast b&w + 1 spot) | Bricolage Grotesque / Space Mono | personal essays, music, scenes |
 
-## Family G — Diegetic worlds · *the page IS an object from another world; commit fully to the fiction, budget = whatever the world dictates*
+## Family G: Diegetic worlds · *the page IS an object from another world; commit fully to the fiction, budget = whatever the world dictates*
 
-These modes only work with total commitment. A tarot spread with a corporate footer breaks the spell. Pair with a matching conceit (SKILL.md Step 2·0) and let the world dictate every token.
+These modes only work with total commitment (SKILL.md section 4, the conceit). Pair with a matching conceit and let the world dictate every token.
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -94,10 +96,15 @@ These modes only work with total commitment. A tarot spread with a corporate foo
 | `arcade-cabinet` | 80s marquee / pixel art | `#0d0630 · #ffffff · #ff2975 #00e5ff #ffd319` | Press Start 2P *(display only, ≥18px)* / Space Grotesk | games, scores, levels, challenges |
 | `ships-log` | expedition journal / Shackleton | `#efe6d2 · #26221b · #1b4f72` | Special Elite / Lora | journeys, day-by-day accounts, weathering |
 | `cabinet-of-curiosities` | Victorian wunderkammer / Verne | `#221a14 · #e8dcc4 · #b08d3e #7c9a63` | Cormorant Garamond / Work Sans | collections, oddities, specimen catalogs |
+| `airline-safety-card` | laminated seat-pocket card | `#f7f7f2 · #1d3557 · #e63946 #f4a261` (flat pictograms, no prose) | Jost / Inter | procedures, do/don't pairs, emergency plans |
+| `pulp-paperback` | 1950s dime-store cover | `#e8d5a3 · #241c12 · #c1121f #f4a300` (worn edges, lurid type) | Anton / Lora | dramatic retellings, postmortems as noir |
+| `vhs-rental` | Blockbuster shelf / VHS sleeve | `#10131a · #f2e9d8 · #ffcc00 #2364aa` | Syne / Inter | retrospectives, "now showing" lists, media |
+| `racing-form` | betting slip / turf-club program | `#f5efdc · #1d241d · #0f6c3c #b8860b` | IBM Plex Mono / IBM Plex Sans | odds, predictions, head-to-heads |
+| `heist-blueprint` | Ocean's-Eleven planning wall | `#0e2a47 · #dce8f2 · #f2c14e` (white-line plans on midnight) | Space Grotesk / JetBrains Mono | multi-phase plans, risk maps, "the crew" |
 
-## Family H — Warm & personal · *budget: 3–4 warm hues, soft edges, at least one handmade touch; must feel addressed to ONE person*
+## Family H: Warm & personal · *budget: 3–4 warm hues, soft edges, at least one handmade touch; must feel addressed to ONE person*
 
-The anti-corporate family. If Family A is a designer's portfolio, Family H is a letter on the kitchen table. These pair naturally with the warmth rules in SKILL.md Step 3.5 (asides, P.S., colophon).
+The anti-corporate family. If Family A is a designer's portfolio, Family H is a letter on the kitchen table. These pair naturally with the warmth rules in SKILL.md section 7 (asides, P.S., colophon).
 
 | Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
 |---|---|---|---|---|
@@ -110,9 +117,43 @@ The anti-corporate family. If Family A is a designer's portfolio, Family H is a 
 | `postcard-from` | vintage travel postcard + airmail edge | `#f4ead6 · #23405c · #c0392b` (airmail stripes) | Playfair Display / Karla | trips, wish-you-were-here recaps, places |
 | `letter-from-a-friend` | stationery + real handwriting | `#fffdf7 · #2b3a67 · #c0392b` | Homemade Apple *(sparingly)* / Lora | advice, recaps, anything personal |
 
+## Family I: Movements & eras · *budget: whatever the movement actually practiced; get the era's grid and ornament right or don't pick it*
+
+Each of these is a real design movement with real rules. Half-committing produces costume, not design, study the exemplar's actual composition (Bauhaus means asymmetric geometry and primaries, not "red circle somewhere").
+
+| Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
+|---|---|---|---|---|
+| `bauhaus-1923` | Dessau posters / Moholy-Nagy | `#f2e8d5 · #1a1a1a · #d02e26 #1b4f8a #e8a800` (geometry does the work) | Archivo / Inter | principles, curricula, anything modular |
+| `art-deco-metropolis` | Gatsby invitation / Chrysler lobby | `#101820 · #e8d7b0 · #c9a227` (gold on midnight, sunburst frames) | Limelight / Jost | galas, launches, glamorous best-ofs |
+| `constructivist-agitprop` | Rodchenko / El Lissitzky | `#e8dfc8 · #1a1a1a · #d02e26` (hard diagonals, photomontage) | Oswald / Inter | rallying cries, bold announcements |
+| `mid-century-jetset` | PanAm & TWA travel posters | `#f4ead2 · #22333b · #2364aa #e0803d` (flat shapes, optimism) | Jost / DM Sans | itineraries, destination guides |
+| `memphis-milano` | Sottsass / 1981 Memphis group | `#fdf6ec · #1a1a1a · #f45b69 #17bebb #ffc914` (squiggles, terrazzo) | Baloo 2 / Nunito | playful inventories, creative recaps |
+| `medieval-illuminated` | Book of Kells / illuminated MS | `#f3e9d0 · #2b1d0e · #8b1e3f #c9a227 #1b4f8a` (gold leaf, drop caps, borders) | UnifrakturMaguntia *(display only, ≥24px)* / EB Garamond | epics, sagas, mock-heroic anything |
+| `ukiyo-e-woodblock` | Hokusai / Hiroshige | `#ece5d3 · #2b3a42 · #4a7ba6 #c1614a` (flat planes, wave lines, seal stamp) | Zen Antique / Karla | nature, journeys, seasonal guides |
+| `frutiger-aero-y2k` | 2004 Windows XP / Nokia ads | `#eaf4fb · #1b3a4b · #35a7ff #7ed957` (gloss, bubbles, sky) | Exo 2 / Inter | tech nostalgia, optimism, product pages |
+
+## Family J: Desi & diasporic · *budget: the source object's own maximalism or formality; ornament is structural here, not decoration*
+
+This family exists because this library belongs to one household (the general rule: build modes from the reader's own culture, these are Shubham and Annu's). Use for content with any personal, familial, or celebratory register; never as exotic paint on unrelated corporate content.
+
+| Mode | Exemplar | Triad `bg · ink · accent` | Fonts | Good for |
+|---|---|---|---|---|
+| `bollywood-hand-painted` | 1970s hand-painted film posters | `#f2d8a7 · #2b1a12 · #d02e26 #f4a300 #1b7ca6` (brushy, melodramatic) | Yatra One / Baloo 2 | dramatic recaps, sagas, hype pages |
+| `shaadi-invite` | Indian wedding card, gold on maroon | `#5c1a1a · #f3e2c0 · #c9a227` (foil borders, formal blessings) | Cinzel / EB Garamond | celebrations, announcements, milestones |
+| `jingle-truck` | South-Asian truck art | `#1b7ca6 · #fdf6ec · #d02e26 #f4a300 #2e8b57` (ornate borders on everything) | Baloo 2 / Nunito | maximalist joy, lists with blessings, horns-ok energy |
+| `cricket-scorecard` | Test-match scorecard / Wisden | `#f5f0e0 · #1d241d · #0f6c3c #b8860b` (innings tables, extras, fall of wickets) | IBM Plex Mono / IBM Plex Sans | stats-of-anything, innings-style recaps, partnerships |
+
 ---
 
-## The remix operator — manufacture novel combinations
+## The mode forge: when the subject brings its own world
+
+If the subject owns a real, strong visual language, a club's kit and crest, a city's transit signage, a game's UI, a brand, a specific decade of a specific place, don't pick a catalog mode: **forge one from the subject's actual world.** Pull the real palette (verified from primary sources, not memory), the nearest Google Font to its typographic feel, and the furniture that world would actually print (a matchday programme prints lineups; a metro prints strip maps).
+
+Then **append the forged mode to this file**, one table row in the closest family, or under a `## Forged` heading, with exemplar, triad, fonts, and good-for, so the catalog grows a new permanent entry every time a strong subject passes through. A library that forges is never finished, which is the point.
+
+Rules: CSS/SVG homage, never hotlinked copyrighted art · palette/logo facts verified against the real thing · a forged mode still declares and obeys a restraint-or-maximalism budget · forge only when the world is genuinely strong (a generic SaaS product does not have a world; Arsenal does).
+
+## The remix operator: manufacture novel combinations
 
 Axis rotation prevents repeats; remixing manufactures *fresh* looks. Formula:
 
@@ -127,6 +168,6 @@ Take the grid/structure from one exemplar and the color/type from another in a *
 When to remix: the topic is generic, the obvious mode is on cooldown, or you want the "one non-obvious pairing" the skill rewards. State the remix in one line (and in the `design-mode` meta tag as `A×B`).
 
 ## Picking a mode
-1. **Format/topic → family.** Serious analysis → A/B · statement/announcement → C · personal/fun/kit → D · network/teardown/flow → E · nostalgic/playful-web → F · strong conceit ("the page IS a thing") → G · made-for-one-person, warm → H. **When torn between a professional family and G/H at `read`/`experience` tier, lean G/H** — the corporate look is never under-represented in the library. At **`glance` tier, lean A/B** and let flawless execution be the signature: a Vignelli-quiet reference card beats a themed one you have to decode while cooking.
-2. **Rotate** off the last 3 modes; don't repeat the last 5 `(layout × mode)` pairs; rotate exemplars too (don't always reach for Linear/Stripe).
-3. **Picture the exemplar, then build the triad into a full ramp** via `craft-recipes.md` (60/30/10 dominance, never pure-black body text). Honor the family's restraint budget.
+1. **Format/topic → family.** Serious analysis → A/B · statement/announcement → C · personal/fun/kit → D · network/teardown/flow → E · nostalgic/playful-web → F · strong conceit ("the page IS a thing") → G · made-for-one-person, warm → H · era/movement energy ("make it 1923 / 1969 / 2004") → I · personal-cultural, celebratory → J. **When torn between a professional family and G/H/I/J at `read`/`experience` tier, lean away from professional**, the corporate look is never under-represented in the library. At **`glance` tier, lean A/B** and let flawless execution be the signature: a Vignelli-quiet reference card beats a themed one you have to decode while cooking.
+2. **Freshness breaks ties** (SKILL.md section 4); rotate exemplars too (don't always reach for Linear/Stripe).
+3. **Picture the exemplar, then build the triad into a full ramp** via `craft-recipes.md` §5. Honor the family's restraint budget.
