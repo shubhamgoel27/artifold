@@ -7,7 +7,7 @@ name = "artifold"
 # Single source of truth is artifold/__init__.py — `artifold --version`
 # reads __version__, so a second literal here just drifts out of sync.
 dynamic = ["version"]
-description = "Local-first library for your AI-generated HTML artifacts (Claude, ChatGPT, v0, …)."
+description = "/craft makes better HTML pages with Claude; the Artifold library keeps every page you make findable."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"

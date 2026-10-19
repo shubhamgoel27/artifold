@@ -64,6 +64,8 @@ def _cmd_init(args):
     else:
         _wizard_pick_root(existing)
 
+    _wizard_offer_skill()
+
     cfg = config.load()
     if not (cfg.get("roots") or []):
         print("\n  Nothing scanned yet. Add a root any time: artifold add <dir>")
@@ -88,6 +90,20 @@ def _cmd_init(args):
         return _cmd_open(None)
     print("\n  done. run `artifold` any time to view + auto-rescan.")
     return 0
+
+
+def _wizard_offer_skill():
+    """/craft makes the pages, Artifold keeps them: set up both in one go."""
+    missing = [a for a in _detected_agents() if not _skill_installed(a)]
+    if not missing:
+        return
+    names = " and ".join("Claude Code" if a == "claude" else "Codex" for a in missing)
+    ans = input(f"\n  Install the craft skill for {names}? [Y/n]: ").strip().lower()
+    if ans in ("n", "no"):
+        print("  ok. run `artifold install-skill` any time.")
+        return
+    print()
+    _cmd_install_skill(argparse.Namespace(dest=None, force=False, agent=missing))
 
 
 def _wizard_pick_root(existing: list[str]):
@@ -422,44 +438,87 @@ def _cmd_search(args):
     return 0
 
 
-def _cmd_install_skill(args):
-    """Copy the bundled /craft Claude Code skill into ~/.claude/skills/.
+# Where each coding agent looks for user-level skills. Both read the same
+# SKILL.md format (the open Agent Skills standard), so one copy serves both.
+SKILL_HOMES = {"claude": ".claude/skills", "codex": ".agents/skills"}
+INVOKE = {"claude": "/craft", "codex": "$craft"}
 
-    The skill is SKILL.md (the procedure) plus references/*.md (the layout /
-    mode / device / font / recipe catalogs it reads at compose time) — all
-    of them install together or the skill runs blind."""
+
+def _detected_agents() -> list[str]:
+    """Agents that look installed. Claude Code is the fallback when none do."""
+    import shutil
+    home = Path.home()
+    found = []
+    if (home / ".claude").is_dir() or shutil.which("claude"):
+        found.append("claude")
+    if (home / ".codex").is_dir() or (home / ".agents").is_dir() \
+            or shutil.which("codex"):
+        found.append("codex")
+    return found or ["claude"]
+
+
+def _skill_dir(agent: str) -> Path:
+    return Path.home() / SKILL_HOMES[agent] / "craft"
+
+
+def _skill_installed(agent: str) -> bool:
+    return (_skill_dir(agent) / "SKILL.md").exists()
+
+
+def _copy_skill(dest_dir: Path, force: bool) -> int | None:
+    """Copy SKILL.md and references/*.md. All of them install together or
+    the skill runs blind. Returns the reference count, or None if skipped."""
     from importlib import resources
     pkg = resources.files("artifold.skills.craft")
-    dest_dir = Path(args.dest).expanduser() if args.dest else \
-               Path.home() / ".claude" / "skills" / "craft"
-    dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / "SKILL.md"
-    if dest.exists() and not args.force:
-        print(f"  ! already installed at {dest}")
-        print(f"    pass --force to overwrite")
-        return 1
+    if dest.exists() and not force:
+        return None
+    dest_dir.mkdir(parents=True, exist_ok=True)
     dest.write_text(pkg.joinpath("SKILL.md").read_text(encoding="utf-8"),
                     encoding="utf-8")
     refs = pkg.joinpath("references")
-    n_refs = 0
+    n = 0
     if refs.is_dir():
         (dest_dir / "references").mkdir(exist_ok=True)
         for f in refs.iterdir():
             if f.name.endswith(".md"):
                 (dest_dir / "references" / f.name).write_text(
                     f.read_text(encoding="utf-8"), encoding="utf-8")
-                n_refs += 1
-    print(f"  installed /craft skill → {dest}"
-          + (f"  (+{n_refs} reference catalogs)" if n_refs else ""))
+                n += 1
+    return n
+
+
+def _cmd_install_skill(args):
+    """Install the bundled /craft skill for Claude Code, Codex, or both."""
+    if args.dest:
+        targets = [(None, Path(args.dest).expanduser())]
+    else:
+        agents = (args.agent if isinstance(args.agent, list)
+                  else _detected_agents() if args.agent == "auto"
+                  else list(SKILL_HOMES) if args.agent == "all"
+                  else [args.agent])
+        targets = [(a, _skill_dir(a)) for a in agents]
+    rc = 0
+    for agent, dest_dir in targets:
+        n = _copy_skill(dest_dir, args.force)
+        label = f" for {'Claude Code' if agent == 'claude' else 'Codex'}" if agent else ""
+        if n is None:
+            print(f"  ! already installed{label} at {dest_dir}  (--force to overwrite)")
+            rc = 1
+            continue
+        print(f"  installed craft{label} → {dest_dir}"
+              + (f"  (+{n} reference catalogs)" if n else ""))
+    cmd = INVOKE.get(targets[0][0] or "claude")
     print()
-    print("  Try it in Claude Code:")
-    print("    /craft a 30-day strength tracker for a beginner")
-    print("    /craft a one-pager comparing SF apartments")
-    print("    /craft an explainer of how transformers work, like dobble")
+    print("  Try it:")
+    print(f"    {cmd} a 30-day strength tracker for a beginner")
+    print(f"    {cmd} a pitch deck for a neighborhood coffee subscription")
+    print(f"    {cmd} an explainer of how transformers work, like dobble")
     print()
-    print("  The skill will consult your Artifold library for style references")
-    print("  by default; pass a reference explicitly with `like <id-or-name>`.")
-    return 0
+    print("  The skill reads your Artifold library for style references, so")
+    print("  a new page doesn't repeat your last few. Restart your agent once")
+    print("  so it picks up the skill.")
+    return rc
 
 
 # Design skills Artifold knows about. Artifold indexes the output of any of
@@ -866,9 +925,13 @@ def main(argv=None) -> int:
                         "from each").set_defaults(fn=_cmd_skills)
 
     isk = sub.add_parser("install-skill",
-        help="install the /craft Claude Code skill into ~/.claude/skills/")
-    isk.add_argument("--dest", help="install to a specific path "
-                                     "(default: ~/.claude/skills/craft/)")
+        help="install the craft skill for Claude Code and/or Codex")
+    isk.add_argument("--agent", choices=["auto", "claude", "codex", "all"],
+                     default="auto",
+                     help="which agent to install for (default: every one "
+                          "found; Claude Code → ~/.claude/skills, Codex → "
+                          "~/.agents/skills)")
+    isk.add_argument("--dest", help="install to a specific path instead")
     isk.add_argument("--force", action="store_true", help="overwrite if present")
     isk.set_defaults(fn=_cmd_install_skill)
 

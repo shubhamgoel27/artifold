@@ -6,7 +6,7 @@ The policy (tier gate, cycle caps, what blocks shipping) lives in SKILL.md secti
 
 Each Bash call is a full agent turn, but a headless render takes about 1.3 s. Run the renders **one after another** in a single block. Two traps, both validated on this machine:
 - **Never pass `--user-data-dir`.** A fresh profile makes headless Chrome hang forever. That is also why running renders in parallel "hung": each parallel render needed its own profile.
-- **Write every flag out in full on each line.** Never bundle flags in a variable like `H="--headless ..."`: the Bash tool runs zsh, which passes `$H` as one argument, so Chrome drops `--headless` and opens tabs in the user's real browser.
+- **Write every flag out in full on each line.** Never bundle flags in a variable like `H="--headless ..."`: zsh (the default shell on macOS) passes `$H` as one argument, so Chrome drops `--headless` and opens tabs in the user's real browser.
 - macOS has no `timeout` command. If you need one, use Python's `subprocess.run(..., timeout=30)`.
 
 ```bash

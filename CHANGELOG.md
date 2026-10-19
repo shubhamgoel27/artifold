@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.14.0
+
+`craft` and the library are now two equal halves of Artifold, and `craft`
+works in Codex as well as Claude Code.
+
+- `artifold init` offers to install `craft` for every agent it finds, so
+  one setup gives you both halves.
+- `artifold install-skill` installs for Claude Code (`~/.claude/skills`),
+  Codex (`~/.agents/skills`), or both. `--agent claude|codex|all` picks
+  one; the default is every agent found, with Claude Code as the fallback.
+- The skill no longer assumes Claude: the `artifold:tool` tag names the
+  agent that ran it, the fresh-eyes review works without subagents, and
+  the earlier-version search has a fallback when the library isn't
+  installed.
+- The README leads with what `craft` makes, side by side with plain
+  output, and has a skill-only install for people who don't want the
+  library.
+
 ## 0.13.1
 
 `/craft` no longer publishes artifacts to claude.ai.
