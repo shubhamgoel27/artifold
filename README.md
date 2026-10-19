@@ -4,64 +4,62 @@
 [![Python](https://img.shields.io/pypi/pyversions/artifold?style=flat-square&color=666)](https://pypi.org/project/artifold/)
 [![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](LICENSE)
 
-**Decks, reports and pages from AI that look designed, not generated.
-And one library that keeps every one of them.**
+Artifold is two tools for people who use Claude Code or Codex to write
+HTML pages: reports, slide decks, trackers, explainers.
 
-Artifold has two parts that work together:
+- **`craft`** is a skill for your agent. It edits the content first, then
+  chooses a layout, fonts and tone for the subject, checks the result in a
+  headless browser, and fixes what looks wrong.
+- **The library** is a local dashboard (`artifold serve`). It finds every
+  HTML file in the folders you choose, groups the versions of each page,
+  and shares any of them to your GitHub Pages in one click.
 
-- **`craft`**, a skill for Claude Code and Codex. Ask it for slides, a
-  report, a tracker or an explainer, and it works like a designer would:
-  it edits the content first, then picks a layout, type and voice for
-  that subject. No purple gradients, no rows of identical cards.
-- **The library**, which finds every HTML page on your disk, keeps its
-  history, and makes it easy to find again and share.
+![Same prompt, plain Claude vs craft](docs/gallery/composite-2x2.jpg)
+<sub>Same prompt and model. Left: Claude with no skill. Right: with
+`craft`. All eleven pairs are in the
+[gallery](https://shubhamgoel27.github.io/artifold/).</sub>
 
-Pages made with it have been passed around and praised by a designer at
-Figma, engineers at OpenAI and Meta, and a data engineer at DoorDash.
-
-![Same prompt, plain Claude vs /craft](docs/gallery/composite-2x2.jpg)
-<sub>Same prompt, same model. Left: plain Claude. Right: with `craft`. See
-all eleven in the [gallery](https://shubhamgoel27.github.io/artifold/).</sub>
+A designer at Figma, engineers at OpenAI and Meta, and a data engineer at
+DoorDash have praised pages made with `craft`.
 
 ## Why this exists
 
 I made a 30-day workout tracker for my partner with Claude. A few weeks
 later I couldn't find it. It was somewhere in a pile of project folders
-and downloads, so I asked for it again and got a worse one.
+and downloads, so I asked for it again. The new one was worse, and it
+looked like most AI pages do: a purple gradient and a row of identical
+cards.
 
-Two problems there. The pages were easy to lose, and the second try came
-out generic: the same purple gradient and the same row of cards as
-everything else. Thariq on the Claude Code team described the first one:
+Thariq on the Claude Code team ended up doing the same search by hand:
 
-> *"I've started preferring HTML as an output format instead of Markdown.
-> The added expressiveness means I get overall better output, and the chance
-> of someone actually reading your spec, report or PR writeup is much higher
-> if it's in HTML. … When writing this article, I asked Claude Code to read
-> through my code folder and find all the HTML files I've generated, group
-> and categorize them …"*
+> *"I asked Claude Code to read through my code folder and find all the
+> HTML files I've generated, group and categorize them …"*
 >
 > Thariq, *[The Unreasonable Effectiveness of HTML](https://x.com/trq212/status/2052809885763747935)*
 
-`craft` fixes the second problem, and the library fixes the first. Each
-one makes the other better: `craft` reads your library so a new page
-doesn't repeat your last few, and every page it makes lands in the
-library already described and searchable.
+So I built `craft` for the generic look and the library for the lost
+pages. The two share data. Before `craft` picks a layout, it looks at your
+last few pages so it doesn't repeat them. Each page it saves arrives in
+the library with a title and a description already filled in.
 
 ## Making pages: `craft`
 
 Type `/craft a 30-day strength tracker for a beginner` in Claude Code, or
 `$craft ...` in Codex, and it:
 
-- decides how much design the job needs, so a daily checklist stays quiet
-  and a deck, a gift or a public page gets the full treatment
+- decides how much design the job needs. A daily checklist gets clean
+  type and nothing more. A deck or a public page gets its own layout and
+  a font pairing.
 - edits the content before styling it: what the reader should remember,
   what to cut, and what belongs in a table or chart instead of prose
-- picks a layout, a visual style, a tone of voice and one hand-built detail
-  for this subject, and reads your library first so the new page doesn't
-  repeat your last few
-- avoids a long list of named AI-design habits (the purple gradient hero,
-  identical cards, emoji bullets)
-- renders the page in a headless browser and fixes what it finds
+- picks a layout, a visual style and a tone for this subject, plus one
+  detail built for it, such as a custom chart, a running margin note, or
+  progress shown as passport stamps
+- checks the page against 15 named AI-design habits (purple gradient hero,
+  identical icon cards, emoji bullets, glass panels, everything centered)
+  and removes them
+- renders the page at desktop and phone widths in a headless browser, and
+  fixes what it finds
 - saves it to `~/artifold-inbox/`, where it shows up in the library within
   seconds
 
@@ -72,6 +70,8 @@ explainer, like dobble` starts from that page's actual CSS.
 
 ## Keeping pages: the library
 
+![Artifold demo](docs/demo.gif)
+
 ### Finds everything
 
 Point it at a few folders and it indexes every HTML file in them. Each
@@ -80,10 +80,8 @@ description of what it is for, so two similar cheat sheets are easy to
 tell apart at a glance. Search covers titles, headings, opening text,
 prompts and intents. `⌘K` jumps to anything.
 
-It leaves out what isn't yours: `node_modules`, build output, cloned git
-repos, server templates, and anything nested too deep.
-
-![Artifold demo](docs/demo.gif)
+It skips `node_modules`, build output, cloned git repos, server
+templates, and anything nested deeper than `max_depth` (3 by default).
 
 ### Keeps the history
 
@@ -101,8 +99,9 @@ under last week's one-offs.
 Click share on any card and, usually within a minute, you get a permanent link
 like `https://you.github.io/artifold-share/abc12345.html`, copied to your
 clipboard. It publishes to your own GitHub Pages: free, no expiry, and
-the person you send it to needs nothing installed. You can also export
-any artifact to PDF.
+the person you send it to needs nothing installed. It uses the
+[`gh` CLI](https://cli.github.com/), so you need to be logged in to GitHub
+there. You can also export any artifact to PDF.
 
 ![Share flow in detail pane](docs/share-detail.png)
 
@@ -114,7 +113,7 @@ learn about each page.
 
 | Made with | Artifold knows |
 |---|---|
-| **`craft`** | everything: intent, the layout and style chosen, and the history of those choices |
+| **`craft`** | intent, the layout and style chosen, and the history of those choices |
 | **[Hallmark](https://github.com/Nutlope/hallmark)** | layout, theme and brief, read from Hallmark's own stamp and log |
 | **[taste-skill](https://github.com/Leonxlnx/taste-skill)**, **[huashu-design](https://github.com/alchaincyf/huashu-design)**, anything else | palette, fonts, design tokens, page structure, thumbnail, full-text search |
 
@@ -131,9 +130,9 @@ Run `artifold skills` to see which of these you have installed.
 ### Stays out of the way
 
 A running `artifold serve` uses about 30 MB of memory and no CPU while
-nothing changes. When a file changes, a rescan takes well under a second,
-because unchanged files are recognized from their size and modification
-time and never reread. While you are iterating on a page, its thumbnail
+nothing changes. When a file changes, a rescan of my library (about 300
+pages) takes 0.7 seconds, because unchanged files are recognized from
+their size and modification time and never reread. While you are iterating on a page, its thumbnail
 waits until you stop editing, so a burst of saves launches the headless
 browser once instead of once per save.
 
@@ -172,8 +171,8 @@ mkdir -p ~/.claude/skills && curl -sL https://github.com/shubhamgoel27/artifold/
 ```
 
 The skill works without the library. It just can't look at your past
-pages, so it has less to go on when it avoids repeating itself. You can
-add the library later and nothing changes.
+pages, so it has less to go on when it avoids repeating itself. If you
+install the library later, the skill starts using it on the next run.
 
 ### Everything, by hand
 
@@ -258,7 +257,7 @@ rebuilds it from your files.
 
 ## Optional: AI descriptions
 
-Artifold works without any AI or network access. Pages made with `craft`
+Indexing and search work offline, with no AI. Pages made with `craft`
 or Hallmark already describe themselves. For everything else, you can have
 Claude Haiku write a one-line description of each artifact:
 
@@ -268,25 +267,17 @@ export ANTHROPIC_API_KEY=sk-ant-...
 artifold scan --intent
 ```
 
-Each artifact costs at most about a third of a cent, and runs once: the
-result is stored by content, so later scans reuse it until the page changes.
+Each artifact costs under half a cent, and runs once: the result is
+stored by content, so later scans reuse it until the page changes.
 
 ## What leaves your machine
 
-Artifold has no server and no account, and the CLI holds no credentials
-for anything. Your library is the folders you pointed it at.
+Artifold has no hosted service and no account. The dashboard runs on
+localhost, and the CLI holds no credentials. It reads your files where
+they are and never moves or rewrites one unless you ask it to.
 
 The only thing that sends an artifact anywhere is `artifold share`, which
 publishes the one artifact you pick to your own GitHub Pages.
-
-## What it isn't
-
-- **A replacement for git or your folders.** It reads what is already
-  there and moves nothing.
-- **Locked to `craft` or to one agent.** Hallmark, taste-skill and huashu-design are all
-  good, and the library keeps their output findable too.
-- **Tied to one folder.** Watch `~/Downloads`, `~/Documents` and a project
-  folder at once.
 
 ## Status
 
@@ -298,7 +289,7 @@ issue](../../issues/new); one line is enough.
 
 ## Roadmap
 
-- [ ] A layout that works well on a phone
+- [ ] A dashboard layout that works on a phone
 - [ ] `artifold adopt <file>` to move existing files into the inbox
 - [ ] Cloudflare Pages as a sharing option for people without the `gh` CLI
 - [ ] First-class Markdown files

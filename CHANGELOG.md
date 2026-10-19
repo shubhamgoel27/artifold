@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.1
+
+README only. The opening now says plainly what the two tools are and who
+they are for, and claims are backed by numbers or examples: the 15 named
+AI-design habits, real built details, the measured rescan time, and that
+sharing needs the `gh` CLI. A contradiction is fixed ("works without any
+network access" sat beside a Chromium download), and repeated sections
+are cut.
+
 ## 0.14.0
 
 `craft` and the library are now two equal halves of Artifold, and `craft`
