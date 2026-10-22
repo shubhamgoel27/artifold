@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.3
+
+README only. The top image is now one before/after pair (the climate
+explainer) instead of a grid of four; the grid moves to the craft section
+and links to the gallery. Images and links use absolute URLs, so they also
+render on PyPI.
+
 ## 0.14.2
 
 README only: a new opening that starts from the default AI look and lets

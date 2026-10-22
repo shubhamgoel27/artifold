@@ -29,3 +29,7 @@ measuring or judging behavior, and tell the user to restart theirs.
 Wall-clock timings of the same scan swung 4x between runs from background
 load. Compare with `time.process_time()` medians, and compare against the
 previous version on the same data in the same run.
+
+- **A pipe hides a failed publish.** `uv publish ... | sed ... && git tag` tagged a release that had not uploaded, because the pipeline's exit code is sed's. The token in `.env` is `pypi_token`, so pass `UV_PUBLISH_TOKEN="$pypi_token"`. Check the upload line before tagging, or use `set -o pipefail`.
+
+- **Taglines are where slop hides.** I wrote "Decks, reports and pages from AI that look designed, not generated. And one library that keeps every one of them." The user called it AI slop. The tells: an "X, not Y" line, an "And ..." fragment for rhythm, symmetry for its own sake ("each fixes the other"), and adjectives where a number or an example should go. Before shipping any opening copy, have a fresh-eyes subagent review it cold, the way craft reviews pages, and lead with a plain sentence that says what the thing is and who it is for.

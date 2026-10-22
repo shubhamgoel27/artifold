@@ -2,15 +2,15 @@
 
 [![PyPI](https://img.shields.io/pypi/v/artifold?color=c1452a&label=pypi&style=flat-square)](https://pypi.org/project/artifold/)
 [![Python](https://img.shields.io/pypi/pyversions/artifold?style=flat-square&color=666)](https://pypi.org/project/artifold/)
-[![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](https://github.com/shubhamgoel27/artifold/blob/main/LICENSE)
 
 Ask Claude Code for a report and you know what you'll get: a purple
 gradient, three cards with emoji icons, everything centered. Ask with
 `/craft` and you get the one on the right.
 
-![Same prompt, plain Claude vs craft](docs/gallery/composite-2x2.jpg)
-<sub>Same prompt and model, with and without `craft`. All eleven pairs are
-in the [gallery](https://shubhamgoel27.github.io/artifold/).</sub>
+![Climate change in seven charts: plain Claude on the left, Claude with craft on the right](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-pair-climate.jpg)
+<sub>Same prompt, same model. More pairs below and in the
+[gallery](https://shubhamgoel27.github.io/artifold/).</sub>
 
 Then Artifold keeps it. Every HTML page your agent has ever written lives
 in one local dashboard, where you can search it, see every version, and
@@ -65,11 +65,13 @@ Type `/craft a 30-day strength tracker for a beginner` in Claude Code, or
 You can also point it at something you made before: `/craft a poker odds
 explainer, like dobble` starts from that page's actual CSS.
 
-![The SF coffee tier list, plain Claude vs craft](docs/gallery/composite-pair-coffee.jpg)
+[![Four more prompts, plain Claude vs craft](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-2x2.jpg)](https://shubhamgoel27.github.io/artifold/)
+<sub>A strength tracker, an apartment comparison, a transformers explainer
+and a coffee tier list. Click through for all eleven, side by side.</sub>
 
 ## Keeping pages: the library
 
-![Artifold demo](docs/demo.gif)
+![Artifold demo](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/demo.gif)
 
 ### Finds everything
 
@@ -91,7 +93,7 @@ how many times you have revised or opened it. "Most used" sorts by that,
 so the trackers you open every day stay near the top instead of sinking
 under last week's one-offs.
 
-![Command palette](docs/cmdk.png)
+![Command palette](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/cmdk.png)
 
 ### Shares in one click
 
@@ -102,7 +104,7 @@ the person you send it to needs nothing installed. It uses the
 [`gh` CLI](https://cli.github.com/), so you need to be logged in to GitHub
 there. You can also export any artifact to PDF.
 
-![Share flow in detail pane](docs/share-detail.png)
+![Share flow in detail pane](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/share-detail.png)
 
 ### Works with other design skills too
 
@@ -119,9 +121,9 @@ learn about each page.
 The last row needs nothing from the page and covers most of what the
 library does. The first two rows exist because a page can say what it is
 in a few lines of `<head>`. If you build a design skill, that format is
-documented in [docs/ARTIFACT-METADATA.md](docs/ARTIFACT-METADATA.md), and
+documented in [docs/ARTIFACT-METADATA.md](https://github.com/shubhamgoel27/artifold/blob/main/docs/ARTIFACT-METADATA.md), and
 nothing in it is specific to Artifold. Skills with their own format are
-read through [adapters](artifold/adapters.py); pull requests for new ones
+read through [adapters](https://github.com/shubhamgoel27/artifold/blob/main/artifold/adapters.py); pull requests for new ones
 are welcome.
 
 Run `artifold skills` to see which of these you have installed.
@@ -284,7 +286,7 @@ Version 0.14, alpha. I use it every day on macOS; Linux should work;
 Windows is untested. There are 178 tests and CI on Python 3.10 to 3.13.
 It is a one-person project, so I build what I need first, but issues and
 pull requests are welcome. If something is confusing, [open an
-issue](../../issues/new); one line is enough.
+issue](https://github.com/shubhamgoel27/artifold/issues/new); one line is enough.
 
 ## Roadmap
 
