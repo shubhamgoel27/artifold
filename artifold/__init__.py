@@ -1,2 +1,2 @@
 """Artifold — a local-first library for your AI-generated HTML artifacts."""
-__version__ = "0.14.3"
+__version__ = "0.14.4"

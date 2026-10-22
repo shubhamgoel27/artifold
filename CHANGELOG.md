@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.4
+
+README only. The top image is the SF coffee tier list pair, and the full
+eleven-pair gallery image now appears in the craft section. That image
+listed a dead `artifold.dev` URL; it now points to the real gallery.
+
 ## 0.14.3
 
 README only. The top image is now one before/after pair (the climate

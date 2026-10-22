@@ -8,9 +8,8 @@ Ask Claude Code for a report and you know what you'll get: a purple
 gradient, three cards with emoji icons, everything centered. Ask with
 `/craft` and you get the one on the right.
 
-![Climate change in seven charts: plain Claude on the left, Claude with craft on the right](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-pair-climate.jpg)
-<sub>Same prompt, same model. More pairs below and in the
-[gallery](https://shubhamgoel27.github.io/artifold/).</sub>
+![An SF coffee tier list: plain Claude on the left, Claude with craft on the right](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-pair-coffee.jpg)
+<sub>Same prompt, same model. Ten more pairs are below.</sub>
 
 Then Artifold keeps it. Every HTML page your agent has ever written lives
 in one local dashboard, where you can search it, see every version, and
@@ -65,9 +64,9 @@ Type `/craft a 30-day strength tracker for a beginner` in Claude Code, or
 You can also point it at something you made before: `/craft a poker odds
 explainer, like dobble` starts from that page's actual CSS.
 
-[![Four more prompts, plain Claude vs craft](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-2x2.jpg)](https://shubhamgoel27.github.io/artifold/)
-<sub>A strength tracker, an apartment comparison, a transformers explainer
-and a coffee tier list. Click through for all eleven, side by side.</sub>
+[![Eleven prompts, plain Claude vs craft](https://raw.githubusercontent.com/shubhamgoel27/artifold/main/docs/gallery/composite-11x.jpg)](https://shubhamgoel27.github.io/artifold/)
+<sub>Eleven prompts, each run through Claude twice. Click through to the
+[gallery](https://shubhamgoel27.github.io/artifold/) to open any of them.</sub>
 
 ## Keeping pages: the library
 
