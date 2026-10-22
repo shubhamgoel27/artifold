@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.2
+
+README only: a new opening that starts from the default AI look and lets
+the side-by-side image make the case.
+
 ## 0.14.1
 
 README only. The opening now says plainly what the two tools are and who

@@ -4,20 +4,19 @@
 [![Python](https://img.shields.io/pypi/pyversions/artifold?style=flat-square&color=666)](https://pypi.org/project/artifold/)
 [![License](https://img.shields.io/badge/license-MIT-666?style=flat-square)](LICENSE)
 
-Artifold is two tools for people who use Claude Code or Codex to write
-HTML pages: reports, slide decks, trackers, explainers.
-
-- **`craft`** is a skill for your agent. It edits the content first, then
-  chooses a layout, fonts and tone for the subject, checks the result in a
-  headless browser, and fixes what looks wrong.
-- **The library** is a local dashboard (`artifold serve`). It finds every
-  HTML file in the folders you choose, groups the versions of each page,
-  and shares any of them to your GitHub Pages in one click.
+Ask Claude Code for a report and you know what you'll get: a purple
+gradient, three cards with emoji icons, everything centered. Ask with
+`/craft` and you get the one on the right.
 
 ![Same prompt, plain Claude vs craft](docs/gallery/composite-2x2.jpg)
-<sub>Same prompt and model. Left: Claude with no skill. Right: with
-`craft`. All eleven pairs are in the
-[gallery](https://shubhamgoel27.github.io/artifold/).</sub>
+<sub>Same prompt and model, with and without `craft`. All eleven pairs are
+in the [gallery](https://shubhamgoel27.github.io/artifold/).</sub>
+
+Then Artifold keeps it. Every HTML page your agent has ever written lives
+in one local dashboard, where you can search it, see every version, and
+share it with one click.
+
+Works with Claude Code and Codex.
 
 A designer at Figma, engineers at OpenAI and Meta, and a data engineer at
 DoorDash have praised pages made with `craft`.
