@@ -3,1066 +3,367 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>30-Day Strength · Beginner Block</title>
-
-<meta name="artifold:intent" content="Printable 30-day beginner strength tracker with daily lifts, sets, weight, rest, tick-boxes.">
+<title>13 lifts in 30 days: a beginner’s strength sheet</title>
+<meta name="description" content="A printable 30-day beginner strength plan. Two full-body dumbbell workouts, alternated three days a week, with boxes for reps and blanks for weight.">
+<meta name="artifold:intent" content="Printable 30-day beginner strength plan with daily cells to log reps and tick off">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
 <meta name="artifold:prompt" content="30-day strength tracker for a beginner. Daily exercise plan with sets, reps, weight progression, rest. Printed, ticked off.">
-<meta name="artifold:design-mode" content="swiss-grid">
-<meta name="artifold:voice-register" content="coach-imperative">
-
-<!--
-  Design choices:
-  - swiss-grid: strict 12-col, Helvetica/Inter, b&w + one accent (signal red).
-    Drives the gridded daily cards; matches a coach's spreadsheet without going editorial.
-  - coach-imperative voice: short verbs, no rhetoric. "Squat. Brace. Drive."
-  - Anti-slop: no cream, no serif, no italic-second-noun, no mono eyebrow,
-    no rust accent, no bento cards, no purple gradient, no rounded-2xl.
-  - Mode override of principle 7 (borders): swiss-grid uses hairlines as the
-    primary structural device. Borders are intentional, not last-resort.
--->
-
+<meta name="artifold:scale" content="glance">
+<meta name="artifold:conceit" content="none">
+<meta name="artifold:layout-archetype" content="calendar-grid">
+<meta name="artifold:design-mode" content="glance-utility (near-white, one ink, plate-red accent for lift days)">
+<meta name="artifold:voice-register" content="coach-plainspoken">
+<meta name="artifold:signature-device" content="log-cell: each lift day is a mini logbook with weight blanks and rep boxes; quiet second: day 30 before/after blanks">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink:        #0a0a0a;
-    --ink-2:      #2a2a2a;
-    --ink-3:      #6b6b6b;
-    --ink-4:      #b8b8b8;
-    --rule:       #d8d8d8;
-    --paper:      #ffffff;
-    --paper-2:    #f4f4f2;
-    --signal:     #d6342a; /* one accent, used sparingly */
+:root{
+  --font: "Inter Tight", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* type, ratio 1.2 */
+  --t-xs: .694rem; --t-sm: .833rem; --t-base: 1rem; --t-md: 1.2rem; --t-lg: 1.44rem; --t-xl: 2.488rem;
+  /* space, 4px steps */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px; --s10:40px; --s12:48px; --s16:64px;
+  --r: 6px;
+  --ground:#fbfbf9; --cell:#ffffff; --ink:#1a1a1a; --ink-2:#55554f; --ink-3:#8a8a82;
+  --rule:#e3e2dc; --rule-strong:#c9c8c0; --accent:#b3261e; --accent-soft:#f8e9e7; --box:#9b9a92;
+  --shadow: 0 1px 1px rgb(60 55 40 / .04), 0 2px 4px rgb(60 55 40 / .05), 0 8px 20px rgb(60 55 40 / .05);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#121211; --cell:#1b1b19; --ink:#ecebe6; --ink-2:#b0afa7; --ink-3:#7f7e77;
+    --rule:#2c2c29; --rule-strong:#44433f; --accent:#ff7a6b; --accent-soft:#2e1a18; --box:#6c6b64;
+    --shadow: 0 1px 1px rgb(0 0 0 / .3), 0 4px 14px rgb(0 0 0 / .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121211; --cell:#1b1b19; --ink:#ecebe6; --ink-2:#b0afa7; --ink-3:#7f7e77;
+  --rule:#2c2c29; --rule-strong:#44433f; --accent:#ff7a6b; --accent-soft:#2e1a18; --box:#6c6b64;
+  --shadow: 0 1px 1px rgb(0 0 0 / .3), 0 4px 14px rgb(0 0 0 / .25);
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ground)}
+body{margin:0;font-family:var(--font);font-size:var(--t-base);line-height:1.5;color:var(--ink);background:var(--ground);
+  font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:var(--ground)}
+.sheet{max-width:1320px;margin:0 auto;padding:var(--s12) var(--s8) var(--s16)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num,.wt,.box,.wkn,.mono,td.n{font-variant-numeric:tabular-nums}
 
-    --fs-1: 11px;
-    --fs-2: 13px;
-    --fs-3: 16px;
-    --fs-4: 22px;
-    --fs-5: 44px;
-    --fs-6: 88px;
+/* ---------- header ---------- */
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s8);align-items:end;margin-bottom:var(--s6)}
+h1{font-size:var(--t-xl);line-height:1.05;letter-spacing:-.025em;font-weight:700;margin:0 0 var(--s3)}
+h1 em{font-style:normal;color:var(--accent)}
+.dek{margin:0;max-width:62ch;color:var(--ink-2);font-size:var(--t-md);line-height:1.4}
+.meta{display:grid;gap:var(--s3);justify-items:end;font-size:var(--t-sm);color:var(--ink-2)}
+.fill{display:flex;gap:var(--s2);align-items:baseline}
+.fill .wt{width:9rem}
+.key{display:flex;gap:var(--s4);flex-wrap:wrap;justify-content:flex-end;margin:0;padding:0;list-style:none}
+.key li{display:flex;align-items:center;gap:var(--s2)}
+.key .sw{width:14px;height:3px;background:var(--accent);border-radius:2px}
 
-    --col: 1fr;
-    --gut: 16px;
-  }
+/* ---------- grid ---------- */
+.cal{--rail:6rem;--L:minmax(0,1.55fr);--E:minmax(0,1fr)}
+/* lift days (Mon, Wed, Fri) get the width; walk and rest cells need little */
+.dows,.grid{display:grid;grid-template-columns:var(--rail) var(--L) var(--E) var(--L) var(--E) var(--L) var(--E) var(--E);gap:var(--s2)}
+.dows{margin-bottom:var(--s2);font-size:var(--t-xs);color:var(--ink-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.dows span{padding-left:var(--s3)}
+.grid{list-style:none;margin:0;padding:0}
+.wk{display:flex;flex-direction:column;justify-content:center;gap:2px;padding-right:var(--s3);border-right:1px solid var(--rule-strong)}
+.wkn{font-family:var(--mono);font-size:var(--t-xs);color:var(--ink-3)}
+.wkv{font-weight:700;font-size:var(--t-md);line-height:1.1}
+.wks{font-size:var(--t-sm);color:var(--ink-2);line-height:1.2}
 
-  * { box-sizing: border-box; }
+.day{position:relative;display:flex;flex-direction:column;min-height:9.5rem;padding:var(--s2) var(--s3) var(--s3);
+  background:var(--cell);border:1px solid var(--rule);border-radius:var(--r)}
+.day.lift{border-top:3px solid var(--accent);box-shadow:var(--shadow)}
+.dh{display:flex;align-items:center;gap:var(--s2);min-height:28px;margin-bottom:var(--s1)}
+.num{font-family:var(--mono);font-weight:700;font-size:var(--t-md);line-height:1}
+.dow{display:none}
+.tag{font-size:var(--t-sm);font-weight:600;color:var(--accent)}
+.tag .no{color:var(--ink-3);font-weight:500}
+.tick{margin-left:auto;flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--box);background:transparent;
+  padding:0;cursor:pointer;position:relative;color:var(--ground)}
+.tick:disabled{cursor:default}
+/* invisible 44px hit area */
+.tick::after{content:"";position:absolute;inset:-10px}
+.tick[aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}
+.tick[aria-pressed="true"]::before{content:"";position:absolute;left:7px;top:4px;width:6px;height:11px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
 
-  html, body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Helvetica Neue", Helvetica, Inter, -apple-system, Arial, sans-serif;
-    font-size: var(--fs-2);
-    line-height: 1.45;
-    -webkit-font-smoothing: antialiased;
-  }
+.exs{list-style:none;margin:0;padding:0;display:grid;gap:var(--s2);margin-top:auto}
+.exs li{display:grid;grid-template-columns:minmax(0,1fr) 2.75rem auto;align-items:end;gap:var(--s2);font-size:var(--t-sm);line-height:1.1}
+.ex{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wt{display:inline-block;height:1.1em;border-bottom:1px solid var(--ink-3)}
+.exs li.bw .ex{grid-column:1/3}
+.boxes{display:flex;gap:3px}
+.box{width:18px;height:18px;border:1px solid var(--box);border-radius:2px}
+.what{margin:auto 0 0;font-weight:600;font-size:var(--t-base);line-height:1.2}
+.sub{margin:var(--s1) 0 0;font-size:var(--t-sm);color:var(--ink-2);line-height:1.3}
+.day.rest .what{color:var(--ink-3)}
+.day.rest{background:transparent;border-style:dashed}
+.day.look{border:1.5px solid var(--ink)}
+.cmp{display:flex;align-items:baseline;gap:var(--s2);margin:var(--s1) 0 0;font-size:var(--t-sm);color:var(--ink-2)}
+.cmp .wt{flex:1}
+.look .what{margin-top:0}
+.day.next{grid-column:span 5;background:transparent;border:0;justify-content:center;padding-left:var(--s6)}
+.day.next .what{font-size:var(--t-lg);margin:0;letter-spacing:-.01em}
 
-  .page {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 48px 40px 80px;
-  }
+.grid{row-gap:var(--s3)}
 
-  /* ---- 12-col grid spine ---- */
-  .g12 {
-    display: grid;
-    grid-template-columns: repeat(12, var(--col));
-    gap: var(--gut);
-  }
+/* ---------- plan ---------- */
+.plan{margin-top:var(--s16);display:grid;gap:var(--s10)}
+h2{font-size:var(--t-lg);line-height:1.15;letter-spacing:-.015em;margin:0 0 var(--s2);font-weight:700}
+.lede{margin:0 0 var(--s5);color:var(--ink-2);max-width:68ch}
+.workouts{display:grid;grid-template-columns:1fr 1fr;gap:var(--s8)}
+h3{font-size:var(--t-md);margin:0 0 var(--s2);font-weight:700;display:flex;align-items:baseline;gap:var(--s3)}
+h3 .l{color:var(--accent)}
+h3 small{font-size:var(--t-sm);font-weight:500;color:var(--ink-3)}
+table{width:100%;border-collapse:collapse;font-size:var(--t-sm)}
+th{text-align:left;font-weight:600;font-size:var(--t-xs);color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;
+  padding:0 var(--s3) var(--s2) 0;border-bottom:1px solid var(--rule-strong)}
+td{padding:var(--s3) var(--s3) var(--s3) 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.4}
+td:first-child{font-weight:600;color:var(--ink);width:34%}
+td.n{font-family:var(--mono);white-space:nowrap;width:1%}
+td.cue{color:var(--ink-2)}
+th:nth-child(2),th:nth-child(3){white-space:nowrap}
+.short{display:block;font-weight:400;color:var(--ink-3);font-size:var(--t-xs);font-family:var(--mono)}
 
-  /* ---- Masthead ---- */
-  .mast {
-    border-top: 2px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    padding: 14px 0 18px;
-    margin-bottom: 32px;
-  }
-  .mast-row {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    align-items: end;
-  }
-  .mast-id {
-    grid-column: 1 / span 2;
-    font-size: var(--fs-1);
-    letter-spacing: 0.04em;
-    color: var(--ink-3);
-    font-weight: 500;
-  }
-  .mast-title {
-    grid-column: 3 / span 7;
-    font-size: var(--fs-5);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.0;
-  }
-  .mast-title em {
-    font-style: normal;
-    color: var(--signal);
-  }
-  .mast-meta {
-    grid-column: 10 / span 3;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    text-align: right;
-    line-height: 1.5;
-  }
-  .mast-meta b { color: var(--ink); font-weight: 600; }
+.rules{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:var(--s8)}
+.rules ol{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:var(--s3)}
+.rules ol li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:var(--s2);font-size:var(--t-sm);line-height:1.45}
+.rules ol li::before{content:counter(s);font-family:var(--mono);font-weight:700;width:22px;height:22px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:var(--t-xs)}
+.rules ul{margin:0;padding:0;list-style:none;display:grid;gap:var(--s3);font-size:var(--t-sm);line-height:1.45}
+.rules ul li b{display:block;font-weight:600}
+.rules p{font-size:var(--t-sm);margin:0;line-height:1.45;color:var(--ink-2)}
+h4{font-size:var(--t-base);margin:0 0 var(--s3);font-weight:700}
+.src{border-top:1px solid var(--rule-strong);padding-top:var(--s4);font-size:var(--t-xs);color:var(--ink-3);max-width:110ch;line-height:1.5}
+.src a{color:inherit}
+.stop{font-weight:600;color:var(--ink)}
 
-  /* ---- Intro block ---- */
-  .intro {
-    margin-bottom: 48px;
-  }
-  .intro-claim {
-    grid-column: 1 / span 7;
-    font-size: var(--fs-4);
-    font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-  }
-  .intro-claim span { color: var(--ink-3); }
-  .intro-side {
-    grid-column: 9 / span 4;
-    font-size: var(--fs-2);
-    color: var(--ink-2);
-  }
-  .intro-side p { margin: 0 0 10px; }
-  .intro-side b { font-weight: 600; }
+.theme{position:fixed;top:var(--s4);right:var(--s4);z-index:5;height:44px;padding:0 var(--s4);border-radius:22px;border:1px solid var(--rule-strong);
+  background:var(--cell);color:var(--ink);font:500 var(--t-sm)/1 var(--font);cursor:pointer;box-shadow:var(--shadow)}
+.print{display:none}
 
-  /* ---- Section heading ---- */
-  .sec {
-    margin-top: 56px;
-    border-top: 1px solid var(--ink);
-    padding-top: 10px;
-    margin-bottom: 18px;
-  }
-  .sec-row {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    align-items: baseline;
-  }
-  .sec-num {
-    grid-column: 1 / span 2;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-  }
-  .sec-title {
-    grid-column: 3 / span 7;
-    font-size: var(--fs-3);
-    font-weight: 600;
-    letter-spacing: -0.005em;
-  }
-  .sec-aside {
-    grid-column: 10 / span 3;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    text-align: right;
-  }
+/* ---------- mid widths ---------- */
+@media (max-width:1100px){
+  .cal{--rail:4.5rem}
+  .wks{display:none}
+  .exs li{grid-template-columns:minmax(0,1fr) 2rem auto;gap:var(--s1)}
+  .box{width:15px;height:15px}
+  .rules{grid-template-columns:1fr 1fr}
+  .rules > :first-child{grid-column:1/-1}
+}
+/* ---------- phone: agenda list ---------- */
+@media (max-width:640px){
+  .sheet{padding:var(--s16) var(--s4) var(--s12)}
+  .top{grid-template-columns:1fr;gap:var(--s4)}
+  h1{font-size:2.074rem}
+  .dek{font-size:var(--t-base)}
+  .meta{justify-items:start}
+  .key{justify-content:flex-start}
+  .dows{display:none}
+  .grid{grid-template-columns:1fr;row-gap:var(--s2)}
+  .wk{flex-direction:row;align-items:baseline;gap:var(--s2);border-right:0;border-bottom:1px solid var(--rule-strong);padding:var(--s6) 0 var(--s2)}
+  .wks{display:inline;margin-left:auto}
+  .day{min-height:0;padding:var(--s3)}
+  .dow{display:inline;font-size:var(--t-sm);color:var(--ink-3)}
+  .what{margin-top:0}
+  .exs{margin-top:var(--s2)}
+  .exs li{grid-template-columns:minmax(0,1fr) 4rem auto;font-size:var(--t-base)}
+  .box{width:22px;height:22px}
+  .boxes{gap:var(--s1)}
+  .day.next{grid-column:auto;padding:var(--s6) 0 0}
+  .workouts,.rules{grid-template-columns:1fr}
+  td:first-child{width:auto}
+  .theme{top:var(--s3);right:var(--s3)}
+}
 
-  /* ---- Rule reference table (program key) ---- */
-  .key {
-    grid-column: 1 / span 12;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--rule);
-    border-left: 1px solid var(--rule);
+/* ---------- print: two landscape pages ---------- */
+@page{size:letter landscape;margin:.4in}
+@media print{
+  :root,:root[data-theme="dark"]{
+    --ground:#fff; --cell:#fff; --ink:#111; --ink-2:#444; --ink-3:#777; --rule:#ccc; --rule-strong:#999;
+    --accent:#b3261e; --accent-soft:#f6e4e2; --box:#777; --shadow:none; color-scheme:light;
   }
-  .key-cell {
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    padding: 14px 14px 16px;
-  }
-  .key-cell .k {
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .key-cell .v {
-    font-size: var(--fs-3);
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: -0.005em;
-  }
-  .key-cell .n {
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    margin-top: 2px;
-  }
-
-  /* ---- Week strip ---- */
-  .week {
-    margin-top: 36px;
-  }
-  .week-head {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--rule);
-    padding: 10px 0 12px;
-    margin-bottom: 14px;
-    align-items: baseline;
-  }
-  .week-label {
-    grid-column: 1 / span 2;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  .week-title {
-    grid-column: 3 / span 5;
-    font-size: var(--fs-3);
-    font-weight: 600;
-  }
-  .week-load {
-    grid-column: 8 / span 3;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-  }
-  .week-load b { color: var(--ink); font-weight: 600; }
-  .week-progress {
-    grid-column: 11 / span 2;
-    text-align: right;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-  }
-
-  /* ---- Day cards (7 across) ---- */
-  .days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-  }
-  .day {
-    border: 1px solid var(--rule);
-    padding: 10px 10px 12px;
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: var(--paper);
-  }
-  .day.rest {
-    background: var(--paper-2);
-    border-color: var(--paper-2);
-  }
-  .day-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 6px;
-    margin-bottom: 2px;
-  }
-  .day.rest .day-head { border-color: #e5e5e3; }
-  .day-num {
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  .day-tag {
-    font-size: var(--fs-1);
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: 0.02em;
-  }
-  .day.rest .day-tag { color: var(--ink-3); }
-  .day-focus {
-    font-size: var(--fs-2);
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 2px;
-    letter-spacing: -0.005em;
-  }
-  .day.rest .day-focus { color: var(--ink-3); font-weight: 500; }
-
-  .lifts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    flex: 1;
-  }
-  .lift {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: baseline;
-    font-size: var(--fs-1);
-    color: var(--ink-2);
-    line-height: 1.35;
-  }
-  .lift .nm { color: var(--ink); font-weight: 500; }
-  .lift .sx { color: var(--ink-3); font-variant-numeric: tabular-nums; }
-
-  .day-foot {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    border-top: 1px solid var(--rule);
-    padding-top: 6px;
-    margin-top: 4px;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-  }
-  .day.rest .day-foot { border-color: #e5e5e3; }
-  .tick {
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--ink);
-    display: inline-block;
-  }
-  .day.rest .tick {
-    border-style: dashed;
-    border-color: var(--ink-4);
-  }
-
-  /* ---- Form notes / reference ---- */
-  .ref {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    margin-top: 28px;
-  }
-  .ref-block {
-    grid-column: span 4;
-    border-top: 1px solid var(--ink);
-    padding-top: 10px;
-  }
-  .ref-block h4 {
-    margin: 0 0 8px;
-    font-size: var(--fs-2);
-    font-weight: 700;
-    letter-spacing: -0.005em;
-  }
-  .ref-block .num {
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
-  }
-  .ref-block ol {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: r;
-  }
-  .ref-block ol li {
-    counter-increment: r;
-    padding-left: 22px;
-    position: relative;
-    font-size: var(--fs-2);
-    color: var(--ink-2);
-    line-height: 1.5;
-    margin-bottom: 4px;
-  }
-  .ref-block ol li::before {
-    content: counter(r, decimal-leading-zero);
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* ---- Progression chart (pure CSS bars) ---- */
-  .prog {
-    margin-top: 56px;
-    border-top: 1px solid var(--ink);
-    padding-top: 14px;
-  }
-  .prog-grid {
-    display: grid;
-    grid-template-columns: 160px 1fr 80px;
-    gap: 24px;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-  .prog-grid:last-child { border-bottom: 1px solid var(--ink); }
-  .prog-name { font-weight: 600; font-size: var(--fs-2); }
-  .prog-name small { display: block; color: var(--ink-3); font-weight: 400; font-size: var(--fs-1); margin-top: 2px; }
-  .bar {
-    height: 14px;
-    background: var(--paper-2);
-    position: relative;
-    overflow: hidden;
-  }
-  .bar > span {
-    display: block;
-    height: 100%;
-    background: var(--ink);
-  }
-  .bar > span.s { background: var(--signal); }
-  .bar-axis {
-    display: grid;
-    grid-template-columns: 160px 1fr 80px;
-    gap: 24px;
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-    padding-top: 6px;
-  }
-  .bar-axis .axis {
-    display: flex;
-    justify-content: space-between;
-  }
-  .prog-end {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-    font-weight: 600;
-    font-size: var(--fs-2);
-  }
-
-  /* ---- Big number block ---- */
-  .bignum {
-    margin-top: 60px;
-    border-top: 2px solid var(--ink);
-    padding-top: 18px;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    align-items: end;
-  }
-  .bignum .n {
-    grid-column: 1 / span 5;
-    font-size: var(--fs-6);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 0.9;
-    color: var(--ink);
-  }
-  .bignum .n sup {
-    font-size: var(--fs-3);
-    color: var(--signal);
-    font-weight: 600;
-    letter-spacing: 0;
-    vertical-align: top;
-    margin-left: 4px;
-  }
-  .bignum .copy {
-    grid-column: 7 / span 6;
-    font-size: var(--fs-3);
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    letter-spacing: -0.005em;
-  }
-  .bignum .copy small {
-    display: block;
-    font-size: var(--fs-2);
-    color: var(--ink-3);
-    font-weight: 400;
-    margin-top: 8px;
-  }
-
-  /* ---- Foot ---- */
-  .colophon {
-    margin-top: 56px;
-    border-top: 1px solid var(--ink);
-    padding-top: 12px;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--gut);
-    font-size: var(--fs-1);
-    color: var(--ink-3);
-  }
-  .colophon .c1 { grid-column: 1 / span 4; }
-  .colophon .c2 { grid-column: 5 / span 5; }
-  .colophon .c3 { grid-column: 10 / span 3; text-align: right; }
-  .colophon b { color: var(--ink); font-weight: 600; }
-
-  /* ---- Print ---- */
-  @media print {
-    .page { padding: 18px 18px 24px; max-width: none; }
-    body { font-size: 10.5px; }
-    :root { --gut: 10px; }
-    .day { min-height: 180px; }
-    .week { break-inside: avoid; page-break-inside: avoid; }
-    .prog, .bignum, .colophon, .ref { break-inside: avoid; }
-  }
-
-  @media (max-width: 900px) {
-    .days { grid-template-columns: repeat(4, 1fr); }
-    .ref-block { grid-column: span 6; }
-    .mast-title { font-size: 32px; grid-column: 1 / span 12; }
-    .mast-id, .mast-meta { grid-column: span 6; text-align: left; }
-    .intro-claim, .intro-side { grid-column: 1 / span 12; }
-    .bignum .n { grid-column: 1 / span 12; font-size: 60px; }
-    .bignum .copy { grid-column: 1 / span 12; }
-  }
-  @media (max-width: 560px) {
-    .days { grid-template-columns: repeat(2, 1fr); }
-  }
+  html{font-size:10pt}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sheet{max-width:none;padding:0}
+  .theme{display:none}
+  .print{display:inline}
+  .top{margin-bottom:6pt}
+  h1{font-size:20pt;margin-bottom:2pt}
+  .dek{font-size:9.5pt}
+  .cal{--rail:44pt}
+  .dows,.grid{gap:4pt}
+  .grid{row-gap:4pt}
+  .wks{display:block;font-size:7.5pt}
+  .day{min-height:0;height:1.16in;padding:3pt 6pt 4pt;break-inside:avoid}
+  .day.next{height:auto}
+  .exs{gap:2pt}
+  .exs li{font-size:8pt;grid-template-columns:minmax(0,1fr) 22pt auto;gap:4pt}
+  .box{width:12pt;height:12pt}
+  .boxes{gap:2pt}
+  .num{font-size:11pt}
+  .tick{width:16pt;height:16pt}
+  .tick::after{display:none}
+  .dh{min-height:16pt;margin-bottom:0}
+  .tag{font-size:8pt}
+  .what{font-size:10pt}
+  .sub,.cmp{font-size:8pt}
+  .wks{font-size:8pt}
+  .plan{break-before:page;margin-top:0;gap:14pt;zoom:1.04}
+  td{padding:5pt 8pt 5pt 0}
+  .workouts{gap:20pt}
+  .rules{grid-template-columns:1.3fr 1fr 1fr;gap:20pt}
+  .rules > :first-child{grid-column:auto}
+  a{text-decoration:none}
+}
 </style>
 </head>
 <body>
-
-<main class="page">
-
-  <!-- ============ MASTHEAD ============ -->
-  <header class="mast">
-    <div class="mast-row">
-      <div class="mast-id">PROGRAM&nbsp;/&nbsp;BEG-30</div>
-      <h1 class="mast-title">Thirty days. Five lifts.<br>Add weight every <em>session</em>.</h1>
-      <div class="mast-meta">
-        <div><b>BLOCK 01</b> · BEGINNER</div>
-        <div>3× / WEEK · FULL-BODY</div>
-        <div>EST. 55 MIN / SESSION</div>
-      </div>
-    </div>
-  </header>
-
-  <!-- ============ INTRO ============ -->
-  <section class="g12 intro">
-    <p class="intro-claim">
-      Show up. Three days a week. Add 5&nbsp;lb to lower-body lifts, 2.5&nbsp;lb to upper-body lifts <span>— every time the previous session went clean.</span>
-    </p>
-    <aside class="intro-side">
-      <p><b>How to use this sheet.</b> Print one page per week. Write the bar weight into the empty cell next to each lift. Tick the box at the bottom of the day when every set is done at full quality.</p>
-      <p><b>Skipped a day?</b> Don't double up. Pick up where you left off. The dates slide, the order doesn't.</p>
-    </aside>
-  </section>
-
-  <!-- ============ PROGRAM KEY ============ -->
-  <div class="sec">
-    <div class="sec-row">
-      <div class="sec-num">§ 01</div>
-      <h2 class="sec-title">The five lifts</h2>
-      <div class="sec-aside">Rotated A / B / A pattern</div>
-    </div>
-  </div>
-
-  <div class="g12">
-    <div class="key">
-      <div class="key-cell">
-        <div class="k">SQ</div>
-        <div class="v">Back Squat</div>
-        <div class="n">3 × 5 · 3&nbsp;min rest · +5&nbsp;lb / session</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">BP</div>
-        <div class="v">Bench Press</div>
-        <div class="n">3 × 5 · 3&nbsp;min rest · +2.5&nbsp;lb / session</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">DL</div>
-        <div class="v">Deadlift</div>
-        <div class="n">1 × 5 · 4&nbsp;min rest · +5&nbsp;lb / session</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">OHP</div>
-        <div class="v">Overhead Press</div>
-        <div class="n">3 × 5 · 3&nbsp;min rest · +2.5&nbsp;lb / session</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">BR</div>
-        <div class="v">Barbell Row</div>
-        <div class="n">3 × 5 · 2&nbsp;min rest · +2.5&nbsp;lb / session</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">WU</div>
-        <div class="v">Warm-up</div>
-        <div class="n">5&nbsp;min row · empty-bar set · 50% set</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">A</div>
-        <div class="v">Day A</div>
-        <div class="n">SQ · BP · BR</div>
-      </div>
-      <div class="key-cell">
-        <div class="k">B</div>
-        <div class="v">Day B</div>
-        <div class="n">SQ · OHP · DL</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ DAY GRID ============ -->
-  <div class="sec">
-    <div class="sec-row">
-      <div class="sec-num">§ 02</div>
-      <h2 class="sec-title">Thirty days, on one page</h2>
-      <div class="sec-aside">M&nbsp;·&nbsp;T&nbsp;·&nbsp;W&nbsp;·&nbsp;T&nbsp;·&nbsp;F&nbsp;·&nbsp;S&nbsp;·&nbsp;S</div>
-    </div>
-  </div>
-
-  <!-- ===== WEEK 1 ===== -->
-  <section class="week">
-    <div class="week-head">
-      <div class="week-label">WEEK&nbsp;01</div>
-      <div class="week-title">Find the bar. Move clean. Don't chase weight.</div>
-      <div class="week-load">START · <b>SQ 95 · BP 65 · DL 135 · OHP 45 · BR 65</b></div>
-      <div class="week-progress">/ 3 sessions</div>
-    </div>
-    <div class="days">
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">01 · MON</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 95</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 65</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 65</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">02 · TUE</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Mobility · hips</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">03 · WED</span><span class="day-tag">B</span></div>
-        <div class="day-focus">Pull &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 100</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 45</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 135</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3–4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">04 · THU</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Sleep 8h</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">05 · FRI</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 105</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 67.5</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 67.5</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">06 · SAT</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Optional walk</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Eat. Protein 1g/lb</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">07 · SUN</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Plan week 02</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Re-stock food</span><span class="tick"></span></div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== WEEK 2 ===== -->
-  <section class="week">
-    <div class="week-head">
-      <div class="week-label">WEEK&nbsp;02</div>
-      <div class="week-title">Add weight. Same form. No grinders.</div>
-      <div class="week-load">LOADS · <b>SQ 110→120 · BP 70→72.5 · DL 145 · OHP 47.5→50 · BR 70→72.5</b></div>
-      <div class="week-progress">/ 3 sessions</div>
-    </div>
-    <div class="days">
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">08 · MON</span><span class="day-tag">B</span></div>
-        <div class="day-focus">Pull &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 110</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 47.5</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 145</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3–4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">09 · TUE</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Mobility · t-spine</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">10 · WED</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 115</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 70</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 70</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">11 · THU</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Sleep 8h</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">12 · FRI</span><span class="day-tag">B</span></div>
-        <div class="day-focus">Pull &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 120</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 50</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 155</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3–4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">13 · SAT</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Optional walk</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Eat. 2 big meals</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">14 · SUN</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Bar-speed check</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Film a set</span><span class="tick"></span></div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== WEEK 3 ===== -->
-  <section class="week">
-    <div class="week-head">
-      <div class="week-label">WEEK&nbsp;03</div>
-      <div class="week-title">First sticking points. Slow down. Stay in 5s.</div>
-      <div class="week-load">LOADS · <b>SQ 125→135 · BP 75→77.5 · DL 165→170 · OHP 52.5→55 · BR 75→77.5</b></div>
-      <div class="week-progress">/ 3 sessions</div>
-    </div>
-    <div class="days">
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">15 · MON</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 125</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 72.5</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 72.5</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">16 · TUE</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk · hips</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Foam roll quads</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">17 · WED</span><span class="day-tag">B</span></div>
-        <div class="day-focus">Pull &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 130</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 52.5</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 165</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">18 · THU</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Sleep 8h</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">19 · FRI</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 135</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 75</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 75</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">20 · SAT</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Eat. Hydrate.</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Protein 1g/lb</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">21 · SUN</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Review notes</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Plan week 04</span><span class="tick"></span></div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== WEEK 4 ===== -->
-  <section class="week">
-    <div class="week-head">
-      <div class="week-label">WEEK&nbsp;04</div>
-      <div class="week-title">Hold what you've earned. Two PR attempts.</div>
-      <div class="week-load">LOADS · <b>SQ 140→PR · BP 80→PR · DL 175→185 · OHP 57.5→PR · BR 80</b></div>
-      <div class="week-progress">/ 3 sessions</div>
-    </div>
-    <div class="days">
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">22 · MON</span><span class="day-tag">B</span></div>
-        <div class="day-focus">Pull &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 140</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 55</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 175</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">23 · TUE</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk · hips</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Mobility 10 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">24 · WED</span><span class="day-tag">A</span></div>
-        <div class="day-focus">Squat &amp; press</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 145</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">3×5 · 77.5</span></li>
-          <li class="lift"><span class="nm">Row</span><span class="sx">3×5 · 77.5</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 3 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">25 · THU</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Walk 30 min</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Sleep 8h</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">26 · FRI</span><span class="day-tag">B+PR</span></div>
-        <div class="day-focus">PR attempt day</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">3×5 · 150</span></li>
-          <li class="lift"><span class="nm">OHP</span><span class="sx">3×5 · 57.5</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">1×5 · 185</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 4 min</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">27 · SAT</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Recover hard</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Eat. Sleep.</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day">
-        <div class="day-head"><span class="day-num">28 · SUN</span><span class="day-tag">PR</span></div>
-        <div class="day-focus">1-rep max test</div>
-        <ul class="lifts">
-          <li class="lift"><span class="nm">Squat</span><span class="sx">build · 1RM</span></li>
-          <li class="lift"><span class="nm">Bench</span><span class="sx">build · 1RM</span></li>
-          <li class="lift"><span class="nm">Deadlift</span><span class="sx">build · 1RM</span></li>
-        </ul>
-        <div class="day-foot"><span>Rest 5 min between</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">29 · MON</span><span class="day-tag">REST</span></div>
-        <div class="day-focus">Deload</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Walk only</span><span class="tick"></span></div>
-      </div>
-
-      <div class="day rest">
-        <div class="day-head"><span class="day-num">30 · TUE</span><span class="day-tag">CLOSE</span></div>
-        <div class="day-focus">Log numbers. Plan block 02.</div>
-        <ul class="lifts"></ul>
-        <div class="day-foot"><span>Write it down</span><span class="tick"></span></div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ FORM REFERENCE ============ -->
-  <div class="sec">
-    <div class="sec-row">
-      <div class="sec-num">§ 03</div>
-      <h2 class="sec-title">Form, in five lines per lift</h2>
-      <div class="sec-aside">Read before every session</div>
-    </div>
-  </div>
-
-  <div class="ref">
-    <div class="ref-block">
-      <div class="num">SQ · BACK SQUAT</div>
-      <h4>Sit between your hips.</h4>
-      <ol>
-        <li>Bar on rear delts, not on neck.</li>
-        <li>Brace. Big breath, hold it down.</li>
-        <li>Break at hips and knees together.</li>
-        <li>Crease of hip below top of knee.</li>
-        <li>Drive the floor away. Exhale at top.</li>
-      </ol>
-    </div>
-    <div class="ref-block">
-      <div class="num">BP · BENCH PRESS</div>
-      <h4>Press the bar, not the ceiling.</h4>
-      <ol>
-        <li>Shoulder blades pinched and pulled down.</li>
-        <li>Feet flat. Light arch, glutes on bench.</li>
-        <li>Bar to lower sternum, elbows ~ 60°.</li>
-        <li>Touch, pause one beat, press.</li>
-        <li>No bouncing. No half-reps.</li>
-      </ol>
-    </div>
-    <div class="ref-block">
-      <div class="num">DL · DEADLIFT</div>
-      <h4>One set. Make it perfect.</h4>
-      <ol>
-        <li>Bar over mid-foot. Shins almost touch.</li>
-        <li>Hips high enough that arms hang vertical.</li>
-        <li>Brace, drag the bar up your shins.</li>
-        <li>Lock knees and hips at the same time.</li>
-        <li>Lower with control. Reset every rep.</li>
-      </ol>
-    </div>
-    <div class="ref-block">
-      <div class="num">OHP · OVERHEAD PRESS</div>
-      <h4>Push your head through.</h4>
-      <ol>
-        <li>Bar on front delts, elbows just ahead.</li>
-        <li>Squeeze glutes. Don't lean back.</li>
-        <li>Press in a straight line over crown.</li>
-        <li>At lockout, head moves under bar.</li>
-        <li>If the bar stalls, brace harder.</li>
-      </ol>
-    </div>
-    <div class="ref-block">
-      <div class="num">BR · BARBELL ROW</div>
-      <h4>Row to the belly, not the chest.</h4>
-      <ol>
-        <li>Hinge to ~ 45°. Flat back.</li>
-        <li>Bar starts on the floor every rep.</li>
-        <li>Pull elbows back and down.</li>
-        <li>Touch lower ribs. Pause.</li>
-        <li>Don't let the torso bounce.</li>
-      </ol>
-    </div>
-    <div class="ref-block">
-      <div class="num">RECOVERY</div>
-      <h4>The lifts work because you sleep.</h4>
-      <ol>
-        <li>Sleep 7–9 hrs. Non-negotiable.</li>
-        <li>Eat 1g protein per lb bodyweight.</li>
-        <li>Walk 30 min on rest days.</li>
-        <li>If a set feels wrong, stop the set.</li>
-        <li>If a lift stalls 2× in a row, deload 10%.</li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- ============ PROGRESSION CHART ============ -->
-  <div class="sec">
-    <div class="sec-row">
-      <div class="sec-num">§ 04</div>
-      <h2 class="sec-title">Expected progression (working set)</h2>
-      <div class="sec-aside">Solid bar = week 01 · red = week 04</div>
-    </div>
-  </div>
-
-  <div class="prog">
-    <div class="prog-grid">
-      <div class="prog-name">Back Squat <small>3 × 5, working</small></div>
+<main class="sheet">
+  <section class="cal" aria-labelledby="t">
+    <header class="top">
       <div>
-        <div class="bar"><span style="width: 51%"></span></div>
-        <div class="bar" style="margin-top:3px;"><span class="s" style="width: 82%"></span></div>
+        <h1 id="t"><em>13 lifts</em> in 30 days</h1>
+        <p class="dek">Three short full-body sessions a week, about 40 minutes each. Write your weight on the line and your reps in each box. When every set reaches 12, go heavier next time.</p>
       </div>
-      <div class="prog-end">95 → 150&nbsp;lb</div>
-    </div>
-    <div class="prog-grid">
-      <div class="prog-name">Bench Press <small>3 × 5, working</small></div>
-      <div>
-        <div class="bar"><span style="width: 35%"></span></div>
-        <div class="bar" style="margin-top:3px;"><span class="s" style="width: 43%"></span></div>
+      <div class="meta">
+        <div class="fill"><span>Start date (a Monday)</span><span class="wt" aria-label="blank for start date"></span></div>
+        <ul class="key" aria-label="How to read the grid">
+          <li><span class="sw" aria-hidden="true"></span>Lift day</li>
+          <li><span class="wt" style="width:1.6rem" aria-hidden="true"></span>Weight</li>
+          <li><span class="box" aria-hidden="true"></span>Reps per set</li>
+          <li><span class="tick" style="margin:0;pointer-events:none" aria-hidden="true"></span>Done</li>
+        </ul>
       </div>
-      <div class="prog-end">65 → 80&nbsp;lb</div>
-    </div>
-    <div class="prog-grid">
-      <div class="prog-name">Deadlift <small>1 × 5, working</small></div>
-      <div>
-        <div class="bar"><span style="width: 73%"></span></div>
-        <div class="bar" style="margin-top:3px;"><span class="s" style="width: 100%"></span></div>
-      </div>
-      <div class="prog-end">135 → 185&nbsp;lb</div>
-    </div>
-    <div class="prog-grid">
-      <div class="prog-name">Overhead Press <small>3 × 5, working</small></div>
-      <div>
-        <div class="bar"><span style="width: 24%"></span></div>
-        <div class="bar" style="margin-top:3px;"><span class="s" style="width: 31%"></span></div>
-      </div>
-      <div class="prog-end">45 → 57.5&nbsp;lb</div>
-    </div>
-    <div class="prog-grid">
-      <div class="prog-name">Barbell Row <small>3 × 5, working</small></div>
-      <div>
-        <div class="bar"><span style="width: 35%"></span></div>
-        <div class="bar" style="margin-top:3px;"><span class="s" style="width: 43%"></span></div>
-      </div>
-      <div class="prog-end">65 → 80&nbsp;lb</div>
-    </div>
-    <div class="bar-axis">
-      <div></div>
-      <div class="axis"><span>0</span><span>50</span><span>100</span><span>150</span><span>200&nbsp;lb</span></div>
-      <div></div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ============ BIG NUMBER ============ -->
-  <section class="bignum">
-    <div class="n">12<sup>sessions</sup></div>
-    <div class="copy">
-      Twelve trips to the bar. That is the whole program. Miss none of them and the numbers above are not optimistic — they are conservative.
-      <small>If you only remember one rule: show up, even when the weight on paper feels heavy.</small>
-    </div>
+    <div class="dows" aria-hidden="true"><span></span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+    <ul class="grid">
+<li class="wk" aria-hidden="false"><span class="wkn">Week 1</span><span class="wkv">Learn</span><span class="wks">2 light sets</span></li>
+<li class="day lift"><div class="dh"><span class="num">1</span><span class="dow">Mon</span><span class="tag">Lift A<span class="no"> · #1</span></span><button class="tick" type="button" data-day="1" aria-pressed="false" aria-label="Mark day 1 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">2</span><span class="dow">Tue</span><button class="tick" type="button" data-day="2" aria-pressed="false" aria-label="Mark day 2 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">20&nbsp;min, easy pace</p></li>
+<li class="day lift"><div class="dh"><span class="num">3</span><span class="dow">Wed</span><span class="tag">Lift B<span class="no"> · #2</span></span><button class="tick" type="button" data-day="3" aria-pressed="false" aria-label="Mark day 3 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day stretch"><div class="dh"><span class="num">4</span><span class="dow">Thu</span><button class="tick" type="button" data-day="4" aria-pressed="false" aria-label="Mark day 4 done: Stretch" disabled></button></div><p class="what">Stretch</p><p class="sub">10&nbsp;min, list on page&nbsp;2</p></li>
+<li class="day lift"><div class="dh"><span class="num">5</span><span class="dow">Fri</span><span class="tag">Lift A<span class="no"> · #3</span></span><button class="tick" type="button" data-day="5" aria-pressed="false" aria-label="Mark day 5 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">6</span><span class="dow">Sat</span><button class="tick" type="button" data-day="6" aria-pressed="false" aria-label="Mark day 6 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">20&nbsp;min, easy pace</p></li>
+<li class="day rest"><div class="dh"><span class="num">7</span><span class="dow">Sun</span><button class="tick" type="button" data-day="7" aria-pressed="false" aria-label="Mark day 7 done: Rest" disabled></button></div><p class="what">Rest</p><p class="sub">Nothing. This is the plan.</p></li>
+<li class="wk" aria-hidden="false"><span class="wkn">Week 2</span><span class="wkv">Build</span><span class="wks">3 sets</span></li>
+<li class="day lift"><div class="dh"><span class="num">8</span><span class="dow">Mon</span><span class="tag">Lift B<span class="no"> · #4</span></span><button class="tick" type="button" data-day="8" aria-pressed="false" aria-label="Mark day 8 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">9</span><span class="dow">Tue</span><button class="tick" type="button" data-day="9" aria-pressed="false" aria-label="Mark day 9 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">20&nbsp;min, easy pace</p></li>
+<li class="day lift"><div class="dh"><span class="num">10</span><span class="dow">Wed</span><span class="tag">Lift A<span class="no"> · #5</span></span><button class="tick" type="button" data-day="10" aria-pressed="false" aria-label="Mark day 10 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day stretch"><div class="dh"><span class="num">11</span><span class="dow">Thu</span><button class="tick" type="button" data-day="11" aria-pressed="false" aria-label="Mark day 11 done: Stretch" disabled></button></div><p class="what">Stretch</p><p class="sub">10&nbsp;min, list on page&nbsp;2</p></li>
+<li class="day lift"><div class="dh"><span class="num">12</span><span class="dow">Fri</span><span class="tag">Lift B<span class="no"> · #6</span></span><button class="tick" type="button" data-day="12" aria-pressed="false" aria-label="Mark day 12 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">13</span><span class="dow">Sat</span><button class="tick" type="button" data-day="13" aria-pressed="false" aria-label="Mark day 13 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">20&nbsp;min, easy pace</p></li>
+<li class="day rest"><div class="dh"><span class="num">14</span><span class="dow">Sun</span><button class="tick" type="button" data-day="14" aria-pressed="false" aria-label="Mark day 14 done: Rest" disabled></button></div><p class="what">Rest</p><p class="sub">Nothing. This is the plan.</p></li>
+<li class="wk" aria-hidden="false"><span class="wkn">Week 3</span><span class="wkv">Climb</span><span class="wks">add weight</span></li>
+<li class="day lift"><div class="dh"><span class="num">15</span><span class="dow">Mon</span><span class="tag">Lift A<span class="no"> · #7</span></span><button class="tick" type="button" data-day="15" aria-pressed="false" aria-label="Mark day 15 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">16</span><span class="dow">Tue</span><button class="tick" type="button" data-day="16" aria-pressed="false" aria-label="Mark day 16 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">30&nbsp;min, easy pace</p></li>
+<li class="day lift"><div class="dh"><span class="num">17</span><span class="dow">Wed</span><span class="tag">Lift B<span class="no"> · #8</span></span><button class="tick" type="button" data-day="17" aria-pressed="false" aria-label="Mark day 17 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day stretch"><div class="dh"><span class="num">18</span><span class="dow">Thu</span><button class="tick" type="button" data-day="18" aria-pressed="false" aria-label="Mark day 18 done: Stretch" disabled></button></div><p class="what">Stretch</p><p class="sub">10&nbsp;min, list on page&nbsp;2</p></li>
+<li class="day lift"><div class="dh"><span class="num">19</span><span class="dow">Fri</span><span class="tag">Lift A<span class="no"> · #9</span></span><button class="tick" type="button" data-day="19" aria-pressed="false" aria-label="Mark day 19 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">20</span><span class="dow">Sat</span><button class="tick" type="button" data-day="20" aria-pressed="false" aria-label="Mark day 20 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">30&nbsp;min, easy pace</p></li>
+<li class="day rest"><div class="dh"><span class="num">21</span><span class="dow">Sun</span><button class="tick" type="button" data-day="21" aria-pressed="false" aria-label="Mark day 21 done: Rest" disabled></button></div><p class="what">Rest</p><p class="sub">Nothing. This is the plan.</p></li>
+<li class="wk" aria-hidden="false"><span class="wkn">Week 4</span><span class="wkv">Climb</span><span class="wks">add weight</span></li>
+<li class="day lift"><div class="dh"><span class="num">22</span><span class="dow">Mon</span><span class="tag">Lift B<span class="no"> · #10</span></span><button class="tick" type="button" data-day="22" aria-pressed="false" aria-label="Mark day 22 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">23</span><span class="dow">Tue</span><button class="tick" type="button" data-day="23" aria-pressed="false" aria-label="Mark day 23 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">30&nbsp;min, easy pace</p></li>
+<li class="day lift"><div class="dh"><span class="num">24</span><span class="dow">Wed</span><span class="tag">Lift A<span class="no"> · #11</span></span><button class="tick" type="button" data-day="24" aria-pressed="false" aria-label="Mark day 24 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day stretch"><div class="dh"><span class="num">25</span><span class="dow">Thu</span><button class="tick" type="button" data-day="25" aria-pressed="false" aria-label="Mark day 25 done: Stretch" disabled></button></div><p class="what">Stretch</p><p class="sub">10&nbsp;min, list on page&nbsp;2</p></li>
+<li class="day lift"><div class="dh"><span class="num">26</span><span class="dow">Fri</span><span class="tag">Lift B<span class="no"> · #12</span></span><button class="tick" type="button" data-day="26" aria-pressed="false" aria-label="Mark day 26 done: lift B" disabled></button></div><ul class="exs"><li><span class="ex">RDL</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Press</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Dead bug</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day walk"><div class="dh"><span class="num">27</span><span class="dow">Sat</span><button class="tick" type="button" data-day="27" aria-pressed="false" aria-label="Mark day 27 done: Walk" disabled></button></div><p class="what">Walk</p><p class="sub">30&nbsp;min, easy pace</p></li>
+<li class="day rest"><div class="dh"><span class="num">28</span><span class="dow">Sun</span><button class="tick" type="button" data-day="28" aria-pressed="false" aria-label="Mark day 28 done: Rest" disabled></button></div><p class="what">Rest</p><p class="sub">Nothing. This is the plan.</p></li>
+<li class="wk" aria-hidden="false"><span class="wkn">Week 5</span><span class="wkv">Finish</span><span class="wks">last lift</span></li>
+<li class="day lift"><div class="dh"><span class="num">29</span><span class="dow">Mon</span><span class="tag">Lift A<span class="no"> · #13</span></span><button class="tick" type="button" data-day="29" aria-pressed="false" aria-label="Mark day 29 done: lift A" disabled></button></div><ul class="exs"><li><span class="ex">Squat</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Bench</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li><span class="ex">Row</span><span class="wt" aria-label="weight"></span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li><li class="bw"><span class="ex">Plank</span><span class="boxes"><span class="box"></span><span class="box"></span><span class="box"></span></span></li></ul></li>
+<li class="day look"><div class="dh"><span class="num">30</span><span class="dow">Tue</span><button class="tick" type="button" data-day="30" aria-pressed="false" aria-label="Mark day 30 done: look back" disabled></button></div><p class="what">Squat, then vs now</p><p class="cmp">Day 1 <span class="wt"></span></p><p class="cmp">Day 29 <span class="wt"></span></p></li>
+<li class="day next"><p class="what">Day 31 is day 1 again.</p><p class="sub">Same plan, starting from your day 29 weights.</p></li>
+    </ul>
   </section>
 
-  <!-- ============ COLOPHON ============ -->
-  <footer class="colophon">
-    <div class="c1"><b>Program</b> · Beginner Linear Progression, 30-day block.</div>
-    <div class="c2"><b>Tools</b> · Barbell, plates, rack, bench, flat ground.</div>
-    <div class="c3"><b>Sheet 01 / 01</b></div>
-  </footer>
+  <section class="plan" aria-labelledby="p">
+    <div>
+      <h2 id="p">Two workouts, taken in turn</h2>
+      <p class="lede">You need a pair of adjustable dumbbells (or a rack) and a bench. Week 1 is two sets of 8 with a weight that feels too easy. From week 2 on it’s three sets, aiming for 8–12&nbsp;reps.</p>
+      <div class="workouts">
+        <div>
+          <h3><span class="l">A</span> Squat, push, pull <small>days 1, 5, 10, 15 …</small></h3>
+          <table>
+            <thead><tr><th scope="col">Exercise</th><th scope="col">Sets × reps</th><th scope="col">Rest</th><th scope="col">Form cue</th></tr></thead>
+            <tbody>
+              <tr><td>Goblet squat<span class="short">“Squat”</span></td><td class="n">3 × 8–12</td><td class="n">2&nbsp;min</td><td class="cue">Hold one dumbbell at your chest. Sit down between your heels.</td></tr>
+              <tr><td>Dumbbell bench press<span class="short">“Bench”</span></td><td class="n">3 × 8–12</td><td class="n">2&nbsp;min</td><td class="cue">Elbows about 45° from your sides. No bench? Press from the floor.</td></tr>
+              <tr><td>One-arm dumbbell row<span class="short">“Row”</span></td><td class="n">3 × 8–12</td><td class="n">90&nbsp;s</td><td class="cue">Each side. Hand and knee on the bench, pull toward your hip.</td></tr>
+              <tr><td>Plank<span class="short">write seconds</span></td><td class="n">3 × 20–40&nbsp;s</td><td class="n">60&nbsp;s</td><td class="cue">Squeeze your glutes. The set ends when your hips sag.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3><span class="l">B</span> Hinge, press, pull <small>days 3, 8, 12, 17 …</small></h3>
+          <table>
+            <thead><tr><th scope="col">Exercise</th><th scope="col">Sets × reps</th><th scope="col">Rest</th><th scope="col">Form cue</th></tr></thead>
+            <tbody>
+              <tr><td>Dumbbell Romanian deadlift<span class="short">“RDL”</span></td><td class="n">3 × 8–12</td><td class="n">2&nbsp;min</td><td class="cue">Soft knees, push your hips back, flat back. Stop when your hamstrings pull.</td></tr>
+              <tr><td>Standing shoulder press<span class="short">“Press”</span></td><td class="n">3 × 8–12</td><td class="n">2&nbsp;min</td><td class="cue">Ribs down, glutes tight, press to straight arms.</td></tr>
+              <tr><td>Chest-supported row<span class="short">“Row”</span></td><td class="n">3 × 8–12</td><td class="n">90&nbsp;s</td><td class="cue">Lie chest-down on an incline bench and row both dumbbells.</td></tr>
+              <tr><td>Dead bug<span class="short">reps per side</span></td><td class="n">3 × 8</td><td class="n">60&nbsp;s</td><td class="cue">Low back stays pressed into the floor the whole time.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
+    <div class="rules">
+      <div>
+        <h4>How the weight goes up</h4>
+        <ol>
+          <li><span>Day 1: pick a weight you could lift about 15 times, and stop at 8. Easy is the point; you’re learning the movement.</span></li>
+          <li><span>Every set, write the reps you got in its box. The boxes are your progress report.</span></li>
+          <li><span>All three sets reached 12 with clean form? Next time, add the smallest jump you have (usually 1–2.5&nbsp;kg or 5&nbsp;lb) and start again at 8.</span></li>
+          <li><span>Missed a day? Do the next workout in line. Never do two in one day.</span></li>
+        </ol>
+      </div>
+      <div>
+        <h4>The other days</h4>
+        <ul>
+          <li><b>Warm-up, every lift day</b>5&nbsp;min brisk walk or bike, then one light set of 8 of the first exercise.</li>
+          <li><b>Walk</b>Easy enough to talk. 20&nbsp;min in weeks 1–2, 30&nbsp;min after that.</li>
+          <li><b>Thursday stretch, 10&nbsp;min</b>Hip flexor stretch 45&nbsp;s a side, cat–cow ×&nbsp;10, child’s pose 60&nbsp;s, open-book rotations ×&nbsp;8 a side.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Sore or hurting?</h4>
+        <p>Muscle soreness for a day or two after weeks 1 and 2 is normal, and it fades. <span class="stop">Sharp or joint pain ends the set.</span> Drop the weight, and if it comes back, ask a doctor or physio before your next session.</p>
+      </div>
+    </div>
+
+    <p class="src">Rep range (8–12), 2–3 lifting days a week, and adding load once you beat the target reps follow the American College of Sports Medicine’s <a href="https://sfu.ca/~ryand/kin343/ACSMresistance.pdf">2009 position stand on progression models</a>. ACSM’s <a href="https://acsm.org/resistance-training-guidelines/">2026 update</a> puts consistency first and asks for every major muscle group at least twice a week; alternating A and B covers both. Rest times are this plan’s choice for beginners. Checked 22&nbsp;October 2026. <span class="print">Page 2 of 2.</span></p>
+  </section>
 </main>
-
+<script>
+(function(){
+  var root=document.documentElement, KEY="lifts30-theme", DAYS="lifts30-days";
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  var saved=get(KEY); if(saved==="light"||saved==="dark") root.setAttribute("data-theme",saved);
+  function isDark(){var t=root.getAttribute("data-theme"); return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+  var b=document.createElement("button"); b.className="theme"; b.type="button";
+  function label(){var d=isDark(); b.textContent=d?"Light sheet":"Dark sheet"; b.setAttribute("aria-label",d?"Switch to the light theme":"Switch to the dark theme")}
+  b.addEventListener("click",function(){var n=isDark()?"light":"dark"; root.setAttribute("data-theme",n); set(KEY,n); label()});
+  label(); document.body.appendChild(b);
+  var done={}; try{done=JSON.parse(get(DAYS)||"{}")||{}}catch(e){}
+  document.querySelectorAll(".grid .tick").forEach(function(t){
+    var d=t.getAttribute("data-day"); t.disabled=false;
+    if(done[d]) t.setAttribute("aria-pressed","true");
+    t.addEventListener("click",function(){var on=t.getAttribute("aria-pressed")!=="true";
+      t.setAttribute("aria-pressed",String(on)); if(on) done[d]=1; else delete done[d]; set(DAYS,JSON.stringify(done))});
+  });
+})();
+</script>
 </body>
 </html>

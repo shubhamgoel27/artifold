@@ -1,402 +1,549 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="artifold:design-mode" content="museum-label">
-    <meta name="artifold:voice-register" content="encyclopedic">
-    <meta name="artifold:tool" content="claude">
-    <title>Apple Macintosh, Model M0001 — Object 84.1.001a–c</title>
-    <style>
-        /* ------------------------------------------------------------------
-           Object label stylesheet
-           Reference: MoMA online collection, Cooper Hewitt artifact pages,
-           Victoria & Albert Museum object catalog.
-           Monochrome. No accents. No shadows. No icons. No gradients.
-           ------------------------------------------------------------------ */
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Macintosh, 1984: a beige box that set the pattern</title>
+<meta name="description" content="The original 1984 Apple Macintosh: what was inside it, who made it, and what it changed.">
+<meta name="artifold:intent" content="Explain the 1984 Macintosh: specs on a drawn machine, its makers, and what it changed">
+<meta name="artifold:generator" content="craft">
+<meta name="artifold:tool" content="claude">
+<meta name="artifold:prompt" content="History of the original 1984 Apple Macintosh: specs, key people, cultural impact.">
+<meta name="artifold:scale" content="read">
+<meta name="artifold:conceit" content="The page is a System 1 desktop: every section is a window, the nav is the menu bar, the theme toggle is Invert">
+<meta name="artifold:layout-archetype" content="radial-centerpiece">
+<meta name="artifold:design-mode" content="system-one-desktop (forged: Kare 1-bit UI × Apple Garamond 1984 print ads × Pantone 453 case)">
+<meta name="artifold:voice-register" content="museum-docent">
+<meta name="artifold:signature-device" content="annotation-callout-layer on a redrawn Macintosh 128K; quiet second: signatures embossed into a beige case panel">
+<meta name="artifold:ad-scores" content="4/4/4/4/4/3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='1' width='10' height='14' rx='1' fill='%23d8cfba' stroke='%23111'/%3E%3Crect x='4.5' y='2.5' width='7' height='5.5' fill='%23fff' stroke='%23111'/%3E%3Crect x='8' y='10' width='3.5' height='.8' fill='%23111'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pixelify+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-text:"EB Garamond", "Apple Garamond", Garamond, Georgia, system-ui, serif;
+  --font-ui:"Pixelify Sans", "Chicago", "Geneva", ui-monospace, system-ui, sans-serif;
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  /* type: 1.25 ratio from a 19px Garamond base (Garamond runs small) */
+  --step--1:.95rem; --step-0:1.1875rem; --step-1:1.484rem; --step-2:1.855rem;
+  --step-3:2.319rem; --step-4:2.899rem; --step-5:3.624rem;
+  /* space: 4px steps */
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-5:1.25rem; --s-6:1.5rem;
+  --s-8:2rem; --s-10:2.5rem; --s-12:3rem; --s-16:4rem; --s-20:5rem; --s-24:6rem;
 
-        html, body {
-            background: #f5f3ee;
-            color: #2a2a2a;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-        }
+  /* light: 1-bit desktop, Apple-beige hardware */
+  --desk:#ffffff; --desk-dot:#cfcfcf;
+  --win:#ffffff; --ink:#1a1a1a; --ink-2:#56524b; --line:#1a1a1a;
+  --beige:#d9d0bb; --beige-2:#c4baa2; --beige-3:#ece6d8; --beige-ink:#4f4636; --beige-edge:#9c927b; --sig:#5f5542; --case:#d9d0bb; --case-ink:#4f4636; --case-head:#1d1a14; --sig-hi:#ece6d8; --case-rule:hsl(40 25% 25% / .35);
+  --screen:#eef0ea; --screen-ink:#1a1a1a;
+  --ground:hsl(40 15% 30% / .16);
+  --apple-g:#61bb46; --apple-y:#fdb827; --apple-o:#f5821f; --apple-r:#e03a3e; --apple-p:#963d97; --apple-b:#009ddc;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --desk:#0d0d0c; --desk-dot:#1f1f1d;
+    --win:#171716; --ink:#ebe7de; --ink-2:#aaa59a; --line:#d9d5cc;
+    --beige:#b8ae97; --beige-2:#a2987f; --beige-3:#c9c0ab; --beige-ink:#2f2819; --beige-edge:#7d735d; --sig:#d6ccb4; --case:#38332a; --case-ink:#cfc6b1; --case-head:#f0e9da; --sig-hi:#1c1914; --case-rule:hsl(40 20% 80% / .25);
+    --screen:#c9cfc3; --screen-ink:#151515;
+    --ground:hsl(40 10% 2% / .55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0d0d0c; --desk-dot:#1f1f1d;
+  --win:#171716; --ink:#ebe7de; --ink-2:#aaa59a; --line:#d9d5cc;
+  --beige:#b8ae97; --beige-2:#a2987f; --beige-3:#c9c0ab; --beige-ink:#2f2819; --beige-edge:#7d735d; --sig:#d6ccb4; --case:#38332a; --case-ink:#cfc6b1; --case-head:#f0e9da; --sig-hi:#1c1914; --case-rule:hsl(40 20% 80% / .25);
+  --screen:#c9cfc3; --screen-ink:#151515;
+  --ground:hsl(40 10% 2% / .55);
+  color-scheme:dark;
+}
 
-        body {
-            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont,
-                         'Segoe UI', Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.65;
-            font-weight: 400;
-            letter-spacing: 0.005em;
-            padding: 120px 24px;
-            min-height: 100vh;
-        }
+*{box-sizing:border-box}
+html{ -webkit-text-size-adjust:100%; scroll-padding-top:64px; }
+body{
+  margin:0; color:var(--ink); font-family:var(--font-text); font-size:var(--step-0); line-height:1.55;
+  background-color:var(--desk);
+  /* the classic 50% gray desktop, drawn as a 2px checker */
+  background-image:
+    conic-gradient(var(--desk-dot) 25%, transparent 0 50%, var(--desk-dot) 0 75%, transparent 0);
+  background-size:4px 4px;
+  font-variant-numeric:oldstyle-nums proportional-nums;
+  cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v16l4-4 3 7 2-1-3-7h6z' fill='%23000' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E") 1 1, auto;
+}
+::selection{ background:var(--ink); color:var(--win); }
+a{ color:inherit; text-decoration-thickness:1px; text-underline-offset:3px; }
+:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
+h1,h2,h3{ text-wrap:balance; font-weight:500; margin:0; }
+p{ text-wrap:pretty; margin:0; }
+.ui{ font-family:var(--font-ui); font-variant-numeric:normal; }
 
-        main {
-            max-width: 560px;
-            margin: 0 auto;
-        }
+/* ---------- menu bar ---------- */
+.menubar{
+  position:sticky; top:0; z-index:20; height:44px;
+  display:flex; align-items:stretch; gap:0; padding:0 var(--s-3);
+  background:var(--win); border-bottom:1px solid var(--line);
+  font-family:var(--font-ui); font-size:18px;
+}
+.menubar a, .menubar button, .menubar .apple{
+  display:flex; align-items:center; padding:0 var(--s-4); color:var(--ink); text-decoration:none;
+  font:inherit; background:none; border:0; cursor:inherit;
+}
+.menubar a:hover, .menubar button:hover, .menubar a:focus-visible, .menubar button:focus-visible{ background:var(--ink); color:var(--win); outline:none; }
+.menubar .apple svg{ width:18px; height:22px; display:block }
+.menubar .spacer{ flex:1 }
+.menubar .clock{ display:flex; align-items:center; padding:0 var(--s-4); color:var(--ink-2); }
 
-        /* ---------- Object header ---------- */
+/* ---------- desktop + windows ---------- */
+.desktop{
+  max-width:1320px; margin:0 auto; padding:var(--s-12) var(--s-8) var(--s-24);
+  display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); column-gap:var(--s-6); row-gap:var(--s-16);
+}
+.win{
+  background:var(--win); border:1px solid var(--line);
+  box-shadow:2px 2px 0 var(--line);   /* System 1 windows cast a hard 1-px shadow; kept honest here */
+  min-width:0; display:flex; flex-direction:column; position:relative;
+}
+.titlebar{
+  height:30px; flex:none; display:flex; align-items:center; justify-content:center; position:relative;
+  border-bottom:1px solid var(--line); margin:0;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 6px, var(--line) 6px 7px, transparent 7px 9px, var(--line) 9px 10px, transparent 10px 12px, var(--line) 12px 13px, transparent 13px 15px, var(--line) 15px 16px, transparent 16px 18px, var(--line) 18px 19px, transparent 19px 21px, var(--line) 21px 22px, transparent 22px 30px);
+  background-clip:content-box; padding:0 4px;
+}
+.titlebar::before{ /* close box */
+  content:""; position:absolute; left:14px; top:8px; width:13px; height:13px; background:var(--win); border:1px solid var(--line);
+  box-shadow:0 0 0 3px var(--win);
+}
+.titlebar span{ background:var(--win); padding:0 var(--s-3); font-family:var(--font-ui); font-size:18px; line-height:30px; white-space:nowrap; }
+.pane{ padding:var(--s-8) var(--s-10) var(--s-10); }
 
-        .object-header {
-            margin-bottom: 36px;
-        }
+/* ---------- read me (hero) ---------- */
+.readme{ grid-column:1 / span 8; }
+.readme .pane{ padding:var(--s-10) var(--s-12) var(--s-12); }
+.kicker{ font-family:var(--font-ui); font-size:18px; color:var(--ink-2); margin-bottom:var(--s-4); }
+h1{
+  font-size:clamp(2.6rem, 1.4rem + 3.6vw, 4.6rem); line-height:1.02; letter-spacing:-.025em; font-weight:500;
+  max-width:15ch;
+}
+h1 em{ font-style:italic; font-weight:400; }
+.deck{ font-size:var(--step-1); line-height:1.45; margin-top:var(--s-6); max-width:36em; color:var(--ink); }
+.deck + .deck{ margin-top:var(--s-4); font-size:var(--step-0); color:var(--ink-2); max-width:40em; }
 
-        .object-header h1 {
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 1.5;
-            letter-spacing: 0;
-            color: #2a2a2a;
-            margin-bottom: 18px;
-        }
+.getinfo{ grid-column:9 / span 4; align-self:start; margin-top:var(--s-16); }
+.getinfo .pane{ padding:var(--s-6) var(--s-6) var(--s-8); }
+.info{ display:grid; grid-template-columns:auto 1fr; column-gap:var(--s-4); row-gap:var(--s-3); margin:0; }
+.info dt{ color:var(--ink-2); font-size:var(--step--1); padding-top:.2em; }
+.info dd{ margin:0; text-align:right; font-variant-numeric:lining-nums tabular-nums; }
+.info dd strong{ font-weight:500; font-size:var(--step-2); line-height:1; letter-spacing:-.01em; }
+.info .rule{ grid-column:1 / -1; border-top:1px dotted var(--ink-2); height:0; }
+.info-note{ margin-top:var(--s-5); font-size:var(--step--1); color:var(--ink-2); line-height:1.45; }
 
-        .object-header .meta {
-            font-size: 14px;
-            line-height: 1.65;
-            color: #2a2a2a;
-        }
+/* ---------- the machine (radial centerpiece) ---------- */
+.machine{ grid-column:1 / -1; }
+.machine .pane{ padding:var(--s-10) var(--s-10) var(--s-8); }
+.sechead{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:var(--s-3) var(--s-8); margin-bottom:var(--s-6); }
+h2{ font-size:var(--step-4); line-height:1.08; letter-spacing:-.02em; max-width:22ch; }
+.sechead p{ color:var(--ink-2); max-width:30em; font-size:var(--step-0); }
 
-        .object-header .meta div {
-            display: block;
-        }
+.figure{ margin:0 auto; max-width:1200px; }
+.stage{ position:relative; }
+.figure svg.mac{ display:block; width:100%; height:auto; }
+.mac .lead{ fill:none; stroke:var(--line); stroke-width:1; }
+.mac .dot{ fill:var(--line); }
+.mac .pin circle{ fill:var(--ink); }
+.mac .pin text{ fill:var(--win); font-family:var(--font-text); font-weight:600; font-size:16px; font-variant-numeric:lining-nums; text-anchor:middle; dominant-baseline:central; }
+.callouts{ list-style:none; margin:0; padding:0; }
+.callout{ font-size:var(--step--1); line-height:1.42; color:var(--ink-2); }
+.callout b{ display:flex; align-items:baseline; gap:var(--s-2); color:var(--ink); font-weight:400; margin-bottom:var(--s-1); }
+.callout .n{ font-family:var(--font-text); font-weight:600; font-size:15px; font-variant-numeric:lining-nums; width:22px; height:22px; flex:none; display:inline-grid; place-items:center; border-radius:50%; background:var(--ink); color:var(--win); transform:translateY(-2px); }
+.callout .fig{ font-size:var(--step-2); line-height:1.1; font-weight:500; letter-spacing:-.01em; white-space:nowrap; font-variant-numeric:lining-nums; }
+.callout.l{ text-align:right; }
+@media (min-width:1180px){ .callout.l b{ flex-direction:row-reverse; } }
+.callout .what{ font-size:var(--step-0); font-style:italic; color:var(--ink); }
 
-        .object-number {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
-                         'Liberation Mono', monospace;
-            font-size: 12px;
-            color: #999999;
-            letter-spacing: 0.01em;
-        }
+@media (min-width:1180px){
+  .callouts{ position:absolute; inset:0; }
+  .callout{ position:absolute; width:26%; }
+  .callout.r b{ }
+}
+@media (max-width:1179.98px){
+  .mac .lead, .mac .dot.leaddot{ display:none; }
+  .callouts{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--s-6) var(--s-8); margin-top:var(--s-6); }
+  .callout{ position:static !important; width:auto !important; text-align:left !important; }
+  .stage{ overflow:hidden; }
+  .figure svg.mac{ width:160%; margin-left:-36%; }
+}
+.figcap{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--s-2) var(--s-8); margin-top:var(--s-8); padding-top:var(--s-4); border-top:1px solid var(--line); font-size:var(--step--1); color:var(--ink-2); }
+.figcap p:first-child{ max-width:46em; color:var(--ink); }
 
-        .object-header .object-number {
-            display: block;
-            margin-top: 18px;
-        }
+/* ---------- people: inside the case ---------- */
+.people{ grid-column:1 / span 9; }
+.case{
+  background:var(--case); color:var(--case-ink);
+  padding:var(--s-10) var(--s-10) var(--s-12);
+  border-top:1px solid var(--line);
+  background-image:
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, hsl(40 20% 20% / .10)),
+    repeating-linear-gradient(90deg, transparent 0 3px, hsl(40 20% 30% / .025) 3px 4px);
+}
+.case-intro{ max-width:38em; color:var(--case-ink); margin-bottom:var(--s-10); }
+.case-intro h2{ color:var(--case-head); margin-bottom:var(--s-4); }
+.signatures{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--s-10) var(--s-8); }
+.sig{ display:flex; flex-direction:column; gap:var(--s-2); }
+.sig .name{
+  font-style:italic; font-size:var(--step-3); line-height:1; letter-spacing:-.01em; white-space:nowrap;
+  color:var(--sig);
+  text-shadow: 1px 1px 0 var(--sig-hi);
+  transform:rotate(var(--r,-2deg)); transform-origin:left center;
+}
+.sig .role{ font-size:var(--step--1); line-height:1.4; color:var(--case-ink); max-width:20em; }
+.case-foot{ margin-top:var(--s-10); padding-top:var(--s-4); border-top:1px solid var(--case-rule); font-size:var(--step--1); color:var(--case-ink); display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--s-2) var(--s-8); }
 
-        /* ---------- Hairline rule ----------
-           Only two hairlines appear in the document: one beneath the
-           object header, and one above the acquisition footer. No
-           other rules, dividers, or boxes are permitted. */
+.flag{ grid-column:10 / span 3; align-self:end; margin-left:calc(-1 * var(--s-16)); margin-bottom:var(--s-24); z-index:2; }
+.flag .pane{ padding:var(--s-6) var(--s-6) var(--s-8); }
+.flag svg{ display:block; width:96px; height:auto; margin-bottom:var(--s-4); }
+.flag blockquote{ margin:0; font-size:var(--step-2); line-height:1.15; letter-spacing:-.01em; text-indent:-.4em; }
+.flag cite{ display:block; margin-top:var(--s-4); font-style:normal; font-size:var(--step--1); color:var(--ink-2); line-height:1.45; }
 
-        .hairline {
-            border: 0;
-            border-top: 0.5px solid #2a2a2a;
-            background: none;
-            height: 0;
-            margin: 0 0 48px 0;
-            width: 100%;
-        }
+/* ---------- impact ---------- */
+.impact{ grid-column:2 / -1; }
+.impact .pane{ display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:var(--s-12); }
+.impact h2{ margin-bottom:var(--s-6); }
+.stuck{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--s-6); }
+.stuck li{ padding-left:var(--s-6); position:relative; }
+.stuck li::before{ content:""; position:absolute; left:0; top:.55em; width:9px; height:9px; background:var(--ink); }
+.stuck strong{ font-weight:600; }
+.lede{ margin-bottom:var(--s-8); }
+table{ width:100%; border-collapse:collapse; font-size:var(--step--1); line-height:1.4; }
+caption{ text-align:left; font-family:var(--font-ui); font-size:18px; padding-bottom:var(--s-3); }
+th, td{ text-align:left; vertical-align:top; padding:var(--s-3) var(--s-3) var(--s-3) 0; border-bottom:1px solid color-mix(in srgb, var(--line) 22%, transparent); }
+thead th{ font-weight:500; color:var(--ink-2); border-bottom:1px solid var(--line); font-size:var(--step--1); }
+td.d{ white-space:nowrap; font-variant-numeric:lining-nums tabular-nums; color:var(--ink-2); width:8.5em; }
+td.e{ color:var(--ink); }
+tr.hl td{ background:var(--ink); color:var(--win); }
+tr.hl td.d{ color:var(--win); padding-left:var(--s-2); }
+.src{ margin-top:var(--s-4); font-size:var(--step--1); color:var(--ink-2); }
 
-        .hairline.before-footer {
-            margin: 64px 0 36px 0;
-        }
+/* ---------- end ---------- */
+.hello{ grid-column:1 / span 7; }
+.hello .pane{ padding:var(--s-12) var(--s-12) var(--s-12); }
+.hello blockquote{ margin:0; font-size:clamp(2rem, 1.2rem + 2.4vw, 3.4rem); line-height:1.08; letter-spacing:-.02em; font-style:italic; text-indent:-.42em; }
+.hello cite{ display:block; margin-top:var(--s-6); font-style:normal; color:var(--ink-2); max-width:34em; }
+.about{ grid-column:8 / span 5; align-self:end; margin-left:var(--s-8); }
+.about .pane{ padding:var(--s-6) var(--s-6) var(--s-8); font-size:var(--step--1); color:var(--ink-2); line-height:1.5; display:flex; flex-direction:column; gap:var(--s-3); }
+.about p:first-child{ color:var(--ink); }
 
-        /* ---------- Section spacing ---------- */
-
-        section {
-            margin-bottom: 56px;
-        }
-
-        section:last-of-type {
-            margin-bottom: 0;
-        }
-
-        h2.section-label {
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            color: #2a2a2a;
-            margin-bottom: 20px;
-            text-transform: none;
-        }
-
-        /* ---------- Curatorial note ----------
-           The single passage of italic serif in the document. All other
-           prose is set in the system sans of the body. */
-
-        .curatorial-note p {
-            font-family: 'EB Garamond', 'Hoefler Text', 'Garamond',
-                         Georgia, serif;
-            font-style: italic;
-            font-size: 17px;
-            line-height: 1.55;
-            color: #2a2a2a;
-            letter-spacing: 0.002em;
-        }
-
-        /* ---------- Technical specification ----------
-           A two-column tabular definition list. Terms in small-caps at
-           body weight; values in monospaced figures, right-aligned, so
-           that the decimal columns of the metric values agree. */
-
-        dl.specs {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            row-gap: 10px;
-            column-gap: 24px;
-            align-items: baseline;
-        }
-
-        dl.specs dt {
-            font-variant-caps: all-small-caps;
-            font-feature-settings: "smcp" 1, "c2sc" 1;
-            font-weight: 400;
-            font-size: 13px;
-            letter-spacing: 0.06em;
-            color: #2a2a2a;
-        }
-
-        dl.specs dd {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
-                         'Liberation Mono', monospace;
-            font-size: 12px;
-            text-align: right;
-            color: #2a2a2a;
-            letter-spacing: 0;
-        }
-
-        /* ---------- Body paragraphs (provenance, conservation) ---------- */
-
-        .body-text p {
-            font-size: 14px;
-            line-height: 1.7;
-            color: #2a2a2a;
-        }
-
-        .body-text p + p {
-            margin-top: 14px;
-        }
-
-        /* ---------- Catalog cross-references ----------
-           Item entries comprise a mono object-number on one line and a
-           prose description beneath. No bullets, no enumeration. */
-
-        ul.related {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        ul.related li {
-            font-size: 13px;
-            line-height: 1.6;
-            padding: 10px 0;
-            border: 0;
-            color: #2a2a2a;
-        }
-
-        ul.related li + li {
-            padding-top: 14px;
-        }
-
-        ul.related li .ref-number {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', Consolas,
-                         'Liberation Mono', monospace;
-            font-size: 12px;
-            color: #999999;
-            display: block;
-            margin-bottom: 4px;
-            letter-spacing: 0.01em;
-        }
-
-        ul.related li .ref-desc {
-            font-size: 13px;
-            color: #2a2a2a;
-            display: block;
-            line-height: 1.55;
-        }
-
-        /* ---------- Acquisition footer ---------- */
-
-        .acquisition {
-            font-size: 12px;
-            color: #2a2a2a;
-            letter-spacing: 0.01em;
-            line-height: 1.6;
-        }
-
-        /* ---------- Selection ----------
-           A neutral, low-contrast selection that does not introduce
-           chromatic accents to the otherwise monochrome composition. */
-
-        ::selection {
-            background: #e5e2da;
-            color: #2a2a2a;
-        }
-
-        /* ---------- Responsive ----------
-           At narrow viewports the two-column specification list folds
-           into a single column with the value beneath its term, the
-           form taken by printed object cards in the V&A reading room. */
-
-        @media (max-width: 640px) {
-            body {
-                padding: 72px 22px;
-            }
-            .curatorial-note p {
-                font-size: 16px;
-            }
-            dl.specs {
-                grid-template-columns: 1fr;
-                row-gap: 4px;
-            }
-            dl.specs dd {
-                text-align: left;
-                padding-bottom: 10px;
-            }
-            dl.specs dt {
-                padding-top: 6px;
-            }
-        }
-
-        /* ---------- Print ----------
-           When the page is reproduced on paper the background returns
-           to white and margins are reduced to those of a standard
-           archival object sheet. */
-
-        @media print {
-            body {
-                background: #ffffff;
-                padding: 40px;
-            }
-
-            .object-number,
-            ul.related li .ref-number {
-                color: #6a6a6a;
-            }
-        }
-    </style>
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .desktop{ grid-template-columns:minmax(0,1fr); row-gap:var(--s-12); padding:var(--s-8) var(--s-4) var(--s-16); }
+  .readme,.getinfo,.machine,.people,.flag,.impact,.hello,.about{ grid-column:1 / -1; margin:0; }
+  .getinfo{ margin-top:calc(-1 * var(--s-6)); margin-left:var(--s-8); max-width:520px; }
+  .flag{ margin:calc(-1 * var(--s-6)) 0 0 var(--s-8); }
+  .about{ margin:calc(-1 * var(--s-6)) 0 0 var(--s-8); }
+  .impact .pane{ grid-template-columns:minmax(0,1fr); gap:var(--s-10); }
+  .signatures{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:640px){
+  .menubar{ padding:0; font-size:18px; }
+  .menubar .clock{ display:none; }
+  .readme .pane, .machine .pane, .hello .pane{ padding:var(--s-6) var(--s-5) var(--s-8); }
+  .pane{ padding:var(--s-6) var(--s-5) var(--s-8); }
+  .case{ padding:var(--s-8) var(--s-5) var(--s-10); }
+  .getinfo,.flag,.about{ margin-left:0; }
+  .callouts{ grid-template-columns:minmax(0,1fr); }
+  .signatures{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--s-8) var(--s-5); }
+  .sig .name{ font-size:var(--step-1); white-space:normal; line-height:1.05; }
+  .menubar .apple{ display:none; }
+  .menubar a, .menubar button{ padding:0 10px; }
+  .figure svg.mac{ width:240%; margin-left:-79%; }
+  h2{ font-size:var(--step-3); }
+  td.d{ width:6.2em; white-space:normal; }
+  .titlebar span{ font-size:18px; }
+}
+@media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; } }
+</style>
 </head>
 <body>
-    <main>
 
-        <header class="object-header">
-            <h1>Apple Macintosh, Model M0001</h1>
-            <div class="meta">
-                <div>Apple Computer, Inc., Cupertino, California</div>
-                <div>Introduced January 24, 1984</div>
-                <span class="object-number">Object number 84.1.001a&ndash;c</span>
-            </div>
-        </header>
+<nav class="menubar" aria-label="Sections">
+  <span class="apple" aria-hidden="true">
+    <svg viewBox="0 0 18 22"><defs><clipPath id="ap"><path d="M12.6 4.2c.7-.9 1.2-2 1.1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.5zM14.5 11.9c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.9-.8C5.5 6.8 4 7.7 3.2 9.1c-1.6 2.8-.4 7 1.2 9.2.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-.9-2.6-3.6z"/></clipPath></defs><g clip-path="url(#ap)"><rect y="0" width="18" height="9.3" fill="var(--apple-g)"/><rect y="9.3" width="18" height="2.2" fill="var(--apple-y)"/><rect y="11.5" width="18" height="2.2" fill="var(--apple-o)"/><rect y="13.7" width="18" height="2.2" fill="var(--apple-r)"/><rect y="15.9" width="18" height="2.2" fill="var(--apple-p)"/><rect y="18.1" width="18" height="4" fill="var(--apple-b)"/></g></svg>
+  </span>
+  <a href="#machine">Machine</a>
+  <a href="#people">People</a>
+  <a href="#impact">Impact</a>
+  <span class="spacer"></span>
+  <span class="clock" aria-hidden="true">Tue Jan 24, 1984</span>
+</nav>
 
-        <hr class="hairline">
+<main class="desktop">
 
-        <section class="curatorial-note" aria-labelledby="curatorial-label">
-            <h2 id="curatorial-label" class="section-label">Curatorial Note</h2>
-            <p>
-                The Macintosh consolidated, in a single moulded enclosure intended for a domestic desk,
-                research into bitmapped display, the graphical user interface, and the hand-held pointing
-                device that had been undertaken across the previous decade, principally at the Xerox Palo
-                Alto Research Center. Its housing was conceived as an object of furniture rather than of
-                office equipment, with a vertical orientation that obscured the cathode-ray tube and
-                presented the screen at the approximate scale of a printed page. The object enters the
-                collection as a complete unit: central processing enclosure, detachable keyboard, and
-                single-button mouse. It is exhibited in a stable resting state, powered off, with the
-                screen aperture facing the viewer.
-            </p>
-        </section>
+  <!-- READ ME -->
+  <section class="win readme" aria-labelledby="h-top">
+    <p class="titlebar" aria-hidden="true"><span>Read Me</span></p>
+    <div class="pane">
+      <p class="kicker">Introduced January 24, 1984</p>
+      <h1 id="h-top">This beige box set the pattern for <em>every computer you’ve used since.</em></h1>
+      <p class="deck">It had 128&nbsp;KB of memory, a 9‑inch black-and-white screen and one floppy drive, and it cost $2,495. By the specs it was underpowered and overpriced. It was also the first computer most people saw with windows, icons, menus and a mouse, and after it, nobody went back.</p>
+      <p class="deck">Notice, as you go, how much of today’s computer was already sitting on that 9‑inch screen.</p>
+    </div>
+  </section>
 
-        <section aria-labelledby="specs-label">
-            <h2 id="specs-label" class="section-label">Technical Specification</h2>
-            <dl class="specs">
-                <dt>Processor</dt>
-                <dd>Motorola 68000, 7.83 MHz</dd>
+  <aside class="win getinfo" aria-labelledby="h-info">
+    <p class="titlebar" aria-hidden="true"><span>Macintosh Info</span></p>
+    <div class="pane">
+      <h2 id="h-info" class="ui" style="font-size:18px;margin-bottom:var(--s-5);font-weight:500">Kind: personal computer</h2>
+      <dl class="info">
+        <dt>Price, 1984</dt><dd><strong>$2,495</strong></dd>
+        <dt>In 2026 dollars</dt><dd>about $8,200</dd>
+        <dt>Apple Lisa, 1983</dt><dd>$9,995</dd>
+        <div class="rule" role="presentation"></div>
+        <dt>Model</dt><dd>M0001</dd>
+        <dt>Weight</dt><dd>16.5&nbsp;lb (7.5&nbsp;kg)</dd>
+        <dt>Sold, first 100 days</dt><dd>about 70,000</dd>
+      </dl>
+      <p class="info-note">A quarter of the Lisa’s price, for most of the Lisa’s ideas. Inflation figure from the BLS consumer price index.</p>
+    </div>
+  </aside>
 
-                <dt>Memory</dt>
-                <dd>128 KB RAM, 64 KB ROM</dd>
+  <!-- THE MACHINE -->
+  <section class="win machine" id="machine" aria-labelledby="h-machine">
+    <p class="titlebar" aria-hidden="true"><span>Macintosh 128K</span></p>
+    <div class="pane">
+      <div class="sechead">
+        <h2 id="h-machine">Notice what isn’t there: no fan, no slots, no command line.</h2>
+        <p>Everything sits in one molded case. You couldn’t open it without a long-shafted Torx driver, and that was the point.</p>
+      </div>
 
-                <dt>Display</dt>
-                <dd>9-inch monochrome CRT, 512 &times; 342 px</dd>
+      <figure class="figure" style="margin:0">
+        <div class="stage">
+        <svg class="mac" viewBox="0 0 1200 720" role="img" aria-labelledby="mac-t mac-d">
+          <title id="mac-t">Front view of the Macintosh 128K, with numbered parts</title>
+          <desc id="mac-d">A drawing of the upright beige Macintosh with its built-in screen showing the smiling Mac icon, a floppy slot below the screen on the right, a rainbow Apple logo at lower left, and a one-button mouse beside it. Numbered pins mark the screen, processor, memory, handle, floppy drive, sound and mouse.</desc>
+          <!-- ground -->
+          <ellipse cx="610" cy="612" rx="250" ry="16" fill="var(--ground)"/>
+          <ellipse cx="822" cy="676" rx="44" ry="7" fill="var(--ground)"/>
+          <!-- body -->
+          <path d="M440 92 Q440 70 462 70 H738 Q760 70 760 92 V586 Q760 600 746 600 H454 Q440 600 440 586 Z" fill="var(--beige)" stroke="var(--beige-edge)" stroke-width="1.5"/>
+          <!-- top bevel and handle recess -->
+          <path d="M452 82 H748" stroke="var(--beige-3)" stroke-width="2"/>
+          <path d="M556 70 Q560 62 572 62 H628 Q640 62 644 70" fill="var(--beige-2)" stroke="var(--beige-edge)" stroke-width="1.2"/>
+          <!-- base foot -->
+          <path d="M458 600 H742 V612 Q742 616 738 616 H462 Q458 616 458 612 Z" fill="var(--beige-2)" stroke="var(--beige-edge)" stroke-width="1.2"/>
+          <!-- side shading -->
+          <path d="M748 92 V588" stroke="var(--beige-2)" stroke-width="10" opacity=".7"/>
+          <!-- bezel -->
+          <rect x="466" y="100" width="268" height="232" rx="10" fill="var(--beige-2)" stroke="var(--beige-edge)" stroke-width="1.2"/>
+          <rect x="474" y="108" width="252" height="216" rx="8" fill="#2b2a27"/>
+          <!-- screen glass, 512x342 aspect -->
+          <rect x="489" y="126" width="222" height="148" rx="7" fill="var(--screen)"/>
+          <!-- menu bar on screen -->
+          <rect x="489" y="126" width="222" height="11" rx="0" fill="var(--screen)"/>
+          <path d="M489 137.5 H711" stroke="var(--screen-ink)" stroke-width="1"/>
+          <g fill="var(--screen-ink)" shape-rendering="crispEdges">
+            <rect x="498" y="129" width="5" height="6"/>
+            <rect x="510" y="130" width="12" height="3"/><rect x="528" y="130" width="12" height="3"/><rect x="546" y="130" width="14" height="3"/><rect x="566" y="130" width="18" height="3"/>
+          </g>
+          <!-- happy mac, 1-bit, 3px pixels -->
+          <g fill="var(--screen-ink)" shape-rendering="crispEdges" transform="translate(582 160)">
+            <path d="M0 0h36v3H0zM0 0h3v57H0zM33 0h3v57h-3zM0 54h36v3H0zM0 45h36v3H0z"/>
+            <path d="M6 6h24v3H6zM6 6h3v27H6zM27 6h3v27h-3zM6 30h24v3H6z"/>
+            <rect x="13" y="13" width="3" height="5"/><rect x="21" y="13" width="3" height="5"/>
+            <rect x="18" y="13" width="2" height="9"/><rect x="16" y="20" width="3" height="2"/>
+            <rect x="12" y="25" width="2" height="2"/><rect x="14" y="27" width="9" height="2"/><rect x="23" y="25" width="2" height="2"/>
+            <rect x="21" y="50" width="9" height="2"/>
+          </g>
+          <!-- floppy slot -->
+          <rect x="612" y="438" width="104" height="10" rx="2" fill="#2b2a27"/>
+          <rect x="612" y="437" width="104" height="2" fill="var(--beige-edge)"/>
+          <!-- logic board ghost (inside) -->
+          <rect x="462" y="470" width="276" height="74" rx="3" fill="none" stroke="var(--beige-ink)" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
+          <g fill="var(--beige-ink)" opacity=".75"><rect x="496" y="479" width="74" height="15" rx="1.5"/>
+            <rect x="496" y="513" width="12" height="13" rx="1"/><rect x="512" y="513" width="12" height="13" rx="1"/><rect x="528" y="513" width="12" height="13" rx="1"/><rect x="544" y="513" width="12" height="13" rx="1"/><rect x="560" y="513" width="12" height="13" rx="1"/><rect x="576" y="513" width="12" height="13" rx="1"/><rect x="592" y="513" width="12" height="13" rx="1"/><rect x="608" y="513" width="12" height="13" rx="1"/></g>
+          <text x="722" y="536" text-anchor="end" font-family="EB Garamond, Georgia, serif" font-style="italic" font-size="15" fill="var(--beige-ink)">logic board, inside</text>
+          <!-- rainbow apple -->
+          <g transform="translate(470 556) scale(1.1)">
+            <g clip-path="url(#ap)"><rect y="0" width="18" height="9.3" fill="var(--apple-g)"/><rect y="9.3" width="18" height="2.2" fill="var(--apple-y)"/><rect y="11.5" width="18" height="2.2" fill="var(--apple-o)"/><rect y="13.7" width="18" height="2.2" fill="var(--apple-r)"/><rect y="15.9" width="18" height="2.2" fill="var(--apple-p)"/><rect y="18.1" width="18" height="4" fill="var(--apple-b)"/></g>
+          </g>
+          <!-- mouse + cord -->
+          <path d="M822 586 C822 560 800 548 776 548 C766 548 762 552 760 556" fill="none" stroke="var(--beige-edge)" stroke-width="2.5"/>
+          <rect x="796" y="586" width="54" height="88" rx="9" fill="var(--beige)" stroke="var(--beige-edge)" stroke-width="1.5"/>
+          <rect x="803" y="593" width="40" height="28" rx="3" fill="var(--beige-2)" stroke="var(--beige-edge)" stroke-width="1"/>
 
-                <dt>Storage</dt>
-                <dd>400 KB single-sided 3.5-inch floppy</dd>
+          <!-- leader lines: callout edge -> part -->
+          <g class="leads">
+            <path class="lead" d="M336 100 H400 L489 190"/>
+            <path class="lead" d="M336 318 H400 L480 486"/>
+            <path class="lead" d="M336 487 H400 L480 520"/>
+            <path class="lead" d="M864 37 H700 L630 64"/>
+            <path class="lead" d="M864 197 H790 V443 H716"/>
+            <path class="lead" d="M864 366 H800 V520 H738"/>
+            <path class="lead" d="M864 546 H835 V636"/>
+            <g class="dot leaddot"><circle cx="336" cy="100" r="2.5"/><circle cx="336" cy="318" r="2.5"/><circle cx="336" cy="487" r="2.5"/><circle cx="864" cy="37" r="2.5"/><circle cx="864" cy="197" r="2.5"/><circle cx="864" cy="366" r="2.5"/><circle cx="864" cy="546" r="2.5"/></g>
+          </g>
+          <!-- pins on the parts -->
+          <g class="pin"><circle cx="489" cy="190" r="11"/><text x="489" y="190">1</text></g>
+          <g class="pin"><circle cx="480" cy="486" r="11"/><text x="480" y="486">2</text></g>
+          <g class="pin"><circle cx="480" cy="520" r="11"/><text x="480" y="520">3</text></g>
+          <g class="pin"><circle cx="630" cy="64" r="11"/><text x="630" y="64">4</text></g>
+          <g class="pin"><circle cx="716" cy="443" r="11"/><text x="716" y="443">5</text></g>
+          <g class="pin"><circle cx="738" cy="520" r="11"/><text x="738" y="520">6</text></g>
+          <g class="pin"><circle cx="835" cy="640" r="11"/><text x="835" y="640">7</text></g>
+        </svg>
 
-                <dt>Input</dt>
-                <dd>Single-button mouse, 58-key keyboard</dd>
+        <ol class="callouts">
+          <li class="callout l" style="left:1.5%;top:11.4%">
+            <b><span class="n">1</span><span class="fig">512 × 342</span></b>
+            <span class="what">A 9‑inch black-and-white screen.</span> At 72 pixels per inch, close to print’s 72 points, a line on screen was the size it would print.
+          </li>
+          <li class="callout l" style="left:1.5%;top:41.6%">
+            <b><span class="n">2</span><span class="fig">7.8336 MHz</span></b>
+            <span class="what">A Motorola 68000.</span> The video shared its memory, so in practice it ran closer to 6&nbsp;MHz.
+          </li>
+          <li class="callout l" style="left:1.5%;top:65.2%">
+            <b><span class="n">3</span><span class="fig">128 KB</span></b>
+            <span class="what">RAM, with 64&nbsp;KB of ROM.</span> The ROM held the Toolbox and QuickDraw, so every program drew windows the same way.
+          </li>
+          <li class="callout r" style="left:72.5%;top:2.6%">
+            <b><span class="n">4</span><span class="fig">16.5 lb</span></b>
+            <span class="what">A handle molded into the top.</span> No fan either; it cooled by convection and ran silent.
+          </li>
+          <li class="callout r" style="left:72.5%;top:24.8%">
+            <b><span class="n">5</span><span class="fig">400 KB</span></b>
+            <span class="what">A 3.5‑inch Sony drive, single-sided.</span> It replaced Apple’s own 5.25‑inch Twiggy drive late in development, after Twiggy proved unreliable in the Lisa.
+          </li>
+          <li class="callout r" style="left:72.5%;top:48.4%">
+            <b><span class="n">6</span><span class="fig">22.25 kHz</span></b>
+            <span class="what">8‑bit mono sound.</span> Enough for the Mac to talk at its own launch.
+          </li>
+          <li class="callout r" style="left:72.5%;top:73.4%">
+            <b><span class="n">7</span><span class="fig">1 button</span></b>
+            <span class="what">The mouse.</span> One button, so there was never a wrong one to press.
+          </li>
+        </ol>
+        </div>
 
-                <dt>Audio</dt>
-                <dd>8-bit, 22 kHz</dd>
+        <figcaption class="figcap">
+          <p>Drawn from the front, in the Pantone 453 that Apple called beige. It shipped with System 1.0, the Finder, MacWrite and MacPaint, and no internal expansion slots.</p>
+          <p>Sources: EveryMac; Burrell Smith in <i>BYTE</i>, Feb 1984; folklore.org</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 
-                <dt>Dimensions</dt>
-                <dd>13.6 &times; 9.7 &times; 10.9 in</dd>
+  <!-- PEOPLE -->
+  <section class="win people" id="people" aria-labelledby="h-people">
+    <p class="titlebar" aria-hidden="true"><span>Inside the case</span></p>
+    <div class="case">
+      <div class="case-intro">
+        <h2 id="h-people">Turn it around: the team signed the inside of the case.</h2>
+        <p>At a signing party on February 10, 1982, the Mac team put their names on a sheet that was molded into the back of every case, about 48 names in all. Here are twelve of the people behind the machine, set in type rather than traced, with what each of them did.</p>
+      </div>
+      <ul class="signatures">
+        <li class="sig" style="--r:-3deg"><span class="name">Jef Raskin</span><span class="role">Started the project in 1979 and named it after his favorite apple, the McIntosh.</span></li>
+        <li class="sig" style="--r:2deg"><span class="name">Steve Jobs</span><span class="role">Took the project over in early 1981 and drove it to launch.</span></li>
+        <li class="sig" style="--r:-1deg"><span class="name">Burrell Smith</span><span class="role">Designed the digital board, the computer itself.</span></li>
+        <li class="sig" style="--r:-4deg"><span class="name">Andy Hertzfeld</span><span class="role">Wrote much of the system software and the User Interface Toolbox.</span></li>
+        <li class="sig" style="--r:1deg"><span class="name">Bill Atkinson</span><span class="role">Built QuickDraw, the graphics engine, and wrote MacPaint.</span></li>
+        <li class="sig" style="--r:-2deg"><span class="name">Susan Kare</span><span class="role">Drew the icons and the bitmap fonts, Chicago and Geneva among them.</span></li>
+        <li class="sig" style="--r:3deg"><span class="name">Bud Tribble</span><span class="role">Managed the software team.</span></li>
+        <li class="sig" style="--r:-1deg"><span class="name">Steve Capps</span><span class="role">Co-wrote the Finder. Also sewed the pirate flag.</span></li>
+        <li class="sig" style="--r:-3deg"><span class="name">Bruce Horn</span><span class="role">Co-wrote the Finder.</span></li>
+        <li class="sig" style="--r:2deg"><span class="name">Randy Wigginton</span><span class="role">Wrote MacWrite.</span></li>
+        <li class="sig" style="--r:-2deg"><span class="name">Jerry Manock</span><span class="role">Designed the case with Terry Oyama, and chose its beige.</span></li>
+        <li class="sig" style="--r:1deg"><span class="name">Joanna Hoffman</span><span class="role">Marketing, from the team’s earliest days.</span></li>
+      </ul>
+      <p class="case-foot"><span>Molded signatures: about 48, including Steve Wozniak’s.</span><span>Sources: folklore.org, “Signing Party”; vintagecomputing.com</span></p>
+    </div>
+  </section>
 
-                <dt>Mass</dt>
-                <dd>7.5 kg</dd>
+  <aside class="win flag" aria-label="The pirate flag">
+    <p class="titlebar" aria-hidden="true"><span>Note</span></p>
+    <div class="pane">
+      <svg viewBox="0 0 48 32" aria-hidden="true" shape-rendering="crispEdges">
+        <rect x="0" y="0" width="2" height="32" fill="var(--ink)"/>
+        <rect x="2" y="1" width="44" height="22" fill="var(--ink)"/>
+        <g fill="var(--win)">
+          <rect x="18" y="4" width="12" height="2"/><rect x="16" y="6" width="16" height="7"/><rect x="18" y="13" width="12" height="3"/>
+          <rect x="20" y="16" width="2" height="2"/><rect x="23" y="16" width="2" height="2"/><rect x="26" y="16" width="2" height="2"/>
+          <rect x="8" y="17" width="4" height="2"/><rect x="36" y="17" width="4" height="2"/><rect x="10" y="19" width="4" height="2"/><rect x="34" y="19" width="4" height="2"/>
+          <rect x="8" y="4" width="4" height="2"/><rect x="36" y="4" width="4" height="2"/><rect x="10" y="2" width="4" height="2"/><rect x="34" y="2" width="4" height="2"/>
+        </g>
+        <rect x="18" y="8" width="4" height="3" fill="var(--apple-r)"/>
+        <rect x="25" y="8" width="4" height="3" fill="var(--ink)"/>
+      </svg>
+      <blockquote>“It’s better to be a pirate than join the Navy.”</blockquote>
+      <cite>Steve Jobs, at the team’s January 1983 retreat in Carmel. That August a pirate flag went up over the Bandley&nbsp;3 building; Steve Capps sewed it and Susan Kare painted the skull.</cite>
+    </div>
+  </aside>
 
-                <dt>Launch price</dt>
-                <dd>$2,495 USD ($7,500 in 2024 dollars)</dd>
-            </dl>
-        </section>
+  <!-- IMPACT -->
+  <section class="win impact" id="impact" aria-labelledby="h-impact">
+    <p class="titlebar" aria-hidden="true"><span>After hello</span></p>
+    <div class="pane">
+      <div>
+        <h2 id="h-impact">The ad aired nationally once. The idea never stopped airing.</h2>
+        <p class="lede">The first Mac sold about 70,000 in its first 100 days, and then demand slowed: 128&nbsp;KB was too little, and there was almost no software yet. What lasted was the way of working it introduced.</p>
+        <ul class="stuck">
+          <li><strong>The pointer became the default.</strong> Windows, icons, menus and a mouse went from a $9,995 Lisa feature to the way a computer was used. Microsoft shipped Windows 1.0 in November 1985.</li>
+          <li><strong>Type became something anyone could choose.</strong> Kare’s fonts put real typefaces on a screen. With the LaserWriter and Aldus PageMaker in 1985, the Mac started desktop publishing.</li>
+          <li><strong>A computer launch became an event.</strong> Ridley Scott’s “1984,” made by Chiat/Day, set the template for the product launch as cultural moment.</li>
+        </ul>
+      </div>
+      <div>
+        <table>
+          <caption>Ten dates, December 1983 to January 1986</caption>
+          <thead><tr><th scope="col">Date</th><th scope="col">What happened</th></tr></thead>
+          <tbody>
+            <tr><td class="d">Dec 31, 1983</td><td class="e">“1984” airs once on KMVT in Twin Falls, Idaho, just before midnight, so it can qualify for that year’s ad awards.</td></tr>
+            <tr><td class="d">Jan 22, 1984</td><td class="e">“1984” airs nationally in the third quarter of Super Bowl XVIII on CBS. Reported production cost: $370,000 to $900,000.</td></tr>
+            <tr class="hl"><td class="d">Jan 24, 1984</td><td class="e">Jobs unveils the Macintosh at Apple’s shareholder meeting at the Flint Center in Cupertino. It introduces itself out loud.</td></tr>
+            <tr><td class="d">May 3, 1984</td><td class="e">Day 100: about 70,000 sold.</td></tr>
+            <tr><td class="d">Sep 10, 1984</td><td class="e">Macintosh 512K, the “Fat Mac,” quadruples the memory.</td></tr>
+            <tr><td class="d">Nov 1984</td><td class="e">Apple buys all 39 ad pages of <i>Newsweek</i>’s post-election issue. “Test Drive a Macintosh” lets about 200,000 people take one home overnight.</td></tr>
+            <tr><td class="d">1985</td><td class="e">The LaserWriter (March) and Aldus PageMaker (July) make the Mac a print shop.</td></tr>
+            <tr><td class="d">Sep 1985</td><td class="e">Steve Jobs resigns from Apple.</td></tr>
+            <tr><td class="d">Nov 20, 1985</td><td class="e">Microsoft releases Windows 1.0.</td></tr>
+            <tr><td class="d">Jan 16, 1986</td><td class="e">The Macintosh Plus brings 1&nbsp;MB of RAM and the design to full strength.</td></tr>
+          </tbody>
+        </table>
+        <p class="src">Sources: Computer History Museum; <i>The New York Times</i>, 1984; folklore.org; Cult of Mac</p>
+      </div>
+    </div>
+  </section>
 
-        <section class="body-text" aria-labelledby="provenance-label">
-            <h2 id="provenance-label" class="section-label">Provenance</h2>
-            <p>
-                Industrial design by Jerry Manock and Terry Oyama. System software developed by Andy
-                Hertzfeld, Bill Atkinson, and Bud Tribble. System bitmaps and the original screen
-                typefaces &mdash; including Chicago, Geneva, Monaco, and New York &mdash; designed by
-                Susan Kare. Project leadership by Steven P. Jobs, succeeding Jef Raskin, who originated
-                the Macintosh project at Apple Computer, Inc. in 1979 and conceived its name. Launch
-                marketing included the one-minute television advertisement titled
-                <span style="font-style: italic;">1984</span>, directed by Ridley Scott and broadcast
-                during Super Bowl XVIII on January 22, 1984.
-            </p>
-        </section>
+  <!-- END -->
+  <section class="win hello" aria-label="The Macintosh speaks">
+    <p class="titlebar" aria-hidden="true"><span>MacinTalk</span></p>
+    <div class="pane">
+      <blockquote>“Hello, I’m Macintosh. It sure is great to get out of that bag.”</blockquote>
+      <cite>The Macintosh, speaking through its 8‑bit speaker after Jobs pulled it from a carrying bag on stage, January 24, 1984. It closed with advice: “Never trust a computer you can’t lift.”</cite>
+    </div>
+  </section>
 
-        <section class="body-text" aria-labelledby="conservation-label">
-            <h2 id="conservation-label" class="section-label">Conservation Note</h2>
-            <p>
-                The cathode-ray tube remains an analog component and is subject to gradual loss of
-                cathode emission; the original deflection circuitry has not been operated in display
-                conditions since accession. The polyvinyl chloride housing, originally specified in the
-                manufacturer&rsquo;s &ldquo;Fog&rdquo; finish, is undergoing progressive oxidative
-                yellowing under ambient ultraviolet exposure, a behaviour common to brominated flame-
-                retardant ABS and PVC enclosures of the period; the object is stored at 18&deg;C and
-                40 percent relative humidity, with ultraviolet-filtered illumination during exhibition.
-                The accompanying 3.5-inch floppy disks are subject to magnetic decay and binder
-                hydrolysis of the oxide layer; the disks have been imaged to archival storage and are
-                no longer mounted for read access. Restoration to operating condition is not
-                anticipated.
-            </p>
-        </section>
+  <aside class="win about" aria-label="About this page">
+    <p class="titlebar" aria-hidden="true"><span>About This Page</span></p>
+    <div class="pane">
+      <p>Made for Shubham, October 22, 2026. Set in EB Garamond, standing in for the Apple Garamond of the 1984 ads, and Pixelify Sans, standing in for Susan Kare’s Chicago.</p>
+      <p>Facts checked October 22, 2026 against EveryMac, folklore.org, the Computer History Museum and <i>BYTE</i>. The Mac and its happy face are redrawn by hand, not traced.</p>
+    </div>
+  </aside>
 
-        <section aria-labelledby="related-label">
-            <h2 id="related-label" class="section-label">Related Objects</h2>
-            <ul class="related">
-                <li>
-                    <span class="ref-number">84.1.022</span>
-                    <span class="ref-desc">Susan Kare, design sketches for system bitmaps, ink on graph paper, gift of the artist, 2009.</span>
-                </li>
-                <li>
-                    <span class="ref-number">84.1.047</span>
-                    <span class="ref-desc">Apple Macintosh single-button mouse, Model M0100, injection-moulded ABS and steel, 1984.</span>
-                </li>
-                <li>
-                    <span class="ref-number">79.4.003</span>
-                    <span class="ref-desc">Jef Raskin, internal memorandum &ldquo;Computers by the Millions,&rdquo; typescript with manuscript annotations, 1979.</span>
-                </li>
-                <li>
-                    <span class="ref-number">84.7.011</span>
-                    <span class="ref-desc">Chiat&sol;Day for Apple Computer, Inc., <span style="font-style: italic;">1984</span>, 35&thinsp;mm film transfer to digital video, 60 seconds, directed by Ridley Scott.</span>
-                </li>
-            </ul>
-        </section>
+</main>
 
-        <hr class="hairline before-footer">
-
-        <footer class="acquisition">
-            Gift of the estate of Steven P. Jobs, 2012.
-        </footer>
-
-    </main>
+<script>
+(function(){
+  var root=document.documentElement, bar=document.querySelector('.menubar'), clock=bar.querySelector('.clock');
+  var stored=null; try{ stored=localStorage.getItem('mac84-theme'); }catch(e){}
+  if(stored==='light'||stored==='dark') root.setAttribute('data-theme',stored);
+  function isDark(){ var t=root.getAttribute('data-theme'); return t ? t==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; }
+  var b=document.createElement('button'); b.type='button';
+  function label(){ var d=isDark(); b.textContent='Invert'; b.setAttribute('aria-label', d ? 'Switch to light theme' : 'Switch to dark theme'); b.setAttribute('aria-pressed', d ? 'true' : 'false'); }
+  b.addEventListener('click',function(){ var next=isDark()?'light':'dark'; root.setAttribute('data-theme',next); try{ localStorage.setItem('mac84-theme',next); }catch(e){} label(); });
+  label(); bar.insertBefore(b, clock);
+})();
+</script>
 </body>
 </html>

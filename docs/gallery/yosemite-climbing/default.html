@@ -2,219 +2,676 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guide to Popular Yosemite Climbing Routes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Granite Classics: A Guide to Yosemite's Most Famous Routes</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #14161a;
+    --panel: #1d2026;
+    --panel-2: #252931;
+    --ink: #e9e6df;
+    --muted: #a3a097;
+    --line: #333842;
+    --granite: #cfc8bb;
+    --sun: #e8a85c;
+    --pine: #6f9a74;
+    --sky: #7fa7c9;
+    --aid: #c9786a;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background: #f9f9f9;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   }
-  header {
-    background: linear-gradient(135deg, #2c5f7c 0%, #4a8db5 100%);
-    color: white;
-    padding: 60px 20px;
-    text-align: center;
+  .sans, nav, .chip, .stats, table, .badge, button, .legend {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
-  header h1 { font-size: 2.5em; margin-bottom: 10px; }
-  header p { font-size: 1.2em; opacity: 0.9; }
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 20px;
-  }
-  .intro {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  .route {
-    background: white;
-    padding: 25px;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-left: 4px solid #2c5f7c;
-  }
-  .route h2 {
-    color: #2c5f7c;
-    margin-bottom: 8px;
-  }
-  .route .formation {
-    color: #777;
-    font-style: italic;
-    margin-bottom: 15px;
-  }
-  .stats {
+  a { color: var(--sun); }
+
+  /* Hero */
+  header.hero {
+    position: relative;
+    min-height: 74vh;
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin: 15px 0;
-    padding: 12px;
-    background: #f4f7f9;
-    border-radius: 6px;
+    align-items: flex-end;
+    overflow: hidden;
+    background: linear-gradient(180deg, #2b3b4f 0%, #6b6f78 45%, #d79a62 78%, #e7b27a 100%);
   }
-  .stat {
-    flex: 1;
-    min-width: 120px;
+  header.hero svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-text {
+    position: relative;
+    z-index: 2;
+    padding: 0 6vw 7vh;
+    max-width: 900px;
   }
-  .stat-label {
-    font-size: 0.8em;
+  .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: .25em;
     text-transform: uppercase;
-    color: #888;
-    letter-spacing: 0.5px;
+    font-size: .78rem;
+    color: var(--sun);
+    margin: 0 0 .6rem;
   }
-  .stat-value {
-    font-weight: bold;
-    color: #2c5f7c;
-    font-size: 1.05em;
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    line-height: 1;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 30px rgba(0,0,0,.4);
   }
-  .route p { margin-bottom: 10px; }
-  .grade-key {
-    background: #eef4f8;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 30px;
+  .hero-text p.lede { font-size: 1.2rem; max-width: 640px; color: #efe9de; margin: 0; }
+
+  nav.top {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(20,22,26,.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    display: flex; gap: 1.5rem; padding: .8rem 6vw;
+    font-size: .88rem; overflow-x: auto; white-space: nowrap;
   }
-  .grade-key h3 { color: #2c5f7c; margin-bottom: 10px; }
-  .grade-key ul { padding-left: 20px; }
+  nav.top a { color: var(--muted); text-decoration: none; }
+  nav.top a:hover { color: var(--ink); }
+  nav.top strong { color: var(--granite); margin-right: auto; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 5vw 6rem; }
+  section { padding-top: 4.5rem; }
+  h2 { font-size: 2.1rem; margin: 0 0 .4rem; font-weight: 600; }
+  .section-sub { color: var(--muted); margin: 0 0 2rem; max-width: 720px; }
+
+  /* Controls */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: .6rem; align-items: center;
+    margin-bottom: 1.6rem;
+  }
+  .chip {
+    background: var(--panel); color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: .45rem 1rem; font-size: .85rem; cursor: pointer;
+    transition: all .15s ease;
+  }
+  .chip:hover { color: var(--ink); border-color: #4a505c; }
+  .chip.active { background: var(--granite); color: #1a1a1a; border-color: var(--granite); }
+  .controls .spacer { flex: 1; }
+  .controls select {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: .45rem .7rem; font-size: .85rem;
+    font-family: inherit;
+  }
+  .count { color: var(--muted); font-size: .85rem; font-family: -apple-system, sans-serif; }
+
+  /* Cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.4rem; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #4a505c; }
+  .card .art { height: 120px; position: relative; }
+  .card .art svg { width: 100%; height: 100%; display: block; }
+  .card .num {
+    position: absolute; top: 12px; left: 14px;
+    font: 600 .75rem -apple-system, sans-serif; letter-spacing: .15em;
+    color: rgba(255,255,255,.85); background: rgba(0,0,0,.35);
+    padding: .2rem .55rem; border-radius: 6px;
+  }
+  .card .body { padding: 1.2rem 1.3rem 1.3rem; display: flex; flex-direction: column; flex: 1; }
+  .card h3 { margin: 0; font-size: 1.45rem; font-weight: 600; line-height: 1.2; }
+  .card .wall { color: var(--muted); font-size: .95rem; margin: .15rem 0 .8rem; font-style: italic; }
+  .badges { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .9rem; }
+  .badge {
+    font-size: .72rem; font-weight: 600; letter-spacing: .04em;
+    padding: .22rem .55rem; border-radius: 6px;
+    background: var(--panel-2); color: var(--granite); border: 1px solid var(--line);
+  }
+  .badge.aid { color: #f0b2a6; border-color: #5a3934; background: #2e2220; }
+  .badge.free { color: #b2d6b6; border-color: #34503a; background: #1f2b22; }
+  .badge.grade { color: #1a1a1a; background: var(--sun); border-color: var(--sun); }
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    margin: 0 0 1rem; padding: .7rem 0;
+  }
+  .stats div { text-align: center; }
+  .stats b { display: block; font-size: 1.1rem; color: var(--ink); }
+  .stats span { font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .card p.desc { margin: 0 0 1rem; color: #d5d1c8; }
+  .card details { margin-top: auto; border-top: 1px dashed var(--line); padding-top: .8rem; }
+  .card summary {
+    cursor: pointer; font: 600 .85rem -apple-system, sans-serif;
+    color: var(--sun); list-style: none;
+  }
+  .card summary::-webkit-details-marker { display: none; }
+  .card summary::before { content: "+ "; }
+  .card details[open] summary::before { content: "\2212  "; }
+  .card dl { margin: .8rem 0 0; font-size: .93rem; }
+  .card dt {
+    font: 600 .7rem -apple-system, sans-serif; text-transform: uppercase;
+    letter-spacing: .12em; color: var(--muted); margin-top: .7rem;
+  }
+  .card dd { margin: .15rem 0 0; }
+
+  .meter { display: flex; gap: 3px; margin-top: .25rem; }
+  .meter i { width: 18px; height: 6px; border-radius: 3px; background: #3a3f49; }
+  .meter i.on { background: var(--sun); }
+
+  /* Elevation chart */
+  .chart-wrap {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.5rem 1.2rem 1rem;
+  }
+  .chart-wrap svg { width: 100%; height: auto; display: block; }
+  .legend { display: flex; gap: 1.2rem; font-size: .8rem; color: var(--muted); margin-top: .6rem; flex-wrap: wrap; }
+  .legend span::before {
+    content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+    margin-right: .4rem; vertical-align: -1px; background: var(--c);
+  }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 760px; }
+  th, td { padding: .75rem .9rem; text-align: left; border-bottom: 1px solid var(--line); }
+  th { background: var(--panel-2); color: var(--muted); font-weight: 600; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--panel); }
+  td.name { font-weight: 600; color: var(--ink); }
+
+  /* Primer */
+  .primer { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
+  .primer .box {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.3rem 1.4rem;
+  }
+  .primer h4 { margin: 0 0 .6rem; font-size: 1.15rem; }
+  .primer ul { margin: 0; padding-left: 1.1rem; color: #d5d1c8; }
+  .primer li { margin-bottom: .35rem; }
+  .primer code {
+    font: 600 .85em ui-monospace, Menlo, monospace; color: var(--sun);
+    background: #2a2620; padding: .05rem .35rem; border-radius: 4px;
+  }
+
+  .callout {
+    margin-top: 1.4rem; padding: 1.1rem 1.3rem; border-left: 3px solid var(--sun);
+    background: #221f1a; border-radius: 0 10px 10px 0; color: #e2dccf;
+  }
+
   footer {
-    text-align: center;
-    padding: 30px 20px;
-    color: #888;
-    font-size: 0.9em;
+    border-top: 1px solid var(--line); color: var(--muted);
+    padding: 2rem 6vw 3rem; font-size: .85rem; text-align: center;
+    font-family: -apple-system, sans-serif;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    .stats b { font-size: 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto !important; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Yosemite Climbing Routes</h1>
-  <p>A guide to the classics of the Valley</p>
+<header class="hero">
+  <svg viewBox="0 0 1600 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#c9b9a2"/>
+        <stop offset="1" stop-color="#6e655a"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#8d8172"/>
+        <stop offset="1" stop-color="#4f4840"/>
+      </linearGradient>
+      <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#14161a" stop-opacity="0"/>
+        <stop offset="1" stop-color="#14161a" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+    <circle cx="1240" cy="300" r="70" fill="#f6d39b" opacity=".7"/>
+    <!-- Half Dome, distant -->
+    <path d="M980 560 C 1010 420, 1080 330, 1160 320 L 1165 560 Z" fill="#7a6f66" opacity=".7"/>
+    <path d="M1160 320 L 1166 560 L 1240 560 C 1230 470, 1205 380, 1160 320 Z" fill="#5d554e" opacity=".7"/>
+    <!-- El Capitan -->
+    <path d="M0 800 L0 300 C 120 230, 260 200, 380 210 C 430 214, 470 230, 500 260 L 560 800 Z" fill="url(#g1)"/>
+    <path d="M380 210 C 420 214, 460 232, 492 262 L 470 800 L 440 800 C 430 600, 410 400, 380 210 Z" fill="#5b5248" opacity=".55"/>
+    <!-- Nose line hint -->
+    <path d="M455 800 C 450 650, 440 450, 400 215" stroke="#e8a85c" stroke-width="2" stroke-dasharray="6 8" fill="none" opacity=".75"/>
+    <!-- Cathedral / Sentinel side -->
+    <path d="M1600 800 L1600 380 C 1520 340, 1460 330, 1420 360 C 1380 300, 1340 290, 1300 340 L 1220 800 Z" fill="url(#g2)"/>
+    <!-- Valley trees -->
+    <path d="M0 800 L0 640 Q 80 600 160 640 T 320 630 T 520 650 T 760 620 T 980 650 T 1200 625 T 1420 650 T 1600 630 L1600 800 Z" fill="#26342b"/>
+    <path d="M0 800 L0 700 Q 100 670 200 700 T 420 690 T 680 705 T 940 690 T 1200 705 T 1420 690 T 1600 700 L1600 800 Z" fill="#1b2620"/>
+    <rect x="0" y="560" width="1600" height="240" fill="url(#fade)"/>
+  </svg>
+  <div class="hero-text">
+    <p class="eyebrow">Yosemite Valley, California</p>
+    <h1>Granite Classics</h1>
+    <p class="lede">Ten of the most celebrated trad, multi-pitch, and big-wall routes in the place that invented modern rock climbing. From a five-pitch cragging lesson to the three-thousand-foot prow of El Capitan.</p>
+  </div>
 </header>
+
+<nav class="top">
+  <strong>Granite Classics</strong>
+  <a href="#routes">Routes</a>
+  <a href="#profile">Height Profile</a>
+  <a href="#compare">Compare</a>
+  <a href="#grades">Reading the Grades</a>
+  <a href="#beta">Valley Beta</a>
+</nav>
 
 <main>
 
-  <div class="intro">
-    <p>Yosemite Valley is the spiritual home of American big wall climbing. Its towering granite walls have shaped the sport since the 1950s, when pioneers like Royal Robbins, Warren Harding, and Yvon Chouinard pushed what was thought possible. Below are some of the most iconic routes that draw climbers from around the world.</p>
-  </div>
+  <section id="routes">
+    <h2>The Routes</h2>
+    <p class="section-sub">Filter by style, sort by difficulty or size, and open any card for history, key features, and logistics. Grades follow the Yosemite Decimal System; ratings in parentheses show the free-climbing grade of an otherwise aided route.</p>
 
-  <div class="route">
-    <h2>The Nose</h2>
-    <div class="formation">El Capitan &middot; Southwest Buttress</div>
-    <p>Perhaps the most famous rock climb in the world. First climbed by Warren Harding, Wayne Merry, and George Whitmore in 1958 over 47 days using siege tactics. The route follows the prow of El Cap up some of the cleanest granite on Earth, passing legendary features like Sickle Ledge, Dolt Tower, El Cap Tower, Camp 4, Camp 5, the Great Roof, and the Changing Corners.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.14a or 5.9 C2</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~2,900 ft (31 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">3-5 days</div></div>
-      <div class="stat"><div class="stat-label">First Ascent</div><div class="stat-value">1958</div></div>
+    <div class="controls">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="wall">Big Wall / Aid</button>
+      <button class="chip" data-filter="free">Free Multi-pitch</button>
+      <button class="chip" data-filter="elcap">El Capitan</button>
+      <button class="chip" data-filter="beginner">Moderate (5.9 and under)</button>
+      <span class="spacer"></span>
+      <span class="count" id="count"></span>
+      <select id="sort" aria-label="Sort routes">
+        <option value="fame">Sort: Iconic first</option>
+        <option value="height">Sort: Tallest</option>
+        <option value="pitches">Sort: Most pitches</option>
+        <option value="diff">Sort: Hardest free grade</option>
+        <option value="easy">Sort: Most approachable</option>
+      </select>
     </div>
-    <p>The speed record, held by Tommy Caldwell and Alex Honnold, stands at 1:58:07 (2018).</p>
-  </div>
 
-  <div class="route">
-    <h2>The Regular Northwest Face</h2>
-    <div class="formation">Half Dome &middot; Northwest Face</div>
-    <p>The first Grade VI in North America, climbed by Royal Robbins, Mike Sherrick, and Jerry Gallwas in 1957. The route ascends the unmistakable sheer face of Half Dome, with classic pitches like the Robbins Traverse and the Zig-Zags. A bucket-list objective for aspiring big wall climbers.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.12 or 5.9 C1</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~2,000 ft (23 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">1-3 days</div></div>
-      <div class="stat"><div class="stat-label">First Ascent</div><div class="stat-value">1957</div></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="profile">
+    <h2>Height Profile</h2>
+    <p class="section-sub">Approximate roped climbing length of each route. El Capitan's walls dwarf almost everything else, though Snake Dike's numbers hide a long approach and a big slab finish.</p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 1000 380" role="img" aria-label="Bar chart of route heights in feet"></svg>
+      <div class="legend">
+        <span style="--c: var(--aid)">Big wall / aid</span>
+        <span style="--c: var(--pine)">Free multi-pitch</span>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="route">
-    <h2>Freerider</h2>
-    <div class="formation">El Capitan &middot; Salathe Wall variation</div>
-    <p>A free variation of the Salathe Wall, established by the Huber brothers. Made world-famous by Alex Honnold's ropeless ascent on June 3, 2017, documented in the Oscar-winning film Free Solo. Features the notorious Boulder Problem and the Enduro Corner.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.13a</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~3,000 ft (33 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">2-5 days</div></div>
-      <div class="stat"><div class="stat-label">First Free Ascent</div><div class="stat-value">1998</div></div>
+  <section id="compare">
+    <h2>At a Glance</h2>
+    <p class="section-sub">Quick comparison for trip planning. Times are typical for a competent party; fast teams go much quicker and first-timers on walls often take longer.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Route</th><th>Formation</th><th>Grade</th><th>Pitches</th><th>Length</th><th>Typical time</th><th>First ascent</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
-  </div>
+  </section>
 
-  <div class="route">
-    <h2>The Dawn Wall</h2>
-    <div class="formation">El Capitan &middot; Southeast Face</div>
-    <p>Considered the hardest big wall free climb in the world. Tommy Caldwell and Kevin Jorgeson made the first free ascent in January 2015 after years of effort, captivating global audiences. Features multiple pitches of 5.14 climbing on relentlessly thin granite.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.14d</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~3,000 ft (32 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">2+ weeks (free)</div></div>
-      <div class="stat"><div class="stat-label">First Free Ascent</div><div class="stat-value">2015</div></div>
+  <section id="grades">
+    <h2>Reading the Grades</h2>
+    <p class="section-sub">A Yosemite grade is really three numbers stacked together: how long the day is, how hard the hardest free moves are, and how difficult the aid is.</p>
+    <div class="primer">
+      <div class="box">
+        <h4>Commitment Grade (I to VI)</h4>
+        <ul>
+          <li><code>I-II</code> A few hours.</li>
+          <li><code>III</code> Half a day.</li>
+          <li><code>IV</code> A full day of technical climbing.</li>
+          <li><code>V</code> A long day; many parties bivy once.</li>
+          <li><code>VI</code> Multi-day wall for most teams.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Yosemite Decimal System</h4>
+        <ul>
+          <li><code>5.0-5.7</code> Moderate; big holds, comfortable for new leaders.</li>
+          <li><code>5.8-5.9</code> Solid intermediate. Valley 5.9 is famously stiff.</li>
+          <li><code>5.10a-d</code> Requires real crack technique.</li>
+          <li><code>5.11+</code> Advanced; sustained jamming and stemming.</li>
+          <li><code>5.12-5.14</code> Elite free climbing.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Aid Ratings</h4>
+        <ul>
+          <li><code>A0</code> Pulling on a bolt or pendulum; no real aid gear.</li>
+          <li><code>C1</code> Easy, bomber clean aid.</li>
+          <li><code>C2</code> Harder placements, still safe falls.</li>
+          <li><code>C3+</code> Delicate placements, serious falls.</li>
+          <li>The <code>C</code> means "clean," without a hammer. <code>A</code> once meant pitons.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Seriousness Suffixes</h4>
+        <ul>
+          <li><code>R</code> Runout; a fall could mean injury.</li>
+          <li><code>X</code> A fall could be fatal.</li>
+          <li><code>OW</code> Offwidth: too wide to jam, too narrow to chimney. Valley specialty.</li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="route">
-    <h2>Salathe Wall</h2>
-    <div class="formation">El Capitan &middot; Southwest Face</div>
-    <p>Established by Royal Robbins, Chuck Pratt, and Tom Frost in 1961, the Salathe is often considered the finest rock climb in the world. The route features the iconic Hollow Flake, the Ear, El Cap Spire, and the Headwall. First free climbed by Todd Skinner and Paul Piana in 1988.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.13b or 5.9 C2</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~3,000 ft (35 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">3-5 days</div></div>
-      <div class="stat"><div class="stat-label">First Ascent</div><div class="stat-value">1961</div></div>
+  <section id="beta">
+    <h2>Valley Beta</h2>
+    <p class="section-sub">General notes that apply across nearly every route in this guide.</p>
+    <div class="primer">
+      <div class="box">
+        <h4>Seasons</h4>
+        <ul>
+          <li><b>Spring (Apr-May) and fall (Sep-Oct)</b> are prime for Valley-floor walls.</li>
+          <li><b>Summer</b> is brutally hot on sunny faces; head high to Tuolumne or pick shaded aspects.</li>
+          <li>Half Dome and Snake Dike are best late spring through fall, once snow clears.</li>
+          <li>Winter brings storms, ice fall, and short days.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Permits and Rules</h4>
+        <ul>
+          <li>Overnight wall climbs require a free <b>Big Wall Permit</b> from the park.</li>
+          <li>Pack out all human waste on walls; bring a poop tube.</li>
+          <li>Never leave fixed ropes or haul bags abandoned on the wall.</li>
+          <li>Check park closures for raptor nesting, which can affect some walls in spring.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Gear Mindset</h4>
+        <ul>
+          <li>Valley cracks eat cams. Doubles to 3" is the baseline; walls often want triples.</li>
+          <li>Learn to tape hands; granite is abrasive.</li>
+          <li>Wide pieces (#4-#6) matter more here than almost anywhere else.</li>
+          <li>Always check a current topo; fixed gear changes.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Hazards</h4>
+        <ul>
+          <li><b>Rockfall</b> is real and frequent. Wear a helmet, even at the base.</li>
+          <li><b>Crowds</b> on the Nose and Half Dome mean dropped gear and passing parties.</li>
+          <li><b>Afternoon thunderstorms</b> hit Half Dome hard in summer.</li>
+          <li><b>Descents</b> cause many accidents. Know yours before you start.</li>
+        </ul>
+      </div>
     </div>
-  </div>
-
-  <div class="route">
-    <h2>Astroman</h2>
-    <div class="formation">Washington Column &middot; East Face</div>
-    <p>One of the most celebrated free climbs in Yosemite. First freed in 1975 by John Bachar, Ron Kauk, and John Long, it was considered the hardest free climb in the world at the time. Famous for the Harding Slot and Boulder Problem pitches.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.11c</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~1,100 ft (11 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">1 day</div></div>
-      <div class="stat"><div class="stat-label">First Free Ascent</div><div class="stat-value">1975</div></div>
+    <div class="callout">
+      This guide is an overview for inspiration and planning, not a topo. Route details, fixed gear, and conditions change. Bring a current guidebook, check recent trip reports, and climb within your experience.
     </div>
-  </div>
-
-  <div class="route">
-    <h2>Snake Dike</h2>
-    <div class="formation">Half Dome &middot; Southwest Face</div>
-    <p>The easiest technical route up Half Dome and a Yosemite classic. Features unique dike formations of harder rock protruding from the slab. The approach is long (about 6 miles) and the descent down the cables is iconic. Often climbed in a single big day.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.7 R</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~800 ft (8 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">1 long day</div></div>
-      <div class="stat"><div class="stat-label">First Ascent</div><div class="stat-value">1965</div></div>
-    </div>
-  </div>
-
-  <div class="route">
-    <h2>Royal Arches</h2>
-    <div class="formation">North Side of the Valley</div>
-    <p>A long, moderate classic perfect for getting comfortable on big Yosemite granite. Established in 1936, it weaves up natural ramp systems and includes a famous pendulum. A great introduction to Valley climbing for those new to long routes.</p>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Grade</div><div class="stat-value">5.7 A0 or 5.10b</div></div>
-      <div class="stat"><div class="stat-label">Length</div><div class="stat-value">~1,400 ft (15 pitches)</div></div>
-      <div class="stat"><div class="stat-label">Typical Time</div><div class="stat-value">1 day</div></div>
-      <div class="stat"><div class="stat-label">First Ascent</div><div class="stat-value">1936</div></div>
-    </div>
-  </div>
-
-  <div class="grade-key">
-    <h3>Grading Quick Reference</h3>
-    <ul>
-      <li><strong>YDS (Yosemite Decimal System):</strong> 5.0-5.15 measures free-climbing difficulty. 5.10+ is considered hard; 5.13+ is elite.</li>
-      <li><strong>Aid Grades:</strong> A0-A5 (or C0-C5 for clean aid). Higher numbers mean harder placements and longer fall potential.</li>
-      <li><strong>Commitment Grade:</strong> I-VII indicates length and seriousness. Grade VI typically means multi-day on a big wall.</li>
-      <li><strong>R/X:</strong> Modifiers indicating runout (R) or potential ground falls (X).</li>
-    </ul>
-  </div>
+  </section>
 
 </main>
 
 <footer>
-  <p>Always climb within your ability. Check current conditions, permits, and seasonal closures with the National Park Service before heading out.</p>
+  Granite Classics &middot; A guide to Yosemite's legendary climbs &middot; Leave no trace, climb with care.
 </footer>
 
+<script>
+const ROUTES = [
+  {
+    id: "nose", fame: 1, name: "The Nose", wall: "El Capitan",
+    style: "wall", tags: ["wall", "elcap", "beginner"],
+    grade: "VI", yds: "5.9 C2", free: "5.14a", diffKey: 14.1, entryKey: 9.2,
+    pitches: 31, height: 2900, time: "3-5 days (1 day for fast teams)",
+    fa: "1958", faWho: "Warren Harding, Wayne Merry, George Whitmore",
+    desc: "The most famous rock climb on Earth. It follows the prow dividing El Cap's southwest and southeast faces, a soaring line of cracks, flakes, and corners straight up the center of the monolith.",
+    history: "Harding's team took 47 days over 18 months using siege tactics and fixed ropes, topping out on November 12, 1958. In 1993 Lynn Hill made the first free ascent, then returned in 1994 to free it in under 24 hours. Tommy Caldwell and Alex Honnold broke the two-hour speed barrier in June 2018.",
+    features: "Sickle Ledge, the Stoveleg Cracks, Dolt Tower, El Cap Tower, Texas Flake, Boot Flake, the King Swing, the Great Roof, Pancake Flake, and Changing Corners.",
+    logistics: "Short approach from El Cap Meadow. Descend the East Ledges with rappels. Expect traffic; an early start or a midweek push helps.",
+    commit: 5
+  },
+  {
+    id: "salathe", fame: 2, name: "Salathé Wall", wall: "El Capitan, Southwest Face",
+    style: "wall", tags: ["wall", "elcap", "beginner"],
+    grade: "VI", yds: "5.9 C2", free: "5.13b", diffKey: 13.2, entryKey: 9.2,
+    pitches: 35, height: 3000, time: "3-5 days",
+    fa: "1961", faWho: "Royal Robbins, Chuck Pratt, Tom Frost",
+    desc: "Often called the greatest rock climb in the world. A wandering line of incredible natural features up El Cap's southwest face, finishing on a steep, exposed headwall crack high above the valley.",
+    history: "Climbed in 1961 with far fewer bolts and fixed ropes than the Nose, setting a new ethic for big walls. Todd Skinner and Paul Piana freed it in 1988. The Huber brothers later established Freerider (5.12d) in 1998, a free variation that Alex Honnold famously free soloed on June 3, 2017.",
+    features: "Hollow Flake, Heart Ledges, El Cap Spire, the Block, the Roof, and the overhanging Headwall. Freerider adds the Monster Offwidth and the Teflon Corner.",
+    logistics: "Starts near the Nose. Many parties fix to Heart Ledges first. Same East Ledges descent.",
+    commit: 5
+  },
+  {
+    id: "zodiac", fame: 6, name: "Zodiac", wall: "El Capitan, Southeast Face",
+    style: "wall", tags: ["wall", "elcap"],
+    grade: "VI", yds: "5.7 C2+", free: "5.13d", diffKey: 13.4, entryKey: 9.8,
+    pitches: 16, height: 1800, time: "3-4 days",
+    fa: "1975", faWho: "Charlie Porter (solo)",
+    desc: "A steep, overhanging aid line on El Cap's right side. Bags hang free in space, and nearly every pitch is aid, making it a pure big-wall experience that rarely touches a ledge.",
+    history: "Charlie Porter soloed the first ascent in 1975 over about ten days. Once a hard nailing route, it is now climbed clean. Alexander and Thomas Huber made the first free ascent in 2003, and the brothers also set speed records on it.",
+    features: "Relentlessly steep terrain, the Black Tower, hanging belays throughout, and huge exposure over the right side of the valley.",
+    logistics: "Short approach. Portaledges are standard since natural ledges are rare. The steepness makes retreat awkward once you are committed.",
+    commit: 5
+  },
+  {
+    id: "halfdome", fame: 3, name: "Regular Northwest Face", wall: "Half Dome",
+    style: "wall", tags: ["wall", "beginner"],
+    grade: "VI", yds: "5.9 C1", free: "5.12", diffKey: 12.0, entryKey: 9.1,
+    pitches: 23, height: 2000, time: "1-2 days",
+    fa: "1957", faWho: "Royal Robbins, Mike Sherrick, Jerry Gallwas",
+    desc: "America's first Grade VI. It climbs the sheer northwest face of Valley's signature dome, mixing free climbing, chimneys, and short aid sections before a dramatic traverse near the summit.",
+    history: "Robbins, Sherrick, and Gallwas spent five days on the face in 1957. Their ascent came a year before the Nose, and it marked the birth of American big-wall climbing.",
+    features: "The Robbins Chimneys, Big Sandy Ledge, the Zig Zags, and the airy Thank God Ledge traverse, followed by a final bolt ladder.",
+    logistics: "Long approach from the valley floor or via the Mist Trail and slabs. Descend the cable route on the hikers' side. Afternoon storms are common in summer.",
+    commit: 4
+  },
+  {
+    id: "astroman", fame: 4, name: "Astroman", wall: "Washington Column, East Face",
+    style: "free", tags: ["free"],
+    grade: "V", yds: "5.11c", free: "5.11c", diffKey: 11.3, entryKey: 11.3,
+    pitches: 10, height: 1000, time: "1 long day",
+    fa: "1959 (aid); 1975 (free)", faWho: "Harding, Denny, Pratt; freed by John Long, John Bachar, Ron Kauk",
+    desc: "The greatest hard free climb in the valley. Sustained, technical crack climbing up a striking pillar of perfect granite, with almost no easy pitches.",
+    history: "First climbed as an aid route by Warren Harding, Glen Denny, and Chuck Pratt in 1959. In 1975 the Stonemasters trio of John Long, John Bachar, and Ron Kauk freed it, a landmark in free climbing. Peter Croft later free soloed it in 1987.",
+    features: "Enduro Corner, a long, demanding stemming and finger crack; and the Harding Slot, a squeeze chimney that has spit off many strong climbers.",
+    logistics: "Short approach below Washington Column. The east face catches morning sun, so plan around heat. Descend via North Dome Gully.",
+    commit: 3
+  },
+  {
+    id: "eastbuttress", fame: 5, name: "East Buttress", wall: "El Capitan",
+    style: "free", tags: ["free", "elcap"],
+    grade: "IV", yds: "5.10b", free: "5.10b", diffKey: 10.2, entryKey: 10.2,
+    pitches: 11, height: 1400, time: "1 day",
+    fa: "1953", faWho: "Allen Steck, Willi Unsoeld, Bill Long, Will Siri",
+    desc: "The best way to stand on top of El Capitan in a single day of free climbing. It follows a clean, exposed buttress on the far east edge of the wall with enormous views.",
+    history: "Climbed in 1953, it was the first route to the top of El Cap from the valley floor. Unsoeld later became one of the first Americans to summit Everest via the West Ridge in 1963.",
+    features: "A steep 5.10b crux low, sustained 5.8-5.9 crack and face climbing, and a beautiful exposed arête in the upper section.",
+    logistics: "Start near the East Ledges descent, which you will descend afterward. Popular, so start early.",
+    commit: 3
+  },
+  {
+    id: "steck", fame: 7, name: "Steck-Salathé", wall: "Sentinel Rock, North Face",
+    style: "free", tags: ["free"],
+    grade: "V", yds: "5.10b", free: "5.10b", diffKey: 10.25, entryKey: 10.25,
+    pitches: 15, height: 1600, time: "1 long day",
+    fa: "1950", faWho: "Allen Steck, John Salathé",
+    desc: "A historic, physical chimney-and-offwidth adventure up the north face of Sentinel Rock. One of the original Fifty Classic Climbs of North America, and a rite of passage for Valley wide-crack climbing.",
+    history: "Steck and Salathé spent five days on the route in 1950 with little water in brutal heat. Salathé, a Swiss blacksmith, forged hard steel pitons that helped revolutionize Yosemite aid climbing.",
+    features: "The Flying Buttress, the Wilson Overhang, and the infamous Narrows, a tight squeeze chimney that defines the route.",
+    logistics: "Steep approach gully. Descend the long, loose Sentinel Gully. Bring wide gear and expect to wriggle.",
+    commit: 4
+  },
+  {
+    id: "royal", fame: 8, name: "Royal Arches", wall: "Royal Arches",
+    style: "free", tags: ["free", "beginner"],
+    grade: "IV", yds: "5.7 A0", free: "5.10b", diffKey: 7.1, entryKey: 7.1,
+    pitches: 15, height: 1400, time: "1 day",
+    fa: "1936", faWho: "Morgan Harris, Kenneth Adam, Hervey Voge",
+    desc: "A long, varied moderate that climbs beside the huge granite arches above the Ahwahnee. It is many climbers' first Grade IV and a test of efficiency, route-finding, and descent skills.",
+    history: "Climbed in 1936, it is one of the oldest technical routes in the valley. The famous pendulum (A0) can be bypassed with a 5.10b friction variation.",
+    features: "Chimneys, cracks, and slabs; the pendulum traverse; and a long easy section where many parties simul-climb.",
+    logistics: "Very short approach. Descent is either many rappels or North Dome Gully; both demand care. Getting benighted is common, so carry a headlamp.",
+    commit: 3
+  },
+  {
+    id: "snakedike", fame: 9, name: "Snake Dike", wall: "Half Dome, Southwest Face",
+    style: "free", tags: ["free", "beginner"],
+    grade: "III", yds: "5.7 R", free: "5.7 R", diffKey: 7.2, entryKey: 7.2,
+    pitches: 8, height: 800, time: "1 very long day",
+    fa: "1965", faWho: "Eric Beck, Chris Fredericks, Jim Bridwell",
+    desc: "An easy but runout climb up a dike of quartz that snakes across Half Dome's southwest face. Bolts are far apart, and the climbing is delicate but secure. A spectacular way to reach the Half Dome summit.",
+    history: "Climbed in 1965 with very few bolts. The first ascent party established a tradition of not adding protection, which is why the route is still rated R.",
+    features: "The dike itself, with knobs and edges; long runouts between bolts; and a long section of unroped or simul-climbed slab to the summit.",
+    logistics: "The approach is the crux: around 7-9 miles from Happy Isles past Nevada Fall. Descend the cables. Climbers who summit via a technical route generally do not need the hikers' cables permit, but check current park rules.",
+    commit: 2
+  },
+  {
+    id: "nutcracker", fame: 10, name: "Nutcracker", wall: "Manure Pile Buttress",
+    style: "free", tags: ["free", "beginner"],
+    grade: "II", yds: "5.8", free: "5.8", diffKey: 8.0, entryKey: 8.0,
+    pitches: 5, height: 500, time: "Half day",
+    fa: "1967", faWho: "Royal Robbins, Liz Robbins",
+    desc: "A short, beautifully varied route and often the first Valley multi-pitch climbers do. Cracks, slabs, and a memorable mantel finish, all close to the road.",
+    history: "Royal and Liz Robbins climbed it in 1967 using only nuts, without pitons, to showcase clean climbing. The route helped start the clean-climbing revolution that made hammerless climbing the norm.",
+    features: "Varied crack pitches, a slabby traverse, and a final 5.8 mantel move that tests everyone.",
+    logistics: "Short approach from Northside Drive. Easy walk-off descent. Busy on weekends, so start early.",
+    commit: 1
+  }
+];
+
+const art = (r, i) => {
+  const hue = r.style === "wall" ? ["#5b4a46", "#a6806f"] : ["#3f5143", "#8ea586"];
+  const peaks = [
+    "M0 120 L0 60 C 60 30, 140 18, 220 25 C 280 30, 320 55, 340 80 L 400 120 Z",
+    "M0 120 L0 80 C 80 40, 160 30, 240 45 C 300 55, 360 70, 400 60 L 400 120 Z",
+    "M0 120 L 60 95 C 120 40, 200 10, 260 30 L 300 120 Z M 220 120 L 300 70 C 340 50, 380 55, 400 70 L 400 120 Z"
+  ];
+  const p = peaks[i % peaks.length];
+  return `<svg viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="c${i}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${hue[1]}"/><stop offset="1" stop-color="${hue[0]}"/></linearGradient></defs>
+    <rect width="400" height="120" fill="${hue[0]}" opacity=".5"/>
+    <path d="${p}" fill="url(#c${i})"/>
+    <path d="M${150 + (i * 23) % 120} 120 C ${140 + (i * 17) % 100} 90, ${170 + (i * 13) % 80} 60, ${180 + (i * 11) % 60} ${30 + (i * 7) % 20}"
+      stroke="#e8a85c" stroke-width="2" stroke-dasharray="4 5" fill="none" opacity=".85"/>
+  </svg>`;
+};
+
+const meter = n => `<div class="meter">${[1,2,3,4,5].map(k => `<i class="${k <= n ? "on" : ""}"></i>`).join("")}</div>`;
+
+function card(r, i) {
+  const styleBadge = r.style === "wall"
+    ? `<span class="badge aid">Big Wall / Aid</span>`
+    : `<span class="badge free">Free Multi-pitch</span>`;
+  const freeBadge = r.free !== r.yds ? `<span class="badge">Free: ${r.free}</span>` : "";
+  return `<article class="card" data-id="${r.id}">
+    <div class="art">${art(r, i)}<span class="num">No. ${String(r.fame).padStart(2, "0")}</span></div>
+    <div class="body">
+      <h3>${r.name}</h3>
+      <div class="wall">${r.wall}</div>
+      <div class="badges">
+        <span class="badge grade">Grade ${r.grade}</span>
+        <span class="badge">${r.yds}</span>
+        ${freeBadge}${styleBadge}
+      </div>
+      <div class="stats">
+        <div><b>${r.pitches}</b><span>Pitches</span></div>
+        <div><b>${r.height.toLocaleString()}'</b><span>Length</span></div>
+        <div><b>${r.fa.slice(0, 4)}</b><span>First ascent</span></div>
+      </div>
+      <p class="desc">${r.desc}</p>
+      <details>
+        <summary>History, features &amp; logistics</summary>
+        <dl>
+          <dt>First ascent</dt><dd>${r.faWho} (${r.fa})</dd>
+          <dt>History</dt><dd>${r.history}</dd>
+          <dt>Key features</dt><dd>${r.features}</dd>
+          <dt>Logistics</dt><dd>${r.logistics}</dd>
+          <dt>Typical time</dt><dd>${r.time}</dd>
+          <dt>Commitment</dt><dd>${meter(r.commit)}</dd>
+        </dl>
+      </details>
+    </div>
+  </article>`;
+}
+
+const grid = document.getElementById("grid");
+const countEl = document.getElementById("count");
+let filter = "all";
+let sort = "fame";
+
+const sorters = {
+  fame: (a, b) => a.fame - b.fame,
+  height: (a, b) => b.height - a.height,
+  pitches: (a, b) => b.pitches - a.pitches,
+  diff: (a, b) => b.diffKey - a.diffKey,
+  easy: (a, b) => a.entryKey - b.entryKey || a.commit - b.commit
+};
+
+function render() {
+  const list = ROUTES
+    .filter(r => filter === "all" || r.tags.includes(filter))
+    .sort(sorters[sort]);
+  grid.innerHTML = list.map(r => card(r, ROUTES.indexOf(r))).join("");
+  countEl.textContent = `${list.length} of ${ROUTES.length} routes`;
+}
+
+document.querySelectorAll(".chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filter = btn.dataset.filter;
+    render();
+  });
+});
+document.getElementById("sort").addEventListener("change", e => {
+  sort = e.target.value;
+  render();
+});
+
+/* Table */
+document.getElementById("tbody").innerHTML = [...ROUTES].sort(sorters.fame).map(r => `
+  <tr>
+    <td class="name">${r.name}</td>
+    <td>${r.wall}</td>
+    <td>${r.grade} ${r.yds}</td>
+    <td>${r.pitches}</td>
+    <td>${r.height.toLocaleString()} ft</td>
+    <td>${r.time}</td>
+    <td>${r.fa}</td>
+  </tr>`).join("");
+
+/* Chart */
+(function chart() {
+  const svg = document.getElementById("chart");
+  const data = [...ROUTES].sort(sorters.height);
+  const W = 1000, H = 380, padL = 50, padB = 90, padT = 20;
+  const max = 3000;
+  const bw = (W - padL - 20) / data.length;
+  let out = "";
+  for (let v = 0; v <= max; v += 500) {
+    const y = H - padB - (v / max) * (H - padB - padT);
+    out += `<line x1="${padL}" x2="${W - 10}" y1="${y}" y2="${y}" stroke="#333842" stroke-width="1"/>`;
+    out += `<text x="${padL - 8}" y="${y + 4}" fill="#a3a097" font-size="12" text-anchor="end" font-family="-apple-system, sans-serif">${v.toLocaleString()}</text>`;
+  }
+  data.forEach((r, i) => {
+    const h = (r.height / max) * (H - padB - padT);
+    const x = padL + i * bw + bw * 0.18;
+    const y = H - padB - h;
+    const color = r.style === "wall" ? "#c9786a" : "#6f9a74";
+    out += `<g><title>${r.name}: ~${r.height.toLocaleString()} ft, ${r.pitches} pitches</title>
+      <rect x="${x}" y="${y}" width="${bw * 0.64}" height="${h}" rx="4" fill="${color}"/>
+      <text x="${x + bw * 0.32}" y="${y - 6}" fill="#e9e6df" font-size="12" text-anchor="middle" font-family="-apple-system, sans-serif">${r.height.toLocaleString()}'</text>
+      <text transform="translate(${x + bw * 0.32}, ${H - padB + 14}) rotate(35)" fill="#a3a097" font-size="12" font-family="-apple-system, sans-serif">${r.name}</text></g>`;
+  });
+  out += `<text x="12" y="${padT + 8}" fill="#a3a097" font-size="11" font-family="-apple-system, sans-serif">ft</text>`;
+  svg.innerHTML = out;
+})();
+
+render();
+</script>
 </body>
 </html>

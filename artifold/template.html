@@ -1059,7 +1059,7 @@ function rowHTML(p) {
       <div class="title">${escape(p.name)}</div>
       <div class="meta">
         <span class="cat-dot"></span><span>${p.category}</span>
-        ${p.dir && p.dir !== '.' ? `<span>·</span><span>${escape(p.dir)}</span>` : ''}
+        ${shownDir(p) ? `<span>·</span><span>${escape(p.dir)}</span>` : ''}
         <span>·</span><span>${fmt(p.primary.mtime)}</span>
         ${p.file_count > 1 ? `<span>·</span><span>${p.file_count} files</span>` : ''}
       </div>
@@ -1139,6 +1139,8 @@ function emptyHTML() {
   </div>`;
 }
 
+// A file directly in a watched folder has dir '.'; show nothing for it.
+function shownDir(p) { return p.dir && p.dir !== '.' ? p.dir : ''; }
 function escape(s) { return String(s || '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
 
 // --- detail pane ---
@@ -1164,7 +1166,7 @@ function open(p) {
 function setVersion(v) {
   openVer = v;
   $('d-frame').src = reportURL(v.path);
-  $('d-meta').textContent = `${openProj.dir} · ${openProj.category} · v${v.version} · ${fmt(v.mtime)}`;
+  $('d-meta').textContent = [shownDir(openProj), openProj.category, `v${v.version}`, fmt(v.mtime)].filter(Boolean).join(' · ');
   // Diff button: compare the selected version against the next-older one.
   // versions[] is newest → oldest; hide on the oldest (nothing to compare).
   const vs = openProj.versions || [];
@@ -1733,7 +1735,7 @@ function cmdkRender() {
     s: q ? fuzzy(q, a.label) : 100  // always shown when no query
   })).filter(x => q ? x.s > 0 : true);
   const artHits = D.projects.map(p => ({
-    type:'artifact', p, label:p.name, sub:p.dir,
+    type:'artifact', p, label:p.name, sub:shownDir(p),
     s: q ? fuzzy(q, `${p.name} ${p.dir} ${p.category} ${(provenance(p).intent || '')}`)
          : -p.latest_mtime / 1e9
   })).filter(x => q ? x.s > 0 : true);

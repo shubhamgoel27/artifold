@@ -2,641 +2,422 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Transformers · A technical blueprint</title>
-<meta name="artifold:intent" content="Explainer of Transformer architecture for ML engineers familiar with LSTMs and convolutions">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-attention, explained for people who already know LSTMs and convolutions</title>
+<meta name="description" content="How the Transformer works, from the attention formula to the full encoder and decoder, written for readers who know recurrent and convolutional networks.">
+<meta name="artifold:intent" content="Teach self-attention and the Transformer block to a reader fluent in LSTMs and convolutions">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
 <meta name="artifold:prompt" content="Explainer of how Transformers work for someone who knows LSTMs and convolutions but not self-attention. Include real formulas and an inline SVG architecture diagram.">
-<meta name="artifold:design-mode" content="technical-blueprint">
+<meta name="artifold:scale" content="read">
+<meta name="artifold:conceit" content="none (patent-drawing grammar only: FIG. numbers and reference numerals that key the notes)">
+<meta name="artifold:layout-archetype" content="radial-centerpiece">
+<meta name="artifold:design-mode" content="patent-filing">
 <meta name="artifold:voice-register" content="encyclopedic">
+<meta name="artifold:signature-device" content="annotation-callout-layer: patent reference numerals on a redrawn Transformer figure, keyed to formula notes; quiet second: a script-computed attention heatmap worked by hand">
+<meta name="artifold:ad-scores" content="4/3/4/5/4/3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Cg stroke='%231b4f8a' stroke-width='2'%3E%3Cline x1='6' y1='26' x2='26' y2='6'/%3E%3Cline x1='6' y1='26' x2='16' y2='6'/%3E%3Cline x1='6' y1='26' x2='6' y2='6'/%3E%3C/g%3E%3Ccircle cx='6' cy='26' r='3' fill='%231b4f8a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  /* ---- Technical blueprint: graph-paper bg, mono, navy/cyan on cream ---- */
-  :root{
-    --paper:#f1ecdc;          /* warm cream (drafting paper) */
-    --paper-2:#e8e2cd;
-    --ink:#0b2545;            /* navy */
-    --ink-2:#13315c;
-    --rule:#8da9c4;           /* faded blueprint cyan */
-    --cyan:#1e88a8;           /* annotation cyan */
-    --accent:#b14a2a;         /* drafting red — single accent for emphasis */
-    --muted:#5f6b7a;
-    --grid:rgba(11,37,69,0.07);
-    --grid-2:rgba(11,37,69,0.14);
+:root{
+  --paper:#ffffff; --sheet:#fbfbfa; --ink:#16181d; --ink-2:#50555e; --ink-3:#6c717a;
+  --rule:#d3d6db; --line:#2a2d33; --accent:#1b4f8a; --accent-ink:#1b4f8a; --accent-soft:#e3ebf5; --on-accent:#ffffff;
+  --shadow-color:215 30% 30%; --heat:#1b4f8a; --heat-ink:#16181d; --heat-on:#ffffff;
+  --shadow:0 1px 2px hsl(var(--shadow-color)/.08), 0 8px 24px hsl(var(--shadow-color)/.07);
+  --serif:"IBM Plex Serif", Georgia, "Iowan Old Style", system-ui, serif;
+  --sans:"IBM Plex Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --math:"STIX Two Math","Latin Modern Math","Cambria Math",math;
+  /* type: 1.25 ratio on a 17px base */
+  --t--1:.85rem; --t-0:1.0625rem; --t-1:1.328rem; --t-2:1.66rem; --t-3:2.075rem; --t-4:2.594rem;
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-6:1.5rem; --s-8:2rem; --s-12:3rem; --s-16:4rem; --s-24:6rem;
+  --r:4px; --hair:1px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --paper:#111418; --sheet:#161a1f; --ink:#e3e5e9; --ink-2:#a9aeb7; --ink-3:#8a909a;
+  --rule:#323841; --line:#c9cdd4; --accent:#7fa9dc; --accent-ink:#9dbde6; --accent-soft:#1a2a3e; --on-accent:#0d1520; --heat:#4f8fdc; --heat-ink:#e3e5e9; --heat-on:#ffffff;
+  --shadow-color:215 40% 2%; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#111418; --sheet:#161a1f; --ink:#e3e5e9; --ink-2:#a9aeb7; --ink-3:#8a909a;
+  --rule:#323841; --line:#c9cdd4; --accent:#7fa9dc; --accent-ink:#9dbde6; --accent-soft:#1a2a3e; --on-accent:#0d1520; --heat:#4f8fdc; --heat-ink:#e3e5e9; --heat-on:#ffffff;
+  --shadow-color:215 40% 2%; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 var(--t-0)/1.62 var(--sans);font-kerning:normal}
+::selection{background:var(--accent);color:var(--on-accent)}
+a{color:var(--accent-ink);text-decoration-thickness:1px;text-underline-offset:.18em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;color:var(--ink);text-wrap:balance;margin:0}
+p{margin:0;text-wrap:pretty}
+math{font-family:var(--math);font-size:1.08em}
+math[display="block"]{margin:0;overflow-x:auto;overflow-y:hidden;padding-block:var(--s-1)}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
 
-    --mono:"SFMono-Regular","Menlo","Consolas","Liberation Mono",monospace;
-    --serif:"Iowan Old Style","Charter","Cambria",Georgia,serif;
-    --sans:"Inter","Helvetica Neue",Arial,sans-serif; /* used sparingly */
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--s-8)}
 
-    --s1:11px; --s2:13px; --s3:15px; --s4:18px; --s5:24px; --s6:34px;
-  }
+/* running head, like the top of a patent sheet */
+.runhead{display:flex;justify-content:space-between;align-items:center;gap:var(--s-4);
+  border-bottom:var(--hair) solid var(--rule);padding:var(--s-3) 0;font:400 var(--t--1)/1.4 var(--mono);color:var(--ink-3)}
+.runhead .r{display:flex;align-items:center;gap:var(--s-4)}
+.toggle{font:500 var(--t--1)/1 var(--mono);color:var(--ink-2);background:transparent;border:var(--hair) solid var(--rule);
+  border-radius:var(--r);min-height:44px;min-width:44px;padding:0 var(--s-3);cursor:pointer;display:inline-flex;align-items:center;gap:var(--s-2)}
+.toggle:hover{color:var(--ink);border-color:var(--ink-3)}
+.toggle svg{width:14px;height:14px}
 
-  html,body{background:var(--paper); color:var(--ink); margin:0;}
-  body{
-    font-family:var(--mono);
-    font-size:var(--s3);
-    line-height:1.55;
-    /* graph paper: minor 8px, major 64px */
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
-      linear-gradient(var(--grid-2) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-2) 1px, transparent 1px);
-    background-size: 8px 8px, 8px 8px, 64px 64px, 64px 64px;
-    background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
-  }
+/* opening */
+.open{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:var(--s-12);align-items:end;padding:var(--s-16) 0 var(--s-12)}
+.open h1{font-size:clamp(2.1rem,1.2rem + 3vw,var(--t-4));line-height:1.12;letter-spacing:-.015em;max-width:18ch}
+.open .dek{color:var(--ink-2);font-size:var(--t-0);max-width:52ch}
+.open .dek p+p{margin-top:var(--s-3)}
+.open .dek strong{color:var(--ink);font-weight:600}
 
-  .sheet{
-    max-width:980px;
-    margin:0 auto;
-    padding:48px 56px 96px;
-  }
+/* figure sections */
+.fig{padding:var(--s-16) 0;border-top:var(--hair) solid var(--rule)}
+.fighead{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:var(--s-6);align-items:baseline;margin-bottom:var(--s-8)}
+.figno{font:500 var(--t--1)/1 var(--mono);letter-spacing:.08em;color:var(--accent-ink)}
+.fighead h2{font-size:var(--t-3);line-height:1.18;letter-spacing:-.01em;max-width:28ch}
+.body{margin-left:calc(7rem + var(--s-6))}
+.prose{max-width:64ch}
+.prose p+p{margin-top:var(--s-4)}
+.cap{font-size:var(--t--1);line-height:1.5;color:var(--ink-2);max-width:72ch}
+.cap .src{display:block;color:var(--ink-3);margin-top:var(--s-1)}
+.cap b{font-weight:600;color:var(--ink)}
 
-  /* ---- Title block (drafting cartouche) ---- */
-  .cartouche{
-    border:1.5px solid var(--ink);
-    background:var(--paper);
-    display:grid;
-    grid-template-columns: 1fr 240px;
-    margin-bottom:40px;
-  }
-  .cartouche .lhs{ padding:18px 22px; border-right:1px solid var(--ink); }
-  .cartouche .rhs{
-    padding:14px 18px;
-    font-size:var(--s1);
-    display:grid; grid-template-columns: auto 1fr; gap:4px 12px;
-    align-content:start;
-  }
-  .cartouche .rhs b{ font-weight:600; color:var(--ink-2);}
-  .cartouche h1{
-    font-family:var(--serif);
-    font-weight:600;
-    font-size:var(--s6);
-    line-height:1.05;
-    letter-spacing:-0.01em;
-    margin:0 0 6px;
-  }
-  .cartouche .sub{
-    font-family:var(--mono);
-    font-size:var(--s2);
-    color:var(--muted);
-    text-transform:none;
-    letter-spacing:0;
-  }
-  .cartouche .docno{
-    font-size:var(--s1);
-    color:var(--muted);
-    margin-bottom:10px;
-  }
+/* FIG 1 */
+.wires{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-8);margin-bottom:var(--s-6)}
+.wcell{display:flex;flex-direction:column;gap:var(--s-2)}
+.wcell h3{font:600 var(--t-0)/1.3 var(--sans)}
+.wcell .hops{font:400 var(--t--1)/1.4 var(--mono);color:var(--ink-2)}
+.wcell .hops b{color:var(--accent-ink);font-weight:500}
+.wire{width:100%;height:auto;background:var(--sheet);border-radius:var(--r);outline:var(--hair) solid var(--rule);padding:var(--s-2)}
+.wire .nd{fill:var(--paper);stroke:var(--line);stroke-width:1.4}
+.wire .nd.hi{fill:var(--accent);stroke:var(--accent)}
+.wire .ed{stroke:var(--ink-3);stroke-width:1;opacity:.55}
+.wire .ed-f{opacity:.28}
+.wire .ed.hi{stroke:var(--accent);stroke-width:2.4;opacity:1}
+.wire .lab{font:400 12px var(--mono);fill:var(--ink-2)}
+.wire .lab-s{font-size:11px;fill:var(--ink-3)}
+.ahp{fill:var(--accent)}
+.costs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-12);align-items:start;margin-top:var(--s-8)}
+table{border-collapse:collapse;width:100%;font-size:var(--t--1)}
+th,td{text-align:left;padding:var(--s-2) var(--s-3);border-bottom:var(--hair) solid var(--rule);vertical-align:baseline}
+th{font-weight:600;color:var(--ink-2)}
+thead th{border-bottom-color:var(--ink-3)}
+td math{font-size:1.05em}
+tr.us td{background:var(--accent-soft)}
+tr.us td:first-child{font-weight:600}
+.costs td:first-child{white-space:nowrap}
 
-  /* ---- Section heading ---- */
-  section{ margin: 36px 0; }
-  h2{
-    font-family:var(--mono);
-    font-size:var(--s3);
-    font-weight:600;
-    letter-spacing:0.04em;
-    color:var(--ink);
-    margin:0 0 14px;
-    padding-bottom:6px;
-    border-bottom:1px dashed var(--rule);
-    display:flex; justify-content:space-between; align-items:baseline;
-  }
-  h2 .secno{
-    color:var(--accent);
-    font-weight:600;
-  }
-  h3{
-    font-family:var(--mono);
-    font-size:var(--s2);
-    font-weight:600;
-    letter-spacing:0.02em;
-    color:var(--ink-2);
-    margin:18px 0 6px;
-  }
-  p{
-    font-family:var(--serif);
-    font-size:var(--s4);
-    line-height:1.6;
-    color:#1a1f2c;
-    margin:0 0 12px;
-    max-width:68ch;
-  }
+/* FIG 2 */
+.attn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-12);align-items:start}
+.eq{padding:var(--s-4) 0;display:flex;flex-direction:column;gap:var(--s-2)}
+.eq.hero math{font-size:1.5em}
+.eq .eqn{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s-4)}
+.eq .tag{font:400 var(--t--1) var(--mono);color:var(--ink-3)}
+.work{background:var(--sheet);outline:var(--hair) solid var(--rule);border-radius:var(--r);padding:var(--s-6);box-shadow:var(--shadow)}
+.work h3{font:600 var(--t-0)/1.3 var(--sans);margin-bottom:var(--s-1)}
+.work .lede{font-size:var(--t--1);color:var(--ink-2);margin-bottom:var(--s-4)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-6)}
+.steps li{display:grid;grid-template-columns:1.75rem minmax(0,1fr);gap:var(--s-3)}
+.steps .sn{font:500 var(--t--1)/1.9 var(--mono);color:var(--accent-ink)}
+.steps p{font-size:var(--t--1);line-height:1.55;color:var(--ink-2)}
+.steps p b{color:var(--ink);font-weight:600}
+.mats{display:flex;flex-wrap:wrap;gap:var(--s-4) var(--s-6);align-items:center;margin-top:var(--s-2)}
+.mats math{font-size:.98em}
+.steps .mats + p{margin-top:var(--s-3)}
+.heat{width:100%;max-width:300px;height:auto;margin-top:var(--s-2);display:block}
+.heat .cell{fill:var(--heat)}
+.heat .cv{font:500 13px var(--mono);fill:var(--heat-ink)}
+.heat .cvon{fill:var(--heat-on)}
+.heat .ax{font:400 13px var(--mono);fill:var(--ink-2)}
+.heat .axhi{fill:var(--ink);font-weight:500}
+.heat .hirow{fill:none;stroke:var(--ink);stroke-width:1.5}
+.asides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-8);margin-top:var(--s-12)}
+.aside{display:flex;flex-direction:column;gap:var(--s-3);border-top:2px solid var(--ink);padding-top:var(--s-4)}
+.aside h3{font:600 var(--t-0)/1.35 var(--sans)}
+.aside p{font-size:var(--t--1);line-height:1.6;color:var(--ink-2)}
+.aside .eq{padding:var(--s-1) 0}
+.aside-in{margin-top:var(--s-8);max-width:64ch}
+.aside-in p{font-size:var(--t-0);color:var(--ink)}
 
-  code, .k{
-    font-family:var(--mono);
-    background:var(--paper-2);
-    padding:1px 5px;
-    border-radius:2px;
-    font-size:0.92em;
-    color:var(--ink);
-  }
-  .k-em{ color:var(--accent); background:transparent; padding:0; font-weight:600;}
+/* FIG 3: the centerpiece */
+.machine{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,640px) minmax(0,1fr);gap:var(--s-8);align-items:start;
+  width:min(1376px,100vw - 4rem);margin-left:calc(50% - min(688px,50vw - 2rem))}
+.tscroll{overflow-x:auto;max-width:100%}
+.pan{overflow-x:auto}
+.machine .center{min-width:0}
+.panhint{display:none;margin-top:var(--s-2)}
+.arch{width:100%;height:auto;display:block}
+.arch .frame{fill:var(--sheet);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.arch .bx{fill:var(--paper);stroke:var(--line);stroke-width:1.4}
+.arch .bx.att{fill:url(#hatch);stroke:var(--accent);stroke-width:1.8}
+.arch .bx.an{fill:var(--sheet)}
+.arch .hl{stroke:var(--accent);stroke-width:1.2;opacity:.3}
+.arch .bl{font:500 13px var(--sans);fill:var(--ink)}
+.arch .bl-s{font-weight:400;fill:var(--ink-2)}
+.arch .fl{fill:none;stroke:var(--line);stroke-width:1.3}
+.arch .fl-x{stroke:var(--accent);stroke-width:1.8}
+.arch .ahp{fill:var(--line)}
+.arch .pl{fill:var(--paper);stroke:var(--line);stroke-width:1.3}
+.arch .pe{fill:var(--paper);stroke:var(--line);stroke-width:1.3}
+.arch .io{font:400 13px var(--mono);fill:var(--ink-2)}
+.arch .nx{font:500 16px var(--serif);fill:var(--ink)}
+.arch .kq{font:italic 500 13px var(--serif);fill:var(--accent-ink)}
+.arch .ld{fill:none;stroke:var(--ink-2);stroke-width:.9}
+.arch .rn{font:500 14px var(--mono);fill:var(--ink)}
+.arch .rn-link:hover .rn,.arch .rn-link:focus .rn{fill:var(--accent-ink)}
+.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-8)}
+.notes li{display:flex;flex-direction:column;gap:var(--s-2);scroll-margin-top:var(--s-8)}
+.notes li:target h3 .n{background:var(--accent);color:var(--on-accent)}
+.notes h3{font:600 var(--t-0)/1.35 var(--sans);display:flex;gap:var(--s-3);align-items:baseline}
+.notes h3 .n{font:500 var(--t--1)/1 var(--mono);color:var(--accent-ink);padding:3px 5px;border-radius:3px;margin-left:-5px}
+.notes p{font-size:var(--t--1);line-height:1.6;color:var(--ink-2)}
+.notes math[display="block"]{font-size:.98em}
+.spec{margin-top:var(--s-8);display:flex;flex-wrap:wrap;gap:var(--s-2) var(--s-6);font:400 var(--t--1)/1.5 var(--mono);color:var(--ink-2);
+  justify-content:center;padding:var(--s-4) 0;border-block:var(--hair) solid var(--rule)}
+.spec b{color:var(--ink);font-weight:500}
+.machine-cap{margin:var(--s-6) auto 0;text-align:center}
+@media (min-width:1101px){ .spec{width:min(1376px,100vw - 4rem);margin-left:calc(50% - min(688px,50vw - 2rem))} }
 
-  /* ---- Equation blocks ---- */
-  .eq{
-    margin:14px 0;
-    padding:18px 22px 16px;
-    background:var(--paper);
-    border:1px solid var(--ink);
-    border-left:3px solid var(--accent);
-    display:grid;
-    grid-template-columns: 1fr 60px;
-    align-items:center;
-    column-gap:18px;
-  }
-  .eq .body{
-    font-family:var(--serif);
-    font-size:var(--s5);
-    line-height:1.5;
-    color:var(--ink);
-    overflow-x:auto;
-  }
-  .eq .label{
-    font-family:var(--mono);
-    font-size:var(--s1);
-    text-align:right;
-    color:var(--muted);
-  }
-  .eq i{ font-style:italic; }
-  .eq b{ font-weight:600; }
-  .eq sub, .eq sup{ font-size:0.65em; }
-  .eq .op{ color:var(--cyan); padding:0 3px; }
-  .eq .frac{ display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; line-height:1.1; padding:0 4px;}
-  .eq .frac .num{ border-bottom:1.2px solid var(--ink); padding:0 4px 1px;}
-  .eq .frac .den{ padding:1px 4px 0;}
-  .eq .sqrt{ border-top:1.2px solid var(--ink); padding:0 4px;}
+/* translation table */
+.xl{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--s-12);align-items:start}
+.xl td:first-child{color:var(--ink-2)}
+.xl td:last-child{color:var(--ink)}
+.xl .arrow{color:var(--ink-3);width:1.5rem;padding-inline:0;text-align:center}
+.since{display:flex;flex-direction:column;gap:var(--s-4)}
+.since h3{font:600 var(--t-0)/1.35 var(--sans)}
+.since p{color:var(--ink-2);font-size:var(--t--1)}
 
-  /* ---- Annotation callout (margin note) ---- */
-  .note{
-    border:1px dotted var(--rule);
-    background:rgba(30,136,168,0.06);
-    padding:10px 14px;
-    margin:14px 0;
-    font-family:var(--mono);
-    font-size:var(--s2);
-    color:var(--ink-2);
-  }
-  .note::before{
-    content:"NOTE — ";
-    color:var(--cyan);
-    font-weight:600;
-  }
+/* the end */
+.end{border-top:var(--hair) solid var(--rule);padding:var(--s-12) 0 var(--s-16);display:grid;grid-template-columns:7rem minmax(0,1fr);gap:var(--s-6)}
+.end p{font-family:var(--serif);font-size:var(--t-1);line-height:1.45;max-width:46ch;color:var(--ink)}
+.end p+p{margin-top:var(--s-4);font-family:var(--sans);font-size:var(--t--1);color:var(--ink-3);max-width:70ch}
+.end .stamp{font:500 var(--t--1)/1.3 var(--mono);color:var(--accent-ink);letter-spacing:.04em}
 
-  /* ---- Comparison table ---- */
-  table.spec{
-    width:100%;
-    border-collapse:collapse;
-    font-family:var(--mono);
-    font-size:var(--s2);
-    margin:8px 0 18px;
-  }
-  table.spec th, table.spec td{
-    text-align:left;
-    padding:8px 12px;
-    border-bottom:1px solid var(--rule);
-    vertical-align:top;
-  }
-  table.spec thead th{
-    border-bottom:1.5px solid var(--ink);
-    color:var(--ink);
-    font-weight:600;
-    letter-spacing:0.04em;
-  }
-  table.spec tbody tr:nth-child(even){ background:rgba(11,37,69,0.025);}
-  table.spec td:first-child{ color:var(--accent); font-weight:600; width:160px;}
-
-  /* ---- Diagram frame ---- */
-  figure.diagram{
-    margin:18px 0 24px;
-    border:1.5px solid var(--ink);
-    background:var(--paper);
-    padding:0;
-  }
-  figure.diagram .caption{
-    font-family:var(--mono);
-    font-size:var(--s1);
-    color:var(--muted);
-    padding:8px 14px;
-    border-top:1px solid var(--ink);
-    display:flex; justify-content:space-between;
-  }
-  figure.diagram .caption b{ color:var(--ink); font-weight:600;}
-
-  /* ---- Two-column split for code/explanation ---- */
-  .split{
-    display:grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap:24px;
-    align-items:start;
-  }
-  pre.pseudocode{
-    margin:0;
-    padding:14px 18px;
-    background:#0b2545;
-    color:#e8eef7;
-    font-family:var(--mono);
-    font-size:var(--s2);
-    line-height:1.5;
-    border:1px solid var(--ink);
-    overflow-x:auto;
-  }
-  pre.pseudocode .kw{ color:#7ac4d8; }
-  pre.pseudocode .fn{ color:#f0c674; }
-  pre.pseudocode .cm{ color:#8da9c4; font-style:italic;}
-  pre.pseudocode .nm{ color:#e8a87c; }
-
-  /* ---- Footer plate ---- */
-  footer.plate{
-    margin-top:48px;
-    border-top:1.5px solid var(--ink);
-    padding-top:14px;
-    font-family:var(--mono);
-    font-size:var(--s1);
-    color:var(--muted);
-    display:flex; justify-content:space-between;
-  }
-
-  /* mobile */
-  @media (max-width: 720px){
-    .sheet{ padding:24px 18px 64px;}
-    .cartouche{ grid-template-columns:1fr;}
-    .cartouche .lhs{ border-right:none; border-bottom:1px solid var(--ink);}
-    .split{ grid-template-columns:1fr;}
-    .eq{ grid-template-columns:1fr; }
-    .eq .label{ text-align:left; margin-top:6px;}
-    .eq .body{ font-size:var(--s4);}
-  }
+@media (max-width:1100px){
+  .machine{grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:auto;margin-left:0}
+  .machine .center{grid-column:1 / -1;grid-row:1;max-width:640px;margin:0 auto;width:100%}
+}
+@media (max-width:860px){
+  .wrap{padding:0 var(--s-4)}
+  .open{grid-template-columns:1fr;gap:var(--s-6);padding:var(--s-12) 0 var(--s-8)}
+  .fighead{grid-template-columns:1fr;gap:var(--s-2)}
+  .fighead h2{font-size:var(--t-2)}
+  .body{margin-left:0}
+  .wires,.costs,.attn,.asides,.xl{grid-template-columns:1fr;gap:var(--s-8)}
+  .fig{padding:var(--s-12) 0}
+  .end{grid-template-columns:1fr;gap:var(--s-3)}
+}
+@media (max-width:640px){
+  .machine{grid-template-columns:1fr}
+  .arch{min-width:520px}
+  .arch .bl{font-size:15px}
+  .panhint{display:block}
+  .runhead .l{display:none}
+  .runhead{justify-content:flex-end}
+  .runhead .r span{display:none}
+  .work{padding:var(--s-4)}
+  .eq.hero math{font-size:1.02em}
+  table{font-size:.8rem} th,td{padding:var(--s-2)}
+}
+@media print{ .toggle{display:none} .fig{break-inside:avoid-page} }
 </style>
 </head>
 <body>
-<div class="sheet">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="ahp" d="M0 1 L10 5 L0 9 z"/></marker>
+</defs></svg>
 
-  <!-- ====== TITLE / CARTOUCHE ====== -->
-  <header class="cartouche">
-    <div class="lhs">
-      <div class="docno">DOC TR-01 · ARCH NOTES · REV 1.0</div>
-      <h1>Transformers</h1>
-      <div class="sub">A blueprint of self-attention, multi-head projection, and the encoder–decoder stack from <i>Attention Is All You Need</i> (Vaswani et al., 2017).</div>
+<div class="wrap">
+<header class="runhead">
+  <span class="l">Self-attention, for readers of LSTMs and CNNs</span>
+  <span class="r"><span>After Vaswani et&nbsp;al., 2017 · US&nbsp;10,452,978&nbsp;B2</span></span>
+</header>
+
+<section class="open" aria-labelledby="h1">
+  <h1 id="h1">Self-attention lets every token read every other token in one step.</h1>
+  <div class="dek">
+    <p>You already know two answers to the question “which inputs does this position get to see?” An LSTM carries a summary forward one step at a time. A convolution looks through a fixed window.</p>
+    <p><strong>A Transformer computes, for every pair of positions, how much one should read from the other, and then reads them all at once.</strong> Below: why that’s different, the formula worked by hand, then the whole machine.</p>
+  </div>
+</section>
+
+<section class="fig" aria-labelledby="f1">
+  <div class="fighead"><span class="figno">FIG. 1</span><h2 id="f1">A recurrence is a chain, a convolution is a window, attention is a complete graph</h2></div>
+  <div class="body">
+    <div class="wires">
+      <div class="wcell"><h3>LSTM</h3><svg viewBox="0 0 300 190" class="wire" aria-hidden="true"><line class="ed" x1="24" y1="160" x2="24" y2="100"/><line class="ed" x1="70" y1="160" x2="70" y2="100"/><line class="ed" x1="116" y1="160" x2="116" y2="100"/><line class="ed" x1="162" y1="160" x2="162" y2="100"/><line class="ed" x1="208" y1="160" x2="208" y2="100"/><line class="ed" x1="254" y1="160" x2="254" y2="100"/><line class="ed hi" x1="32" y1="92" x2="61" y2="92" marker-end="url(#ah)"/><line class="ed hi" x1="78" y1="92" x2="107" y2="92" marker-end="url(#ah)"/><line class="ed hi" x1="124" y1="92" x2="153" y2="92" marker-end="url(#ah)"/><line class="ed hi" x1="170" y1="92" x2="199" y2="92" marker-end="url(#ah)"/><line class="ed hi" x1="216" y1="92" x2="245" y2="92" marker-end="url(#ah)"/><line class="ed hi" x1="24" y1="160" x2="24" y2="100"/><circle class="nd hi" cx="24" cy="92" r="7"/><circle class="nd hi" cx="70" cy="92" r="7"/><circle class="nd hi" cx="116" cy="92" r="7"/><circle class="nd hi" cx="162" cy="92" r="7"/><circle class="nd hi" cx="208" cy="92" r="7"/><circle class="nd hi" cx="254" cy="92" r="7"/><circle class="nd hi" cx="24" cy="168" r="7"/><circle class="nd " cx="70" cy="168" r="7"/><circle class="nd " cx="116" cy="168" r="7"/><circle class="nd " cx="162" cy="168" r="7"/><circle class="nd " cx="208" cy="168" r="7"/><circle class="nd " cx="254" cy="168" r="7"/><text class="lab" x="24" y="74" text-anchor="middle">h₁</text><text class="lab" x="254" y="74" text-anchor="middle">h₆</text><text class="lab" x="24" y="188" text-anchor="middle" dy="0">x₁</text><text class="lab" x="254" y="188" text-anchor="middle">x₆</text></svg><span class="hops"><b>5 hops</b>, strictly in order</span></div>
+      <div class="wcell"><h3>Dilated convolution, k&nbsp;=&nbsp;3</h3><svg viewBox="0 0 300 190" class="wire" aria-hidden="true"><line class="ed" x1="24" y1="161" x2="24" y2="135"/><line class="ed" x1="70" y1="161" x2="24" y2="135"/><line class="ed" x1="24" y1="161" x2="70" y2="135"/><line class="ed" x1="70" y1="161" x2="70" y2="135"/><line class="ed" x1="116" y1="161" x2="70" y2="135"/><line class="ed" x1="70" y1="161" x2="116" y2="135"/><line class="ed" x1="116" y1="161" x2="116" y2="135"/><line class="ed" x1="162" y1="161" x2="116" y2="135"/><line class="ed" x1="116" y1="161" x2="162" y2="135"/><line class="ed" x1="162" y1="161" x2="162" y2="135"/><line class="ed" x1="208" y1="161" x2="162" y2="135"/><line class="ed" x1="162" y1="161" x2="208" y2="135"/><line class="ed" x1="208" y1="161" x2="208" y2="135"/><line class="ed" x1="254" y1="161" x2="208" y2="135"/><line class="ed" x1="208" y1="161" x2="254" y2="135"/><line class="ed" x1="254" y1="161" x2="254" y2="135"/><line class="ed" x1="24" y1="121" x2="24" y2="95"/><line class="ed" x1="116" y1="121" x2="24" y2="95"/><line class="ed" x1="70" y1="121" x2="70" y2="95"/><line class="ed" x1="162" y1="121" x2="70" y2="95"/><line class="ed" x1="24" y1="121" x2="116" y2="95"/><line class="ed" x1="116" y1="121" x2="116" y2="95"/><line class="ed" x1="208" y1="121" x2="116" y2="95"/><line class="ed" x1="70" y1="121" x2="162" y2="95"/><line class="ed" x1="162" y1="121" x2="162" y2="95"/><line class="ed" x1="254" y1="121" x2="162" y2="95"/><line class="ed" x1="116" y1="121" x2="208" y2="95"/><line class="ed" x1="208" y1="121" x2="208" y2="95"/><line class="ed" x1="162" y1="121" x2="254" y2="95"/><line class="ed" x1="254" y1="121" x2="254" y2="95"/><line class="ed" x1="24" y1="81" x2="24" y2="55"/><line class="ed" x1="208" y1="81" x2="24" y2="55"/><line class="ed" x1="70" y1="81" x2="70" y2="55"/><line class="ed" x1="254" y1="81" x2="70" y2="55"/><line class="ed" x1="116" y1="81" x2="116" y2="55"/><line class="ed" x1="162" y1="81" x2="162" y2="55"/><line class="ed" x1="24" y1="81" x2="208" y2="55"/><line class="ed" x1="208" y1="81" x2="208" y2="55"/><line class="ed" x1="70" y1="81" x2="254" y2="55"/><line class="ed" x1="254" y1="81" x2="254" y2="55"/><line class="ed hi" x1="24" y1="161" x2="70" y2="135"/><line class="ed hi" x1="70" y1="121" x2="70" y2="95"/><line class="ed hi" x1="70" y1="81" x2="254" y2="55"/><circle class="nd hi" cx="24" cy="168" r="7"/><circle class="nd " cx="70" cy="168" r="7"/><circle class="nd " cx="116" cy="168" r="7"/><circle class="nd " cx="162" cy="168" r="7"/><circle class="nd " cx="208" cy="168" r="7"/><circle class="nd " cx="254" cy="168" r="7"/><circle class="nd " cx="24" cy="128" r="7"/><circle class="nd hi" cx="70" cy="128" r="7"/><circle class="nd " cx="116" cy="128" r="7"/><circle class="nd " cx="162" cy="128" r="7"/><circle class="nd " cx="208" cy="128" r="7"/><circle class="nd " cx="254" cy="128" r="7"/><circle class="nd " cx="24" cy="88" r="7"/><circle class="nd hi" cx="70" cy="88" r="7"/><circle class="nd " cx="116" cy="88" r="7"/><circle class="nd " cx="162" cy="88" r="7"/><circle class="nd " cx="208" cy="88" r="7"/><circle class="nd " cx="254" cy="88" r="7"/><circle class="nd " cx="24" cy="48" r="7"/><circle class="nd " cx="70" cy="48" r="7"/><circle class="nd " cx="116" cy="48" r="7"/><circle class="nd " cx="162" cy="48" r="7"/><circle class="nd " cx="208" cy="48" r="7"/><circle class="nd hi" cx="254" cy="48" r="7"/><text class="lab lab-s" x="296" y="132" text-anchor="end">d=1</text><text class="lab lab-s" x="296" y="92" text-anchor="end">d=2</text><text class="lab lab-s" x="296" y="52" text-anchor="end">d=4</text><text class="lab" x="24" y="188" text-anchor="middle" dy="0">x₁</text><text class="lab" x="254" y="188" text-anchor="middle">x₆</text></svg><span class="hops"><b>3 layers</b>, positions in parallel</span></div>
+      <div class="wcell"><h3>Self-attention</h3><svg viewBox="0 0 300 190" class="wire" aria-hidden="true"><line class="ed ed-f" x1="24" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="24" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="24" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="24" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="24" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="70" y1="161" x2="254" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="116" y1="161" x2="254" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="162" y1="161" x2="254" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="208" y1="161" x2="254" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="24" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="70" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="116" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="162" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="208" y2="77"/><line class="ed ed-f" x1="254" y1="161" x2="254" y2="77"/><line class="ed hi" x1="24" y1="161" x2="254" y2="77"/><circle class="nd " cx="24" cy="70" r="7"/><circle class="nd hi" cx="24" cy="168" r="7"/><circle class="nd " cx="70" cy="70" r="7"/><circle class="nd " cx="70" cy="168" r="7"/><circle class="nd " cx="116" cy="70" r="7"/><circle class="nd " cx="116" cy="168" r="7"/><circle class="nd " cx="162" cy="70" r="7"/><circle class="nd " cx="162" cy="168" r="7"/><circle class="nd " cx="208" cy="70" r="7"/><circle class="nd " cx="208" cy="168" r="7"/><circle class="nd hi" cx="254" cy="70" r="7"/><circle class="nd " cx="254" cy="168" r="7"/><text class="lab" x="24" y="188" text-anchor="middle" dy="0">x₁</text><text class="lab" x="254" y="188" text-anchor="middle">x₆</text></svg><span class="hops"><b>1 hop</b>, every pair at once</span></div>
     </div>
-    <div class="rhs">
-      <b>AUDIENCE</b><span>ML engineers; LSTM/CNN literate</span>
-      <b>PREREQ</b><span>linear algebra; softmax; backprop</span>
-      <b>SCOPE</b><span>encoder + decoder, training time</span>
-      <b>OMITS</b><span>tokenization, KV-cache, RoPE</span>
-      <b>DATE</b><span>2026-05-26</span>
-    </div>
-  </header>
+    <p class="cap"><b>How far is token 1 from token 6?</b> Follow the blue path. Information and gradients both fade along long paths, which is the whole reason the LSTM cell state exists. Attention makes every path length one.</p>
 
-  <!-- ====== §1 WHY ====== -->
-  <section>
-    <h2><span>§1 — Why recurrence broke</span><span class="secno">01 / 07</span></h2>
-    <p>An LSTM processes a sequence one timestep at a time. Each hidden state <code>h<sub>t</sub></code> depends on <code>h<sub>t−1</sub></code>, so the computation is intrinsically serial. Two pathologies follow.</p>
-
-    <table class="spec">
-      <thead><tr><th>Failure</th><th>Mechanism</th><th>Consequence</th></tr></thead>
-      <tbody>
-        <tr><td>Path length</td><td>Signal between token <i>i</i> and token <i>j</i> traverses |i−j| nonlinear gates.</td><td>Gradients vanish or distort; long-range structure is lost.</td></tr>
-        <tr><td>Serial compute</td><td>Step <i>t</i> cannot start until step <i>t−1</i> finishes.</td><td>GPU utilization is poor; wall-clock scales with sequence length.</td></tr>
-        <tr><td>Fixed bottleneck</td><td>Seq2seq compresses the source into one final hidden vector.</td><td>Decoder must reconstruct everything from a single point.</td></tr>
-      </tbody>
-    </table>
-
-    <p>Convolutions parallelize across positions but their receptive field grows only as <code>O(log<sub>k</sub> n)</code> with stacked kernels of width <code>k</code>. A direct edge between any two positions still requires depth.</p>
-
-    <p>The Transformer removes both constraints by replacing recurrent and convolutional mixing with a single primitive — <span class="k-em">scaled dot-product attention</span> — that runs in parallel across all positions and connects any pair in one layer.</p>
-  </section>
-
-  <!-- ====== §2 ATTENTION ====== -->
-  <section>
-    <h2><span>§2 — Scaled dot-product attention</span><span class="secno">02 / 07</span></h2>
-
-    <p>Each token emits three projections of its embedding: a <span class="k-em">query</span> <code>q</code> (what am I looking for?), a <span class="k-em">key</span> <code>k</code> (what do I offer?), and a <span class="k-em">value</span> <code>v</code> (what do I deliver if matched?). Attention is a content-addressed soft lookup: every query reads from every key, weighted by similarity.</p>
-
-    <p>Stack token queries into a matrix <code>Q ∈ ℝ<sup>n×d<sub>k</sub></sup></code>, keys into <code>K ∈ ℝ<sup>n×d<sub>k</sub></sup></code>, and values into <code>V ∈ ℝ<sup>n×d<sub>v</sub></sup></code>. Then:</p>
-
-    <div class="eq">
-      <div class="body">
-        Attention(<b>Q</b>, <b>K</b>, <b>V</b>) <span class="op">=</span> softmax<span class="op">(</span>
-        <span class="frac">
-          <span class="num"><b>Q K</b><sup>⊤</sup></span>
-          <span class="den"><span class="sqrt">d<sub>k</sub></span></span>
-        </span>
-        <span class="op">)</span> <b>V</b>
+    <div class="costs">
+      <div class="tscroll"><table>
+        <caption class="cap" style="caption-side:bottom;text-align:left;padding-top:var(--s-3)">
+          <span class="src">Vaswani et&nbsp;al., “Attention Is All You Need,” NeurIPS 2017, Table 1. <i>n</i>&nbsp;= sequence length, <i>d</i>&nbsp;= width, <i>k</i>&nbsp;= kernel size.</span>
+        </caption>
+        <thead><tr><th scope="col">Layer</th><th scope="col">Cost per layer</th><th scope="col">Sequential steps</th><th scope="col">Longest path</th></tr></thead>
+        <tbody>
+          <tr><td>Recurrent</td><td><math><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo>·</mo><msup><mi>d</mi><mn>2</mn></msup><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></math></td></tr>
+          <tr><td>Convolutional</td><td><math><mi>O</mi><mo stretchy="false">(</mo><mi>k</mi><mo>·</mo><mi>n</mi><mo>·</mo><msup><mi>d</mi><mn>2</mn></msup><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><msub><mi>log</mi><mi>k</mi></msub><mi>n</mi><mo stretchy="false">)</mo></math></td></tr>
+          <tr class="us"><td>Self-attention</td><td><math><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>·</mo><mi>d</mi><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></math></td><td><math><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></math></td></tr>
+        </tbody>
+      </table></div>
+      <div class="prose">
+        <p>The bill for those short paths is the <math><msup><mi>n</mi><mn>2</mn></msup></math> term. Double the context and the attention matrix quadruples. For sentences, where <i>n</i> is smaller than <i>d</i>, that’s cheaper than a recurrent layer. For a book, it isn’t, and most of the work on long-context models since 2017 is about that one term.</p>
+        <p>The middle column matters more in practice. Zero sequential steps means a GPU can process the whole sequence in one pass during training, with no backprop through time.</p>
       </div>
-      <div class="label">(2.1)</div>
     </div>
+  </div>
+</section>
 
-    <p>The product <code>QK<sup>⊤</sup></code> is an <code>n×n</code> matrix of raw compatibility scores. Softmax over each row turns it into a probability distribution. Multiplying by <code>V</code> yields a length-<code>n</code> sequence of mixed values — every output position is a convex combination of every input position.</p>
-
-    <div class="note">The <code>1/√d<sub>k</sub></code> scaling is not cosmetic. For large <code>d<sub>k</sub></code> the dot products grow with variance ~<code>d<sub>k</sub></code>, pushing softmax into saturated regions where its gradient is near zero. Scaling restores well-conditioned gradients.</div>
-  </section>
-
-  <!-- ====== §3 MULTIHEAD ====== -->
-  <section>
-    <h2><span>§3 — Multi-head projection</span><span class="secno">03 / 07</span></h2>
-
-    <p>One attention map can only express one relation per query — say, "match my subject's verb." Real language has many. Multi-head attention runs <code>h</code> attention operations in parallel on lower-dimensional projections, then concatenates.</p>
-
-    <div class="eq">
-      <div class="body">
-        head<sub>i</sub> <span class="op">=</span> Attention<span class="op">(</span><b>Q</b><b>W</b><sub>i</sub><sup>Q</sup><span class="op">,</span> <b>K</b><b>W</b><sub>i</sub><sup>K</sup><span class="op">,</span> <b>V</b><b>W</b><sub>i</sub><sup>V</sup><span class="op">)</span>
+<section class="fig" aria-labelledby="f2">
+  <div class="fighead"><span class="figno">FIG. 2</span><h2 id="f2">Attention is a soft dictionary lookup, and every token is both the question and the answer</h2></div>
+  <div class="body attn">
+    <div class="prose">
+      <p>Stack the sequence as rows of a matrix <math><mi>X</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mtext>model</mtext></msub></mrow></msup></math>. Project it three ways with learned weights:</p>
+      <div class="eq">
+        <math display="block"><mi>Q</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>Q</mi></msup><mo>,</mo><mspace width="1em"/><mi>K</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>K</mi></msup><mo>,</mo><mspace width="1em"/><mi>V</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>V</mi></msup></math>
       </div>
-      <div class="label">(3.1)</div>
-    </div>
-
-    <div class="eq">
-      <div class="body">
-        MultiHead(<b>Q</b>,<b>K</b>,<b>V</b>) <span class="op">=</span> Concat(head<sub>1</sub>, …, head<sub>h</sub>) <b>W</b><sup>O</sup>
+      <p>The <b>query</b> row for a token says what it’s looking for. The <b>key</b> row says what it offers. The <b>value</b> row is what it hands over if chosen. Every token gets all three, so every token asks and every token answers.</p>
+      <div class="eq hero">
+        <div class="eqn">
+          <math display="block"><mrow><mtext>Attention</mtext><mo>(</mo><mi>Q</mi><mo>,</mo><mi>K</mi><mo>,</mo><mi>V</mi><mo>)</mo></mrow><mo>=</mo><mrow><mtext>softmax</mtext><mo>(</mo><mfrac><mrow><mi>Q</mi><msup><mi>K</mi><mo>⊤</mo></msup></mrow><msqrt><msub><mi>d</mi><mi>k</mi></msub></msqrt></mfrac><mo>)</mo></mrow><mi>V</mi></math>
+          <span class="tag">(1)</span>
+        </div>
       </div>
-      <div class="label">(3.2)</div>
-    </div>
-
-    <p>Each <code>W<sub>i</sub><sup>Q,K,V</sup> ∈ ℝ<sup>d<sub>model</sub>×d<sub>k</sub></sup></code> with <code>d<sub>k</sub> = d<sub>model</sub>/h</code>, so total compute is the same as one full-width head. The output projection <code>W<sup>O</sup></code> linearly mixes the concatenated heads back to <code>d<sub>model</sub></code>. In the base model: <code>d<sub>model</sub> = 512</code>, <code>h = 8</code>, <code>d<sub>k</sub> = d<sub>v</sub> = 64</code>.</p>
-
-    <p>Empirically, different heads specialize on different syntactic and semantic relations — coreference, agreement, positional offsets — without ever being told to.</p>
-  </section>
-
-  <!-- ====== §4 POSITION ====== -->
-  <section>
-    <h2><span>§4 — Positional encoding</span><span class="secno">04 / 07</span></h2>
-
-    <p>Attention as defined is permutation-invariant: shuffle the rows of <code>Q</code>, <code>K</code>, <code>V</code> identically and the output shuffles the same way. Language is not permutation-invariant. Position must be injected explicitly.</p>
-
-    <p>The original paper adds a deterministic sinusoidal signal to the input embeddings:</p>
-
-    <div class="eq">
-      <div class="body">
-        PE<sub>(pos, 2i)</sub> <span class="op">=</span> sin<span class="op">(</span> pos <span class="op">/</span> 10000<sup>2i/d<sub>model</sub></sup> <span class="op">)</span>
+      <p><math><mi>Q</mi><msup><mi>K</mi><mo>⊤</mo></msup></math> is an <math><mi>n</mi><mo>×</mo><mi>n</mi></math> table of dot products, one score per (reader, read) pair. The softmax runs along each row, so each token spends exactly one unit of attention across the sequence. Multiplying by <math><mi>V</mi></math> turns those weights into a weighted average of values. The output has the same shape as the input: one new vector per token, now mixed with context.</p>
+      <p>Nothing in equation (1) knows about position or distance. Token 1 can pull from token 6 as easily as from token 2, which is FIG.&nbsp;1’s single hop.</p>
+    <div class="aside aside-in">
+      <h3>Same weighted sum as a convolution, opposite source of weights</h3>
+      <div class="eq">
+        <math display="block"><msub><mi>y</mi><mi>i</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mi>i</mi><mo>−</mo><mi>r</mi></mrow><mrow><mi>i</mi><mo>+</mo><mi>r</mi></mrow></munderover><msub><mi>w</mi><mrow><mi>j</mi><mo>−</mo><mi>i</mi></mrow></msub><msub><mi>x</mi><mi>j</mi></msub><mspace width="1.2em"/><mtext>vs.</mtext><mspace width="1.2em"/><msub><mi>z</mi><mi>i</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>α</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>v</mi><mi>j</mi></msub></math>
       </div>
-      <div class="label">(4.1)</div>
+      <p>A conv weight depends on the offset <math><mi>j</mi><mo>−</mo><mi>i</mi></math> and is frozen after training. An attention weight <math><msub><mi>α</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></math> depends on what tokens <i>i</i> and <i>j</i> contain, and it’s recomputed for every input. Think of it as a kernel the size of the whole sequence, generated on the fly.</p>
     </div>
-    <div class="eq">
-      <div class="body">
-        PE<sub>(pos, 2i+1)</sub> <span class="op">=</span> cos<span class="op">(</span> pos <span class="op">/</span> 10000<sup>2i/d<sub>model</sub></sup> <span class="op">)</span>
+    </div>
+
+    <div class="work" aria-labelledby="wk">
+      <h3 id="wk">Worked by hand: who does “it” read?</h3>
+      <p class="lede">Four tokens, <math><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><mn>4</mn></math>. The projections are already applied; these are toy numbers chosen so you can check them.</p>
+      <ol class="steps">
+        <li><span class="sn">1</span><div><p><b>Queries and keys.</b> One row per token: the, cat, sat, it.</p>
+          <div class="mats"><math><mi>Q</mi><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="0.6em" rowspacing="0.15em"><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>]</mo></mrow></math><math><mi>K</mi><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="0.6em" rowspacing="0.15em"><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>]</mo></mrow></math></div></div></li>
+        <li><span class="sn">2</span><div><p><b>Score every pair.</b> Entry (<i>i</i>,&nbsp;<i>j</i>) is <math><msub><mi>q</mi><mi>i</mi></msub><mo>·</mo><msub><mi>k</mi><mi>j</mi></msub></math>. The “it” row scores 5 against “cat”.</p>
+          <div class="mats"><math><mi>Q</mi><msup><mi>K</mi><mo>⊤</mo></msup><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="0.6em" rowspacing="0.15em"><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>5</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>]</mo></mrow></math></div></div></li>
+        <li><span class="sn">3</span><div><p><b>Scale by <math><msqrt><mn>4</mn></msqrt><mo>=</mo><mn>2</mn></math>, softmax each row.</b> “It” now puts 0.69 of its attention on “cat”.</p>
+          <svg class="heat" viewBox="0 0 294 280" role="img" aria-labelledby="heat-t"><title id="heat-t">Attention weights for the four tokens. The row for “it” puts 0.69 of its weight on “cat”.</title><text class="ax" x="83.0" y="28" text-anchor="middle">the</text><text class="ax" x="141.0" y="28" text-anchor="middle">cat</text><text class="ax" x="199.0" y="28" text-anchor="middle">sat</text><text class="ax" x="257.0" y="28" text-anchor="middle">it</text><text class="ax" x="44" y="74.0" text-anchor="end">the</text><rect class="cell" x="55" y="41" width="56" height="56" style="fill-opacity:0.37"/><text class="cv" x="83.0" y="74.0" text-anchor="middle">0.31</text><rect class="cell" x="113" y="41" width="56" height="56" style="fill-opacity:0.25"/><text class="cv" x="141.0" y="74.0" text-anchor="middle">0.19</text><rect class="cell" x="171" y="41" width="56" height="56" style="fill-opacity:0.37"/><text class="cv" x="199.0" y="74.0" text-anchor="middle">0.31</text><rect class="cell" x="229" y="41" width="56" height="56" style="fill-opacity:0.25"/><text class="cv" x="257.0" y="74.0" text-anchor="middle">0.19</text><text class="ax" x="44" y="132.0" text-anchor="end">cat</text><rect class="cell" x="55" y="99" width="56" height="56" style="fill-opacity:0.18"/><text class="cv" x="83.0" y="132.0" text-anchor="middle">0.11</text><rect class="cell" x="113" y="99" width="56" height="56" style="fill-opacity:0.55"/><text class="cv cvon" x="141.0" y="132.0" text-anchor="middle">0.51</text><rect class="cell" x="171" y="99" width="56" height="56" style="fill-opacity:0.25"/><text class="cv" x="199.0" y="132.0" text-anchor="middle">0.19</text><rect class="cell" x="229" y="99" width="56" height="56" style="fill-opacity:0.25"/><text class="cv" x="257.0" y="132.0" text-anchor="middle">0.19</text><text class="ax" x="44" y="190.0" text-anchor="end">sat</text><rect class="cell" x="55" y="157" width="56" height="56" style="fill-opacity:0.28"/><text class="cv" x="83.0" y="190.0" text-anchor="middle">0.22</text><rect class="cell" x="113" y="157" width="56" height="56" style="fill-opacity:0.41"/><text class="cv" x="141.0" y="190.0" text-anchor="middle">0.35</text><rect class="cell" x="171" y="157" width="56" height="56" style="fill-opacity:0.28"/><text class="cv" x="199.0" y="190.0" text-anchor="middle">0.22</text><rect class="cell" x="229" y="157" width="56" height="56" style="fill-opacity:0.28"/><text class="cv" x="257.0" y="190.0" text-anchor="middle">0.22</text><text class="ax axhi" x="44" y="248.0" text-anchor="end">it</text><rect class="cell" x="55" y="215" width="56" height="56" style="fill-opacity:0.13"/><text class="cv" x="83.0" y="248.0" text-anchor="middle">0.06</text><rect class="cell" x="113" y="215" width="56" height="56" style="fill-opacity:0.72"/><text class="cv cvon" x="141.0" y="248.0" text-anchor="middle">0.69</text><rect class="cell" x="171" y="215" width="56" height="56" style="fill-opacity:0.17"/><text class="cv" x="199.0" y="248.0" text-anchor="middle">0.09</text><rect class="cell" x="229" y="215" width="56" height="56" style="fill-opacity:0.22"/><text class="cv" x="257.0" y="248.0" text-anchor="middle">0.15</text><rect class="hirow" x="54" y="214" width="232" height="58"/></svg></div></li>
+        <li><span class="sn">4</span><div><p><b>Mix the values.</b> Each row of <i>V</i> has <math><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><mn>2</mn></math> here.</p><div class="mats"><math><mi>V</mi><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="0.6em" rowspacing="0.15em"><mtr><mtd><mn>0.1</mn></mtd><mtd><mn>0.0</mn></mtd></mtr><mtr><mtd><mn>1.0</mn></mtd><mtd><mn>0.2</mn></mtd></mtr><mtr><mtd><mn>0.0</mn></mtd><mtd><mn>1.0</mn></mtd></mtr><mtr><mtd><mn>0.3</mn></mtd><mtd><mn>0.3</mn></mtd></mtr></mtable><mo>]</mo></mrow></math></div><p>The new vector for “it” is <math><mn>0.06</mn><msub><mi>v</mi><mtext>the</mtext></msub><mo>+</mo><mn>0.69</mn><msub><mi>v</mi><mtext>cat</mtext></msub><mo>+</mo><mn>0.09</mn><msub><mi>v</mi><mtext>sat</mtext></msub><mo>+</mo><mn>0.15</mn><msub><mi>v</mi><mtext>it</mtext></msub></math> = <span class="mono num">(0.75, 0.28)</span>, mostly cat.</p></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="body asides">
+    <div class="aside">
+      <h3>Scaling the scores keeps the softmax trainable</h3>
+      <p>If the components of <i>q</i> and <i>k</i> are independent with mean 0 and variance 1, then <math><mi>q</mi><mo>·</mo><mi>k</mi></math> has variance <math><msub><mi>d</mi><mi>k</mi></msub></math>. At <math><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><mn>64</mn></math>, raw scores spread to about ±8, the softmax goes nearly one-hot, and its gradients vanish. Dividing by <math><msqrt><msub><mi>d</mi><mi>k</mi></msub></msqrt></math> puts the variance back at 1.</p>
+    </div>
+    <div class="aside">
+      <h3>A mask makes it causal, like a forward-only LSTM</h3>
+      <div class="eq">
+        <math display="block"><mtext>softmax</mtext><mo>(</mo><mfrac><mrow><mi>Q</mi><msup><mi>K</mi><mo>⊤</mo></msup></mrow><msqrt><msub><mi>d</mi><mi>k</mi></msub></msqrt></mfrac><mo>+</mo><mi>M</mi><mo>)</mo><mi>V</mi></math>
+        <math display="block"><msub><mi>M</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo>{</mo><mtable columnalign="left"><mtr><mtd><mn>0</mn></mtd><mtd><mi>j</mi><mo>≤</mo><mi>i</mi></mtd></mtr><mtr><mtd><mo>−</mo><mi>∞</mi></mtd><mtd><mi>j</mi><mo>&gt;</mo><mi>i</mi></mtd></mtr></mtable></mrow></math>
       </div>
-      <div class="label">(4.2)</div>
+      <p>For generating text left to right, future positions get −∞ before the softmax, so their weights are exactly zero. It’s the causal-conv trick, applied to a lookup.</p>
     </div>
+  </div>
+</section>
 
-    <p>Each dimension is a sinusoid of a different wavelength, geometrically spaced from <code>2π</code> to <code>10000·2π</code>. Because <code>sin(a+b)</code> and <code>cos(a+b)</code> are linear combinations of <code>sin a, cos a, sin b, cos b</code>, the model can learn to attend to <span class="k-em">relative</span> offsets by a fixed linear transform of position vectors.</p>
+<section class="fig" aria-labelledby="f3">
+  <div class="fighead"><span class="figno">FIG. 3</span><h2 id="f3">Eight copies of that lookup, stacked six deep, make the Transformer</h2></div>
+  <div class="machine">
+    <ol class="notes" aria-label="Encoder parts">
+      <li id="r102"><h3><span class="n">102</span>Input embedding</h3><p>Token ids become vectors of width <math><msub><mi>d</mi><mtext>model</mtext></msub><mo>=</mo><mn>512</mn></math>, scaled by <span style="white-space:nowrap"><math><msqrt><msub><mi>d</mi><mtext>model</mtext></msub></msqrt></math>.</span> The output layer (130) reuses this same matrix.</p></li>
+      <li id="r104"><h3><span class="n">104</span>Positional encoding</h3><p>Shuffle the inputs to equation (1) and its outputs shuffle the same way; it has no sense of order. So order is added in, as fixed sinusoids:</p>
+        <math display="block"><mtable columnalign="left" rowspacing="0.4em"><mtr><mtd><msub><mi>PE</mi><mrow><mo>(</mo><mi>p</mi><mo>,</mo><mn>2</mn><mi>i</mi><mo>)</mo></mrow></msub><mo>=</mo><mi>sin</mi><mo>(</mo><mi>p</mi><mo>/</mo><msup><mn>10000</mn><mrow><mn>2</mn><mi>i</mi><mo>/</mo><msub><mi>d</mi><mtext>model</mtext></msub></mrow></msup><mo>)</mo></mtd></mtr><mtr><mtd><msub><mi>PE</mi><mrow><mo>(</mo><mi>p</mi><mo>,</mo><mn>2</mn><mi>i</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow></msub><mo>=</mo><mi>cos</mi><mo>(</mo><mi>p</mi><mo>/</mo><msup><mn>10000</mn><mrow><mn>2</mn><mi>i</mi><mo>/</mo><msub><mi>d</mi><mtext>model</mtext></msub></mrow></msup><mo>)</mo></mtd></mtr></mtable></math>
+        <p>An LSTM got order free from its loop, a conv from its kernel offsets.</p></li>
+      <li id="r110"><h3><span class="n">110</span>Multi-head self-attention</h3>
+        <math display="block"><mtable columnalign="left" rowspacing="0.4em"><mtr><mtd><mtext>MultiHead</mtext><mo>=</mo><mtext>Concat</mtext><mo>(</mo><msub><mtext>head</mtext><mn>1</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mtext>head</mtext><mi>h</mi></msub><mo>)</mo><msup><mi>W</mi><mi>O</mi></msup></mtd></mtr><mtr><mtd><msub><mtext>head</mtext><mi>i</mi></msub><mo>=</mo><mtext>Attention</mtext><mo>(</mo><mi>Q</mi><msubsup><mi>W</mi><mi>i</mi><mi>Q</mi></msubsup><mo>,</mo><mi>K</mi><msubsup><mi>W</mi><mi>i</mi><mi>K</mi></msubsup><mo>,</mo><mi>V</mi><msubsup><mi>W</mi><mi>i</mi><mi>V</mi></msubsup><mo>)</mo></mtd></mtr></mtable></math>
+        <p><math><mi>h</mi><mo>=</mo><mn>8</mn></math> heads, each <math><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><mn>64</mn></math> wide, for about the cost of one 512-wide head. Treat them like output channels: each learns its own kind of relation, one tracking syntax, another coreference.</p></li>
+      <li id="r118"><h3><span class="n">118</span>N × stack</h3><p>The encoder repeats 110, 112 and 114 six times, and the decoder repeats its own stack six times. Every layer keeps the sequence length: no pooling, no stride.</p></li>
+    </ol>
 
-    <div class="note">Learned positional embeddings work about as well. Sinusoidal encodings were chosen because they extrapolate — in principle — to sequence lengths unseen during training.</div>
-  </section>
-
-  <!-- ====== §5 DIAGRAM ====== -->
-  <section>
-    <h2><span>§5 — Encoder–decoder stack</span><span class="secno">05 / 07</span></h2>
-
-    <p>The full architecture is a stack of <code>N</code> identical encoder blocks feeding a stack of <code>N</code> identical decoder blocks. Each block wraps its sublayers in residual connections and layer normalization.</p>
-
-    <figure class="diagram">
-      <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transformer architecture diagram">
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#0b2545"/>
-          </marker>
-          <marker id="arrow-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#b14a2a"/>
-          </marker>
-          <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="#8da9c4" stroke-width="1"/>
-          </pattern>
-        </defs>
-
-        <style>
-          .lbl{ font: 600 11px "SFMono-Regular",Menlo,monospace; fill:#0b2545;}
-          .lbl-sm{ font: 11px "SFMono-Regular",Menlo,monospace; fill:#13315c;}
-          .lbl-mut{ font: 10px "SFMono-Regular",Menlo,monospace; fill:#5f6b7a;}
-          .lbl-em{ font: 600 11px "SFMono-Regular",Menlo,monospace; fill:#b14a2a;}
-          .lbl-title{ font: 600 12px "SFMono-Regular",Menlo,monospace; fill:#0b2545; letter-spacing:0.04em;}
-          .box{ fill:#f1ecdc; stroke:#0b2545; stroke-width:1.2;}
-          .box-attn{ fill:#fff; stroke:#1e88a8; stroke-width:1.2;}
-          .box-ffn{ fill:#fff; stroke:#0b2545; stroke-width:1.2;}
-          .box-norm{ fill:#e8e2cd; stroke:#0b2545; stroke-width:1; stroke-dasharray:3 2;}
-          .stack{ fill:none; stroke:#0b2545; stroke-width:1.5;}
-          .arrow{ stroke:#0b2545; stroke-width:1.4; fill:none; marker-end:url(#arrow);}
-          .arrow-r{ stroke:#b14a2a; stroke-width:1.4; fill:none; marker-end:url(#arrow-r);}
-          .resid{ stroke:#0b2545; stroke-width:1; fill:none; stroke-dasharray:4 3;}
-        </style>
-
-        <!-- Frame title -->
-        <text x="20" y="22" class="lbl-title">FIG. 5.1 — TRANSFORMER ARCHITECTURE (N=6 BLOCKS EACH)</text>
-        <line x1="20" y1="30" x2="880" y2="30" stroke="#0b2545" stroke-width="0.8"/>
-
-        <!-- ============ ENCODER (left) ============ -->
-        <g transform="translate(80,60)">
-          <text x="0" y="12" class="lbl-title">ENCODER  ×N</text>
-
-          <!-- input -->
-          <rect class="box" x="0" y="430" width="220" height="34"/>
-          <text x="110" y="452" text-anchor="middle" class="lbl">Source token embedding</text>
-          <text x="-60" y="452" class="lbl-mut">x ∈ ℝⁿˣᵈ</text>
-
-          <!-- positional encoding adder -->
-          <circle cx="110" cy="400" r="11" fill="#f1ecdc" stroke="#0b2545" stroke-width="1.2"/>
-          <text x="110" y="404" text-anchor="middle" class="lbl">+</text>
-          <text x="170" y="404" class="lbl-mut">⊕ PE(pos)</text>
-          <line x1="110" y1="430" x2="110" y2="411" class="arrow"/>
-
-          <!-- block boundary -->
-          <rect x="-10" y="40" width="240" height="350" fill="url(#hatch)" opacity="0.18"/>
-          <rect x="-10" y="40" width="240" height="350" class="stack"/>
-          <text x="-50" y="60" class="lbl-em" transform="rotate(-90 -50 60)">BLOCK 1 … N</text>
-
-          <!-- Multi-head self-attention -->
-          <rect class="box-attn" x="10" y="290" width="200" height="60"/>
-          <text x="110" y="312" text-anchor="middle" class="lbl">Multi-Head</text>
-          <text x="110" y="328" text-anchor="middle" class="lbl">Self-Attention</text>
-          <text x="110" y="344" text-anchor="middle" class="lbl-mut">Q = K = V = x</text>
-
-          <line x1="110" y1="389" x2="110" y2="351" class="arrow"/>
-
-          <!-- Add & Norm 1 -->
-          <rect class="box-norm" x="40" y="252" width="140" height="26"/>
-          <text x="110" y="270" text-anchor="middle" class="lbl-sm">Add &amp; Norm</text>
-          <line x1="110" y1="290" x2="110" y2="279" class="arrow"/>
-          <!-- residual 1 -->
-          <path class="resid" d="M 110 400 Q 245 400 245 265 Q 245 252 180 252"/>
-
-          <!-- FFN -->
-          <rect class="box-ffn" x="10" y="170" width="200" height="60"/>
-          <text x="110" y="192" text-anchor="middle" class="lbl">Position-wise FFN</text>
-          <text x="110" y="208" text-anchor="middle" class="lbl-mut">max(0, xW₁+b₁)W₂+b₂</text>
-          <text x="110" y="222" text-anchor="middle" class="lbl-mut">d_ff = 2048</text>
-          <line x1="110" y1="252" x2="110" y2="231" class="arrow"/>
-
-          <!-- Add & Norm 2 -->
-          <rect class="box-norm" x="40" y="132" width="140" height="26"/>
-          <text x="110" y="150" text-anchor="middle" class="lbl-sm">Add &amp; Norm</text>
-          <line x1="110" y1="170" x2="110" y2="159" class="arrow"/>
-          <!-- residual 2 -->
-          <path class="resid" d="M 110 252 Q 245 252 245 145 Q 245 132 180 132"/>
-
-          <!-- exit -->
-          <line x1="110" y1="132" x2="110" y2="100" class="arrow"/>
-          <text x="120" y="115" class="lbl-mut">encoder out z</text>
-        </g>
-
-        <!-- ============ Bridge ============ -->
-        <g>
-          <path class="arrow-r" d="M 300 160 C 380 160 380 280 460 280"/>
-          <path class="arrow-r" d="M 300 160 C 380 160 380 320 460 320"/>
-          <text x="380" y="148" class="lbl-em">K, V from encoder</text>
-        </g>
-
-        <!-- ============ DECODER (right) ============ -->
-        <g transform="translate(560,60)">
-          <text x="0" y="12" class="lbl-title">DECODER  ×N</text>
-
-          <!-- shifted target input -->
-          <rect class="box" x="0" y="430" width="220" height="34"/>
-          <text x="110" y="452" text-anchor="middle" class="lbl">Target embedding (shifted right)</text>
-
-          <circle cx="110" cy="400" r="11" fill="#f1ecdc" stroke="#0b2545" stroke-width="1.2"/>
-          <text x="110" y="404" text-anchor="middle" class="lbl">+</text>
-          <text x="170" y="404" class="lbl-mut">⊕ PE(pos)</text>
-          <line x1="110" y1="430" x2="110" y2="411" class="arrow"/>
-
-          <rect x="-10" y="40" width="240" height="350" fill="url(#hatch)" opacity="0.18"/>
-          <rect x="-10" y="40" width="240" height="350" class="stack"/>
-
-          <!-- Masked self-attn -->
-          <rect class="box-attn" x="10" y="290" width="200" height="60"/>
-          <text x="110" y="312" text-anchor="middle" class="lbl">Masked Multi-Head</text>
-          <text x="110" y="328" text-anchor="middle" class="lbl">Self-Attention</text>
-          <text x="110" y="344" text-anchor="middle" class="lbl-em">causal mask</text>
-          <line x1="110" y1="389" x2="110" y2="351" class="arrow"/>
-
-          <rect class="box-norm" x="40" y="252" width="140" height="26"/>
-          <text x="110" y="270" text-anchor="middle" class="lbl-sm">Add &amp; Norm</text>
-          <line x1="110" y1="290" x2="110" y2="279" class="arrow"/>
-          <path class="resid" d="M 110 400 Q 245 400 245 265 Q 245 252 180 252"/>
-
-          <!-- Cross attn -->
-          <rect class="box-attn" x="10" y="180" width="200" height="60"/>
-          <text x="110" y="202" text-anchor="middle" class="lbl">Cross-Attention</text>
-          <text x="110" y="218" text-anchor="middle" class="lbl-mut">Q from dec, K,V from enc</text>
-          <text x="110" y="234" text-anchor="middle" class="lbl-mut"></text>
-          <line x1="110" y1="252" x2="110" y2="241" class="arrow"/>
-
-          <rect class="box-norm" x="40" y="142" width="140" height="26"/>
-          <text x="110" y="160" text-anchor="middle" class="lbl-sm">Add &amp; Norm</text>
-          <line x1="110" y1="180" x2="110" y2="169" class="arrow"/>
-          <path class="resid" d="M 110 252 Q 245 252 245 155 Q 245 142 180 142"/>
-
-          <!-- FFN -->
-          <rect class="box-ffn" x="10" y="80" width="200" height="44"/>
-          <text x="110" y="100" text-anchor="middle" class="lbl">Position-wise FFN</text>
-          <text x="110" y="116" text-anchor="middle" class="lbl-mut">+ Add &amp; Norm</text>
-          <line x1="110" y1="142" x2="110" y2="125" class="arrow"/>
-          <line x1="110" y1="80" x2="110" y2="55" class="arrow"/>
-        </g>
-
-        <!-- Output head -->
-        <g transform="translate(560,0)">
-          <rect class="box" x="10" y="38" width="200" height="22"/>
-          <text x="110" y="54" text-anchor="middle" class="lbl-sm">Linear → Softmax → P(y_t | y_&lt;t, x)</text>
-        </g>
-
-        <!-- legend -->
-        <g transform="translate(20,510)">
-          <rect class="box-attn" x="0" y="0" width="16" height="12"/>
-          <text x="22" y="10" class="lbl-mut">attention sublayer</text>
-          <rect class="box-ffn" x="170" y="0" width="16" height="12"/>
-          <text x="192" y="10" class="lbl-mut">feed-forward sublayer</text>
-          <rect class="box-norm" x="360" y="0" width="16" height="12"/>
-          <text x="382" y="10" class="lbl-mut">LayerNorm</text>
-          <line x1="500" y1="6" x2="540" y2="6" class="resid"/>
-          <text x="546" y="10" class="lbl-mut">residual connection</text>
-          <line x1="700" y1="6" x2="740" y2="6" stroke="#b14a2a" stroke-width="1.4" marker-end="url(#arrow-r)"/>
-          <text x="746" y="10" class="lbl-em">cross-attn keys/values</text>
-        </g>
-      </svg>
-      <figcaption class="caption">
-        <span><b>FIG. 5.1</b> &nbsp;Encoder–decoder Transformer. Base config: N=6, d_model=512, h=8, d_ff=2048.</span>
-        <span>after Vaswani et al., 2017 — fig. 1</span>
-      </figcaption>
+    <figure class="center" style="margin:0">
+      <div class="pan" tabindex="0" aria-label="Transformer architecture figure, scrollable on small screens"><svg class="arch" viewBox="-12 140 664 676" role="img" aria-labelledby="f3t"><title id="f3t">The Transformer, encoder on the left and decoder on the right. Each encoder layer is multi-head self-attention then a feed-forward network, each followed by add and norm, repeated six times. Each decoder layer adds masked self-attention and cross-attention to the encoder output.</title><defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahp" d="M0 1 L10 5 L0 9 z"/></marker><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="hl" x1="0" y1="0" x2="0" y2="7"/></pattern></defs><rect class="frame" x="95" y="428" width="230" height="242" rx="10"/><text class="nx" x="86" y="552" text-anchor="end">N×</text><rect class="bx att" x="120" y="600" width="180" height="42" rx="3"/><text class="bl" x="210.0" y="619.0" text-anchor="middle">Multi-head</text><text class="bl bl-s" x="210.0" y="634.0" text-anchor="middle">self-attention</text><rect class="bx an" x="120" y="560" width="180" height="24" rx="3"/><text class="bl" x="210.0" y="577.0" text-anchor="middle">Add &amp; norm</text><rect class="bx" x="120" y="490" width="180" height="42" rx="3"/><text class="bl" x="210.0" y="516.0" text-anchor="middle">Feed-forward</text><rect class="bx an" x="120" y="448" width="180" height="24" rx="3"/><text class="bl" x="210.0" y="465.0" text-anchor="middle">Add &amp; norm</text><rect class="bx" x="120" y="728" width="180" height="34" rx="3"/><text class="bl" x="210.0" y="750.0" text-anchor="middle">Input embedding</text><circle class="pl" cx="210" cy="698" r="10"/><path class="fl" d="M204 698 H216 M210 692 V704"/><circle class="pe" cx="58" cy="698" r="18"/><path class="fl" d="M46 698 C50 686 54 686 58 698 S66 710 70 698"/><path class="fl" d="M76 698 L198 698" marker-end="url(#ah3)"/><path class="fl" d="M210 728 L210 710" marker-end="url(#ah3)"/><path class="fl" d="M210 688 L210 668"/><path class="fl" d="M210 664 L160 664 L160 644" marker-end="url(#ah3)"/><path class="fl" d="M210 664 L210 664 L210 644" marker-end="url(#ah3)"/><path class="fl" d="M210 664 L260 664 L260 644" marker-end="url(#ah3)"/><path class="fl" d="M210 655 L108 655 L108 572 L118 572" marker-end="url(#ah3)"/><path class="fl" d="M210 600 L210 586" marker-end="url(#ah3)"/><path class="fl" d="M210 560 L210 534" marker-end="url(#ah3)"/><path class="fl" d="M210 546 L108 546 L108 460 L118 460" marker-end="url(#ah3)"/><path class="fl" d="M210 490 L210 474" marker-end="url(#ah3)"/><text class="io" x="210" y="790" text-anchor="middle">Inputs</text><path class="fl" d="M210 776 L210 764" marker-end="url(#ah3)"/><rect class="frame" x="355" y="314" width="230" height="356" rx="10"/><text class="nx" x="594" y="346" text-anchor="start">N×</text><rect class="bx att" x="380" y="600" width="180" height="42" rx="3"/><text class="bl" x="470.0" y="619.0" text-anchor="middle">Masked multi-head</text><text class="bl bl-s" x="470.0" y="634.0" text-anchor="middle">self-attention</text><rect class="bx an" x="380" y="560" width="180" height="24" rx="3"/><text class="bl" x="470.0" y="577.0" text-anchor="middle">Add &amp; norm</text><rect class="bx att" x="380" y="478" width="180" height="42" rx="3"/><text class="bl" x="470.0" y="497.0" text-anchor="middle">Multi-head</text><text class="bl bl-s" x="470.0" y="512.0" text-anchor="middle">cross-attention</text><rect class="bx an" x="380" y="440" width="180" height="24" rx="3"/><text class="bl" x="470.0" y="457.0" text-anchor="middle">Add &amp; norm</text><rect class="bx" x="380" y="372" width="180" height="42" rx="3"/><text class="bl" x="470.0" y="398.0" text-anchor="middle">Feed-forward</text><rect class="bx an" x="380" y="332" width="180" height="24" rx="3"/><text class="bl" x="470.0" y="349.0" text-anchor="middle">Add &amp; norm</text><rect class="bx" x="380" y="728" width="180" height="34" rx="3"/><text class="bl" x="470.0" y="750.0" text-anchor="middle">Output embedding</text><circle class="pl" cx="470" cy="698" r="10"/><path class="fl" d="M464 698 H476 M470 692 V704"/><circle class="pe" cx="612" cy="698" r="18"/><path class="fl" d="M600 698 C604 686 608 686 612 698 S620 710 624 698"/><path class="fl" d="M594 698 L482 698" marker-end="url(#ah3)"/><path class="fl" d="M470 728 L470 710" marker-end="url(#ah3)"/><path class="fl" d="M470 688 L470 668"/><path class="fl" d="M470 664 L420 664 L420 644" marker-end="url(#ah3)"/><path class="fl" d="M470 664 L470 664 L470 644" marker-end="url(#ah3)"/><path class="fl" d="M470 664 L520 664 L520 644" marker-end="url(#ah3)"/><path class="fl" d="M470 655 L572 655 L572 572 L562 572" marker-end="url(#ah3)"/><path class="fl" d="M470 600 L470 586" marker-end="url(#ah3)"/><path class="fl" d="M470 560 L470 548 L520 548 L520 522" marker-end="url(#ah3)"/><path class="fl" d="M520 548 L572 548 L572 452 L562 452" marker-end="url(#ah3)"/><path class="fl" d="M470 478 L470 466" marker-end="url(#ah3)"/><path class="fl" d="M470 440 L470 416" marker-end="url(#ah3)"/><path class="fl" d="M470 428 L572 428 L572 344 L562 344" marker-end="url(#ah3)"/><path class="fl" d="M470 372 L470 358" marker-end="url(#ah3)"/><path class="fl fl-x" d="M210 448 L210 396 L340 396 L340 540 L420 540 L420 522" marker-end="url(#ah3)"/><path class="fl fl-x" d="M440 540 L440 522" marker-end="url(#ah3)"/><text class="kq" x="418" y="556" text-anchor="middle">K</text><text class="kq" x="442" y="556" text-anchor="middle">V</text><text class="kq" x="530" y="538" text-anchor="start">Q</text><text class="io" x="470" y="790" text-anchor="middle">Outputs, shifted right</text><path class="fl" d="M470 776 L470 764" marker-end="url(#ah3)"/><rect class="bx" x="380" y="252" width="180" height="30" rx="3"/><text class="bl" x="470.0" y="272.0" text-anchor="middle">Linear</text><rect class="bx" x="380" y="196" width="180" height="30" rx="3"/><text class="bl" x="470.0" y="216.0" text-anchor="middle">Softmax</text><path class="fl" d="M470 332 L470 284" marker-end="url(#ah3)"/><path class="fl" d="M470 252 L470 228" marker-end="url(#ah3)"/><path class="fl" d="M470 196 L470 168" marker-end="url(#ah3)"/><text class="io" x="470" y="156" text-anchor="middle">Next-token probabilities</text><path class="ld" d="M26 760 Q72.0 750 118 748"/><a href="#r102" class="rn-link"><text class="rn" x="22" y="765" text-anchor="end">102</text></a><path class="ld" d="M26 664 Q37.0 654 48 684"/><a href="#r104" class="rn-link"><text class="rn" x="22" y="669" text-anchor="end">104</text></a><path class="ld" d="M26 616 Q72.0 606 118 618"/><a href="#r110" class="rn-link"><text class="rn" x="22" y="621" text-anchor="end">110</text></a><path class="ld" d="M614 392 Q588.0 402 562 392"/><a href="#r114" class="rn-link"><text class="rn" x="618" y="397" text-anchor="start">114</text></a><path class="ld" d="M614 452 Q588.0 462 562 452"/><a href="#r112" class="rn-link"><text class="rn" x="618" y="457" text-anchor="start">112</text></a><path class="ld" d="M26 412 Q73.0 402 120 430"/><a href="#r118" class="rn-link"><text class="rn" x="22" y="417" text-anchor="end">118</text></a><path class="ld" d="M614 238 Q588.0 248 562 254"/><a href="#r130" class="rn-link"><text class="rn" x="618" y="243" text-anchor="start">130</text></a><path class="ld" d="M614 498 Q588.0 508 562 496"/><a href="#r122" class="rn-link"><text class="rn" x="618" y="503" text-anchor="start">122</text></a><path class="ld" d="M614 618 Q588.0 628 562 618"/><a href="#r120" class="rn-link"><text class="rn" x="618" y="623" text-anchor="start">120</text></a><path class="ld" d="M614 808 Q590.0 818 566 792"/><a href="#r106" class="rn-link"><text class="rn" x="618" y="813" text-anchor="start">106</text></a></svg></div>
+      <p class="panhint cap">Swipe sideways to see both towers.</p>
     </figure>
 
-    <h3>Per-block sublayer formula</h3>
-    <div class="eq">
-      <div class="body">
-        x' <span class="op">=</span> LayerNorm<span class="op">(</span> x <span class="op">+</span> Sublayer(x) <span class="op">)</span>
-      </div>
-      <div class="label">(5.1)</div>
-    </div>
+    <ol class="notes" aria-label="Decoder parts">
+      <li id="r106"><h3><span class="n">106</span>Outputs, shifted right</h3><p>In training, the decoder sees the true target offset by one position, every position at once. That’s teacher forcing without the time loop, and the reason training runs in parallel.</p></li>
+      <li id="r120"><h3><span class="n">120</span>Masked self-attention</h3><p>The decoder’s lookup over the tokens it has produced so far, with the causal mask <i>M</i> from FIG.&nbsp;2.</p></li>
+      <li id="r122"><h3><span class="n">122</span>Cross-attention</h3><p>Queries come from the decoder; keys and values come from the encoder’s final output (blue line). If you’ve bolted Bahdanau attention onto an LSTM seq2seq model, this is that attention, kept, with the LSTMs around it removed.</p></li>
+      <li id="r112"><h3><span class="n">112</span>Add &amp; norm</h3>
+        <math display="block"><mtext>LayerNorm</mtext><mo>(</mo><mi>x</mi><mo>+</mo><mtext>Sublayer</mtext><mo>(</mo><mi>x</mi><mo>)</mo><mo>)</mo></math>
+        <p>Wraps every sublayer, in both towers. The residual is the LSTM cell state’s additive highway, rebuilt between layers, so gradients reach layer 1 intact. LayerNorm normalizes each token across its features, not across the batch.</p></li>
+      <li id="r114"><h3><span class="n">114</span>Position-wise feed-forward</h3>
+        <math display="block"><mtext>FFN</mtext><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>max</mi><mo>(</mo><mn>0</mn><mo>,</mo><mi>x</mi><msub><mi>W</mi><mn>1</mn></msub><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><mo>)</mo><msub><mi>W</mi><mn>2</mn></msub><mo>+</mo><msub><mi>b</mi><mn>2</mn></msub></math>
+        <p>Also in both towers. 512 → 2048 → 512, applied to each token separately. The paper calls it what you’d call it: two convolutions with kernel size&nbsp;1. Attention mixes across tokens; this mixes within one.</p></li>
+      <li id="r130"><h3><span class="n">130</span>Linear + softmax</h3><p>Projects each decoder vector to vocabulary size and turns the scores into next-token probabilities.</p></li>
+    </ol>
+  </div>
+  <p class="spec num" aria-label="Base model hyperparameters"><span><b>N</b>&nbsp;=&nbsp;6</span><span><b>d<sub>model</sub></b>&nbsp;=&nbsp;512</span><span><b>d<sub>ff</sub></b>&nbsp;=&nbsp;2048</span><span><b>h</b>&nbsp;=&nbsp;8</span><span><b>d<sub>k</sub></b>&nbsp;=&nbsp;<b>d<sub>v</sub></b>&nbsp;=&nbsp;64</span><span><b>dropout</b>&nbsp;0.1</span><span><b>params</b>&nbsp;65M</span></p>
+  <p class="cap machine-cap">The base model from the paper. Hatched blocks are attention; the dashed frames repeat <i>N</i> times. Click a numeral to jump to its note.<span class="src">Redrawn after Vaswani et&nbsp;al., 2017, Figure 1; hyperparameters from Table 3.</span></p>
+</section>
 
-    <p>Three attention variants appear in the diagram. They differ only in where <code>Q</code>, <code>K</code>, <code>V</code> come from and whether a mask is applied:</p>
-
-    <table class="spec">
-      <thead><tr><th>Variant</th><th>Q from</th><th>K, V from</th><th>Mask</th></tr></thead>
+<section class="fig" aria-labelledby="f4">
+  <div class="fighead"><span class="figno">TABLE</span><h2 id="f4">Most of what you know has a Transformer counterpart</h2></div>
+  <div class="body xl">
+    <table>
+      <thead><tr><th scope="col">In an LSTM or CNN</th><th aria-hidden="true"></th><th scope="col">In a Transformer</th></tr></thead>
       <tbody>
-        <tr><td>Encoder self-attn</td><td>source tokens</td><td>source tokens</td><td>none</td></tr>
-        <tr><td>Decoder self-attn</td><td>target tokens</td><td>target tokens</td><td>causal (upper triangle = −∞)</td></tr>
-        <tr><td>Cross-attn</td><td>target tokens</td><td>encoder output z</td><td>none</td></tr>
+        <tr><td>Hidden state <math><msub><mi>h</mi><mi>t</mi></msub></math></td><td class="arrow" aria-hidden="true">→</td><td>The token’s own vector, updated layer by layer</td></tr>
+        <tr><td>Cell state’s additive update</td><td class="arrow" aria-hidden="true">→</td><td>Residual connections (112)</td></tr>
+        <tr><td>Kernel weights <math><msub><mi>w</mi><mrow><mi>j</mi><mo>−</mo><mi>i</mi></mrow></msub></math></td><td class="arrow" aria-hidden="true">→</td><td>Attention weights <math><msub><mi>α</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></math>, computed per input</td></tr>
+        <tr><td>Output channels</td><td class="arrow" aria-hidden="true">→</td><td>Heads</td></tr>
+        <tr><td>Depth and dilation for receptive field</td><td class="arrow" aria-hidden="true">→</td><td>Not needed: one layer sees everything</td></tr>
+        <tr><td>1×1 convolution</td><td class="arrow" aria-hidden="true">→</td><td>Feed-forward block (114)</td></tr>
+        <tr><td>Forward-only LSTM, causal conv</td><td class="arrow" aria-hidden="true">→</td><td>Causal mask <i>M</i></td></tr>
+        <tr><td>Seq2seq attention over encoder states</td><td class="arrow" aria-hidden="true">→</td><td>Cross-attention (122)</td></tr>
+        <tr><td>Backprop through time</td><td class="arrow" aria-hidden="true">→</td><td>Gone; all positions train together</td></tr>
       </tbody>
     </table>
-
-    <p>The causal mask is what makes generation autoregressive: position <i>t</i> cannot attend to position <i>t+1</i>, so the decoder can be trained with teacher forcing in parallel — one forward pass produces a logit for every output position simultaneously, but each is conditioned only on its predecessors.</p>
-  </section>
-
-  <!-- ====== §6 SCALE ====== -->
-  <section>
-    <h2><span>§6 — Why it scales</span><span class="secno">06 / 07</span></h2>
-
-    <p>Three properties stacked together explain why Transformers absorb compute and data so much better than recurrent or convolutional alternatives.</p>
-
-    <table class="spec">
-      <thead><tr><th>Property</th><th>Self-attention</th><th>Recurrent</th><th>Convolutional</th></tr></thead>
-      <tbody>
-        <tr><td>Complexity / layer</td><td>O(n²·d)</td><td>O(n·d²)</td><td>O(k·n·d²)</td></tr>
-        <tr><td>Sequential ops</td><td>O(1)</td><td>O(n)</td><td>O(1)</td></tr>
-        <tr><td>Max path length</td><td>O(1)</td><td>O(n)</td><td>O(log<sub>k</sub> n)</td></tr>
-      </tbody>
-    </table>
-
-    <p>The <code>O(1)</code> sequential count is the load-bearing entry. It means a Transformer forward pass is one big batch of matrix multiplies — exactly the workload modern accelerators were built for. Doubling the GPU count roughly halves wall-clock; doubling RNN GPUs does almost nothing per step.</p>
-
-    <p>The <code>O(1)</code> path length means any two positions exchange information in a single layer. Stacking <code>N</code> layers gives <code>N</code> rounds of arbitrary-distance mixing rather than <code>N</code> rounds of local mixing.</p>
-
-    <p>The quadratic <code>n²</code> term is the cost paid for these gains, and the open research front: sparse attention, linear attention, state-space models, and KV-caching all attempt to soften that <code>n²</code> without surrendering parallelism or path length.</p>
-  </section>
-
-  <!-- ====== §7 PSEUDOCODE ====== -->
-  <section>
-    <h2><span>§7 — Reference forward pass</span><span class="secno">07 / 07</span></h2>
-
-    <div class="split">
-      <pre class="pseudocode"><span class="cm"># single encoder block, batched</span>
-<span class="kw">def</span> <span class="fn">encoder_block</span>(<span class="nm">x</span>):                 <span class="cm"># x: [B, n, d]</span>
-    <span class="nm">h</span> = <span class="fn">multi_head_attn</span>(<span class="nm">x</span>, <span class="nm">x</span>, <span class="nm">x</span>)    <span class="cm"># Q=K=V=x</span>
-    <span class="nm">x</span> = <span class="fn">layer_norm</span>(<span class="nm">x</span> + <span class="nm">h</span>)              <span class="cm"># residual</span>
-    <span class="nm">h</span> = <span class="fn">ffn</span>(<span class="nm">x</span>)                          <span class="cm"># 2-layer MLP</span>
-    <span class="nm">x</span> = <span class="fn">layer_norm</span>(<span class="nm">x</span> + <span class="nm">h</span>)
-    <span class="kw">return</span> <span class="nm">x</span>
-
-<span class="kw">def</span> <span class="fn">decoder_block</span>(<span class="nm">y</span>, <span class="nm">z</span>, <span class="nm">mask</span>):
-    <span class="nm">h</span> = <span class="fn">multi_head_attn</span>(<span class="nm">y</span>, <span class="nm">y</span>, <span class="nm">y</span>, <span class="nm">mask</span>)  <span class="cm"># causal</span>
-    <span class="nm">y</span> = <span class="fn">layer_norm</span>(<span class="nm">y</span> + <span class="nm">h</span>)
-    <span class="nm">h</span> = <span class="fn">multi_head_attn</span>(<span class="nm">y</span>, <span class="nm">z</span>, <span class="nm">z</span>)        <span class="cm"># cross</span>
-    <span class="nm">y</span> = <span class="fn">layer_norm</span>(<span class="nm">y</span> + <span class="nm">h</span>)
-    <span class="nm">h</span> = <span class="fn">ffn</span>(<span class="nm">y</span>)
-    <span class="nm">y</span> = <span class="fn">layer_norm</span>(<span class="nm">y</span> + <span class="nm">h</span>)
-    <span class="kw">return</span> <span class="nm">y</span></pre>
-
-      <div>
-        <h3>What to notice</h3>
-        <p>Every line is either a matmul, a softmax, or an elementwise op. There is no loop over time. The only sequence-dependent operation — the causal mask in the decoder — is implemented as adding <code>−∞</code> to the upper triangle of the attention logits before softmax.</p>
-        <h3>Training vs inference</h3>
-        <p>At training time, the full target sequence is fed to the decoder in one pass under the causal mask. At inference, generation is autoregressive: sample <code>y<sub>t</sub></code>, append, re-run. The KV-cache (out of scope here) stores past keys and values so each new step costs <code>O(t·d)</code> rather than <code>O(t²·d)</code>.</p>
-      </div>
+    <div class="since">
+      <h3>Since 2017, most models keep one tower</h3>
+      <p>GPT-style models are the right half of FIG.&nbsp;3 without 122: masked self-attention and feed-forward, stacked. BERT-style models are the left half alone. Most modern stacks also move the LayerNorm in front of each sublayer (“pre-norm”), which trains more stably when the stack gets deep.</p>
+      <p>The parts list is otherwise the one above. If you can read FIG.&nbsp;3, you can read the architecture section of nearly any language-model paper.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer class="plate">
-    <span>DOC TR-01 · END OF SHEET</span>
-    <span>REF: Vaswani et al., NeurIPS 2017, arXiv:1706.03762</span>
-  </footer>
-
+<footer class="end">
+  <span class="stamp">22.10.2026</span>
+  <div>
+    <p>Google’s patent on FIG.&nbsp;3, US&nbsp;10,452,978, was granted on 22&nbsp;October 2019, seven years ago today. The idea at its center fits on one line: softmax(<i>QK</i><sup>⊤</sup>/√<i>d</i><sub>k</sub>)<i>V</i>.</p>
+    <p>Sources: Vaswani et&nbsp;al., <a href="https://arxiv.org/abs/1706.03762">“Attention Is All You Need”</a> (arXiv 1706.03762); <a href="https://patents.google.com/patent/US10452978B2/en">US&nbsp;10,452,978&nbsp;B2</a>, checked 22&nbsp;October 2026. The worked example uses toy numbers; real heads are rarely this tidy.</p>
+  </div>
+</footer>
 </div>
+
+<script>
+(function(){
+  var root=document.documentElement, key='theme';
+  try{var s=localStorage.getItem(key); if(s==='light'||s==='dark') root.setAttribute('data-theme',s);}catch(e){}
+  var bar=document.querySelector('.runhead .r');
+  var b=document.createElement('button'); b.className='toggle'; b.type='button';
+  function cur(){var t=root.getAttribute('data-theme'); if(t) return t; return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+  function paint(){var dark=cur()==='dark';
+    b.innerHTML=(dark?'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3" stroke="currentColor" stroke-width="1.4"/></svg>Light sheet':'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.5 10.5A5.5 5.5 0 0 1 5.5 2.6a5.5 5.5 0 1 0 6 7.9Z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Dark sheet');
+    b.setAttribute('aria-label', dark?'Switch to the light theme':'Switch to the dark theme');}
+  b.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark'; root.setAttribute('data-theme',n); try{localStorage.setItem(key,n);}catch(e){} paint();});
+  paint(); bar.appendChild(b);
+})();
+</script>
 </body>
 </html>

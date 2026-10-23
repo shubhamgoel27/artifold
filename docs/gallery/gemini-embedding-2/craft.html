@@ -1,463 +1,537 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="artifold:design-mode" content="corporate-memo">
-<meta name="artifold:voice-register" content="pitch-deck">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Here, a cooking video sits beside its recipe: a tour of Gemini Embedding 2</title>
+<meta name="description" content="A guided explainer of arXiv 2605.27295, Gemini Embedding 2: one embedding space for video, audio, images and text.">
+<meta name="artifold:intent" content="Explain the Gemini Embedding 2 paper: one shared space, how it is built, what it wins">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
-<meta name="artifold:source" content="https://arxiv.org/abs/2605.27295">
-<title>MEMORANDUM — Gemini Embedding 2 — Eng-Public</title>
+<meta name="artifold:prompt" content="Explainer for this arxiv paper: https://arxiv.org/abs/2605.27295 (Gemini Embedding 2).">
+<meta name="artifold:scale" content="read">
+<meta name="artifold:conceit" content="none">
+<meta name="artifold:layout-archetype" content="radial-centerpiece">
+<meta name="artifold:design-mode" content="google-modality (forged: Google four-color as V/A/I/T, Google Sans Flex, Material dark palette)">
+<meta name="artifold:voice-register" content="museum-docent">
+<meta name="artifold:signature-device" content="annotation-callout-layer: six numbered notes with leader lines onto a hand-drawn shared-space map; quiet second: the ‘wreck a nice beach’ ASR detour drawn on the map">
+<meta name="artifold:ad-scores" content="4/3/4/4/4/4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='11' height='11' rx='2' fill='%231a73e8'/%3E%3Ccircle cx='23.5' cy='8.5' r='5.5' fill='%23d93025'/%3E%3Cpath d='M4 18l11 5.5L4 29z' fill='%23f9ab00'/%3E%3Cpath d='M23.5 17l6 6.5-6 6.5-6-6.5z' fill='%23188038'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400;6..144,500;6..144,600;6..144,700&family=Google+Sans+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: #ffffff;
-    color: #1a1a1a;
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+:root{
+  --font: "Google Sans Flex", "Google Sans", "Product Sans", "Segoe UI", Roboto, system-ui, sans-serif;
+  --mono: "Google Sans Code", "Roboto Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  .page {
-    max-width: 740px;
-    margin: 0 auto;
-    padding: 64px 32px 96px 32px;
-    position: relative;
-  }
+  /* type, ratio 1.25 on a 17px body */
+  --step--1: .8rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.563rem; --step-3: 1.953rem; --step-4: 2.441rem; --step-5: 3.815rem;
+  /* space, 4px steps */
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-6:1.5rem; --s-8:2rem; --s-12:3rem; --s-16:4rem; --s-24:6rem;
+  --radius: 6px;
 
-  @media (min-width: 900px) {
-    .page {
-      margin-left: calc(50% - 280px);
-      padding-left: 0;
-      padding-right: 48px;
-    }
+  /* Google light surfaces */
+  --bg: #ffffff; --surface: #f8f9fa; --ink: #202124; --ink-2: #3c4043; --muted: #5f6368;
+  --rule: #dadce0; --rule-soft: #eceef1; --halo: rgb(32 33 36 / .045); --grid: #e3e5e8;
+  --rival: #bdc1c6; --us: #202124; --leader: #9aa0a6;
+  /* one color per modality: Google's four */
+  --c-text: #1a73e8; --c-image: #d93025; --c-video: #f9ab00; --c-video-ink: #b06000; --c-audio: #188038;
+  --shadow-color: 220 9% 30%;
+  --shadow: 0 1px 2px hsl(var(--shadow-color) / .10), 0 4px 12px hsl(var(--shadow-color) / .08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1f1f1f; --surface:#28292a; --ink:#e8eaed; --ink-2:#c4c7c5; --muted:#9aa0a6;
+    --rule:#3c4043; --rule-soft:#303134; --halo: rgb(232 234 237 / .08); --grid:#333537;
+    --rival:#5f6368; --us:#e8eaed; --leader:#6f7479;
+    --c-text:#8ab4f8; --c-image:#f28b82; --c-video:#fdd663; --c-video-ink:#fdd663; --c-audio:#81c995;
+    --shadow-color: 0 0% 0%;
   }
+}
+:root[data-theme="dark"]{
+  --bg:#1f1f1f; --surface:#28292a; --ink:#e8eaed; --ink-2:#c4c7c5; --muted:#9aa0a6;
+  --rule:#3c4043; --rule-soft:#303134; --halo: rgb(232 234 237 / .08); --grid:#333537;
+  --rival:#5f6368; --us:#e8eaed; --leader:#6f7479;
+  --c-text:#8ab4f8; --c-image:#f28b82; --c-video:#fdd663; --c-video-ink:#fdd663; --c-audio:#81c995;
+  --shadow-color: 0 0% 0%;
+}
 
-  /* Doc-ID strip */
-  .doc-id-strip {
-    background: #1a73e8;
-    color: #ffffff;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    display: inline-block;
-    margin-bottom: 28px;
-    font-weight: 500;
-  }
+*{ box-sizing:border-box; }
+html{ font-size:106.25%; -webkit-text-size-adjust:100%; }
+body{ margin:0; background:var(--bg); color:var(--ink-2); font-family:var(--font); font-size:var(--step-0); line-height:1.55;
+  font-variation-settings:"opsz" 17; font-optical-sizing:auto; -webkit-font-smoothing:antialiased; }
+::selection{ background:color-mix(in srgb, var(--c-text) 28%, transparent); color:var(--ink); }
+h1,h2,h3{ color:var(--ink); text-wrap:balance; margin:0; }
+p{ margin:0; text-wrap:pretty; }
+a{ color:var(--c-text); text-underline-offset:.18em; text-decoration-thickness:1px; }
+:focus-visible{ outline:2px solid var(--c-text); outline-offset:3px; border-radius:4px; }
+.num, .mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-  h1.memo-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    margin: 0 0 24px 0;
-    padding-bottom: 14px;
-    border-bottom: 1px solid #1a1a1a;
-  }
+.page{ max-width:1440px; margin:0 auto; padding:0 var(--s-12) var(--s-16); }
 
-  /* MEMO header definition list */
-  dl.memo-header {
-    display: grid;
-    grid-template-columns: 92px 1fr;
-    gap: 6px 16px;
-    margin: 0 0 28px 0;
-    padding: 0;
-  }
-  dl.memo-header dt {
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #5e6470;
-    font-weight: 600;
-    padding-top: 1px;
-  }
-  dl.memo-header dd {
-    margin: 0;
-    font-size: 13px;
-    color: #1a1a1a;
-  }
+/* ---------- masthead ---------- */
+.mast{ display:flex; justify-content:space-between; align-items:center; gap:var(--s-4); padding:var(--s-6) 0; border-bottom:1px solid var(--rule); font-size:var(--step--1); color:var(--muted); }
+.mast a{ color:inherit; }
+.mast .glyphs{ display:inline-flex; gap:5px; vertical-align:-1px; margin-right:var(--s-2); }
+.theme-btn{ font:inherit; font-size:var(--step--1); color:var(--ink); background:transparent; border:1px solid var(--rule); border-radius:999px;
+  padding:var(--s-2) var(--s-4); min-height:44px; cursor:pointer; display:inline-flex; align-items:center; gap:var(--s-2); }
+.theme-btn:hover{ background:var(--surface); }
 
-  hr.rule {
-    border: none;
-    border-top: 1px solid #e5e7eb;
-    margin: 32px 0 28px 0;
-  }
+.top{ display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:var(--s-16); align-items:end; padding:var(--s-16) 0 var(--s-12); }
+.tour{ font-size:var(--step-0); color:var(--muted); margin-bottom:var(--s-4); }
+h1{ font-size:clamp(2.2rem, 1.2rem + 3.2vw, var(--step-5)); line-height:1.04; letter-spacing:-.025em; font-weight:600; font-variation-settings:"opsz" 96; max-width:15ch; }
+.dek{ font-size:var(--step-1); line-height:1.45; color:var(--ink-2); margin-top:var(--s-6); max-width:40em; }
+.dek b{ color:var(--ink); font-weight:600; }
+.byline{ margin-top:var(--s-6); font-size:var(--step--1); color:var(--muted); line-height:1.5; }
 
-  h2 {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #1a1a1a;
-    font-weight: 700;
-    margin: 0 0 16px 0;
-  }
+.hero-fig{ margin:0; }
+.hero-fig .big{ display:flex; align-items:baseline; gap:var(--s-3); color:var(--ink); }
+.hero-fig .big .num{ font-family:var(--font); font-size:var(--step-5); font-weight:600; letter-spacing:-.03em; line-height:1; font-variation-settings:"opsz" 120; }
+.hero-fig .big span:last-child{ font-size:var(--step-0); color:var(--muted); }
+.hbars{ list-style:none; margin:var(--s-4) 0 0; padding:0; display:grid; gap:var(--s-2); }
+.hbar{ display:grid; grid-template-columns:13.5em 1fr 3em; align-items:center; gap:var(--s-3); font-size:var(--step--1); color:var(--muted); }
+.hbar-track{ height:10px; background:var(--rule-soft); border-radius:2px; overflow:hidden; }
+.hbar-fill{ display:block; height:100%; background:var(--rival); }
+.hbar-val{ font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums; }
+.hbar.is-us{ color:var(--ink); font-weight:600; }
+.hbar.is-us .hbar-fill{ background:var(--us); }
+.cap{ font-size:var(--step--1); color:var(--muted); line-height:1.5; margin-top:var(--s-3); }
+.src{ display:block; margin-top:var(--s-1); opacity:.85; }
 
-  h3 {
-    font-size: 13px;
-    font-weight: 700;
-    margin: 22px 0 8px 0;
-    color: #1a1a1a;
-  }
+/* ---------- radial ---------- */
+.radial{ position:relative; display:grid; grid-template-columns:minmax(0,1fr) min(500px, 38vw) minmax(0,1fr); gap:var(--s-12); margin-top:var(--s-8); padding-top:var(--s-12); border-top:1px solid var(--rule); }
+.col{ display:flex; flex-direction:column; gap:var(--s-12); position:relative; z-index:1; }
+.stage{ position:sticky; top:var(--s-6); align-self:start; z-index:1; margin:0; }
+.leaders{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:visible; }
+.leaders path{ fill:none; stroke:var(--leader); stroke-width:1; stroke-dasharray:2 3; transition:stroke .2s; }
+.leaders circle{ fill:var(--leader); }
+.leaders .on path{ stroke:var(--ink); stroke-dasharray:none; }
+.leaders .on circle{ fill:var(--ink); }
 
-  h3 .num {
-    color: #5e6470;
-    font-weight: 600;
-    margin-right: 8px;
-  }
+.map{ display:block; width:100%; height:auto; }
+.map .gridpat circle{ fill:var(--grid); }
+.map .halo{ fill:var(--halo); }
+.map .clab{ font:500 13px var(--font); fill:var(--muted); }
+.map .note{ font:500 12.5px var(--font); fill:var(--ink); }
+.map .note-dim{ font:400 12px var(--font); fill:var(--muted); }
+.map .clab, .map .note, .map .note-dim{ stroke:var(--bg); stroke-width:4px; stroke-linejoin:round; paint-order:stroke; }
+.map use, .map .pt{ stroke:var(--bg); stroke-width:2; paint-order:stroke; }
+.m-text{ fill:var(--c-text); } .m-image{ fill:var(--c-image); } .m-video{ fill:var(--c-video); } .m-audio{ fill:var(--c-audio); }
+.map .hollow{ fill:var(--bg); stroke:var(--c-text); stroke-width:1.6; stroke-dasharray:2.5 2; }
+.map .pull{ stroke:var(--ink); stroke-width:1.4; }
+.map .push{ stroke:var(--muted); stroke-width:1.2; stroke-dasharray:3 3; fill:none; }
+.map .asr{ stroke:var(--c-audio); stroke-width:1.4; stroke-dasharray:4 3; fill:none; }
+.map .arrow{ fill:var(--muted); } .map .arrow-a{ fill:var(--c-audio); }
+.map .pin line{ stroke:var(--ink); stroke-width:1; }
+.map .pin circle{ fill:var(--ink); transition:r .2s; }
+.map .pin text{ font:600 12px var(--mono); fill:var(--bg); text-anchor:middle; dominant-baseline:central; }
+.map .pin.on circle{ r:13; }
 
-  p {
-    margin: 0 0 12px 0;
-    color: #1a1a1a;
-  }
+.legend{ list-style:none; display:flex; flex-wrap:wrap; gap:var(--s-2) var(--s-4); padding:0; margin:var(--s-4) 0 0; font-size:var(--step--1); color:var(--ink-2); }
+.legend li{ display:inline-flex; align-items:center; gap:var(--s-2); }
+.legend svg{ width:15px; height:15px; overflow:visible; }
 
-  /* Executive summary list */
-  ul.exec, ul.recs, ul.risks {
-    list-style: none;
-    margin: 0 0 8px 0;
-    padding: 0;
-  }
-  ul.exec li, ul.risks li {
-    position: relative;
-    padding: 0 0 0 18px;
-    margin-bottom: 8px;
-    font-size: 14px;
-  }
-  ul.exec li::before, ul.risks li::before {
-    content: "—";
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: #5e6470;
-  }
+/* notes */
+.note-card{ border-top:1px solid var(--rule); padding-top:var(--s-4); display:flex; flex-direction:column; gap:var(--s-4); transition:border-color .2s; }
+.note-card.on{ border-top-color:var(--ink); }
+.note-card header{ display:flex; gap:var(--s-3); align-items:flex-start; }
+.badge{ flex:none; width:28px; height:28px; border-radius:50%; background:var(--ink); color:var(--bg); font:600 .8rem/28px var(--mono); text-align:center; margin-top:2px; }
+.note-card h2{ font-size:var(--step-1); line-height:1.25; font-weight:600; letter-spacing:-.005em; font-variation-settings:"opsz" 28; }
+.note-card p{ font-size:var(--step-0); }
+.note-card .cap{ font-size:var(--step--1); }
+.note-card .but{ font-size:var(--step--1); color:var(--muted); line-height:1.5; }
+.note-card .but b{ color:var(--ink); font-weight:600; }
+.note-card figure{ margin:0; }
 
-  /* Recommendations callout with accent bar */
-  .recs-block {
-    background: #f3f4f6;
-    border-left: 3px solid #1a73e8;
-    padding: 16px 18px 14px 18px;
-    margin: 4px 0 0 0;
-  }
-  ul.recs {
-    counter-reset: rec;
-  }
-  ul.recs li {
-    counter-increment: rec;
-    position: relative;
-    padding: 0 0 0 26px;
-    margin-bottom: 8px;
-    font-size: 13.5px;
-  }
-  ul.recs li::before {
-    content: "R" counter(rec);
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    color: #1a73e8;
-    padding-top: 3px;
-  }
-  ul.recs li:last-child { margin-bottom: 0; }
+/* pipeline (note 1) */
+.pipe{ display:grid; grid-template-columns:auto 1fr; gap:var(--s-2) var(--s-3); align-items:center; font-size:var(--step--1); }
+.pipe dt{ font-family:var(--mono); color:var(--muted); font-size:.75rem; text-align:right; }
+.pipe dd{ margin:0; color:var(--ink); }
+.chips{ display:flex; gap:var(--s-1); flex-wrap:wrap; }
+.chip{ display:inline-flex; align-items:center; gap:5px; padding:2px var(--s-2); border:1px solid var(--rule); border-radius:999px; background:var(--bg); color:var(--ink-2); }
+.chip svg{ width:11px; height:11px; overflow:visible; }
+.mrl{ position:relative; height:22px; border-radius:3px; background:var(--rule-soft); overflow:hidden; font-family:var(--mono); font-size:.72rem; }
+.mrl span{ position:absolute; top:0; bottom:0; left:0; display:flex; align-items:center; justify-content:flex-end; padding-right:6px; border-right:1.5px solid var(--bg); }
+.mrl .d3{ width:100%; color:var(--muted); }
+.mrl .d2{ width:50%; background:color-mix(in srgb, var(--ink) 18%, transparent); color:var(--ink); }
+.mrl .d1{ width:25%; background:color-mix(in srgb, var(--ink) 34%, transparent); color:var(--ink); }
 
-  /* Results table */
-  table.results {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 4px 0 8px 0;
-    font-size: 13px;
-  }
-  table.results thead th {
-    text-align: left;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #5e6470;
-    font-weight: 600;
-    padding: 8px 10px;
-    border-bottom: 1px solid #1a1a1a;
-  }
-  table.results thead th.num-col {
-    text-align: right;
-  }
-  table.results tbody td {
-    padding: 10px 10px;
-    border-bottom: 1px solid #e5e7eb;
-    vertical-align: top;
-  }
-  table.results tbody tr:nth-child(even) td {
-    background: #f3f4f6;
-  }
-  table.results td.bench {
-    font-weight: 600;
-    color: #1a1a1a;
-  }
-  table.results td.metric {
-    color: #5e6470;
-  }
-  table.results td.num {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    font-family: "SF Mono", "Menlo", "Consolas", monospace;
-    font-size: 12.5px;
-    color: #1a1a1a;
-  }
-  table.results td.delta {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    font-family: "SF Mono", "Menlo", "Consolas", monospace;
-    font-size: 12.5px;
-    color: #1a73e8;
-  }
-  table.results tfoot td {
-    padding: 8px 10px 0 10px;
-    font-size: 11px;
-    color: #5e6470;
-    border-top: 1px solid #1a1a1a;
-  }
+/* stages (note 2) */
+.stages{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:var(--s-2); counter-reset:st; }
+.stages li{ background:var(--surface); border-radius:var(--radius); padding:var(--s-3); font-size:var(--step--1); line-height:1.4; display:flex; flex-direction:column; gap:var(--s-2); }
+.stages b{ color:var(--ink); font-weight:600; }
+.stages .gl{ display:flex; gap:4px; margin-top:auto; }
+.stages .gl svg{ width:12px; height:12px; overflow:visible; }
+.aside{ font-size:var(--step--1); line-height:1.5; color:var(--ink-2); border-left:2px solid var(--rule); padding-left:var(--s-3); }
 
-  /* Sign-off */
-  .signoff {
-    margin-top: 22px;
-    padding: 14px 0 0 0;
-    border-top: 1px solid #e5e7eb;
-    font-size: 12.5px;
-    color: #1a1a1a;
-  }
-  .signoff .label {
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #5e6470;
-    font-weight: 600;
-    margin-right: 8px;
-  }
-  .signoff .name + .name::before {
-    content: " · ";
-    color: #5e6470;
-  }
+/* dot plot (note 3) */
+.dots{ list-style:none; padding:0; margin:0; display:grid; gap:var(--s-3); }
+.dot-row{ display:grid; grid-template-columns:minmax(0,1fr) 3.2em; grid-template-areas:"lab gap" "trk gap"; column-gap:var(--s-3); row-gap:2px; align-items:center; }
+.dot-label{ grid-area:lab; font-size:var(--step--1); color:var(--ink); line-height:1.3; }
+.dot-label small{ display:block; color:var(--muted); font-size:.72rem; }
+.dot-track{ grid-area:trk; position:relative; height:14px; border-bottom:1px solid var(--rule-soft); }
+.dot-span{ position:absolute; top:6px; height:2px; background:var(--rule); }
+.dot{ position:absolute; top:7px; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; }
+.dot.us{ background:var(--us); box-shadow:0 0 0 2px var(--bg); }
+.dot.rival{ background:transparent; border:1.5px solid var(--muted); z-index:1; }
+.dot-gap{ grid-area:gap; font-family:var(--mono); font-size:var(--step--1); color:var(--ink); text-align:right; font-variant-numeric:tabular-nums; align-self:end; }
+.is-loss .dot-gap{ color:var(--muted); }
+.scale{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:.68rem; color:var(--muted); margin:var(--s-1) calc(3.2rem + var(--s-3)) 0 0; }
 
-  /* Footer */
-  footer.doc-footer {
-    margin-top: 56px;
-    padding-top: 14px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 11px;
-    color: #5e6470;
-    line-height: 1.6;
-  }
-  footer.doc-footer .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 6px;
-  }
-  footer.doc-footer .row.last { margin-bottom: 0; }
-  footer.doc-footer .conf {
-    flex: 1 1 auto;
-    font-size: 10.5px;
-    letter-spacing: 0.04em;
-  }
-  footer.doc-footer .pageno {
-    font-size: 11px;
-    color: #5e6470;
-    white-space: nowrap;
-  }
-  footer.doc-footer .paper {
-    font-size: 11px;
-    color: #1a1a1a;
-  }
-  footer.doc-footer .rev {
-    font-variant-numeric: tabular-nums;
-    font-family: "SF Mono", "Menlo", "Consolas", monospace;
-    font-size: 10.5px;
-    color: #5e6470;
-  }
+/* paired bars (notes 4, 5) */
+.pairs{ list-style:none; padding:0; margin:0; display:grid; gap:var(--s-3); }
+.pair{ display:grid; gap:3px; }
+.pair-head{ font-size:var(--step--1); color:var(--ink); }
+.pair-head b{ font-weight:600; }
+.pair-head small{ color:var(--muted); font-size:.72rem; margin-left:var(--s-1); }
+.pair-bar{ display:grid; grid-template-columns:1fr; position:relative; height:16px; }
+.pair-bar .fill{ display:block; height:100%; border-radius:0 2px 2px 0; }
+.pair-bar.us .fill{ background:var(--us); }
+.pair-bar.rival .fill{ background:var(--rival); }
+.pair-bar .v{ position:absolute; top:0; left:var(--s-2); line-height:16px; font-family:var(--mono); font-size:.72rem; color:var(--bg); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.pair-bar.rival .v{ color:var(--ink); }
+.pair-bar.rival .v small{ font-family:var(--font); color:var(--ink-2); margin-left:2px; }
+.keyline{ display:flex; gap:var(--s-4); font-size:.72rem; color:var(--muted); margin-top:var(--s-2); }
+.keyline i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
 
-  /* Print-feel: subtle shadow if viewed wide */
-  @media (min-width: 1100px) {
-    body {
-      background: #fafafa;
-    }
-    .page {
-      background: #ffffff;
-      box-shadow: 0 1px 0 #e5e7eb, 0 0 0 1px #eeeeee;
-      padding: 72px 56px 96px 56px;
-    }
-  }
+.bigpair{ display:flex; align-items:baseline; gap:var(--s-3); color:var(--muted); font-size:var(--step--1); }
+.bigpair .num{ font-family:var(--font); font-size:var(--step-3); font-weight:600; color:var(--ink); letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.bigpair s{ text-decoration:none; font-family:var(--font); font-size:var(--step-1); color:var(--muted); font-variant-numeric:tabular-nums; }
 
-  /* Tighten paragraphs after numbered headings */
-  h3 + p { margin-top: 4px; }
+/* mini table (note 6) */
+.mini{ width:100%; border-collapse:collapse; font-size:var(--step--1); }
+.mini th, .mini td{ padding:var(--s-2) 0; border-bottom:1px solid var(--rule-soft); text-align:left; font-weight:400; }
+.mini thead th{ color:var(--muted); font-size:.72rem; line-height:1.25; vertical-align:bottom; }
+.mini td.num, .mini th.num{ text-align:right; padding-left:var(--s-3); }
+.mini tbody th{ color:var(--ink); }
+.mini td.us{ color:var(--ink); font-weight:600; }
+.mini td.num{ color:var(--muted); }
+.mini td.us.num{ color:var(--ink); }
 
-  /* Author micro-line */
-  .author-line {
-    font-size: 12px;
-    color: #5e6470;
-    margin: -8px 0 16px 0;
-    line-height: 1.5;
-  }
+/* ---------- after the tour ---------- */
+.tables{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:var(--s-12); margin-top:var(--s-24); padding-top:var(--s-8); border-top:1px solid var(--rule); align-items:start; }
+details{ border-bottom:1px solid var(--rule-soft); }
+summary{ cursor:pointer; list-style:none; padding:var(--s-2) 0 var(--s-4); display:grid; grid-template-columns:1fr auto; gap:var(--s-4); align-items:baseline; min-height:44px; }
+summary::-webkit-details-marker{ display:none; }
+summary h3{ font-size:var(--step-1); font-weight:600; }
+summary p{ grid-column:1; font-size:var(--step--1); color:var(--muted); margin-top:var(--s-1); }
+summary .tog{ grid-row:1; grid-column:2; font-size:var(--step--1); color:var(--c-text); white-space:nowrap; }
+details[open] .tog .o{ display:none; } details:not([open]) .tog .c{ display:none; }
+.full{ width:100%; border-collapse:collapse; font-size:var(--step--1); margin:var(--s-2) 0 var(--s-6); }
+.full th, .full td{ padding:6px var(--s-2); border-bottom:1px solid var(--rule-soft); font-weight:400; text-align:left; }
+.full thead th{ color:var(--muted); font-size:.72rem; vertical-align:bottom; border-bottom-color:var(--rule); }
+.full .num{ text-align:right; color:var(--muted); }
+.full .top{ color:var(--ink); font-weight:600; }
+.full tr.grp th{ padding-top:var(--s-4); color:var(--ink); font-weight:600; border-bottom-color:var(--rule); }
+.full tbody th{ color:var(--ink-2); }
+
+.end{ margin-top:var(--s-24); display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:var(--s-16); align-items:end; }
+.kicker{ font-size:clamp(1.6rem, 1rem + 1.8vw, var(--step-4)); line-height:1.15; color:var(--ink); font-weight:500; letter-spacing:-.015em; font-variation-settings:"opsz" 72; max-width:22ch; text-wrap:balance; }
+.kicker em{ font-style:normal; color:var(--muted); }
+.colophon{ font-size:var(--step--1); color:var(--muted); line-height:1.6; border-left:1px solid var(--rule); padding-left:var(--s-4); }
+.colophon b{ color:var(--ink); font-weight:600; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1179px){
+  .radial{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:var(--s-12) var(--s-8); }
+  .col{ display:contents; }
+  .stage{ position:static; grid-column:1 / -1; order:-1; max-width:560px; justify-self:center; width:100%; }
+  .leaders{ display:none; }
+  .top{ grid-template-columns:1fr; gap:var(--s-8); }
+  .end{ grid-template-columns:1fr; gap:var(--s-8); }
+}
+@media (max-width: 760px){
+  .page{ padding:0 var(--s-4) var(--s-12); }
+  .radial{ grid-template-columns:1fr; }
+  .tables{ grid-template-columns:1fr; gap:var(--s-4); margin-top:var(--s-16); }
+  .top{ padding-top:var(--s-8); }
+  .hbar{ grid-template-columns:1fr 2.6em; row-gap:2px; } .hbar-name{ grid-column:1 / -1; } .hbar-track{ grid-column:1; }
+  .end{ margin-top:var(--s-16); }
+}
+@media (max-width: 639px){
+  .map .clab, .map .note, .map .note-dim{ display:none; }
+  .map .pin circle{ r:15; } .map .pin text{ font-size:16px; }
+  .mobile-key{ display:block !important; } .hover-hint{ display:none; }
+}
+.mobile-key{ display:none; margin-top:var(--s-2); }
+@media (prefers-reduced-motion: reduce){ *{ transition-duration:.01ms !important; } }
 </style>
 </head>
 <body>
-<main class="page">
+<div class="page">
 
-  <div class="doc-id-strip">DOC-ID GBE2-PR-2026-0527 · ENG-PUBLIC</div>
+<header class="mast">
+  <span><span class="glyphs" aria-hidden="true"><svg width="11" height="11" viewBox="-6 -6 12 12"><use href="#g-text" class="m-text"/></svg><svg width="11" height="11" viewBox="-7 -7 14 14"><use href="#g-image" class="m-image"/></svg><svg width="11" height="11" viewBox="-7 -7 14 14"><use href="#g-video" class="m-video"/></svg><svg width="11" height="11" viewBox="-8 -8 16 16"><use href="#g-audio" class="m-audio"/></svg></span>A paper, explained · <a href="https://arxiv.org/abs/2605.27295">arXiv 2605.27295</a></span>
+  <span id="theme-slot"></span>
+</header>
 
-  <h1 class="memo-title">Memorandum</h1>
+<section class="top">
+  <div>
+    <p class="tour">A short gallery tour of one embedding space</p>
+    <h1>Here, a cooking video sits beside its recipe.</h1>
+    <p class="dek"><b>Gemini Embedding 2</b> turns video, audio, images, text, and any mix of them into one list of 3,072 numbers, so things that mean the same thing land in the same place. Google built it out of Gemini itself, and on the paper’s retrieval suite it beats the specialists.</p>
+    <p class="byline">Madhuri Shanbhogue, Zhe Li, Shanfeng Zhang and 85 others, Gemini Embedding Team, Google · submitted May 26, 2026</p>
+  </div>
+  <figure class="hero-fig">
+    <div class="big"><span class="num">77.2</span><span>overall, vs 70.0 for the next model</span></div>
+    <ul class="hbars" aria-label="Overall retrieval score by model"><li class="hbar is-us"><span class="hbar-name">Gemini Embedding 2</span><span class="hbar-track"><span class="hbar-fill" style="width:77.2%"></span></span><span class="hbar-val">77.2</span></li><li class="hbar"><span class="hbar-name">Voyage‑3.5‑multimodal</span><span class="hbar-track"><span class="hbar-fill" style="width:70.0%"></span></span><span class="hbar-val">70.0</span></li><li class="hbar"><span class="hbar-name">Amazon Nova MME</span><span class="hbar-track"><span class="hbar-fill" style="width:68.2%"></span></span><span class="hbar-val">68.2</span></li><li class="hbar"><span class="hbar-name">multimodalembedding@001</span><span class="hbar-track"><span class="hbar-fill" style="width:64.1%"></span></span><span class="hbar-val">64.1</span></li></ul>
+    <figcaption class="cap">Averaged over the image, video and document retrieval tasks that all four models report.<span class="src">Source: Table 1, arXiv 2605.27295v1</span></figcaption>
+  </figure>
+</section>
 
-  <dl class="memo-header">
-    <dt>TO:</dt>
-    <dd>Gemini Leadership; Cloud AI Product Council; DeepMind Research Directors</dd>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="g-text" overflow="visible"><rect x="-6" y="-6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="g-image" overflow="visible"><circle r="6.5"/></symbol>
+    <symbol id="g-video" overflow="visible"><path d="M-5.5 -6.8 L7.5 0 L-5.5 6.8 Z"/></symbol>
+    <symbol id="g-audio" overflow="visible"><path d="M0 -7.8 L7.8 0 L0 7.8 L-7.8 0 Z"/></symbol>
+    <pattern id="dotgrid" width="20" height="20" patternUnits="userSpaceOnUse" class="gridpat"><circle cx="10" cy="10" r="1"/></pattern>
+    <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" class="arrow"/></marker>
+    <marker id="ah-a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" class="arrow-a"/></marker>
+  </defs>
+</svg>
 
-    <dt>FROM:</dt>
-    <dd>Gemini Embeddings Working Group</dd>
+<section class="radial" id="radial" aria-label="The tour: six notes pinned to one embedding space">
+  <svg class="leaders" id="leaders" aria-hidden="true"></svg>
 
-    <dt>DATE:</dt>
-    <dd>May 27, 2026</dd>
+  <div class="col col-l">
+    <article class="note-card" id="n1" data-pin="1">
+      <header><span class="badge" aria-hidden="true">1</span><h2>Notice where it starts: inside Gemini</h2></header>
+      <p>The model <em>is</em> Gemini, retrained to read instead of write. Attention runs in both directions, every token’s vector is averaged, and one linear layer squeezes the result to 3,072 numbers. Gemini handles the formats, so raw images, video and audio go in as they are, in any order, even mixed inside one query.</p>
+      <figure>
+        <dl class="pipe" aria-label="How an input becomes an embedding">
+          <dt>in</dt><dd class="chips"><span class="chip"><svg viewBox="-8 -8 16 16"><use href="#g-image" class="m-image"/></svg>photo</span><span class="chip"><svg viewBox="-8 -8 16 16"><use href="#g-text" class="m-text"/></svg>“when did it open?”</span></dd>
+          <dt>read</dt><dd>Gemini, attention both ways</dd>
+          <dt>pool</dt><dd>average of all token vectors</dd>
+          <dt>out</dt><dd><div class="mrl" role="img" aria-label="Embedding sizes: 768, 1,536 or 3,072 numbers, nested"><span class="d3">3,072</span><span class="d2">1,536</span><span class="d1">768</span></div></dd>
+        </dl>
+        <figcaption class="cap">Trained Matryoshka-style, so the first 768 or 1,536 numbers also work as a smaller embedding on their own.<span class="src">Source: §3.1–3.2</span></figcaption>
+      </figure>
+      <p class="but"><b>Not on the label:</b> how large the model is, how fast it runs, or what a call costs. The paper gives none of the three.</p>
+    </article>
 
-    <dt>RE:</dt>
-    <dd>Gemini Embedding 2 — Launch Decision and Downstream Integration Plan</dd>
+    <article class="note-card" id="n2" data-pin="2">
+      <header><span class="badge" aria-hidden="true">2</span><h2>Each match is pulled close; the rest of the batch is pushed away</h2></header>
+      <p>Training is contrastive. Given a query, the model has to pick its true match out of every other example in the batch, often plus one deliberately tricky decoy (on the map, boiling eggs is the decoy for boiling ramen). It happens in three stages.</p>
+      <ol class="stages">
+        <li><b>Pre-fine-tune</b>Lots of noisy pairs, very large batches.<span class="gl" aria-label="text, image, code"><svg viewBox="-8 -8 16 16"><use href="#g-text" class="m-text"/></svg><svg viewBox="-8 -8 16 16"><use href="#g-image" class="m-image"/></svg></span></li>
+        <li><b>Fine-tune</b>Curated tasks, hard decoys, batch size tuned per task.<span class="gl" aria-label="text, image, video, audio"><svg viewBox="-8 -8 16 16"><use href="#g-text" class="m-text"/></svg><svg viewBox="-8 -8 16 16"><use href="#g-image" class="m-image"/></svg><svg viewBox="-8 -8 16 16"><use href="#g-video" class="m-video"/></svg><svg viewBox="-9 -9 18 18"><use href="#g-audio" class="m-audio"/></svg></span></li>
+        <li><b>Soup</b>Average the weights of several fine-tuning runs.</li>
+      </ol>
+      <p class="aside">Why soup works, from the video ablation: training on Vatex and MSR‑VTT lifted Vatex by 10.3 points but cost YouCook2 0.6. Averaged 1:1 with the original weights, all three sets came out ahead (+5.5, +0.9, +7.6).</p>
+      <p class="but"><b>The authors admit</b> the balance between modalities was touchy, set by trial and error over sampling rates and batch sizes.</p>
+    </article>
 
-    <dt>CLASS:</dt>
-    <dd>Eng-Public — Approved for external publication May 26, 2026 (arXiv 2605.27295)</dd>
-
-    <dt>STATUS:</dt>
-    <dd>Decision requested by EOW</dd>
-  </dl>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Executive Summary</h2>
-    <ul class="exec">
-      <li>Gemini Embedding 2 is a native multimodal embedding model that beats specialized SOTA on four headline benchmarks across image, video, multilingual, and code retrieval.</li>
-      <li>The model embeds video, audio, image, and text — including arbitrarily interleaved inputs — into a single shared space, collapsing four prior production embedding stacks into one.</li>
-      <li>We recommend immediate productization across Vertex AI, NotebookLM, AI Overviews, and Cloud Search; consolidation alone removes an estimated four model-serving pipelines.</li>
-    </ul>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Background</h2>
-    <p>Unified multimodal retrieval is now the binding constraint on RAG quality across Google surfaces. Customers operating cross-modal corpora — video libraries, scanned PDFs, multilingual support tickets — currently stitch together three or more embedding endpoints, each with its own dimensionality and licensing. A single native model removes this integration tax and unblocks Vertex parity with closed multimodal offerings.</p>
-    <p>Gemini Embedding 1 shipped text-only with 768-dim outputs and trailed CLIP-class image retrievers by double digits on COCO. It also lacked any audio or video pathway, forcing internal teams to maintain a parallel UMT-derived stack for YouTube and Cloud Video Intelligence. Gemini Embedding 2 inherits the Gemini foundation directly, retiring that parallel stack and lifting retrieval quality past the specialized baselines it replaces.</p>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Approach</h2>
-
-    <h3><span class="num">1.</span>Architecture is native multimodal, not bolted-on.</h3>
-    <p>Gemini Embedding 2 reuses the Gemini encoder stack with a single shared projection head, so video, audio, image, and text land in one embedding space without modality-specific adapters. Crucially, it accepts arbitrary interleaved inputs — a frame plus a caption plus an audio clip — as one sequence rather than as separate calls. This is the architectural unlock that lets one model replace four production endpoints.</p>
-
-    <h3><span class="num">2.</span>Training is large-scale contrastive, multi-task, multi-stage.</h3>
-    <p>The model is trained via large-scale contrastive learning across a curated mixture spanning retrieval, classification, clustering, and code-search objectives. The multi-stage curriculum advances from text-dominant pretraining to balanced multimodal alignment to task-specific finetuning. This staged setup is what closes the gap to specialized models on MSCOCO and Vatex simultaneously, instead of trading one for the other.</p>
-
-    <h3><span class="num">3.</span>Scaling rides Gemini foundation gains for free.</h3>
-    <p>By initializing from the Gemini backbone, Embedding 2 inherits multilingual coverage and reasoning priors at zero additional pretraining cost. The same backbone improvements that lifted Gemini quality in Q1 propagate directly into the embedding head — MTEB multilingual reaches 69.9 without dedicated multilingual pretraining runs. This makes the model a compounding asset, not a one-shot release.</p>
-
-    <h3><span class="num">4.</span>Evaluation spans four modalities and zero-shot domains.</h3>
-    <p>We evaluate on MSCOCO (image-text), Vatex (video-text), MTEB multilingual (text), and MTEB Code (code) — one benchmark per modality we ship against. Zero-shot probes additionally cover astronomy, bioscience, fine arts, and culinary arts, where Embedding 2 leads specialized retrievers without any in-domain finetuning. The eval surface mirrors the production surface, so wins on this table translate directly to deployment wins.</p>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Results</h2>
-    <p class="author-line">Lead authors: Madhuri Shanbhogue, Zhe Li, Shanfeng Zhang, Gustavo Hernández Ábrego, Shih-Cheng Huang — and 83 additional contributors across DeepMind and Google Cloud AI.</p>
-    <table class="results">
-      <thead>
-        <tr>
-          <th>Benchmark</th>
-          <th>Metric</th>
-          <th class="num-col">Score</th>
-          <th class="num-col">Δ vs SOTA</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="bench">MSCOCO</td>
-          <td class="metric">R@1</td>
-          <td class="num">62.9</td>
-          <td class="delta">+1.4</td>
-        </tr>
-        <tr>
-          <td class="bench">Vatex</td>
-          <td class="metric">NDCG@10</td>
-          <td class="num">68.8</td>
-          <td class="delta">+2.1</td>
-        </tr>
-        <tr>
-          <td class="bench">MTEB Multilingual</td>
-          <td class="metric">avg</td>
-          <td class="num">69.9</td>
-          <td class="delta">+0.8</td>
-        </tr>
-        <tr>
-          <td class="bench">MTEB Code</td>
-          <td class="metric">avg</td>
-          <td class="num">84.0</td>
-          <td class="delta">+3.2</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="4">Δ vs SOTA computed against the strongest specialized public baseline per benchmark at submission time (May 26, 2026). Positive values indicate Gemini Embedding 2 leads.</td>
-        </tr>
-      </tfoot>
-    </table>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Recommendations</h2>
-    <div class="recs-block">
-      <ul class="recs">
-        <li>Ship Gemini Embedding 2 to the Vertex AI Embeddings API as the default multimodal endpoint within 30 days; gate behind a public preview tier with usage caps to manage initial GPU draw.</li>
-        <li>Supersede Embedding-001 in all internal and external RAG references, sample notebooks, and Cloud documentation; mark Embedding-001 deprecated with a 6-month sunset window.</li>
-        <li>Prioritize integration in NotebookLM (cross-document multimodal grounding), AI Overviews (image and video retrieval), and Cloud Search (multilingual enterprise corpora) — three surfaces where the unified embedding space removes a known quality ceiling.</li>
-      </ul>
-    </div>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <h2>Risks &amp; Open Questions</h2>
-    <ul class="risks">
-      <li>Compute cost at production scale is unbounded for video-heavy workloads; we need a quantized inference path and a Matryoshka truncation tier before GA, or per-query cost will dominate Vertex margin on the multimodal tier.</li>
-      <li>Multilingual coverage gaps remain on low-resource scripts despite the 69.9 MTEB multilingual average; the per-language breakdown shows a long tail below 50, which will draw external scrutiny if not disclosed in the model card.</li>
-      <li>Fairness audit is pending across the four zero-shot domains; Responsible AI has not signed off on the astronomy, bioscience, fine arts, and culinary arts deployments, and external publication does not waive the internal review gate.</li>
-    </ul>
-  </section>
-
-  <div class="signoff">
-    <span class="label">Reviewed by:</span>
-    <span class="name">Dr. Priya Ramachandran, Director, DeepMind Research</span>
-    <span class="name">Aaron Becker, GM, Cloud AI Products</span>
-    <span class="name">Dr. Lena Okafor, Lead, Responsible AI (conditional)</span>
+    <article class="note-card" id="n3" data-pin="3">
+      <header><span class="badge" aria-hidden="true">3</span><h2>Against three rivals, the widest gap opens on photo‑plus‑question queries</h2></header>
+      <p>Each row compares Gemini Embedding 2 (filled dot) with whichever rival did best on that task (open dot): Voyage‑3.5‑multimodal, Amazon Nova MME, or Google’s older multimodalembedding@001.</p>
+      <figure>
+        <ul class="dots"><li class="dot-row"><span class="dot-label">Photo + question → answer<small>EncyclopedicVQA, R@20 · vs Voyage‑3.5</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:17.2%;width:25.8%"></span><span class="dot rival" style="left:17.2%"></span><span class="dot us" style="left:43.0%"></span></span><span class="dot-gap">+12.9<span class="sr"> points: 71.5 vs 58.6</span></span></li><li class="dot-row"><span class="dot-label">Image → same object<small>GUIEC, R@1 · vs Google’s @001</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:39.0%;width:19.8%"></span><span class="dot rival" style="left:39.0%"></span><span class="dot us" style="left:58.8%"></span></span><span class="dot-gap">+9.9<span class="sr"> points: 79.4 vs 69.5</span></span></li><li class="dot-row"><span class="dot-label">Text → video<small>3-set mean, NDCG@10 · vs Nova MME</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:8.0%;width:18.2%"></span><span class="dot rival" style="left:8.0%"></span><span class="dot us" style="left:26.2%"></span></span><span class="dot-gap">+9.1<span class="sr"> points: 63.1 vs 54.0</span></span></li><li class="dot-row"><span class="dot-label">Image → caption<small>4-set mean, R@1 · vs Voyage‑3.5</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:71.8%;width:10.6%"></span><span class="dot rival" style="left:71.8%"></span><span class="dot us" style="left:82.4%"></span></span><span class="dot-gap">+5.3<span class="sr"> points: 91.2 vs 85.9</span></span></li><li class="dot-row"><span class="dot-label">Caption → image<small>4-set mean, R@1 · vs Voyage‑3.5</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:51.6%;width:9.4%"></span><span class="dot rival" style="left:51.6%"></span><span class="dot us" style="left:61.0%"></span></span><span class="dot-gap">+4.7<span class="sr"> points: 80.5 vs 75.8</span></span></li><li class="dot-row is-loss"><span class="dot-label">Query → document page<small>ViDoRe V2, NDCG@10 · vs Voyage‑3.5</small></span><span class="dot-track" aria-hidden="true"><span class="dot-span" style="left:29.8%;width:1.2%"></span><span class="dot rival" style="left:31.0%"></span><span class="dot us" style="left:29.8%"></span></span><span class="dot-gap">−0.6<span class="sr"> points: 64.9 vs 65.5</span></span></li></ul>
+        <div class="scale" aria-hidden="true"><span>50</span><span>75</span><span>100</span></div>
+        <figcaption class="cap">Five wins out of six, and the one loss is by 0.6. Metrics differ by row, so compare gaps, not positions across rows.<span class="src">Source: Table 1</span></figcaption>
+      </figure>
+      <p class="but"><b>Read with care:</b> rival scores were measured through their public APIs unless the vendor self-reported.</p>
+    </article>
   </div>
 
-  <footer class="doc-footer">
-    <div class="row">
-      <div class="conf">CONFIDENTIAL — Eng-Public. Approved for external publication via arXiv on May 26, 2026. Distribution within Alphabet is unrestricted; redistribution outside Alphabet is governed by the standard public-research disclosure terms.</div>
-    </div>
-    <div class="row last">
-      <div class="paper">Paper: arxiv.org/abs/2605.27295</div>
-      <div class="rev">Rev 2.4 — 2026-05-27</div>
-      <div class="pageno">Page 1 of 1 · Internal</div>
-    </div>
-  </footer>
+  <figure class="stage" id="stage">
+    <svg class="map" id="map" viewBox="0 0 560 560" role="img" aria-labelledby="map-t map-d">
+      <title id="map-t">Sketch of the shared space</title>
+      <desc id="map-d">Six neighborhoods of meaning: Golden Gate Bridge, ramen, Saturn, speech recognition, beach and code. Inside each, text, images, video and audio sit together. A spoken “recognize speech” sits in the speech neighborhood, while its ASR transcript, “wreck a nice beach”, lands in the beach neighborhood.</desc>
+      <rect width="560" height="560" fill="url(#dotgrid)"/>
 
-</main>
+      <!-- Golden Gate -->
+      <ellipse class="halo" cx="135" cy="128" rx="92" ry="62"/>
+      <text class="clab" x="52" y="58">Golden Gate Bridge</text>
+      <use href="#g-image" class="m-image" x="98" y="110"><title>Photo of the bridge at dusk</title></use>
+      <use href="#g-text" class="m-text" x="152" y="96"><title>“Suspension bridge in San Francisco”</title></use>
+      <use href="#g-video" class="m-video" x="186" y="128"><title>Drone flyover clip</title></use>
+      <g transform="translate(120 152)"><title>Interleaved query: photo + “When did it open?”</title><path class="pt m-image" d="M0 -7 A7 7 0 0 0 0 7 Z"/><rect class="pt m-text" x="0" y="-7" width="7" height="14" rx="1.5"/></g>
+      <use href="#g-text" class="m-text" x="174" y="170"><title>Answer passage: “Opened in 1937”</title></use>
+
+      <!-- Ramen -->
+      <ellipse class="halo" cx="148" cy="330" rx="100" ry="66"/>
+      <text class="clab" x="60" y="256">Ramen</text>
+      <line class="pull" x1="114" y1="318" x2="156" y2="337"/>
+      <text class="note-dim" x="140" y="318">pull</text>
+      <use href="#g-text" class="m-text" x="108" y="315"><title>Query: “How long do I boil fresh ramen?”</title></use>
+      <use href="#g-video" class="m-video" x="162" y="340"><title>Cooking clip, the boiling step</title></use>
+      <use href="#g-image" class="m-image" x="200" y="300"><title>Photo of a bowl of tonkotsu</title></use>
+      <use href="#g-audio" class="m-audio" x="118" y="370"><title>Voice note: “Ramen tonight?”</title></use>
+      <path class="push" d="M118 322 Q170 392 232 404" marker-end="url(#ah)"/>
+      <text class="note-dim" x="176" y="404">push</text>
+      <use href="#g-text" class="m-text" x="244" y="408"><title>Decoy: “How long do I boil eggs?”</title></use>
+
+      <!-- Saturn -->
+      <ellipse class="halo" cx="430" cy="118" rx="86" ry="58"/>
+      <text class="clab" x="372" y="52">Saturn</text>
+      <use href="#g-image" class="m-image" x="404" y="104"><title>Cassini image of Saturn</title></use>
+      <use href="#g-text" class="m-text" x="454" y="92"><title>“The ringed sixth planet”</title></use>
+      <use href="#g-video" class="m-video" x="440" y="140"><title>Ring-plane timelapse</title></use>
+      <use href="#g-audio" class="m-audio" x="482" y="128"><title>Spoken: “What are Saturn’s rings made of?”</title></use>
+
+      <!-- Speech -->
+      <ellipse class="halo" cx="426" cy="296" rx="82" ry="52"/>
+      <text class="clab" x="362" y="236">Speech recognition</text>
+      <use href="#g-text" class="m-text" x="390" y="276"><title>“How speech-to-text works”</title></use>
+      <use href="#g-text" class="m-text" x="456" y="274"><title>“Why voice assistants mishear you”</title></use>
+      <use href="#g-audio" class="m-audio" x="424" y="304"><title>Spoken query: “recognize speech”</title></use>
+      <text class="note" x="420" y="334" text-anchor="middle">spoken “recognize speech”</text>
+
+      <!-- ASR detour -->
+      <path class="asr" d="M414 314 Q372 392 318 446" marker-end="url(#ah-a)"/>
+      <text class="note-dim" x="356" y="394" text-anchor="end">transcribe first</text>
+
+      <!-- Beach -->
+      <ellipse class="halo" cx="268" cy="484" rx="86" ry="46"/>
+      <text class="clab" x="186" y="430">Beach</text>
+      <use href="#g-image" class="m-image" x="232" y="476"><title>Beach photo</title></use>
+      <use href="#g-video" class="m-video" x="272" y="500"><title>Clip of waves</title></use>
+      <rect class="hollow" x="303" y="447" width="12" height="12" rx="2"><title>ASR transcript: “wreck a nice beach”</title></rect>
+      <text class="note" x="268" y="548" text-anchor="middle">ASR hears “wreck a nice beach”</text>
+
+      <!-- Code -->
+      <ellipse class="halo" cx="472" cy="446" rx="62" ry="40"/>
+      <text class="clab" x="482" y="400">Code</text>
+      <use href="#g-text" class="m-text" x="452" y="438"><title>“Reverse a list in Python”</title></use>
+      <use href="#g-text" class="m-text" x="494" y="458"><title>Snippet: xs[::-1]</title></use>
+
+      <!-- pins -->
+      <g class="pin" data-pin="1"><line x1="120" y1="152" x2="56" y2="184"/><circle cx="56" cy="184" r="11"/><text x="56" y="184">1</text></g>
+      <g class="pin" data-pin="2"><line x1="101" y1="317" x2="44" y2="334"/><circle cx="44" cy="334" r="11"/><text x="44" y="334">2</text></g>
+      <g class="pin" data-pin="3"><line x1="162" y1="340" x2="112" y2="444"/><circle cx="112" cy="444" r="11"/><text x="112" y="444">3</text></g>
+      <g class="pin" data-pin="4"><line x1="440" y1="140" x2="526" y2="180"/><circle cx="526" cy="180" r="11"/><text x="526" y="180">4</text></g>
+      <g class="pin" data-pin="5"><line x1="432" y1="304" x2="526" y2="304"/><circle cx="526" cy="304" r="11"/><text x="526" y="304">5</text></g>
+      <g class="pin" data-pin="6"><line x1="494" y1="458" x2="530" y2="508"/><circle cx="530" cy="508" r="11"/><text x="530" y="508">6</text></g>
+    </svg>
+    <ul class="legend" aria-label="Legend">
+      <li><svg viewBox="-8 -8 16 16"><use href="#g-text" class="m-text"/></svg>text and code</li>
+      <li><svg viewBox="-8 -8 16 16"><use href="#g-image" class="m-image"/></svg>image</li>
+      <li><svg viewBox="-8 -8 16 16"><use href="#g-video" class="m-video"/></svg>video</li>
+      <li><svg viewBox="-9 -9 18 18"><use href="#g-audio" class="m-audio"/></svg>audio</li>
+      <li><svg viewBox="-8 -8 16 16"><path class="m-image" d="M0 -7 A7 7 0 0 0 0 7 Z"/><rect class="m-text" x="0" y="-7" width="7" height="14" rx="1.5"/></svg>mixed in one input</li>
+    </ul>
+    <figcaption class="cap">A hand-placed sketch of the idea, flattened to two dimensions; the real space has 3,072. Neighborhoods form by meaning, not by file type. <span class="hover-hint">Hover a mark to see what it stands for.</span><span class="mobile-key">Neighborhoods, top to bottom: Golden Gate Bridge and Saturn; ramen and speech recognition; beach and code. The dashed green arrow is the ASR detour: a spoken “recognize speech” transcribed as “wreck a nice beach.”</span></figcaption>
+  </figure>
+
+  <div class="col col-r">
+    <article class="note-card" id="n4" data-pin="4">
+      <header><span class="badge" aria-hidden="true">4</span><h2>Look at astronomy, where every other model stalls near 30</h2></header>
+      <p>Zero-shot, image-to-text, in fields nobody tuned it for. The specialists are moody: SigLIP 2 Giant scores 81.2 on recipes and 8.4 on fine art, and TIPS runs the other way. Gemini Embedding 2 never drops below 64.</p>
+      <figure>
+        <ul class="pairs"><li class="pair"><span class="pair-head"><b>Astronomy</b> <small>AstroLLaVA</small></span><span class="pair-bar us"><span class="fill" style="width:64.4%"></span><span class="v">64.4</span></span><span class="pair-bar rival"><span class="fill" style="width:31.6%"></span><span class="v">31.6 <small>CLIP L/14‑336</small></span></span></li><li class="pair"><span class="pair-head"><b>Microscopy</b> <small>MicroVQA</small></span><span class="pair-bar us"><span class="fill" style="width:79.3%"></span><span class="v">79.3</span></span><span class="pair-bar rival"><span class="fill" style="width:53.3%"></span><span class="v">53.3 <small>Voyage‑3.5</small></span></span></li><li class="pair"><span class="pair-head"><b>Recipes</b> <small>Recipe1M, ingredients</small></span><span class="pair-bar us"><span class="fill" style="width:90.2%"></span><span class="v">90.2</span></span><span class="pair-bar rival"><span class="fill" style="width:81.2%"></span><span class="v">81.2 <small>SigLIP 2 Giant</small></span></span></li><li class="pair"><span class="pair-head"><b>Fine art</b> <small>ArtCap</small></span><span class="pair-bar us"><span class="fill" style="width:67.7%"></span><span class="v">67.7</span></span><span class="pair-bar rival"><span class="fill" style="width:65.2%"></span><span class="v">65.2 <small>TIPS Giant</small></span></span></li></ul>
+        <div class="keyline" aria-hidden="true"><span><i style="background:var(--us)"></i>Gemini Embedding 2</span><span><i style="background:var(--rival)"></i>best of eleven others</span></div>
+        <figcaption class="cap">Recall@5 out of 100. Each grey bar is a different model, the strongest rival in that field.<span class="src">Source: Table 4</span></figcaption>
+      </figure>
+      <p class="but"><b>Gap in the record:</b> Voyage was scored on the first three fields only; its recipe cells are blank in the paper.</p>
+    </article>
+
+    <article class="note-card" id="n5" data-pin="5">
+      <header><span class="badge" aria-hidden="true">5</span><h2>Here, the voice note skips the transcript, and finds more</h2></header>
+      <p>In this test a spoken question has to find its answer among text passages. Fed the raw audio, the model beats the very same model reading an ASR transcript. A transcript has to commit: “recognize speech” or “wreck a nice beach.” The embedding doesn’t, and it keeps tone and emphasis too.</p>
+      <figure>
+        <div class="bigpair"><span class="num">73.99</span><span>native audio</span><s>70.40</s><span>via ASR</span></div>
+        <ul class="pairs" style="margin-top:var(--s-4)">
+          <li class="pair"><span class="pair-head"><b>Across languages</b> <small>+5.01</small></span><span class="pair-bar us"><span class="fill" style="width:72.56%"></span><span class="v">72.56</span></span><span class="pair-bar rival"><span class="fill" style="width:67.55%"></span><span class="v">67.55 <small>via ASR</small></span></span></li>
+          <li class="pair"><span class="pair-head"><b>Same language</b> <small>+2.00</small></span><span class="pair-bar us"><span class="fill" style="width:75.58%"></span><span class="v">75.58</span></span><span class="pair-bar rival"><span class="fill" style="width:73.58%"></span><span class="v">73.58 <small>via ASR</small></span></span></li>
+        </ul>
+        <figcaption class="cap">MSEB passage retrieval, mrr@10 out of 100. The gap more than doubles when the question and the passages are in different languages.<span class="src">Source: Table 3</span></figcaption>
+      </figure>
+      <p class="but"><b>Small print:</b> the paper doesn’t name the ASR system used for the baseline.</p>
+    </article>
+
+    <article class="note-card" id="n6" data-pin="6">
+      <header><span class="badge" aria-hidden="true">6</span><h2>Text didn’t pay for the pictures</h2></header>
+      <p>Teaching a text model three new senses usually blunts it. Here the multimodal model edges out its own text-only predecessor on multilingual text and jumps eight points on code. Much of the code gain is Gemini-written training data: on three code tasks it lifts the average from 73.0 to 86.3.</p>
+      <table class="mini">
+        <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">New</th><th scope="col" class="num">Old, text only</th><th scope="col" class="num">Best rival</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">MTEB Multilingual</th><td class="num us">69.9</td><td class="num">68.4</td><td class="num">63.8</td></tr>
+          <tr><th scope="row">MTEB Code</th><td class="num us">84.0</td><td class="num">76.0</td><td class="num">–</td></tr>
+          <tr><th scope="row">CoIR (code)</th><td class="num us">82.3</td><td class="num">73.9</td><td class="num">78.5</td></tr>
+        </tbody>
+      </table>
+      <p class="cap" style="margin-top:0">New is Gemini Embedding&nbsp;2; old is the 2025 Gemini Embedding. Best rival: Amazon Nova MME on Multilingual, voyage‑code‑3 on CoIR; no rival reported MTEB Code.<span class="src">Source: Tables 2 and 5</span></p>
+      <p class="but"><b>Not a clean sweep:</b> it still trails the old model on instruction retrieval (2.9 vs 5.2) and pair classification (83.2 vs 83.6).</p>
+    </article>
+  </div>
+</section>
+
+<section class="tables" aria-label="Full tables">
+  <details>
+    <summary><h3>Table 1, all nineteen rows</h3><span class="tog"><span class="o">Show</span><span class="c">Hide</span></span><p>Gemini Embedding 2 tops seventeen; Voyage takes Flickr30k caption→image and ViDoRe.</p></summary>
+    <table class="full"><thead><tr><th scope="col">Task</th><th scope="col" class="num">Gemini Emb. 2</th><th scope="col" class="num">Nova MME</th><th scope="col" class="num">Voyage‑3.5</th><th scope="col" class="num">Google’s @001</th></tr></thead><tbody><tr class="grp"><th colspan="5" scope="rowgroup">Image → image (R@1)</th></tr><tr><th scope="row">GUIEC</th><td class="num top">79.4</td><td class="num">68.6</td><td class="num">69.4</td><td class="num">69.5</td></tr><tr><th scope="row">ImageNet</th><td class="num top">83.6</td><td class="num">–</td><td class="num">–</td><td class="num">71.8</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Text → image (R@1)</th></tr><tr><th scope="row">Mean†</th><td class="num top">80.5</td><td class="num">71.6</td><td class="num">75.8</td><td class="num">69.5</td></tr><tr><th scope="row">MSCOCO</th><td class="num top">62.9</td><td class="num">57.2</td><td class="num">58.1</td><td class="num">53.1</td></tr><tr><th scope="row">Flickr30k</th><td class="num">89.1</td><td class="num">81.6</td><td class="num top">89.9</td><td class="num">81.4</td></tr><tr><th scope="row">DOCCI</th><td class="num top">93.4</td><td class="num">84.0</td><td class="num">83.8</td><td class="num">–</td></tr><tr><th scope="row">TextCaps</th><td class="num top">89.6</td><td class="num">76.0</td><td class="num">79.4</td><td class="num">74.0</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Image → text (R@1)</th></tr><tr><th scope="row">Mean†</th><td class="num top">91.2</td><td class="num">81.6</td><td class="num">85.9</td><td class="num">83.4</td></tr><tr><th scope="row">MSCOCO</th><td class="num top">78.8</td><td class="num">68.3</td><td class="num">74.5</td><td class="num">68.2</td></tr><tr><th scope="row">Flickr30k</th><td class="num top">97.4</td><td class="num">87.5</td><td class="num">94.5</td><td class="num">94.0</td></tr><tr><th scope="row">DOCCI</th><td class="num top">91.3</td><td class="num">76.5</td><td class="num">77.4</td><td class="num">–</td></tr><tr><th scope="row">TextCaps</th><td class="num top">97.4</td><td class="num">88.9</td><td class="num">88.6</td><td class="num">88.1</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Text → video (NDCG@10)</th></tr><tr><th scope="row">Mean</th><td class="num top">63.1</td><td class="num">54.0</td><td class="num">49.9</td><td class="num">49.2</td></tr><tr><th scope="row">Vatex</th><td class="num top">68.8</td><td class="num">60.3</td><td class="num">55.2</td><td class="num">54.9</td></tr><tr><th scope="row">MSR-VTT</th><td class="num top">68.0</td><td class="num">67.0</td><td class="num">63.0</td><td class="num">57.9</td></tr><tr><th scope="row">YouCook2</th><td class="num top">52.5</td><td class="num">34.7</td><td class="num">31.4</td><td class="num">34.9</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Image + text → text (R@20)</th></tr><tr><th scope="row">EncyclopedicVQA</th><td class="num top">71.5</td><td class="num">–</td><td class="num">58.6</td><td class="num">–</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Document pages (NDCG@10)</th></tr><tr><th scope="row">ViDoRe V2</th><td class="num">64.9</td><td class="num">60.6</td><td class="num top">65.5</td><td class="num">28.9</td></tr><tr class="grp"><th colspan="5" scope="rowgroup">Overall</th></tr><tr><th scope="row">Overall†</th><td class="num top">77.2</td><td class="num">68.2</td><td class="num">70.0</td><td class="num">64.1</td></tr></tbody></table>
+  </details>
+  <details>
+    <summary><h3>Table 4, every specialist model</h3><span class="tog"><span class="o">Show</span><span class="c">Hide</span></span><p>Gemini Embedding 2 tops all five columns; the runner-up is a different model in four of them.</p></summary>
+    <table class="full"><thead><tr><th scope="col">Model</th><th scope="col" class="num">Micro</th><th scope="col" class="num">Art</th><th scope="col" class="num">Astro</th><th scope="col" class="num">Ingr.</th><th scope="col" class="num">Instr.</th></tr></thead><tbody><tr><th scope="row">CLIP Base/32</th><td class="num">34.1</td><td class="num">34.1</td><td class="num">21.2</td><td class="num">64.6</td><td class="num">61.1</td></tr><tr><th scope="row">CLIP Large/14</th><td class="num">44.4</td><td class="num">49.4</td><td class="num">28.8</td><td class="num">76.5</td><td class="num">74.6</td></tr><tr><th scope="row">CLIP Large/14‑336</th><td class="num">46.7</td><td class="num">52.2</td><td class="num">31.6</td><td class="num">76.0</td><td class="num">75.6</td></tr><tr><th scope="row">ALIGN Base</th><td class="num">48.1</td><td class="num">49.2</td><td class="num">18.4</td><td class="num">70.3</td><td class="num">70.8</td></tr><tr><th scope="row">SigLIP 2 Base</th><td class="num">23.0</td><td class="num">16.3</td><td class="num">6.3</td><td class="num">69.8</td><td class="num">70.7</td></tr><tr><th scope="row">SigLIP 2 Large</th><td class="num">27.4</td><td class="num">7.3</td><td class="num">11.0</td><td class="num">78.7</td><td class="num">78.3</td></tr><tr><th scope="row">SigLIP 2 Giant</th><td class="num">33.3</td><td class="num">8.4</td><td class="num">13.2</td><td class="num">81.2</td><td class="num">80.4</td></tr><tr><th scope="row">TIPS Base</th><td class="num">14.8</td><td class="num">59.3</td><td class="num">6.9</td><td class="num">60.7</td><td class="num">59.3</td></tr><tr><th scope="row">TIPS Large</th><td class="num">21.5</td><td class="num">59.9</td><td class="num">8.9</td><td class="num">61.3</td><td class="num">63.0</td></tr><tr><th scope="row">TIPS Giant</th><td class="num">20.0</td><td class="num">65.2</td><td class="num">10.1</td><td class="num">66.0</td><td class="num">65.6</td></tr><tr><th scope="row">Voyage‑3.5‑multimodal</th><td class="num">53.3</td><td class="num">48.7</td><td class="num">30.3</td><td class="num">–</td><td class="num">–</td></tr><tr><th scope="row">Gemini Embedding 2</th><td class="num top">79.3</td><td class="num top">67.7</td><td class="num top">64.4</td><td class="num top">90.2</td><td class="num top">92.1</td></tr></tbody></table>
+  </details>
+</section>
+
+<footer class="end">
+  <p class="kicker">That ends the tour. Next room, per the authors: retrieval trained end to end for agentic RAG. <em>Until then, one index takes every kind of file.</em></p>
+  <p class="colophon">Toured for <b>Shubham</b> on October 22, 2026, from arXiv v1 (May 26, 2026, CC BY 4.0). Every number is the paper’s own; the map is a sketch, not a projection. One note for the 88 authors: not a single parameter count.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement, slot = document.getElementById('theme-slot');
+  function current(){ var t = root.getAttribute('data-theme'); if (t) return t; return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+  try { var saved = localStorage.getItem('ge2-theme'); if (saved) root.setAttribute('data-theme', saved); } catch(e){}
+  var b = document.createElement('button'); b.className = 'theme-btn'; b.type = 'button';
+  function label(){ var d = current() === 'dark'; b.textContent = d ? 'Lights up' : 'Lights down'; b.setAttribute('aria-label', d ? 'Switch to light theme' : 'Switch to dark theme'); }
+  b.addEventListener('click', function(){ var n = current() === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', n); try { localStorage.setItem('ge2-theme', n); } catch(e){} label(); });
+  label(); slot.appendChild(b);
+
+  var radial = document.getElementById('radial'), lead = document.getElementById('leaders'), map = document.getElementById('map');
+  var NS = 'http://www.w3.org/2000/svg', raf = 0;
+  function draw(){
+    raf = 0; lead.innerHTML = '';
+    if (getComputedStyle(lead).display === 'none') return;
+    var R = radial.getBoundingClientRect(), M = map.getBoundingClientRect();
+    document.querySelectorAll('.note-card').forEach(function(card){
+      var n = card.dataset.pin, pin = map.querySelector('.pin[data-pin="' + n + '"] circle');
+      if (!pin) return;
+      var P = pin.getBoundingClientRect(), B = card.querySelector('.badge').getBoundingClientRect(), C = card.getBoundingClientRect();
+      var left = C.right < M.left, k = (+n - 1) % 3;
+      var x1 = (left ? C.right + 6 : C.left - 6) - R.left, y1 = B.top + B.height / 2 - R.top;
+      var lane = (left ? M.left - 8 - (2 - k) * 8 : M.right + 8 + (2 - k) * 8) - R.left;
+      var px = P.left + P.width / 2 - R.left, py = P.top + P.height / 2 - R.top;
+      var pxe = px + (left ? -P.width / 2 : P.width / 2);
+      if (B.top > M.bottom + 24 || B.bottom < M.top - 24) return; /* only notes beside the map get a line */
+      var g = document.createElementNS(NS, 'g'); g.setAttribute('data-pin', n);
+      if (card.classList.contains('on')) g.setAttribute('class', 'on');
+      var p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', 'M' + x1 + ' ' + y1 + ' H' + lane + ' V' + py + ' H' + pxe);
+      var c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', x1); c.setAttribute('cy', y1); c.setAttribute('r', 2.5);
+      g.appendChild(p); g.appendChild(c); lead.appendChild(g);
+    });
+  }
+  function queue(){ if (!raf) raf = requestAnimationFrame(draw); }
+  addEventListener('resize', queue); addEventListener('scroll', queue, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(queue);
+  addEventListener('load', queue); queue();
+
+  function set(n, on){
+    var card = document.getElementById('n' + n), pin = map.querySelector('.pin[data-pin="' + n + '"]');
+    card.classList.toggle('on', on); if (pin) pin.classList.toggle('on', on); queue();
+  }
+  document.querySelectorAll('.note-card').forEach(function(card){
+    var n = card.dataset.pin;
+    card.addEventListener('mouseenter', function(){ set(n, true); });
+    card.addEventListener('mouseleave', function(){ set(n, false); });
+  });
+  map.querySelectorAll('.pin').forEach(function(pin){
+    var n = pin.dataset.pin;
+    pin.style.cursor = 'pointer';
+    pin.addEventListener('mouseenter', function(){ set(n, true); });
+    pin.addEventListener('mouseleave', function(){ set(n, false); });
+    pin.addEventListener('click', function(){ document.getElementById('n' + n).scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }); });
+  });
+})();
+</script>
 </body>
 </html>

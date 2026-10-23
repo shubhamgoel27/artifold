@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.15.0
+
+- **craft is a Claude Code plugin.** `/plugin install craft --marketplace
+  shubhamgoel27/artifold` installs the skill with no Python. The repo is
+  its own marketplace (`.claude-plugin/`), and `artifold init` treats a
+  plugin install as already installed, so you don't get two copies.
+- **Shared pages carry a credit line.** `artifold share` adds one small
+  line at the bottom of the published copy, "Made with craft" or "Shared
+  with Artifold", linking to the repo. It takes the page's own text color.
+  The file on disk and its share URL are unchanged. Turn it off per share
+  with `--no-credit` or for good with `artifold config share_credit off`.
+- **New gallery.** All eleven before/after pairs were run again with
+  today's craft and Opus 5.5, from identical plain prompts.
+  `scripts/build_gallery.py` rebuilds the thumbnails and composites.
+- **New README screenshots and demo GIF**, made by
+  `scripts/readme_shots.py` from a throwaway library of gallery pages, so
+  no real library can leak into them. The old ones still showed the
+  project's earlier name and private pages.
+- Files directly in a watched folder no longer show their folder as "."
+  in the detail header and the palette.
+
 ## 0.14.4
 
 README only. The top image is the SF coffee tier list pair, and the full

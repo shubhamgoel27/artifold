@@ -2,256 +2,551 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini Embedding 2 — Explainer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemini Embedding 2, Explained</title>
 <style>
-  * {
-    box-sizing: border-box;
+  :root {
+    --bg: #fbfaf7;
+    --ink: #1d1f24;
+    --muted: #5e6470;
+    --line: #e3e0d8;
+    --card: #ffffff;
+    --accent: #3b5bdb;
+    --accent-soft: #e7ecff;
+    --text-c: #3b5bdb;
+    --img-c: #e8590c;
+    --vid-c: #2b8a3e;
+    --aud-c: #ae3ec9;
+    --doc-c: #1098ad;
+    --code-c: #c2255c;
+    --good: #2b8a3e;
+    --bad: #c92a2a;
   }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    color: #222;
-    background: #ffffff;
-    margin: 0;
-    padding: 0;
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
   }
-  .hero {
-    background: linear-gradient(135deg, #4285F4 0%, #9b72cb 50%, #d96570 100%);
-    color: white;
-    padding: 60px 40px;
-    text-align: center;
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px; }
+  header.hero {
+    padding: 64px 0 40px; border-bottom: 1px solid var(--line);
+    background: radial-gradient(1200px 400px at 20% -10%, #e9edff 0%, transparent 60%),
+                radial-gradient(900px 300px at 100% 0%, #fff0e6 0%, transparent 60%);
   }
-  .hero h1 {
-    font-size: 2.4rem;
-    margin: 0 0 10px 0;
+  .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 42px; line-height: 1.15; margin: 10px 0 14px; letter-spacing: -.02em; }
+  h2 { font-size: 28px; margin: 0 0 12px; letter-spacing: -.01em; }
+  h3 { font-size: 19px; margin: 26px 0 8px; }
+  .lede { font-size: 20px; color: #343842; max-width: 760px; }
+  .meta { color: var(--muted); font-size: 14.5px; margin-top: 18px; }
+  .meta a { color: var(--accent); }
+  nav.toc {
+    position: sticky; top: 0; z-index: 10; background: rgba(251,250,247,.94);
+    backdrop-filter: blur(6px); border-bottom: 1px solid var(--line);
   }
-  .hero .subtitle {
-    font-size: 1.05rem;
-    opacity: 0.95;
-    margin: 0;
+  nav.toc .wrap { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
+  nav.toc a {
+    white-space: nowrap; font-size: 14px; color: var(--muted); text-decoration: none;
+    padding: 4px 10px; border-radius: 999px;
   }
-  .container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 40px 24px 80px 24px;
+  nav.toc a:hover { background: var(--accent-soft); color: var(--accent); }
+  section { padding: 52px 0 12px; }
+  p { margin: 0 0 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px; margin: 20px 0; box-shadow: 0 1px 2px rgba(0,0,0,.03);
   }
-  h2 {
-    color: #1a73e8;
-    border-bottom: 2px solid #e8eaed;
-    padding-bottom: 6px;
-    margin-top: 40px;
+  .tldr { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 26px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .stat b { display: block; font-size: 30px; letter-spacing: -.02em; }
+  .stat span { font-size: 14px; color: var(--muted); }
+  .callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 18px 0; }
+  .callout.warn { border-color: #e67700; background: #fff4e6; }
+  .pill { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; color: #fff; margin-right: 4px; }
+  .t { background: var(--text-c); } .i { background: var(--img-c); } .v { background: var(--vid-c); }
+  .a { background: var(--aud-c); } .d { background: var(--doc-c); } .c { background: var(--code-c); }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  td.best { font-weight: 700; color: var(--accent); }
+  .up { color: var(--good); font-size: 13px; } .down { color: var(--bad); font-size: 13px; }
+  button, .seg button {
+    font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+    padding: 6px 12px; border-radius: 8px; cursor: pointer;
   }
-  h3 {
-    color: #333;
-    margin-bottom: 6px;
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .seg button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  label.ctl { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+  input[type=range] { width: 220px; accent-color: var(--accent); }
+  .small { font-size: 14px; color: var(--muted); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+
+  /* pipeline */
+  .pipe { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .stage {
+    flex: 1 1 120px; min-width: 120px; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+    background: #fff; cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; font-size: 14px;
   }
-  .meta {
-    background: #f8f9fa;
-    border-left: 4px solid #1a73e8;
-    padding: 14px 18px;
-    margin: 20px 0;
-    font-size: 0.95rem;
-    border-radius: 4px;
-  }
-  .meta p {
-    margin: 4px 0;
-  }
-  .authors {
-    color: #555;
-    font-style: italic;
-  }
-  ul {
-    padding-left: 22px;
-  }
-  li {
-    margin-bottom: 8px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  th, td {
-    text-align: left;
-    padding: 12px 16px;
-    border-bottom: 1px solid #e8eaed;
-  }
-  th {
-    background: #f1f3f4;
-    color: #202124;
-    font-weight: 600;
-  }
-  tr:hover {
-    background: #fafafa;
-  }
-  .score {
-    font-weight: 600;
-    color: #1a73e8;
-  }
-  .use-cases {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-top: 16px;
-  }
-  .use-case {
-    background: #f8f9fa;
-    border-radius: 6px;
-    padding: 16px;
-    border: 1px solid #e8eaed;
-  }
-  .use-case h4 {
-    margin: 0 0 8px 0;
-    color: #1a73e8;
-  }
-  .use-case p {
-    margin: 0;
-    font-size: 0.93rem;
-    color: #555;
-  }
-  .arxiv-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 24px;
-    background: #1a73e8;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background 0.2s;
-  }
-  .arxiv-link:hover {
-    background: #155ab6;
-  }
-  footer {
-    text-align: center;
-    color: #888;
-    font-size: 0.85rem;
-    padding: 20px;
-    border-top: 1px solid #eee;
-  }
+  .stage:hover, .stage.on { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 14px rgba(59,91,219,.12); }
+  .stage .h { font-weight: 700; font-size: 14.5px; margin-bottom: 4px; }
+  .arrow { align-self: center; color: var(--muted); font-size: 20px; }
+  #stageInfo { min-height: 72px; margin-top: 14px; }
+
+  /* bars */
+  .bars .row { display: grid; grid-template-columns: 170px 1fr; gap: 10px; align-items: center; margin: 10px 0; }
+  .bars .lbl { font-size: 14px; }
+  .bars .lbl small { display: block; color: var(--muted); font-size: 12px; }
+  .bars .set { display: flex; flex-direction: column; gap: 3px; }
+  .bar { height: 14px; border-radius: 4px; position: relative; transition: width .5s ease; min-width: 2px; }
+  .bar em { position: absolute; left: calc(100% + 6px); top: -2px; font-style: normal; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .bar.na { background: repeating-linear-gradient(45deg, #eee, #eee 4px, #f7f7f7 4px, #f7f7f7 8px) !important; width: 40px !important; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+  /* MRL */
+  .vec { display: grid; grid-template-columns: repeat(48, 1fr); gap: 2px; margin: 14px 0 6px; }
+  .vec div { height: 26px; border-radius: 2px; background: #dfe3ea; transition: background .25s, opacity .25s; }
+  .vec div.kept { background: var(--accent); }
+  .vec div.kept.mid { background: #6c84e8; }
+  .vec div.kept.far { background: #9fb0f0; }
+
+  /* contrastive toy */
+  .sims { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .simrow { display: grid; grid-template-columns: 210px 70px 1fr 56px; gap: 10px; align-items: center; font-size: 14px; }
+  .simrow .pb { height: 12px; background: #eceef3; border-radius: 6px; overflow: hidden; }
+  .simrow .pb div { height: 100%; background: var(--accent); transition: width .3s; }
+  .simrow.pos .pb div { background: var(--good); }
+  .simrow.masked { opacity: .35; text-decoration: line-through; }
+  .tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: #eee; color: #444; margin-left: 4px; }
+
+  /* audio */
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin: 8px 0; }
+  .box { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 6px 10px; }
+  .box.lossy { border-color: #e67700; background: #fff4e6; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 30px 0 60px; color: var(--muted); font-size: 14px; }
+  ol.steps li, ul.tight li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1>Gemini Embedding 2</h1>
-  <p class="subtitle">A Native Multimodal Embedding Model from Gemini</p>
-</div>
-
-<div class="container">
-
-  <div class="meta">
-    <p><strong>arXiv:</strong> 2605.27295</p>
-    <p><strong>Submitted:</strong> May 26, 2026</p>
-    <p class="authors"><strong>Authors:</strong> Madhuri Shanbhogue, Zhe Li, Shanfeng Zhang, Gustavo Hernández Ábrego, Shih-Cheng Huang, et al. (88 total)</p>
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Paper explainer · arXiv 2605.27295 · cs.CV</div>
+    <h1>Gemini Embedding 2: one vector space for text, images, video, audio, and documents</h1>
+    <p class="lede">Google's new embedding model turns any mix of video, audio, images, and text into a single 3,072-dimensional vector, so a sentence, a photo, and a podcast clip can be compared directly. It is built by converting a Gemini model into an embedder and training it contrastively. On most of the retrieval benchmarks it reports, it beats the commercial multimodal embedders it is compared against.</p>
+    <div class="meta">
+      Madhuri Shanbhogue, Zhe Li, Daniel Cer, … Mojtaba Seyedhosseini (88 authors, Google) · Submitted 26 May 2026 ·
+      <a href="https://arxiv.org/abs/2605.27295">abstract</a> · <a href="https://arxiv.org/pdf/2605.27295">PDF</a> · <a href="https://arxiv.org/html/2605.27295v1">HTML</a>
+    </div>
+    <div class="tldr">
+      <div class="stat"><b>77.2</b><span>mean over 15 multimodal retrieval benchmarks (next best: Voyage-3.5-mm at 70.0)</span></div>
+      <div class="stat"><b>69.9</b><span>MTEB (Multilingual) task mean, up from 68.4 for the text-only Gemini Embedding</span></div>
+      <div class="stat"><b>84.0</b><span>MTEB (Code) mean, up from 76.0</span></div>
+      <div class="stat"><b>+5.0</b><span>cross-lingual audio retrieval gain from embedding raw audio instead of transcribing it first</span></div>
+    </div>
   </div>
+</header>
 
-  <h2>Abstract</h2>
-  <p>
-    Gemini Embedding 2 is a <strong>native multimodal embedding model</strong> built on top of Gemini that
-    embeds <strong>video, audio, image, and text</strong> into a single unified representation space.
-    Trained with large-scale contrastive learning in a multi-task, multi-stage setup, it achieves
-    state-of-the-art results on a wide range of retrieval benchmarks and demonstrates strong
-    zero-shot transfer to specialized domains such as astronomy, bioscience, fine arts, and culinary.
-  </p>
+<nav class="toc"><div class="wrap">
+  <a href="#why">Why it matters</a>
+  <a href="#arch">Architecture</a>
+  <a href="#mrl">Matryoshka dims</a>
+  <a href="#loss">Training objective</a>
+  <a href="#recipe">Training recipe</a>
+  <a href="#results">Results</a>
+  <a href="#audio">Audio</a>
+  <a href="#ablations">Ablations</a>
+  <a href="#caveats">Caveats</a>
+</div></nav>
 
-  <h2>Key Contributions</h2>
-  <ul>
-    <li>
-      <strong>Unified multimodal embedding space:</strong> A single model that encodes video, audio,
-      image, and text into the same vector space, enabling cross-modal retrieval out of the box.
-    </li>
-    <li>
-      <strong>Built on Gemini:</strong> Leverages the Gemini foundation model, inheriting its native
-      multimodal understanding rather than bolting modalities on after the fact.
-    </li>
-    <li>
-      <strong>Multi-task, multi-stage training:</strong> Uses large-scale contrastive learning across
-      a diverse mix of tasks and stages to produce robust, general-purpose embeddings.
-    </li>
-    <li>
-      <strong>State-of-the-art retrieval performance:</strong> Top results across image-text, video-text,
-      multilingual, and code retrieval benchmarks.
-    </li>
-    <li>
-      <strong>Strong zero-shot domain transfer:</strong> Generalizes well to specialized domains
-      (astronomy, bioscience, fine arts, culinary) without domain-specific fine-tuning.
-    </li>
+<main class="wrap">
+
+<section id="why">
+  <h2>1. The problem: one index per modality</h2>
+  <p>An <b>embedding model</b> maps an input to a vector so that related inputs end up close together. Search, retrieval-augmented generation (RAG), recommendation, deduplication, and clustering all rest on this one operation: find the nearest neighbours of a query vector.</p>
+  <p>Production systems have usually needed a separate model for each modality: a text embedder for documents, a CLIP-style model for images, another for video, and a speech-to-text step before audio can be searched at all. Each model has its own vector space, so a text query cannot be compared directly with a video clip unless some bridge connects them.</p>
+  <p>Gemini Embedding 2 replaces that set of models with a single model and a single space. Inputs can also be <b>interleaved</b>. One input might be an image together with a question about it, or a slide that mixes a chart and its caption, and the result is still one vector.</p>
+  <div class="card">
+    <div class="small" style="margin-bottom:8px">Modalities that share the space</div>
+    <span class="pill t">text</span><span class="pill c">code</span><span class="pill i">image</span><span class="pill v">video</span><span class="pill a">audio</span><span class="pill d">documents / PDFs</span>
+    <span class="small">, plus any interleaved combination of them</span>
+  </div>
+</section>
+
+<section id="arch">
+  <h2>2. Architecture: a Gemini model with the decoder turned off</h2>
+  <p>The architecture is deliberately simple. The authors start from a Gemini model and change it in three places. Click each stage for details.</p>
+  <div class="card">
+    <div class="pipe" id="pipe">
+      <div class="stage" data-k="in"><div class="h">Inputs</div>text, image, video, audio, interleaved</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-k="tok"><div class="h">Gemini tokenization</div>every modality becomes tokens</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-k="tf"><div class="h">Transformer</div>init from Gemini, <b>bidirectional</b> attention</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-k="pool"><div class="h">Mean pool</div>average all token states</div>
+      <div class="arrow">→</div>
+      <div class="stage" data-k="proj"><div class="h">Linear projection</div>to 3,072 dims</div>
+    </div>
+    <div id="stageInfo" class="callout">Click a stage above.</div>
+  </div>
+  <p>Gemini already understands every modality, so the embedder gets that understanding without separate image or audio encoders being bolted on. The authors call Gemini initialization the embedder's <i>pre-training</i> stage. Everything that follows is adaptation.</p>
+  <div class="callout warn"><b>Not disclosed:</b> parameter count, number of layers, hidden size, context length, and per-modality input limits. The only input detail given is for video evaluation: frames are sampled at 1 FPS, up to 32 frames.</div>
+</section>
+
+<section id="mrl">
+  <h2>3. Matryoshka embeddings: one vector, three sizes</h2>
+  <p>The full embedding has 3,072 dimensions, which costs a lot to store for billions of items. With <b>Matryoshka Representation Learning (MRL)</b>, the model is trained so that the first <i>k</i> dimensions are a usable embedding by themselves. Like nested dolls, the smaller embedding sits inside the larger one. Training adds one contrastive loss for each prefix length, and the paper optimizes specifically for <b>768</b>, <b>1,536</b>, and <b>3,072</b>.</p>
+  <div class="card">
+    <div class="seg" id="mrlSeg">
+      <button data-d="768">768 dims</button>
+      <button data-d="1536">1,536 dims</button>
+      <button data-d="3072" class="on">3,072 dims</button>
+    </div>
+    <div class="vec" id="vec"></div>
+    <div class="small" id="mrlText"></div>
+  </div>
+  <p class="small">Each cell stands for 64 dimensions. To get a smaller embedding you truncate and re-normalize, with no retraining or second model. The paper does not report retrieval quality separately for each truncation size, so this widget shows storage only.</p>
+</section>
+
+<section id="loss">
+  <h2>4. Training objective: contrastive learning (NCE)</h2>
+  <p>The model is trained on (query, positive) pairs, sometimes with an added <b>hard negative</b>. For each query, the loss is a softmax over cosine similarities divided by a temperature τ, and it pushes probability toward the correct target. Every other target in the batch serves as a free negative (<b>in-batch negatives</b>).</p>
+  <p>The paper adds two details:</p>
+  <ul class="tight">
+    <li><b>False-negative masking.</b> When the same query or positive appears more than once in a batch, those copies are masked out instead of being treated as negatives. This matters most for classification tasks with few labels, where many items in a batch share the same "answer".</li>
+    <li><b>Instruction dropout.</b> Training inputs usually carry a task instruction (for example, "retrieve a caption for this image"). That instruction is randomly dropped during training so the model still works when users send no instruction.</li>
   </ul>
+  <div class="card">
+    <h3 style="margin-top:0">Toy demo: how the softmax over a batch behaves</h3>
+    <p class="small">The query is a <span class="pill t">text</span> caption, "a dog catching a frisbee on a beach". The similarity values are made up for illustration and are not from the paper (the paper does not report τ).</p>
+    <label class="ctl">Temperature τ <input type="range" id="tau" min="0.01" max="0.5" step="0.01" value="0.05"><span class="mono" id="tauV"></span></label>
+    <label class="ctl"><input type="checkbox" id="mask" checked> Mask duplicate positive in batch (false-negative masking)</label>
+    <div class="sims" id="sims"></div>
+    <p class="small" style="margin-top:10px" id="lossV"></p>
+    <p class="small">A lower τ makes the softmax sharper, so the loss concentrates on the hardest negatives. Turn off masking and the second copy of the correct image is counted as a negative. The model is then penalized for ranking a correct answer highly, which is the problem masking fixes.</p>
+  </div>
+</section>
 
-  <h2>Key Benchmark Results</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Benchmark</th>
-        <th>Modality / Task</th>
-        <th>Metric</th>
-        <th>Score</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>MSCOCO</td>
-        <td>Image &harr; Text retrieval</td>
-        <td>R@1</td>
-        <td class="score">62.9</td>
-      </tr>
-      <tr>
-        <td>Vatex</td>
-        <td>Video &harr; Text retrieval</td>
-        <td>NDCG@10</td>
-        <td class="score">68.8</td>
-      </tr>
-      <tr>
-        <td>MTEB (Multilingual)</td>
-        <td>Text retrieval (many languages)</td>
-        <td>Avg score</td>
-        <td class="score">69.9</td>
-      </tr>
-      <tr>
-        <td>MTEB (Code)</td>
-        <td>Code retrieval</td>
-        <td>Avg score</td>
-        <td class="score">84.0</td>
-      </tr>
-    </tbody>
-  </table>
+<section id="recipe">
+  <h2>5. Training recipe: three stages</h2>
+  <ol class="steps">
+    <li><b>Pre-fine-tuning (PFT).</b> Large batches of noisy, web-scale query–target pairs, covering <span class="pill i">image</span><span class="pill t">text</span><span class="pill c">code</span> only. Each batch contains one task, and tasks are sampled at fixed rates. This stage aligns the model's representations to work as embeddings.</li>
+    <li><b>Fine-tuning (FT).</b> Cleaner, task-specific data that often includes (query, positive, hard negative) triplets, across <span class="pill t">text</span><span class="pill c">code</span><span class="pill d">docs</span><span class="pill i">image</span><span class="pill a">audio</span><span class="pill v">video</span>. Batch sizes are tuned per task and mixture rates are set empirically. The authors say that balancing modalities here is sensitive to these choices.</li>
+    <li><b>Model souping.</b> The final model averages parameters from several checkpoints: from one run, from different runs, and with weighted averages. Section 8 shows that this lets a model gain on one domain without losing much on others.</li>
+  </ol>
+  <p><b>Synthetic data.</b> Gemini itself is used to generate and refine training data. The code ablation (Section 8) shows this is the single largest lever reported in the paper.</p>
+  <p>According to the paper's Figure 3, FT improves on PFT on most benchmarks. The gain is small for images, which PFT already covered, and largest for video, which PFT never saw.</p>
+  <div class="callout warn"><b>Not disclosed:</b> dataset sizes, exact mixture weights, step counts, batch sizes, and the temperature.</div>
+</section>
 
-  <h2>Potential Use Cases</h2>
-  <div class="use-cases">
-    <div class="use-case">
-      <h4>Retrieval-Augmented Generation</h4>
-      <p>Power RAG pipelines with high-quality multimodal retrieval over text, images, audio, and video.</p>
+<section id="results">
+  <h2>6. Results: multimodal retrieval</h2>
+  <p>Table 1 compares Gemini Embedding 2 with three commercial multimodal embedders: <b>Amazon Nova MME</b>, <b>Voyage-3.5-multimodal</b>, and Google's earlier <b>multimodalembedding@001</b>. Pick a group:</p>
+  <div class="card">
+    <div class="seg" id="benchSeg"></div>
+    <div class="legend">
+      <span><i style="background:#3b5bdb"></i>Gemini Embedding 2</span>
+      <span><i style="background:#f08c00"></i>Amazon Nova MME</span>
+      <span><i style="background:#868e96"></i>Voyage-3.5-mm</span>
+      <span><i style="background:#ced4da"></i>multimodalembedding@001</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#ddd,#ddd 3px,#f7f7f7 3px,#f7f7f7 6px)"></i>not reported</span>
     </div>
-    <div class="use-case">
-      <h4>Recommendation</h4>
-      <p>Build content and product recommenders that reason across modalities in a shared embedding space.</p>
-    </div>
-    <div class="use-case">
-      <h4>Search</h4>
-      <p>Enable semantic search where queries and documents can be any combination of modalities.</p>
-    </div>
-    <div class="use-case">
-      <h4>Specialized Domains</h4>
-      <p>Zero-shot deployment in domains like astronomy, bioscience, fine arts, and culinary.</p>
-    </div>
+    <div class="bars" id="bars"></div>
+    <p class="small" id="benchNote"></p>
+  </div>
+  <p>Gemini Embedding 2 ranks first on 13 of the 15 benchmarks. Voyage-3.5-mm leads on the other two, both narrowly: Flickr30k text→image (89.9 vs 89.1) and ViDoRe V2 document retrieval (65.5 vs 64.9). The largest margins are on video: YouCook2 goes from 34.9 for the best baseline to 52.5, and Vatex from 60.3 to 68.8.</p>
+
+  <h3>Text and code (MTEB)</h3>
+  <p>Adding modalities often costs text quality. Here text and code scores <i>rise</i> compared with Google's previous text-only Gemini Embedding.</p>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <tr><th>Benchmark</th><th>Gemini Emb. 2</th><th>Gemini Emb. (prev, text-only)</th><th>Nova MME</th><th>Voyage</th></tr>
+      <tr><td>MTEB Multilingual, mean (task)</td><td class="best">69.9</td><td>68.4</td><td>63.8</td><td>58.5 <span class="small">(voyage-3.5)</span></td></tr>
+      <tr><td>MTEB Multilingual, mean (type)</td><td class="best">61.2</td><td>51.9</td><td>59.6</td><td>n/a</td></tr>
+      <tr><td>MTEB Code, mean</td><td class="best">84.0</td><td>76.0</td><td>n/a</td><td>n/a</td></tr>
+      <tr><td>CoIR, mean</td><td class="best">82.3</td><td>73.9</td><td>n/a</td><td>78.5 <span class="small">(voyage-code-3)</span></td></tr>
+    </table>
   </div>
 
-  <h2>Read the Paper</h2>
-  <p>For full details, methodology, and additional results, check out the paper on arXiv:</p>
-  <a class="arxiv-link" href="https://arxiv.org/abs/2605.27295" target="_blank" rel="noopener noreferrer">
-    View on arXiv &rarr;
-  </a>
+  <h3>Zero-shot specialized domains</h3>
+  <p>The paper also tests image→text retrieval (R@5) in niche domains without domain-specific instructions, comparing against the best open contrastive models (CLIP, SigLIP2, ALIGN, TIPS) and Voyage.</p>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <tr><th>Domain</th><th>Gemini Emb. 2</th><th>Strongest baseline</th><th>Gap</th></tr>
+      <tr><td>MicroVQA (microscopy)</td><td class="best">79.3</td><td>53.3 <span class="small">Voyage-3.5-mm</span></td><td class="up">+26.0</td></tr>
+      <tr><td>ArtCap (artwork)</td><td class="best">67.7</td><td>65.2 <span class="small">TIPS-Giant</span></td><td class="up">+2.5</td></tr>
+      <tr><td>AstroLLaVA (astronomy)</td><td class="best">64.4</td><td>31.6 <span class="small">CLIP-Large-336</span></td><td class="up">+32.8</td></tr>
+      <tr><td>Recipe1M (ingredients)</td><td class="best">90.2</td><td>81.2 <span class="small">SigLIP2-Giant</span></td><td class="up">+9.0</td></tr>
+      <tr><td>Recipe1M (instructions)</td><td class="best">92.1</td><td>80.4 <span class="small">SigLIP2-Giant</span></td><td class="up">+11.7</td></tr>
+    </table>
+  </div>
+  <p>The largest gaps are in microscopy and astronomy, where CLIP-style models trained on web image–caption pairs have seen little relevant data. In these domains the knowledge Gemini brings from pre-training appears to account for most of the advantage.</p>
+</section>
 
-</div>
+<section id="audio">
+  <h2>7. Audio: skip the transcript</h2>
+  <p>The usual way to search speech is a <b>cascade</b>: run speech recognition (ASR), then embed the transcript. Gemini Embedding 2 can instead embed the audio directly. The paper compares both setups with the same model on the MSEB benchmark (MRR@10).</p>
+  <div class="grid2">
+    <div class="card">
+      <b>Cascade</b>
+      <div class="flow"><span class="box">audio</span>→<span class="box lossy">ASR</span>→<span class="box">text</span>→<span class="box">embed</span></div>
+      <p class="small">Recognition errors, accent problems, and lost prosody all carry into the embedding.</p>
+      <table>
+        <tr><td>In-language</td><td>73.58</td></tr>
+        <tr><td>Cross-language</td><td>67.55</td></tr>
+        <tr><td><b>Average</b></td><td><b>70.40</b></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <b>Native audio</b>
+      <div class="flow"><span class="box">audio</span>→<span class="box">embed</span></div>
+      <p class="small">A single step that works directly on the audio signal.</p>
+      <table>
+        <tr><td>In-language</td><td class="best">75.58 <span class="up">+2.00</span></td></tr>
+        <tr><td>Cross-language</td><td class="best">72.56 <span class="up">+5.01</span></td></tr>
+        <tr><td><b>Average</b></td><td class="best">73.99 <span class="up">+3.59</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <p>The gain is larger across languages. One likely reason is that the cascade compounds two errors: recognition mistakes in a foreign-language clip, then a cross-lingual match on imperfect text. The paper does not name the ASR system used in the cascade, so the baseline is hard to judge.</p>
+</section>
 
-<footer>
-  Explainer generated for arXiv:2605.27295 &mdash; Gemini Embedding 2
-</footer>
+<section id="ablations">
+  <h2>8. Ablations: what actually helped</h2>
+  <h3>Synthetic data from Gemini</h3>
+  <p>On three MTEB code tasks (all without souping):</p>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <tr><th>Model</th><th>CodeFeedbackMT</th><th>CodeFeedbackST</th><th>SyntheticText2SQL</th><th>Avg</th></tr>
+      <tr><td>Previous Gemini Embedding</td><td>56.3</td><td>85.3</td><td>70.0</td><td>70.5</td></tr>
+      <tr><td>GE2, no synthetic data</td><td>57.9</td><td>85.5</td><td>75.7</td><td>73.0</td></tr>
+      <tr><td>GE2, with synthetic data</td><td class="best">92.3</td><td class="best">88.6</td><td class="best">78.1</td><td class="best">86.3</td></tr>
+    </table>
+  </div>
+  <p>The new model alone accounts for +2.5. Synthetic data adds another +13.3, almost all of it on multi-turn CodeFeedback (57.9 → 92.3).</p>
 
+  <h3>Specialize, then soup</h3>
+  <p>The authors fine-tune further on in-domain video data, then average those weights back into the base model. Use the toggle to compare variants (NDCG@10, change vs baseline).</p>
+  <div class="card">
+    <div class="seg" id="soupSeg"></div>
+    <div id="soupBars" class="bars"></div>
+    <p class="small" id="soupNote"></p>
+  </div>
+  <p>Fine-tuning on MSR-VTT and Vatex data improves those two benchmarks, but YouCook2, which was held out, drops slightly. Averaging the fine-tuned weights back into the base model keeps most of the in-domain gain and turns every benchmark positive. The 1:1 soup outperforms the 2:1 soup on all three. Souping gives a simple way to add a specialization without retraining from scratch.</p>
+</section>
+
+<section id="caveats">
+  <h2>9. Caveats and open questions</h2>
+  <ul class="tight">
+    <li><b>Closed model, thin recipe.</b> The model is built on proprietary Gemini, and the paper omits model size, temperature, data sizes, and mixture weights. Outsiders cannot reproduce it.</li>
+    <li><b>Baselines.</b> Several baseline numbers are self-reported or were collected through commercial APIs. Open multimodal embedders (for example, VLM-based ones) appear only in the specialized-domain table.</li>
+    <li><b>Not best everywhere.</b> Voyage-3.5-mm still slightly leads on visual document retrieval (ViDoRe V2), the setting many enterprise RAG systems care about most.</li>
+    <li><b>Weak sub-tasks.</b> Scores on instruction-following retrieval are very low (Core17 6.44, News21 2.64, Robust04 −0.44), and so are some reasoning-heavy tasks (SpartQA 8.74, TempReasonL1 7.77).</li>
+    <li><b>Small inconsistency.</b> The baseline video scores in the souping ablation (MSR-VTT 68.2, YouCook2 55.9, Vatex 69.2) differ from Table 1 (68.0, 52.5, 68.8). This is probably a different checkpoint or evaluation setup, and the paper does not explain it.</li>
+    <li><b>No MRL quality curve.</b> MRL is trained at 768, 1,536, and 3,072 dimensions, but the paper reports no results for the truncated sizes.</li>
+  </ul>
+  <div class="callout"><b>Bottom line.</b> The paper shows that converting a strong multimodal LLM into an embedder (bidirectional attention, mean pooling, contrastive training in stages, synthetic data, and souping) produces one vector space that is competitive or best across text, code, images, video, audio, and documents. For practitioners, the useful results are that you can build a single index for all content types, and that you can index audio directly without a transcription step.</div>
+  <p class="small">Future directions named by the authors: training with ranking signals from search systems, and end-to-end fine-tuning for agentic RAG.</p>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  Explainer of <i>Gemini Embedding 2: A Native Multimodal Embedding Model from Gemini</i> (arXiv:2605.27295v1). All benchmark numbers come from the paper's tables. The contrastive-loss demo uses illustrative values only. This is an independent summary, not affiliated with the authors.
+</div></footer>
+
+<script>
+// ---------- Architecture stages ----------
+const stageText = {
+  in: "<b>Any input, any mix.</b> One text string, one image, one video clip, raw audio, a PDF page, or an interleaved sequence such as image + question. Every input, whatever its type, comes out as a single vector.",
+  tok: "<b>Native tokenization.</b> Gemini already converts images, video frames, and audio into tokens, so the embedder uses the same front end. Formats Gemini supports natively need no separate encoder. For video evaluation, frames are sampled at 1 FPS, up to 32 frames.",
+  tf: "<b>Gemini weights, bidirectional attention.</b> A generative LLM uses causal attention, where each token sees only the tokens before it. For embedding there is nothing to generate, so the mask is removed and every token can attend to the full input. The weights are initialized from Gemini, which the authors treat as the pre-training stage.",
+  pool: "<b>Mean pooling.</b> The final hidden states of all tokens are averaged into one vector. This follows earlier work on adapting decoder LLMs into embedders, and is an alternative to taking the last token or a [CLS] token.",
+  proj: "<b>Linear projection to 3,072 dimensions.</b> A newly initialized linear layer maps the pooled vector to the output size. Trained with Matryoshka losses, its first 768 or 1,536 dimensions also work as smaller embeddings. Comparisons use cosine similarity."
+};
+document.querySelectorAll('#pipe .stage').forEach(s => s.addEventListener('click', () => {
+  document.querySelectorAll('#pipe .stage').forEach(x => x.classList.remove('on'));
+  s.classList.add('on');
+  document.getElementById('stageInfo').innerHTML = stageText[s.dataset.k];
+}));
+document.querySelector('#pipe .stage[data-k="tf"]').click();
+
+// ---------- MRL ----------
+const vec = document.getElementById('vec');
+for (let i = 0; i < 48; i++) vec.appendChild(document.createElement('div'));
+function setMRL(d) {
+  const n = d / 64;
+  [...vec.children].forEach((c, i) => {
+    c.className = i < n ? 'kept' + (i >= 24 ? ' far' : i >= 12 ? ' mid' : '') : '';
+  });
+  const bytes = d * 4;
+  const perBillion = (bytes * 1e9 / 1e12).toFixed(2);
+  document.getElementById('mrlText').innerHTML =
+    `Keeping the first <b>${d.toLocaleString()}</b> dims: ${bytes.toLocaleString()} bytes per vector in float32, about <b>${perBillion} TB</b> per billion items (${Math.round(d/3072*100)}% of full size).`;
+  document.querySelectorAll('#mrlSeg button').forEach(b => b.classList.toggle('on', +b.dataset.d === d));
+}
+document.querySelectorAll('#mrlSeg button').forEach(b => b.addEventListener('click', () => setMRL(+b.dataset.d)));
+setMRL(3072);
+
+// ---------- Contrastive toy ----------
+const cands = [
+  { name: "photo: dog catching frisbee, beach", mod: "image", s: 0.82, pos: true },
+  { name: "same photo, duplicated in batch", mod: "image", s: 0.80, dup: true },
+  { name: "photo: dog sleeping on a couch", mod: "image", s: 0.55, hard: true },
+  { name: "video: kids playing frisbee in park", mod: "video", s: 0.61, hard: true },
+  { name: "audio: waves crashing", mod: "audio", s: 0.34 },
+  { name: "text: quarterly earnings report", mod: "text", s: 0.05 },
+  { name: "photo: city skyline at night", mod: "image", s: 0.12 },
+];
+function renderSims() {
+  const tau = +document.getElementById('tau').value;
+  const mask = document.getElementById('mask').checked;
+  document.getElementById('tauV').textContent = tau.toFixed(2);
+  const active = cands.filter(c => !(mask && c.dup));
+  const z = active.map(c => Math.exp(c.s / tau));
+  const Z = z.reduce((a, b) => a + b, 0);
+  const pPos = Math.exp(cands[0].s / tau) / Z;
+  const box = document.getElementById('sims');
+  box.innerHTML = '';
+  cands.forEach(c => {
+    const masked = mask && c.dup;
+    const p = masked ? 0 : Math.exp(c.s / tau) / Z;
+    const row = document.createElement('div');
+    row.className = 'simrow' + (c.pos ? ' pos' : '') + (masked ? ' masked' : '');
+    const tag = c.pos ? '<span class="tag">positive</span>' : c.dup ? '<span class="tag">false neg.</span>' : c.hard ? '<span class="tag">hard neg.</span>' : '';
+    row.innerHTML = `<div>${c.name}${tag}</div><div class="mono small">cos ${c.s.toFixed(2)}</div><div class="pb"><div style="width:${(p*100).toFixed(1)}%"></div></div><div class="mono small">${(p*100).toFixed(1)}%</div>`;
+    box.appendChild(row);
+  });
+  document.getElementById('lossV').innerHTML = `Probability assigned to the positive: <b>${(pPos*100).toFixed(1)}%</b> · loss = −log p = <b class="mono">${(-Math.log(pPos)).toFixed(3)}</b>`;
+}
+document.getElementById('tau').addEventListener('input', renderSims);
+document.getElementById('mask').addEventListener('change', renderSims);
+renderSims();
+
+// ---------- Benchmarks (Table 1) ----------
+// [name, metric, GE2, Nova, Voyage, Legacy]; null = not reported
+const groups = {
+  "Text → Image": [
+    ["MSCOCO", "R@1", 62.9, 57.2, 58.1, 53.1],
+    ["Flickr30k", "R@1", 89.1, 81.6, 89.9, 81.4],
+    ["DOCCI", "R@1", 93.4, 84.0, 83.8, null],
+    ["TextCaps", "R@1", 89.6, 76.0, 79.4, 74.0],
+  ],
+  "Image → Text": [
+    ["MSCOCO", "R@1", 78.8, 68.3, 74.5, 68.2],
+    ["Flickr30k", "R@1", 97.4, 87.5, 94.5, 94.0],
+    ["DOCCI", "R@1", 91.3, 76.5, 77.4, null],
+    ["TextCaps", "R@1", 97.4, 88.9, 88.6, 88.1],
+  ],
+  "Text → Video": [
+    ["Vatex", "NDCG@10", 68.8, 60.3, 55.2, 54.9],
+    ["MSR-VTT", "NDCG@10", 68.0, 67.0, 63.0, 57.9],
+    ["YouCook2", "NDCG@10", 52.5, 34.7, 31.4, 34.9],
+  ],
+  "Image → Image": [
+    ["GUIEC", "R@1", 79.4, 68.6, 69.4, 69.5],
+    ["ImageNet", "R@1", 83.6, null, null, 71.8],
+  ],
+  "Docs & VQA": [
+    ["ViDoRe V2", "NDCG@10", 64.9, 60.6, 65.5, 28.9],
+    ["EncyclopedicVQA", "R@20 (I+T→T)", 71.5, null, 58.6, null],
+  ],
+  "Overall": [
+    ["Overall mean", "15 tasks", 77.2, 68.2, 70.0, 64.1],
+    ["T→I mean", "", 80.5, 71.6, 75.8, 69.5],
+    ["I→T mean", "", 91.2, 81.6, 85.9, 83.4],
+    ["T→V mean", "", 63.1, 54.0, 49.9, 49.2],
+  ],
+};
+const colors = ["#3b5bdb", "#f08c00", "#868e96", "#ced4da"];
+const models = ["Gemini Emb. 2", "Nova MME", "Voyage-3.5-mm", "mm-embedding@001"];
+const notes = {
+  "Text → Image": "Flickr30k is the only text→image benchmark where a baseline (Voyage) edges ahead.",
+  "Image → Text": "Clean sweep. Image→text has the largest average margin among the image tasks (91.2 vs 85.9 mean).",
+  "Text → Video": "Video shows the biggest jump. YouCook2 (cooking instructions) rises by about 17.6 points over the best baseline.",
+  "Image → Image": "ImageNet was reported only for Gemini models.",
+  "Docs & VQA": "ViDoRe V2 (visual document retrieval) is the one area where Voyage still narrowly leads.",
+  "Overall": "Unweighted means from Table 1 of the paper.",
+};
+const seg = document.getElementById('benchSeg');
+function renderBench(g) {
+  [...seg.children].forEach(b => b.classList.toggle('on', b.textContent === g));
+  const bars = document.getElementById('bars');
+  bars.innerHTML = '';
+  groups[g].forEach(r => {
+    const row = document.createElement('div'); row.className = 'row';
+    const vals = r.slice(2);
+    const best = Math.max(...vals.filter(v => v != null));
+    row.innerHTML = `<div class="lbl">${r[0]}<small>${r[1]}</small></div>`;
+    const set = document.createElement('div'); set.className = 'set';
+    vals.forEach((v, i) => {
+      const b = document.createElement('div');
+      b.className = 'bar' + (v == null ? ' na' : '');
+      b.style.background = colors[i];
+      b.style.width = '0%';
+      b.title = models[i] + ': ' + (v == null ? 'not reported' : v);
+      b.innerHTML = `<em>${v == null ? 'n/a' : (v === best ? '<b style="color:#1d1f24">' + v.toFixed(1) + '</b>' : v.toFixed(1))}</em>`;
+      set.appendChild(b);
+      if (v != null) requestAnimationFrame(() => requestAnimationFrame(() => b.style.width = (v * 0.85) + '%'));
+    });
+    row.appendChild(set);
+    bars.appendChild(row);
+  });
+  document.getElementById('benchNote').textContent = notes[g];
+}
+Object.keys(groups).forEach(g => {
+  const b = document.createElement('button'); b.textContent = g;
+  b.addEventListener('click', () => renderBench(g)); seg.appendChild(b);
+});
+renderBench("Overall");
+
+// ---------- Souping (Table 6) ----------
+const soup = {
+  "GE2 baseline": [68.2, 55.9, 69.2],
+  "FT + MSR-VTT data": [75.0, 56.1, 71.7],
+  "FT + MSR-VTT & Vatex": [76.1, 55.3, 79.5],
+  "Soup 2:1 (base:FT)": [71.7, 56.1, 74.5],
+  "Soup 1:1": [73.7, 56.8, 76.8],
+};
+const soupNotes = {
+  "GE2 baseline": "Starting point used for this ablation.",
+  "FT + MSR-VTT data": "Training on MSR-VTT data gives a large in-domain gain (+6.8) and helps Vatex too.",
+  "FT + MSR-VTT & Vatex": "Biggest in-domain gains, but held-out YouCook2 regresses (−0.6). This is the specialization tax.",
+  "Soup 2:1 (base:FT)": "Weight-averaged with the base model (2 parts base, 1 part FT). All three benchmarks improve.",
+  "Soup 1:1": "Equal weights. All three improve, and YouCook2 is now the best of any variant (+0.9).",
+};
+const bench = ["MSR-VTT", "YouCook2", "Vatex"];
+const sseg = document.getElementById('soupSeg');
+function renderSoup(k) {
+  [...sseg.children].forEach(b => b.classList.toggle('on', b.textContent === k));
+  const box = document.getElementById('soupBars'); box.innerHTML = '';
+  soup[k].forEach((v, i) => {
+    const base = soup["GE2 baseline"][i], d = v - base;
+    const row = document.createElement('div'); row.className = 'row';
+    const cls = d > 0.05 ? 'up' : d < -0.05 ? 'down' : 'small';
+    const dtxt = k === "GE2 baseline" ? '' : ` <span class="${cls}">${d >= 0 ? '+' : ''}${d.toFixed(1)}</span>`;
+    row.innerHTML = `<div class="lbl">${bench[i]}<small>NDCG@10</small></div>`;
+    const set = document.createElement('div'); set.className = 'set';
+    const b = document.createElement('div'); b.className = 'bar';
+    b.style.background = k.startsWith('Soup') ? '#2b8a3e' : k.startsWith('FT') ? '#f08c00' : '#3b5bdb';
+    b.style.width = (base * 0.85) + '%';
+    b.innerHTML = `<em>${v.toFixed(1)}${dtxt}</em>`;
+    set.appendChild(b); row.appendChild(set); box.appendChild(row);
+    requestAnimationFrame(() => requestAnimationFrame(() => b.style.width = (v * 0.85) + '%'));
+  });
+  document.getElementById('soupNote').textContent = soupNotes[k];
+}
+Object.keys(soup).forEach(k => {
+  const b = document.createElement('button'); b.textContent = k;
+  b.addEventListener('click', () => renderSoup(k)); sseg.appendChild(b);
+});
+renderSoup("FT + MSR-VTT & Vatex");
+</script>
 </body>
 </html>

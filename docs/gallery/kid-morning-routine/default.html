@@ -2,211 +2,505 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Morning Routine!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Morning Routine Chart</title>
 <style>
-  * {
+  @page { size: letter landscape; margin: 0.35in; }
+
+  :root {
+    --ink: #2b2d42;
+    --sun: #ffb703;
+    --sun-deep: #fb8500;
+    --sky: #8ecae6;
+    --sky-deep: #219ebc;
+    --mint: #b7e4c7;
+    --grass: #2d9f5a;
+    --paper: #fffdf7;
+    --line: #e7dcc7;
+    --gold: #f6c32b;
+    --gold-edge: #c98a00;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    background: #f3efe6;
+    color: var(--ink);
+    font-family: "Chalkboard SE", "Comic Sans MS", "Comic Neue", "Trebuchet MS", "Segoe UI", sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
-  body {
-    font-family: "Comic Sans MS", "Chalkboard SE", "Trebuchet MS", sans-serif;
-    background: linear-gradient(135deg, #ffd1dc 0%, #c1e7ff 50%, #fff5ba 100%);
-    min-height: 100vh;
-    padding: 20px;
-    color: #333;
+
+  .toolbar {
+    max-width: 10.3in;
+    margin: 18px auto 0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 14px;
   }
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 30px;
-    padding: 40px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    border: 5px dashed #ffb6c1;
+  .toolbar span { margin-right: auto; opacity: 0.75; }
+  .toolbar button {
+    font: inherit;
+    font-weight: 700;
+    border: 0;
+    border-radius: 999px;
+    padding: 9px 18px;
+    cursor: pointer;
+    background: var(--sky-deep);
+    color: #fff;
+    box-shadow: 0 3px 0 #16708a;
   }
+  .toolbar button.secondary { background: #fff; color: var(--ink); box-shadow: 0 3px 0 #cfc6b4; }
+  .toolbar button:active { transform: translateY(2px); box-shadow: none; }
+
+  .sheet {
+    width: 10.3in;
+    min-height: 7.8in;
+    margin: 14px auto 30px;
+    padding: 0.3in 0.35in 0.25in;
+    background: var(--paper);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(60, 40, 0, 0.12);
+    position: relative;
+    overflow: hidden;
+    border: 6px solid var(--sun);
+  }
+
+  /* Header */
   header {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  h1 {
-    font-size: 3em;
-    color: #ff6b9d;
-    text-shadow: 3px 3px 0px #ffe066;
-    margin-bottom: 10px;
-  }
-  .subtitle {
-    font-size: 1.4em;
-    color: #5b9bd5;
-    margin-bottom: 20px;
-  }
-  .routine-list {
-    display: grid;
-    gap: 15px;
-  }
-  .task {
     display: flex;
     align-items: center;
-    background: #fffbe6;
-    border-radius: 20px;
-    padding: 20px;
-    border: 3px solid #ffd700;
+    gap: 18px;
+    margin-bottom: 0.14in;
+  }
+  .sun {
+    width: 0.95in;
+    height: 0.95in;
+    flex: none;
+  }
+  .titles { flex: 1; }
+  h1 {
+    margin: 0;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    color: var(--sun-deep);
+  }
+  h1 .accent { color: var(--sky-deep); }
+  .name-line {
+    margin-top: 8px;
+    font-size: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .name-line .blank {
+    display: inline-block;
+    min-width: 3.2in;
+    border-bottom: 3px dotted #b9ab90;
+    padding: 0 6px 2px;
+    font-size: 24px;
+    font-weight: 700;
+    outline: none;
+    color: var(--sky-deep);
+  }
+  .name-line .blank:empty::before { content: "\00a0"; }
+
+  .week-of {
+    text-align: right;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .week-of .blank {
+    display: inline-block;
+    min-width: 1.4in;
+    border-bottom: 2px dotted #b9ab90;
+    outline: none;
+    text-align: left;
+  }
+
+  /* Chart */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    border: 3px solid var(--sky);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  col.task-col { width: 3.25in; }
+
+  thead th {
+    background: var(--sky);
+    color: #10394a;
+    font-size: 19px;
+    padding: 7px 4px;
+    font-weight: 700;
+  }
+  thead th:first-child { text-align: left; padding-left: 16px; }
+
+  tbody td {
+    border-top: 2px solid var(--line);
+    text-align: center;
+    vertical-align: middle;
+    height: 0.47in;
+    padding: 0;
+  }
+  tbody td + td { border-left: 2px dashed var(--line); }
+  tbody tr:nth-child(odd) td { background: #fff8e8; }
+  tbody tr:nth-child(even) td { background: #ffffff; }
+
+  .task {
+    text-align: left;
+    padding-left: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .task .num {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--sun);
+    color: #fff;
+    font-size: 13px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    vertical-align: 3px;
+  }
+  .task .icon {
+    font-size: 24px;
+    margin-right: 8px;
+    vertical-align: -3px;
+  }
+
+  /* Checkboxes */
+  .box {
+    width: 0.34in;
+    height: 0.34in;
+    border: 3px solid #9fb7c2;
+    border-radius: 8px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.12s, background 0.12s, border-color 0.12s;
+  }
+  .box:hover { transform: scale(1.08); border-color: var(--sky-deep); }
+  .box svg { width: 80%; height: 80%; opacity: 0; transform: scale(0.4); transition: all 0.15s; }
+  .box.checked { background: var(--mint); border-color: var(--grass); }
+  .box.checked svg { opacity: 1; transform: scale(1); }
+
+  /* Star row */
+  tr.star-row td {
+    background: #fff3c4 !important;
+    border-top: 3px solid var(--sun);
+    height: 0.72in;
+  }
+  tr.star-row .task { color: var(--sun-deep); font-size: 20px; }
+  .star {
+    width: 0.6in;
+    height: 0.6in;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
     transition: transform 0.2s;
   }
-  .task:hover {
-    transform: scale(1.02);
+  .star svg { width: 100%; height: 100%; display: block; }
+  .star .body { fill: #fff; stroke: #d9b45a; stroke-width: 3; stroke-dasharray: 5 4; transition: fill 0.2s; }
+  .star .shine { opacity: 0; }
+  .star.on .body { fill: url(#goldGrad); stroke: var(--gold-edge); stroke-dasharray: none; }
+  .star.on .shine { opacity: 1; }
+  .star.on { animation: pop 0.45s ease; }
+  @keyframes pop {
+    0% { transform: scale(0.6) rotate(-20deg); }
+    60% { transform: scale(1.2) rotate(8deg); }
+    100% { transform: scale(1) rotate(0); }
   }
-  .task:nth-child(odd) {
-    background: #e6f7ff;
-    border-color: #87ceeb;
-  }
-  .task:nth-child(even) {
-    background: #ffe6f0;
-    border-color: #ffb6c1;
-  }
-  .checkbox {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #333;
-    border-radius: 10px;
-    background: white;
-    margin-right: 20px;
-    flex-shrink: 0;
-  }
-  .emoji {
-    font-size: 2.5em;
-    margin-right: 15px;
-  }
-  .task-info {
-    flex-grow: 1;
-  }
-  .task-name {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #444;
-  }
-  .task-time {
-    font-size: 1.1em;
-    color: #888;
-    margin-top: 4px;
-  }
-  .star {
-    font-size: 1.8em;
-  }
+
+  /* Footer */
   footer {
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px;
-    background: linear-gradient(90deg, #ffe066, #ffb6c1);
-    border-radius: 20px;
-    font-size: 1.3em;
-    color: #444;
-    font-weight: bold;
+    margin-top: 0.16in;
+    display: flex;
+    gap: 0.2in;
+    align-items: stretch;
+  }
+  .card {
+    flex: 1;
+    border-radius: 14px;
+    padding: 9px 14px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card.reward { background: #fff3c4; border: 2px solid var(--sun); }
+  .card.cheer { background: #e3f4fb; border: 2px solid var(--sky); justify-content: center; font-weight: 700; font-size: 17px; color: #10566b; }
+  .card .mini-star { width: 26px; height: 26px; flex: none; }
+  .card .blank {
+    flex: 1;
+    border-bottom: 2px dotted #b9ab90;
+    min-height: 22px;
+    outline: none;
+    font-weight: 700;
+    color: var(--sun-deep);
+  }
+  .tally { font-weight: 700; white-space: nowrap; }
+
+  /* Corner doodles */
+  .doodle { position: absolute; pointer-events: none; opacity: 0.9; }
+  .doodle.cloud1 { top: 14px; right: 2.5in; width: 70px; }
+  .doodle.cloud2 { top: 44px; right: 1.75in; width: 46px; }
+
+  .hint-print { display: none; }
+
+  @media print {
+    html, body { background: #fff; }
+    .toolbar { display: none; }
+    .sheet {
+      margin: 0;
+      width: 100%;
+      min-height: 0;
+      height: 7.75in;
+      box-shadow: none;
+      border-radius: 18px;
+      page-break-inside: avoid;
+    }
+    .box:hover { transform: none; }
+    .star.on { animation: none; }
+  }
+
+  @media screen and (max-width: 1050px) {
+    .sheet { width: auto; margin: 14px; min-height: 0; }
+    .toolbar { margin: 14px 14px 0; }
+    col.task-col { width: 40%; }
+    .task { white-space: normal; font-size: 16px; }
+    h1 { font-size: 32px; }
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>My Morning Routine!</h1>
-      <p class="subtitle">Let's have a SUPER morning!</p>
-    </header>
-    <div class="routine-list">
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🌞</div>
-        <div class="task-info">
-          <div class="task-name">Wake Up!</div>
-          <div class="task-time">7:00 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🚽</div>
-        <div class="task-info">
-          <div class="task-name">Go Potty &amp; Wash Hands</div>
-          <div class="task-time">7:05 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🪥</div>
-        <div class="task-info">
-          <div class="task-name">Brush Teeth</div>
-          <div class="task-time">7:10 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">👕</div>
-        <div class="task-info">
-          <div class="task-name">Get Dressed</div>
-          <div class="task-time">7:15 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🥞</div>
-        <div class="task-info">
-          <div class="task-name">Eat Breakfast</div>
-          <div class="task-time">7:25 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">💇</div>
-        <div class="task-info">
-          <div class="task-name">Brush Hair</div>
-          <div class="task-time">7:40 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🎒</div>
-        <div class="task-info">
-          <div class="task-name">Pack Backpack</div>
-          <div class="task-time">7:45 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">👟</div>
-        <div class="task-info">
-          <div class="task-name">Put On Shoes &amp; Jacket</div>
-          <div class="task-time">7:50 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🤗</div>
-        <div class="task-info">
-          <div class="task-name">Hug Mom &amp; Dad</div>
-          <div class="task-time">7:55 AM</div>
-        </div>
-        <div class="star">⭐</div>
-      </div>
-      <div class="task">
-        <div class="checkbox"></div>
-        <div class="emoji">🚌</div>
-        <div class="task-info">
-          <div class="task-name">Leave for School</div>
-          <div class="task-time">8:00 AM</div>
-        </div>
-        <div class="star">⭐</div>
+
+<!-- Shared SVG definitions -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe680"/>
+      <stop offset="0.55" stop-color="#f6c32b"/>
+      <stop offset="1" stop-color="#e09a00"/>
+    </linearGradient>
+    <symbol id="checkShape" viewBox="0 0 24 24">
+      <path d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="#1f7a43" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="toolbar">
+  <span>Tip: tap a box to check it. Finish every task in a day to earn a gold star!</span>
+  <button class="secondary" id="clearBtn" type="button">Start fresh</button>
+  <button id="printBtn" type="button">Print chart</button>
+</div>
+
+<main class="sheet">
+  <!-- Little clouds -->
+  <svg class="doodle cloud1" viewBox="0 0 70 36" aria-hidden="true"><path d="M14 32 a12 12 0 0 1 2-23 a15 15 0 0 1 27-3 a11 11 0 0 1 17 9 a9 9 0 0 1-1 17 z" fill="#dff1f8"/></svg>
+  <svg class="doodle cloud2" viewBox="0 0 70 36" aria-hidden="true"><path d="M14 32 a12 12 0 0 1 2-23 a15 15 0 0 1 27-3 a11 11 0 0 1 17 9 a9 9 0 0 1-1 17 z" fill="#dff1f8"/></svg>
+
+  <header>
+    <svg class="sun" viewBox="0 0 100 100" aria-hidden="true">
+      <g stroke="#ffb703" stroke-width="6" stroke-linecap="round">
+        <line x1="50" y1="4" x2="50" y2="16"/><line x1="50" y1="84" x2="50" y2="96"/>
+        <line x1="4" y1="50" x2="16" y2="50"/><line x1="84" y1="50" x2="96" y2="50"/>
+        <line x1="17" y1="17" x2="26" y2="26"/><line x1="74" y1="74" x2="83" y2="83"/>
+        <line x1="17" y1="83" x2="26" y2="74"/><line x1="74" y1="26" x2="83" y2="17"/>
+      </g>
+      <circle cx="50" cy="50" r="27" fill="#ffd166" stroke="#fb8500" stroke-width="3"/>
+      <circle cx="41" cy="46" r="3.5" fill="#2b2d42"/>
+      <circle cx="59" cy="46" r="3.5" fill="#2b2d42"/>
+      <circle cx="35" cy="56" r="4" fill="#ff9e8a" opacity="0.7"/>
+      <circle cx="65" cy="56" r="4" fill="#ff9e8a" opacity="0.7"/>
+      <path d="M40 57 Q50 67 60 57" fill="none" stroke="#2b2d42" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+    <div class="titles">
+      <h1>My <span class="accent">Morning</span> Routine</h1>
+      <div class="name-line">
+        <span>Superstar:</span>
+        <span class="blank" id="kidName" contenteditable="true" spellcheck="false" aria-label="Child's name"></span>
       </div>
     </div>
-    <footer>
-      🎉 You did it! Have an AMAZING day! 🎉
-    </footer>
-  </div>
+    <div class="week-of">
+      Week of:<br>
+      <span class="blank" id="weekOf" contenteditable="true" spellcheck="false" aria-label="Week of">&nbsp;</span>
+    </div>
+  </header>
+
+  <table aria-label="Morning routine checklist">
+    <colgroup>
+      <col class="task-col">
+      <col><col><col><col><col><col><col>
+    </colgroup>
+    <thead>
+      <tr>
+        <th scope="col">I can do it!</th>
+        <th scope="col">Mon</th>
+        <th scope="col">Tue</th>
+        <th scope="col">Wed</th>
+        <th scope="col">Thu</th>
+        <th scope="col">Fri</th>
+        <th scope="col">Sat</th>
+        <th scope="col">Sun</th>
+      </tr>
+    </thead>
+    <tbody id="chartBody"></tbody>
+  </table>
+
+  <footer>
+    <div class="card reward">
+      <svg class="mini-star" viewBox="0 0 100 100"><path d="M50 6 L62.6 35.4 L94 38.2 L70.2 59 L77.4 90 L50 73.6 L22.6 90 L29.8 59 L6 38.2 L37.4 35.4 Z" fill="url(#goldGrad)" stroke="#c98a00" stroke-width="5" stroke-linejoin="round"/></svg>
+      <span class="tally"><span id="starCount">0</span> stars earned! When I get 5 stars I get:</span>
+      <span class="blank" contenteditable="true" spellcheck="false" aria-label="Reward"></span>
+    </div>
+    <div class="card cheer">Great job getting ready all by yourself! 🌈</div>
+  </footer>
+</main>
+
+<script>
+  const TASKS = [
+    { icon: "😊", label: "Wake up & stretch" },
+    { icon: "🛏️", label: "Make my bed" },
+    { icon: "🚽", label: "Potty & wash hands" },
+    { icon: "👕", label: "Get dressed" },
+    { icon: "🥣", label: "Eat breakfast" },
+    { icon: "🪥", label: "Brush my teeth" },
+    { icon: "💇", label: "Brush my hair" },
+    { icon: "🎒", label: "Pack my backpack" },
+    { icon: "👟", label: "Shoes & jacket on" }
+  ];
+  const DAYS = 7;
+  const STAR_PATH = "M50 6 L62.6 35.4 L94 38.2 L70.2 59 L77.4 90 L50 73.6 L22.6 90 L29.8 59 L6 38.2 L37.4 35.4 Z";
+  const STAR_SVG = `<svg viewBox="0 0 100 100"><path class="body" d="${STAR_PATH}" stroke-linejoin="round"/><path class="shine" d="M40 34 L46 22" stroke="#fff8d6" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`;
+  const STORE = "morning-routine-chart-v1";
+
+  const body = document.getElementById("chartBody");
+  let state = load();
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORE));
+      if (s && Array.isArray(s.checks)) return s;
+    } catch (e) {}
+    return { checks: TASKS.map(() => Array(DAYS).fill(false)), name: "", week: "", reward: "" };
+  }
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function build() {
+    body.innerHTML = "";
+    TASKS.forEach((t, r) => {
+      const tr = document.createElement("tr");
+      const th = document.createElement("td");
+      th.className = "task";
+      th.innerHTML = `<span class="num">${r + 1}</span><span class="icon">${t.icon}</span>${t.label}`;
+      tr.appendChild(th);
+      for (let d = 0; d < DAYS; d++) {
+        const td = document.createElement("td");
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "box" + (state.checks[r][d] ? " checked" : "");
+        b.setAttribute("aria-label", `${t.label}, day ${d + 1}`);
+        b.setAttribute("aria-pressed", state.checks[r][d]);
+        b.innerHTML = '<svg><use href="#checkShape"/></svg>';
+        b.addEventListener("click", () => {
+          state.checks[r][d] = !state.checks[r][d];
+          b.classList.toggle("checked", state.checks[r][d]);
+          b.setAttribute("aria-pressed", state.checks[r][d]);
+          updateStars();
+          save();
+        });
+        td.appendChild(b);
+        tr.appendChild(td);
+      }
+      body.appendChild(tr);
+    });
+
+    const sr = document.createElement("tr");
+    sr.className = "star-row";
+    sr.innerHTML = `<td class="task"><span class="icon">⭐</span>Gold Star Day!</td>`;
+    for (let d = 0; d < DAYS; d++) {
+      const td = document.createElement("td");
+      td.innerHTML = `<button type="button" class="star" data-day="${d}" aria-label="Gold star, day ${d + 1}">
+        ${STAR_SVG}</button>`;
+      sr.appendChild(td);
+    }
+    body.appendChild(sr);
+
+    // Grown-ups can award a star by hand too (e.g. for a printed chart day).
+    state.manual = state.manual || Array(DAYS).fill(false);
+    sr.querySelectorAll(".star").forEach(s => {
+      s.addEventListener("click", () => {
+        const d = +s.dataset.day;
+        state.manual[d] = !state.manual[d];
+        updateStars();
+        save();
+      });
+    });
+    updateStars(true);
+  }
+
+  function dayDone(d) {
+    return state.checks.every(row => row[d]);
+  }
+
+  function updateStars(initial) {
+    let count = 0;
+    document.querySelectorAll(".star").forEach(s => {
+      const d = +s.dataset.day;
+      const on = dayDone(d) || state.manual[d];
+      const was = s.classList.contains("on");
+      if (on && !was && !initial) {
+        s.classList.remove("on"); void s.offsetWidth;
+      }
+      s.classList.toggle("on", on);
+      if (initial) s.style.animation = "none";
+      else s.style.animation = "";
+      if (on) count++;
+    });
+    document.getElementById("starCount").textContent = count;
+  }
+
+  // Editable fields
+  const fields = [
+    [document.getElementById("kidName"), "name"],
+    [document.getElementById("weekOf"), "week"],
+    [document.querySelector(".card.reward .blank"), "reward"]
+  ];
+  fields.forEach(([el, key]) => {
+    if (state[key]) el.textContent = state[key];
+    el.addEventListener("input", () => { state[key] = el.textContent.trim(); save(); });
+    el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); el.blur(); } });
+  });
+
+  document.getElementById("printBtn").addEventListener("click", () => window.print());
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    if (!confirm("Clear all checkmarks and stars for a new week?")) return;
+    state.checks = TASKS.map(() => Array(DAYS).fill(false));
+    state.manual = Array(DAYS).fill(false);
+    state.week = "";
+    document.getElementById("weekOf").innerHTML = "&nbsp;";
+    save();
+    build();
+  });
+
+  build();
+</script>
 </body>
 </html>

@@ -1,0 +1,46 @@
+{
+  "30-day-tracker": {
+    "name": "30-day strength tracker",
+    "prompt": "30-day strength tracker for a beginner. Daily exercise plan with sets, reps, weight progression, rest. Printed, ticked off."
+  },
+  "sf-apartments": {
+    "name": "SF apartment comparison",
+    "prompt": "Compare three SF apartments for a couple: 989 20th Dogpatch, 400 Beale Rincon, NEMA SoMa. Score commute/sun/vibe/amenities/parking/dogs/gym/price, recommend."
+  },
+  "transformers": {
+    "name": "Transformers explainer",
+    "prompt": "Explainer of how Transformers work for someone who knows LSTMs and convolutions but not self-attention. Include real formulas and an inline SVG architecture diagram."
+  },
+  "coffee-tier-list": {
+    "name": "SF coffee tier list",
+    "prompt": "Tier list (S/A/B/C) of 10 great SF coffee shops, ranked by pour-over quality, ambience, and seating availability"
+  },
+  "yosemite-climbing": {
+    "name": "Yosemite climbing route guide",
+    "prompt": "A guide to ~10 of Yosemite's most famous trad / multi-pitch / aid climbing routes."
+  },
+  "slow-software-manifesto": {
+    "name": "Slow software manifesto",
+    "prompt": "A 12-point manifesto for slow, file-based, anti-bloat software. Each point: a sharp imperative + a short paragraph."
+  },
+  "macintosh-1984": {
+    "name": "History of the original Macintosh",
+    "prompt": "History of the original 1984 Apple Macintosh: specs, key people, cultural impact."
+  },
+  "git-survival-kit": {
+    "name": "Git survival kit",
+    "prompt": "The 12 git commands a new developer needs in their first 90 days. With examples and recovery tips."
+  },
+  "climate-in-7-charts": {
+    "name": "Climate change in 7 charts",
+    "prompt": "Climate change explained in 7 charts: CO2, temperature, sea ice, sea level, disasters, emissions, carbon budget."
+  },
+  "kid-morning-routine": {
+    "name": "Kids' morning routine",
+    "prompt": "A morning routine chart for kids 5-8, printable, with checkboxes and gold stars."
+  },
+  "gemini-embedding-2": {
+    "name": "arXiv paper explainer: Gemini Embedding 2",
+    "prompt": "Explainer for this arxiv paper: https://arxiv.org/abs/2605.27295 (Gemini Embedding 2)."
+  }
+}

@@ -174,7 +174,40 @@ def _copy_to_clipboard(text: str) -> bool:
     return False
 
 
-def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
+CREDIT_URL = "https://github.com/shubhamgoel27/artifold"
+CREDIT_MARK = "data-artifold-credit"
+_BODY_END = re.compile(rb"</body\s*>", re.I)
+
+
+def add_credit(html: bytes) -> bytes:
+    """Append a one-line credit to the copy that goes public.
+
+    Only the published bytes change; the file on disk and its content hash
+    (which names the share URL) stay the same. The line inherits the page's
+    own color, so it reads on dark and light pages alike."""
+    if CREDIT_MARK.encode() in html:
+        return html
+    from . import detect
+    meta = detect.extract_embedded_meta(html[:60000].decode("utf-8", "ignore"))
+    gen = (meta.get("generator") or "").lower()
+    # Pages from before craft wrote `generator` still carry its design tags.
+    made = gen == "craft" or (not gen and bool(
+        meta.get("design_mode") or meta.get("layout_archetype")))
+    label = "Made with craft" if made else "Shared with Artifold"
+    tag = (f'<p {CREDIT_MARK} style="margin:48px auto 24px;padding:0 16px;'
+           f'text-align:center;font:12px/1.4 system-ui,sans-serif;'
+           f'color:inherit;opacity:.55">'
+           f'<a href="{CREDIT_URL}" style="color:inherit">{label}</a></p>\n'
+           ).encode()
+    ends = list(_BODY_END.finditer(html))
+    if not ends:
+        return html + tag
+    at = ends[-1].start()
+    return html[:at] + tag + html[at:]
+
+
+def share_via_gh(file: Path, no_clipboard: bool = False,
+                 credit: bool | None = None) -> str | None:
     file = file.expanduser().resolve()
     if not file.is_file():
         print(f"  ! not a file: {file}")
@@ -214,6 +247,11 @@ def share_via_gh(file: Path, no_clipboard: bool = False) -> str | None:
     else:
         publish_bytes = file.read_bytes()
         sha = provenance.sha1_of(file)
+    if credit is None:
+        from . import config
+        credit = bool(config.load().get("share_credit", True))
+    if credit:
+        publish_bytes = add_credit(publish_bytes)
     entry = provenance.get(sha) or {}
     short_id = sha[:8]
     expected_url = f"https://{user}.github.io/{SHARE_REPO_NAME}/{short_id}.html"

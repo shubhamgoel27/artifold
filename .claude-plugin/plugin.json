@@ -1,0 +1,24 @@
+{
+  "$schema": "https://code.claude.com/docs/schemas/plugin-manifest.json",
+  "name": "craft",
+  "displayName": "craft",
+  "version": "0.15.0",
+  "description": "Makes reports, slide decks, trackers and explainers as single HTML pages with a layout, type and voice chosen for the subject, checked in a headless browser before you see them.",
+  "author": {
+    "name": "Shubham Goel",
+    "url": "https://github.com/shubhamgoel27"
+  },
+  "homepage": "https://github.com/shubhamgoel27/artifold",
+  "repository": "https://github.com/shubhamgoel27/artifold",
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "design",
+    "slides",
+    "reports",
+    "artifacts"
+  ],
+  "skills": [
+    "./artifold/skills/"
+  ]
+}

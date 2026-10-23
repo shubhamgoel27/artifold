@@ -57,3 +57,11 @@ def test_wizard_offers_only_what_is_missing(home, monkeypatch):
     asked.clear()
     cli._wizard_offer_skill()
     assert asked == []
+
+
+def test_a_plugin_install_counts_as_installed(home, monkeypatch):
+    (home / ".claude/plugins/cache/artifold/craft/0.15.0").mkdir(parents=True)
+    asked = []
+    monkeypatch.setattr("builtins.input", lambda p: asked.append(p) or "")
+    cli._wizard_offer_skill()
+    assert asked == []

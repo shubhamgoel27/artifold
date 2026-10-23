@@ -96,3 +96,28 @@ Refresh = run one script. Cards show screenshot thumbnails.
       install call made idempotent (no dir-check). Caught after uv
       silently resolved newer playwright that wanted a chromium build
       our cache didn't have.
+
+## v0.15: traction pass (2026-10-22)
+- [x] 2. Rerun the gallery with today's craft (Opus 5.5): same 11 prompts,
+      plain side via `claude -p --disable-slash-commands`, craft side via
+      `/craft`. Re-shoot thumbs, rebuild the 3 composites with a script so
+      it is repeatable, update docs/index.html. README stops saying
+      "an earlier version".
+- [x] 3. Claude Code plugin: manifest + marketplace in the repo so
+      `/plugin` installs craft with no Python. README install updated.
+- [x] 5. Share credit footer: shared copy (never the local file) gets a
+      small "Made with craft" / "Shared with Artifold" link. Setting
+      `share_credit` (on by default), tests.
+- [x] 1. Fresh dashboard screenshots + demo GIF from a demo library built
+      from gallery pages (isolated HOME, so no private pages), after 2.
+
+### Review
+- Gallery: Opus 5.5 without a skill designs much better than 4.7 did, so
+  the gap narrowed. craft wins clearly on 5 of 11; the rest are close.
+  Clear wins lead the grid; the README opening no longer claims plain
+  Claude makes purple gradients.
+- Two craft pages leaked the user's name and employers through the
+  library. Rerun against an empty, isolated library; whole-word scan of
+  all 22 pages is clean.
+- Old README screenshots showed the old name (Folio) and private pages.
+  Replaced from a throwaway library.

@@ -462,7 +462,11 @@ def _skill_dir(agent: str) -> Path:
 
 
 def _skill_installed(agent: str) -> bool:
-    return (_skill_dir(agent) / "SKILL.md").exists()
+    if (_skill_dir(agent) / "SKILL.md").exists():
+        return True
+    # Installed as a Claude Code plugin (/plugin install craft ...).
+    cache = Path.home() / ".claude" / "plugins" / "cache"
+    return agent == "claude" and any(cache.glob("*/craft/*"))
 
 
 def _copy_skill(dest_dir: Path, force: bool) -> int | None:
@@ -767,7 +771,8 @@ def _cmd_share(args):
     if not args.file:
         print("! pass a file to share, or --list / --revoke <id>")
         return 1
-    url = share.share_via_gh(Path(args.file), no_clipboard=args.no_clipboard)
+    url = share.share_via_gh(Path(args.file), no_clipboard=args.no_clipboard,
+                             credit=False if args.no_credit else None)
     return 0 if url else 1
 
 
@@ -988,6 +993,9 @@ def main(argv=None) -> int:
                          "(dry run unless --apply)")
     sh.add_argument("--apply", action="store_true",
                     help="with --reconcile: write the recovered records")
+    sh.add_argument("--no-credit", action="store_true",
+                    help="leave out the one-line credit link at the bottom "
+                         "(or turn it off for good: artifold config share_credit off)")
     sh.add_argument("--no-clipboard", action="store_true",
                     help="don't copy the URL to clipboard")
     sh.set_defaults(fn=_cmd_share)

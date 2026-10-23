@@ -3,255 +3,384 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="artifold:design-mode" content="brutalist-web">
-<meta name="artifold:voice-register" content="manifesto">
+<title>Own it. Shrink it. Slow it down. A manifesto, printed on green-bar.</title>
+<meta name="description" content="Twelve points for slow, file-based, anti-bloat software, set as a continuous-feed printout.">
+<meta name="artifold:intent" content="A public twelve-point manifesto for slow, file-based, anti-bloat software, as a printout">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
-<title>The Slow Software Manifesto</title>
+<meta name="artifold:prompt" content="A 12-point manifesto for slow, file-based, anti-bloat software. Each point: a sharp imperative + a short paragraph. (Public demo: no names or personal details.)">
+<meta name="artifold:scale" content="experience">
+<meta name="artifold:conceit" content="The manifesto is a plain text file, printed on continuous-feed green-bar paper by a printer whose ribbon is wearing out">
+<meta name="artifold:layout-archetype" content="single-object">
+<meta name="artifold:design-mode" content="greenbar-fanfold (forged: line-printer listing paper, tractor holes, two-color ribbon)">
+<meta name="artifold:voice-register" content="manifesto">
+<meta name="artifold:signature-device" content="die-cut-object (tractor-feed strips, fanfold perforations) + progression-motif (ribbon wears sheet by sheet)">
+<meta name="artifold:ad-scores" content="4/3/3/4/4/3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fbfaf3'/%3E%3Crect y='4' width='32' height='6' fill='%23cfe5cb'/%3E%3Crect y='16' width='32' height='6' fill='%23cfe5cb'/%3E%3Ccircle cx='4' cy='7' r='2' fill='%231f2622'/%3E%3Ccircle cx='4' cy='19' r='2' fill='%231f2622'/%3E%3Ccircle cx='28' cy='7' r='2' fill='%231f2622'/%3E%3Ccircle cx='28' cy='19' r='2' fill='%231f2622'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-html { background: #ffffff; }
-body {
-  color: #000000;
-  background: #ffffff;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 18px;
-  line-height: 1.8;
-  max-width: 640px;
-  margin: 48px auto;
-  padding: 0 20px;
+:root{
+  /* type: 1.25 ratio from 1.0625rem (17px) */
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace, system-ui;
+  --dot:"Doto", "IBM Plex Mono", ui-monospace, monospace, system-ui;
+  --step--1:.875rem; --step-0:1.0625rem; --step-1:1.328rem; --step-2:1.66rem; --step-3:2.075rem; --step-4:2.594rem;
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-6:1.5rem; --s-8:2rem; --s-12:3rem; --s-16:4rem; --s-24:6rem;
+  --line:28px;            /* one printed line */
+  --band:calc(var(--line) * 3);   /* green-bar bands are three lines deep */
+  --strip:56px;           /* tractor-feed margin */
+  --hole:7px;
+
+  /* light: paper under a desk lamp */
+  --desk:#cdc8ba;
+  --desk-2:#c3bdae;
+  --paper:#fbfaf3;
+  --greenbar:#d7e9d2;
+  --perf:#a9b3a3;
+  --ink:#1f2622;
+  --ink-soft:#4b544d;
+  --ribbon:#b3261e;          /* the red half of a two-color ribbon */
+  --hole-rim:rgba(31,38,34,.22);
+  --shadow-color:48 18% 30%;
+  --shadow:0 1px 2px hsl(var(--shadow-color)/.18), 0 8px 18px hsl(var(--shadow-color)/.14), 0 28px 60px hsl(var(--shadow-color)/.12);
+  --fold:rgba(60,70,55,.035);
+  color-scheme:light;
 }
-h1 { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; }
-h2 { font-size: 20px; font-weight: bold; margin: 32px 0 8px 0; }
-h3 { font-size: 18px; font-weight: bold; margin: 24px 0 4px 0; }
-p  { margin: 0 0 16px 0; }
-a  { color: #0000ee; }
-a:visited { color: #551a8b; }
-hr {
-  border: 0;
-  border-top: 1px solid #000000;
-  margin: 32px 0;
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#0f1210; --desk-2:#141815;
+    --paper:#1b1f1c; --greenbar:#27352c; --perf:#3b463d;
+    --ink:#dfe1d3; --ink-soft:#a8ae9f; --ribbon:#ec7a6c;
+    --hole-rim:rgba(223,225,211,.14);
+    --shadow-color:140 20% 2%;
+    --fold:rgba(0,0,0,.18);
+    color-scheme:dark;
+  }
 }
-hr.hair { border-top: 1px solid #000000; margin: 24px 0 16px 0; }
-ol { padding-left: 28px; margin: 0; }
-ol > li { margin-bottom: 32px; }
-ul.signers { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 32px; }
-ul.signers li { margin: 0 0 6px 0; break-inside: avoid; }
-ul.plain { padding-left: 24px; margin: 0 0 16px 0; }
-ul.plain li { margin-bottom: 6px; }
-.subtitle { font-style: italic; margin: 0 0 24px 0; }
-.aphorism { font-weight: bold; }
-.meta { font-size: 15px; }
-footer { font-size: 15px; margin-top: 16px; }
-code { font-family: "Courier New", monospace; font-size: 16px; }
-blockquote { margin: 0 0 16px 24px; padding: 0; }
-table.toc { border-collapse: collapse; margin: 0 0 16px 0; font-size: 16px; }
-table.toc td { padding: 2px 12px 2px 0; vertical-align: top; }
+:root[data-theme="dark"]{
+  --desk:#0f1210; --desk-2:#141815;
+  --paper:#1b1f1c; --greenbar:#27352c; --perf:#3b463d;
+  --ink:#dfe1d3; --ink-soft:#a8ae9f; --ribbon:#ec7a6c;
+  --hole-rim:rgba(223,225,211,.14);
+  --shadow-color:140 20% 2%;
+  --fold:rgba(0,0,0,.18);
+  color-scheme:dark;
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0; font-family:var(--mono); font-size:var(--step-0); line-height:var(--line);
+  color:var(--ink);
+  background:
+    radial-gradient(120% 70% at 50% 0%, var(--desk) 0 40%, var(--desk-2) 100%) fixed;
+  padding:var(--s-16) var(--s-6) var(--s-24);
+}
+::selection{ background:var(--ribbon); color:var(--paper); }
+a{ color:inherit; text-decoration-thickness:1px; text-underline-offset:3px; }
+:focus-visible{ outline:2px solid var(--ribbon); outline-offset:3px; }
+
+/* ---------- the printout ---------- */
+.paper{
+  max-width:1180px; margin:0 auto;
+  box-shadow:var(--shadow);
+}
+@media (prefers-reduced-motion: no-preference){
+  .paper{ animation:feed 900ms cubic-bezier(.16,1,.3,1) both; }
+  @keyframes feed{ from{ transform:translateY(48px); } to{ transform:none; } }
+}
+
+.sheet{
+  position:relative; background:var(--paper);
+  padding:0 var(--strip);
+  /* ribbon state, worn down sheet by sheet */
+  --wear:100%;
+  --ink-now:color-mix(in oklab, var(--ink) var(--wear), var(--paper));
+  --wear-red:100%;
+  --red-now:color-mix(in oklab, var(--ribbon) var(--wear-red), var(--paper));
+  color:var(--ink-now);
+}
+.sheet:nth-of-type(2){ --wear:88%; --wear-red:93%; }
+.sheet:nth-of-type(3){ --wear:78%; --wear-red:86%; }
+
+/* tractor-feed strips: holes punched through to the desk */
+.sheet::before, .sheet::after{
+  content:""; position:absolute; top:0; bottom:0; width:var(--strip);
+  background:
+    radial-gradient(circle at 50% calc(var(--line) * .75), var(--desk) 0 var(--hole), var(--hole-rim) calc(var(--hole) + .5px) calc(var(--hole) + 1.5px), transparent calc(var(--hole) + 2px))
+    0 0 / 100% calc(var(--line) * 1.5) repeat-y;
+}
+.sheet::before{ left:0; border-right:1.5px dashed var(--perf); }
+.sheet::after{ right:0; border-left:1.5px dashed var(--perf); }
+
+/* fanfold: a perforated crease between sheets, folded alternately */
+.sheet + .sheet{ border-top:1.5px dashed var(--perf); }
+.sheet:nth-of-type(odd) .print{ background-image:linear-gradient(to bottom, transparent 70%, var(--fold)), var(--bars); }
+.sheet:nth-of-type(even) .print{ background-image:linear-gradient(to top, transparent 70%, var(--fold)), var(--bars); }
+
+.print{
+  --bars:repeating-linear-gradient(to bottom, var(--greenbar) 0 var(--band), transparent var(--band) calc(var(--band) * 2));
+  padding:var(--line) var(--s-12) var(--line);
+  /* impact printing: each glyph struck a hair off itself */
+  text-shadow:.35px .25px 0 color-mix(in oklab, currentColor 45%, transparent);
+}
+
+/* running head, the printer's own line */
+.runhead{
+  display:grid; grid-template-columns:1fr auto 1fr; column-gap:var(--s-6);
+  font-size:var(--step--1); line-height:var(--line); color:var(--ink-soft);
+  margin-bottom:var(--line);
+}
+.runhead > :last-child{ justify-self:end; }
+.runhead .job{ white-space:nowrap;
+}
+.runhead .ribbon-gauge{ letter-spacing:.08em; color:var(--red-now); }
+.runhead .ribbon-gauge span{ color:var(--ink-soft); letter-spacing:0; }
+
+/* ---------- masthead (sheet one only) ---------- */
+.masthead{ display:grid; grid-template-columns:4.5rem minmax(0, 21rem) minmax(0, 60ch); column-gap:var(--s-8); row-gap:var(--line); padding-bottom:calc(var(--line) * 2); }
+.masthead h1{ grid-column:1 / -1; }
+.masthead .dek{ grid-column:3; }
+h1 > span, h1 > em > span{ display:block; }
+h1{
+  font-family:var(--dot); font-weight:900; margin:0;
+  font-size:clamp(2.6rem, 1rem + 6.4vw, 7rem); line-height:1; line-height:round(up, 1em, var(--line)); letter-spacing:-.01em;
+  text-wrap:balance; color:var(--ink-now);
+}
+h1 em{ font-style:normal; color:var(--red-now); }
+.dek{ margin:0; color:var(--ink-now); max-width:46ch; text-wrap:pretty; }
+.dek b{ font-weight:600; }
+
+/* ---------- sheet sections ---------- */
+.part{ display:grid; grid-template-columns:4.5rem minmax(0, 1fr); column-gap:var(--s-8); align-items:start; margin-bottom:var(--line); }
+.part .roman{ font-family:var(--dot); font-weight:900; font-size:var(--step-2); line-height:calc(var(--line) * 2); color:var(--red-now); }
+.part h2{ font-family:var(--dot); font-weight:900; font-size:var(--step-4); line-height:calc(var(--line) * 2); margin:0; }
+.part p{ grid-column:2; margin:0; color:var(--ink-soft); max-width:60ch; }
+
+.points{ list-style:none; margin:0; padding:0; display:grid; gap:0; }
+.pt{
+  display:grid; grid-template-columns:4.5rem minmax(0, 21rem) minmax(0, 60ch);
+  column-gap:var(--s-8); align-items:start;
+  padding-block:var(--line);
+}
+.pt .n{
+  font-family:var(--dot); font-weight:900; font-size:var(--step-3); line-height:var(--line);
+  color:var(--red-now); font-variant-numeric:tabular-nums;
+}
+.pt h3{
+  font-family:var(--dot); font-weight:900; font-size:1.5rem; line-height:var(--line);
+  margin:0; text-wrap:pretty; letter-spacing:.005em;
+}
+.pt p{ margin:0; text-wrap:pretty; }
+.pt p i{ font-style:italic; }
+.stop{ font-family:var(--mono); font-weight:700; }
+
+/* ---------- end of file ---------- */
+.eof{ margin-top:calc(var(--line) * 2); display:grid; grid-template-columns:4.5rem minmax(0, 1fr); column-gap:var(--s-8); }
+.eof .mark{ font-family:var(--dot); font-weight:900; font-size:var(--step-1); line-height:calc(var(--line) * 2); color:var(--red-now); }
+.kicker{ font-family:var(--dot); font-weight:900; font-size:var(--step-4); line-height:calc(var(--line) * 2); margin:0; max-width:22ch; text-wrap:balance; }
+.colophon{ grid-column:2; margin:var(--line) 0 0; font-size:var(--step--1); line-height:var(--line); color:var(--ink-soft); max-width:68ch; }
+
+/* ---------- theme switch: a strip of label tape on the desk ---------- */
+.lamp{
+  position:fixed; top:var(--s-4); right:var(--s-4); z-index:5;
+  min-height:44px; padding:0 var(--s-4);
+  font:500 var(--step--1)/1 var(--mono); letter-spacing:.04em;
+  color:var(--paper); background:var(--ink);
+  border:0; border-radius:2px; cursor:pointer;
+  box-shadow:0 1px 2px hsl(var(--shadow-color)/.3), 0 4px 10px hsl(var(--shadow-color)/.2);
+  transform:rotate(-1.2deg);
+}
+.lamp:hover{ background:var(--ribbon); }
+
+/* ---------- narrower ---------- */
+@media (max-width: 1060px){
+  .pt{ grid-template-columns:4.5rem minmax(0, 1fr); row-gap:0; }
+  .pt p{ grid-column:2; max-width:62ch; }
+  .masthead .dek{ grid-column:2 / -1; }
+}
+@media (max-width: 640px){
+  :root{ --strip:24px; --hole:4px; --line:26px; }
+  body{ padding:var(--s-12) var(--s-2) var(--s-16); font-size:1rem; }
+  .print{ padding:var(--line) var(--s-4) var(--line); }
+  .sheet::before, .sheet::after{ background-size:100% var(--line); background-position:0 calc(var(--line) * -.25); }
+  .pt, .part, .eof{ grid-template-columns:2.75rem minmax(0, 1fr); column-gap:var(--s-3); }
+  .pt .n{ font-size:var(--step-1); }
+  .pt h3{ font-size:1.3rem; }
+  .pt p, .part p, .colophon, .masthead .dek{ grid-column:1 / -1; }
+  .part h2{ font-size:var(--step-3); line-height:calc(var(--line) * 1.5); }
+  .kicker{ font-size:var(--step-2); line-height:calc(var(--line) * 1.25); }
+  .part .roman{ font-size:var(--step-1); }
+  .lamp{ top:var(--s-2); right:var(--s-2); }
+  .runhead .job{ display:none; }
+  .runhead{ grid-template-columns:1fr auto; }
+  .masthead{ grid-template-columns:minmax(0, 1fr); }
+  h1{ font-size:clamp(1.9rem, 9.4vw, 2.6rem); }
+}
 </style>
 </head>
 <body>
 
-<h1>The Slow Software Manifesto</h1>
-<p class="subtitle">Twelve points, signed by people who would rather own their tools than rent them.</p>
+<main class="paper" aria-label="manifesto.txt, printed on three sheets of continuous-feed paper">
 
-<p class="meta">Manifest first published 27 May 2026. Version 1.0. <a href="#sign">Read the signers</a>. <a href="#contents">Read the points</a>.</p>
+  <!-- ===== SHEET 1 ===== -->
+  <section class="sheet" aria-labelledby="title">
+    <div class="print">
+      <div class="runhead" aria-hidden="true">
+        <span class="job">job 0001 · manifesto.txt · 12 points</span>
+        <span>sheet 1 of 3</span>
+        <span class="ribbon-gauge">▮▮▮▮▮ <span>ribbon</span></span>
+      </div>
 
-<hr>
+      <header class="masthead">
+        <h1 id="title"><span>Own it<span class="stop">.</span></span> <span>Shrink it<span class="stop">.</span></span> <em><span>Slow it down<span class="stop">.</span></span></em></h1>
+        <p class="dek">Twelve rules for software that keeps your work in <b>files you can open without it</b>, carries only what it needs, and moves at the speed of the person using it.</p>
+      </header>
 
-<h2>Preface</h2>
+      <div class="part">
+        <span class="roman" aria-hidden="true">I</span>
+        <h2>Own it<span class="stop">.</span></h2>
+        <p>Your data should outlive the program that made it.</p>
+      </div>
 
-<p>Software has been getting faster at producing, and slower at serving. It ships every Tuesday and forgets you every Wednesday. It rents you back the file you wrote. It updates itself in the night and renames your menus by morning. It treats your attention as inventory and your patience as runway.</p>
+      <ol class="points">
+        <li class="pt">
+          <span class="n" aria-hidden="true">01</span>
+          <h3>Write it to a file<span class="stop">.</span></h3>
+          <p>A text file from 1985 still opens today and will open in 2065. A row in someone else’s database opens until the company pivots. Save to a disk the user can see, name, copy and back up, and treat any cloud as a mirror of that file, never the original.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">02</span>
+          <h3>Pick formats a&nbsp;stranger can read<span class="stop">.</span></h3>
+          <p>Plain text, Markdown, CSV, JSON, SQLite. If the only way to read your data is the program that wrote it, you don’t own the data. You rent it, and the rent goes up.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">03</span>
+          <h3>Let people take everything and go<span class="stop">.</span></h3>
+          <p>Export is a feature, not an exit interview. One command, one folder, every byte, in the formats from point two. Software people can leave is software they choose to stay in.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">04</span>
+          <h3>Work without a network<span class="stop">.</span></h3>
+          <p>Offline is the normal state of the world: planes, tunnels, basements, outages. Opening your own notes shouldn’t require permission from a server in another time zone. Make the network an upgrade, not a precondition.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
 
-<p>We refuse. Below are the twelve points of slow software. None of them are difficult. All of them are unfashionable.</p>
+  <!-- ===== SHEET 2 ===== -->
+  <section class="sheet" aria-labelledby="part2">
+    <div class="print">
+      <div class="runhead" aria-hidden="true">
+        <span class="job">job 0001 · manifesto.txt</span>
+        <span>sheet 2 of 3</span>
+        <span class="ribbon-gauge">▮▮▮▮▯ <span>ribbon</span></span>
+      </div>
 
-<p>This document is not a product roadmap. It is a line in the sand. If you agree, sign your name to it. If you disagree, write your own. If you find it obvious, good. The obvious has been forgotten on purpose.</p>
+      <div class="part">
+        <span class="roman" aria-hidden="true">II</span>
+        <h2 id="part2">Shrink it<span class="stop">.</span></h2>
+        <p>Every line you don’t ship is a line that never breaks.</p>
+      </div>
 
-<hr>
+      <ol class="points" start="5">
+        <li class="pt">
+          <span class="n" aria-hidden="true">05</span>
+          <h3>Ship fewer features<span class="stop">.</span></h3>
+          <p>Each feature is a promise you’ll keep forever: documented, tested, migrated, explained. Say no early and say it often. Spend the years you save making the remaining few sharp.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">06</span>
+          <h3>Count your dependencies out loud<span class="stop">.</span></h3>
+          <p>Every import is a stranger with commit access to your future. Know their names and what they’d cost to replace. If you can’t list them from memory, there are too many.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">07</span>
+          <h3>Respect the machine you’re given<span class="stop">.</span></h3>
+          <p>A ten-year-old laptop is a perfectly good computer that bloat taught to feel old. Measure startup time and memory like they’re bills, because for someone on cheap hardware, they are.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">08</span>
+          <h3>Prefer boring tools<span class="stop">.</span></h3>
+          <p>Technology that has been dull for twenty years already had its surprises. Spend your novelty budget on the problem, not the plumbing. Nobody ever lost a weekend to <i>make</i> being too stable.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
 
-<h2 id="contents">Contents</h2>
+  <!-- ===== SHEET 3 ===== -->
+  <section class="sheet" aria-labelledby="part3">
+    <div class="print">
+      <div class="runhead" aria-hidden="true">
+        <span class="job">job 0001 · manifesto.txt</span>
+        <span>sheet 3 of 3</span>
+        <span class="ribbon-gauge">▮▮▮▯▯ <span>ribbon</span></span>
+      </div>
 
-<table class="toc">
-<tr><td>1.</td><td><a href="#p1">Respect the user, or get out of the way.</a></td></tr>
-<tr><td>2.</td><td><a href="#p2">Prefer files to apps.</a></td></tr>
-<tr><td>3.</td><td><a href="#p3">Prefer plain text to proprietary formats.</a></td></tr>
-<tr><td>4.</td><td><a href="#p4">No subscriptions for things that do not change.</a></td></tr>
-<tr><td>5.</td><td><a href="#p5">Run locally.</a></td></tr>
-<tr><td>6.</td><td><a href="#p6">Ship infrequently.</a></td></tr>
-<tr><td>7.</td><td><a href="#p7">Embrace constraints.</a></td></tr>
-<tr><td>8.</td><td><a href="#p8">Be small enough to read.</a></td></tr>
-<tr><td>9.</td><td><a href="#p9">Do not autoupdate without consent.</a></td></tr>
-<tr><td>10.</td><td><a href="#p10">Owned, not rented.</a></td></tr>
-<tr><td>11.</td><td><a href="#p11">Archive well.</a></td></tr>
-<tr><td>12.</td><td><a href="#p12">Outlive the company.</a></td></tr>
-</table>
+      <div class="part">
+        <span class="roman" aria-hidden="true">III</span>
+        <h2 id="part3">Slow it&nbsp;down<span class="stop">.</span></h2>
+        <p>Speed is for the program. Patience is for the project.</p>
+      </div>
 
-<hr>
+      <ol class="points" start="9">
+        <li class="pt">
+          <span class="n" aria-hidden="true">09</span>
+          <h3>Let it wait<span class="stop">.</span></h3>
+          <p>Not every keystroke needs to sync in 200&nbsp;ms. Save on pause, batch on close, reconcile tomorrow. A program allowed to be a little late can be a lot simpler, and simple programs fail in ways you can read.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">10</span>
+          <h3>Release when it’s ready, not when it’s Tuesday<span class="stop">.</span></h3>
+          <p>A calendar makes a poor product manager. Fewer releases mean fewer migrations, fewer changelogs nobody reads, and a button that is still where it was last month.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">11</span>
+          <h3>Start fast, quit clean<span class="stop">.</span></h3>
+          <p>Open in under a second. Close without a dialog. Leave no daemon, no updater, no tray icon behind. A program that’s hard to leave isn’t loyal, it’s clingy.</p>
+        </li>
+        <li class="pt">
+          <span class="n" aria-hidden="true">12</span>
+          <h3>Leave it finished<span class="stop">.</span></h3>
+          <p>Some software is done. Fix the bugs, keep it building, and let it rest. Finished isn’t abandoned. It’s a chair: nobody expects a monthly update to a chair.</p>
+        </li>
+      </ol>
 
-<h2>The Twelve Points</h2>
+      <div class="eof">
+        <span class="mark" aria-hidden="true">EOF</span>
+        <p class="kicker">Close the file<span class="stop">.</span> It’ll be here when you get back<span class="stop">.</span></p>
+        <p class="colophon">Printed from a single HTML file of about 19&nbsp;KB: no framework, no build step, no trackers, one font request, and a few lines of script that only work the lamp. The ribbon fading across three sheets is on purpose. Things wear. The words still read.</p>
+      </div>
+    </div>
+  </section>
 
-<ol>
+</main>
 
-<li id="p1">
-<p class="aphorism">1. Respect the user, or get out of the way.</p>
-<p>The user is the reason the program exists. Not the metric. Not the dashboard. Not the quarterly review. Software that interrupts, nags, upsells, or guilts is software that has forgotten its job. Build a tool. Then leave the room.</p>
-</li>
-
-<li id="p2">
-<p class="aphorism">2. Prefer files to apps.</p>
-<p>A file is a noun the user can hold. An app is a verb the company controls. Files can be moved, copied, emailed, backed up, opened in 2050, and read by a program nobody has written yet. Apps can be deprecated on a Thursday. Files outlive apps. Design accordingly.</p>
-</li>
-
-<li id="p3">
-<p class="aphorism">3. Prefer plain text to proprietary formats.</p>
-<p>Plain text is the only format with a hundred-year warranty. It opens in anything. It diffs cleanly. It survives the company, the founder, the acquirer, and the bankruptcy. If your format requires the vendor's binary to be readable, your format is a leash. Write to disk in something a human could squint at and understand.</p>
-</li>
-
-<li id="p4">
-<p class="aphorism">4. No subscriptions for things that do not change.</p>
-<p>A text editor is not a streaming service. A calculator is not a magazine. Charging rent for a program that ran the same yesterday is a confession that you have nothing new to offer. Sell the thing. Let the buyer keep the thing. Rent only what genuinely costs you every month.</p>
-</li>
-
-<li id="p5">
-<p class="aphorism">5. Run locally.</p>
-<p>The fastest network is no network. The most private server is no server. Software that requires a round trip to a faraway machine to flip a checkbox is software that has chosen its convenience over yours. Run on the user's hardware. The hardware is good now. Use it.</p>
-</li>
-
-<li id="p6">
-<p class="aphorism">6. Ship infrequently.</p>
-<p>Every release is a small tax on someone's muscle memory. Every redesign asks the world to relearn what already worked. Ship when you have something to say. Then be quiet. A program that has not changed in three years is not abandoned. It is finished.</p>
-</li>
-
-<li id="p7">
-<p class="aphorism">7. Embrace constraints.</p>
-<p>A small program does a few things well and refuses the rest. A large program does a thousand things badly and calls it a platform. Choose your scope and defend it. The feature you turn down is the feature that does not break next year. Scope is a moral position.</p>
-</li>
-
-<li id="p8">
-<p class="aphorism">8. Be small enough to read.</p>
-<p>The user cannot trust what the user cannot inspect. A program of a few thousand lines can be read by one curious person in one afternoon. A program of a few million lines is a religion: you must take it on faith. Slow software is small software. Small software is honest software.</p>
-</li>
-
-<li id="p9">
-<p class="aphorism">9. Do not autoupdate without consent.</p>
-<p>The program on the user's disk belongs to the user. It does not have permission to rewrite itself overnight. Ask before you change. Change only what was asked. The user who said no last Tuesday is allowed to say no this Tuesday. Consent is not a checkbox buried in settings.</p>
-</li>
-
-<li id="p10">
-<p class="aphorism">10. Owned, not rented.</p>
-<p>A tool you cannot keep is not a tool. It is an arrangement. When the company turns off the lights, your work should still open. When your card expires, your archive should still read. Buy software the way you buy a hammer: once, fully, forever. The hammer does not phone home.</p>
-</li>
-
-<li id="p11">
-<p class="aphorism">11. Archive well.</p>
-<p>Future you is a stranger with no password manager. Write data in formats that stranger can open. Keep names that stranger can search. Avoid clever schemas that only the current version of the program understands. The archive is the product. Everything else is a viewer.</p>
-</li>
-
-<li id="p12">
-<p class="aphorism">12. Outlive the company.</p>
-<p>Companies die. Founders leave. Investors lose patience. Servers get shut off in alphabetical order. Software that requires its maker to stay alive is software with an expiration date stamped on the user. Build tools that work after you are gone. That is the only software worth signing your name to.</p>
-</li>
-
-</ol>
-
-<hr>
-
-<h2>What we are against</h2>
-
-<p>Your software watches you. Your data is collateral. Your file is a row in someone else's table. Your subscription is a hostage negotiation conducted monthly. Your update broke the workflow you spent a year building. Your vendor was acquired and your archive is now read-only and your read-only access expires in ninety days.</p>
-
-<p>None of this is necessary. All of it is a choice. Other choices exist.</p>
-
-<p>We are against the redesign that solved no problem. The dialog box that asked nothing. The notification that meant nothing. The onboarding flow that delayed the work. The empty state that suggested a tutorial instead of a button. The settings panel reorganized by a designer who did not use the product. The migration to the cloud that was a migration of ownership.</p>
-
-<h2>What we are for</h2>
-
-<p>Programs that start fast and finish. Files on disks you own. Formats older than the people using them. Tools that did not need a relaunch this year because they were correct the first time. Software you can read, fork, and bury in a time capsule with reasonable confidence it will compile when dug up.</p>
-
-<p>We are for the menu that has stayed in the same place since 2008. The keyboard shortcut that still works. The export button that produces something the program did not invent. The save file that is a directory of text files. The program that has no telemetry because it does not need to know.</p>
-
-<p>This is not nostalgia. The 1990s shipped plenty of bad software. We do not want the past back. We want the discipline back.</p>
-
-<hr>
-
-<h2>Frequently asked accusations</h2>
-
-<h3>You are romanticizing the past.</h3>
-<p>No. The past had Clippy and Real Player. We are romanticizing the constraints that produced the good parts of the past, not the parts that crashed your computer at the photo plant. Keep the discipline. Drop the bugs.</p>
-
-<h3>This will not scale.</h3>
-<p>Correct. Some things should not. A diary does not scale. A pocket knife does not scale. A favorite restaurant does not scale. Software is allowed to be a favorite restaurant.</p>
-
-<h3>Users want convenience.</h3>
-<p>Users want their work to still exist tomorrow. The convenience that costs them their archive is not convenience. It is debt with a friendly interface.</p>
-
-<h3>How will anyone get paid?</h3>
-<p>By selling the program. By supporting it. By being hired for knowing it. By teaching it. By writing the next one. People got paid for software long before subscriptions existed. They can do it again.</p>
-
-<h3>What about security updates?</h3>
-<p>Ship them. Announce them. Let the user install them. A security patch is not a redesign and should not arrive bundled with one.</p>
-
-<h3>What about AI?</h3>
-<p>The same rules apply. Run the model on the user's machine when possible. Save outputs as plain text. Do not condition the tool on a remote service that may be deprecated. The novelty of the technology does not exempt it from the obligations of the craft.</p>
-
-<hr>
-
-<h2>A short test</h2>
-
-<p>Before shipping, ask the following questions. If the answer to any of them is no, the work is not finished.</p>
-
-<ul class="plain">
-<li>If the company vanishes tomorrow, can the user still open their files?</li>
-<li>If the network is down, can the user still do the work?</li>
-<li>If the user does not pay next month, does the archive remain readable?</li>
-<li>Can the user export everything in a format another program can read?</li>
-<li>Has any update in the last year removed a feature someone relied on?</li>
-<li>Does the program ask before changing itself?</li>
-<li>Could a curious person read the source in an afternoon?</li>
-<li>Is the file format documented somewhere outside the source code?</li>
-</ul>
-
-<p>These are not aspirational questions. They are minimums. Treat them as such.</p>
-
-<hr>
-
-<h2 id="sign">Signers</h2>
-
-<p>The following people put their names to this document. They are not speaking for their employers. They are speaking as people who have written software, used software, lost software, and would prefer not to lose any more.</p>
-
-<ul class="signers">
-<li>Anders Holm, Stockholm</li>
-<li>Mei Tanaka, Kyoto</li>
-<li>Carlos Mwangi, Nairobi</li>
-<li>Priya Iyer, Bangalore</li>
-<li>Sofia Reinhardt, Leipzig</li>
-<li>Tomasz Wojcik, Krakow</li>
-<li>Leila Haddad, Beirut</li>
-<li>Ines Carvalho, Lisbon</li>
-<li>Joon-ho Park, Busan</li>
-<li>Rosa Aguilar, Mexico City</li>
-<li>Daniel Okafor, Lagos</li>
-<li>Hannah Bergman, Minneapolis</li>
-<li>Yuki Halvorsen, Tromso</li>
-<li>Pablo Restrepo, Medellin</li>
-</ul>
-
-<p class="meta">To add your name: copy this file. Edit the list. Host it yourself. There is no central registry. There is no signup form. There is no newsletter.</p>
-
-<hr>
-
-<h2>How to read this page</h2>
-
-<p>This page is one file. It loads no fonts, calls no servers, runs no scripts, and sets no cookies. If you save it to disk it will work offline forever. If you open it on a phone in a basement in 2050 it will render. If you print it on paper it will fit. The form is the argument.</p>
-
-<p>The CSS is under sixty lines. The HTML is plain. There is no build step. View source. That is the documentation.</p>
-
-<h2>License</h2>
-
-<p>This manifesto is in the public domain. Copy it. Fork it. Mirror it. Translate it. Disagree with it in writing. Strike out the points you reject and ship your own version. The only thing you cannot do is take it down for everyone else.</p>
-
-<hr class="hair">
-
-<footer>
-<p>Manifest first published 27 May 2026, version 1.0. This page is 12kb. It will work in 2050.</p>
-</footer>
-
+<script>
+(function(){
+  var root = document.documentElement, key = 'manifesto-theme';
+  try { var saved = localStorage.getItem(key); if (saved) root.setAttribute('data-theme', saved); } catch(e){}
+  function isDark(){
+    var t = root.getAttribute('data-theme');
+    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  var b = document.createElement('button');
+  b.className = 'lamp'; b.type = 'button';
+  function label(){
+    var d = isDark();
+    b.textContent = d ? 'turn lamp on' : 'turn lamp off';
+    b.setAttribute('aria-label', d ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  b.addEventListener('click', function(){
+    var next = isDark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(key, next); } catch(e){}
+    label();
+  });
+  label();
+  document.body.appendChild(b);
+})();
+</script>
 </body>
 </html>

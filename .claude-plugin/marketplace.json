@@ -1,0 +1,15 @@
+{
+  "name": "artifold",
+  "owner": {
+    "name": "Shubham Goel",
+    "url": "https://github.com/shubhamgoel27"
+  },
+  "description": "The craft skill from Artifold.",
+  "plugins": [
+    {
+      "name": "craft",
+      "source": "./",
+      "description": "Makes reports, slide decks, trackers and explainers as single HTML pages with a layout, type and voice chosen for the subject."
+    }
+  ]
+}

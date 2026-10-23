@@ -1,561 +1,464 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>30-Day Beginner Strength Tracker</title>
 <style>
-  @page { size: A4; margin: 12mm; }
+  :root {
+    --ink: #1c1917;
+    --muted: #6b6560;
+    --line: #d6d0c8;
+    --soft: #f5f1ea;
+    --paper: #fffdf9;
+    --accent: #b4441c;
+    --accent-soft: #fbe9df;
+    --ok: #2f6b3a;
+  }
   * { box-sizing: border-box; }
+  html { background: #ece6dc; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 24px;
-    background: #f5f3ee;
-    color: #1f1f1f;
-    line-height: 1.4;
-  }
-  .page {
-    max-width: 1100px;
     margin: 0 auto;
-    background: #fff;
-    padding: 32px 36px;
-    border: 1px solid #d8d4cb;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    max-width: 920px;
+    padding: 32px 28px 64px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 15px/1.45 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    box-shadow: 0 0 0 1px #e2dbd0, 0 12px 40px rgba(60, 40, 20, .08);
   }
-  header {
-    border-bottom: 3px solid #1f1f1f;
-    padding-bottom: 16px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  h1 {
-    font-size: 28px;
-    margin: 0;
-    letter-spacing: -0.5px;
-  }
-  .subtitle {
-    color: #5a5a5a;
-    font-size: 13px;
-    margin-top: 4px;
-  }
-  .meta {
-    font-size: 12px;
-    color: #444;
-    text-align: right;
-  }
-  .meta label {
-    display: inline-block;
-    margin-left: 12px;
-  }
-  .meta .line {
-    display: inline-block;
-    border-bottom: 1px solid #888;
-    width: 110px;
-    height: 14px;
-    vertical-align: bottom;
-  }
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    font-size: 12px;
-    margin-bottom: 18px;
-    padding: 10px 14px;
-    background: #faf8f3;
-    border: 1px solid #e6e1d4;
-  }
-  .legend .swatch {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 1px solid #777;
-    vertical-align: middle;
-    margin-right: 6px;
-  }
-  .sw-push  { background: #d9e8d3; }
-  .sw-pull  { background: #d6e1ee; }
-  .sw-legs  { background: #ecdcd2; }
-  .sw-core  { background: #f0e6c8; }
-  .sw-full  { background: #e3d8e9; }
-  .sw-rest  { background: #ececec; }
+  h1, h2, h3 { margin: 0; line-height: 1.15; }
+  h1 { font-size: 34px; letter-spacing: -.02em; }
+  h2 { font-size: 20px; letter-spacing: -.01em; }
+  h3 { font-size: 16px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 700; color: var(--accent); }
+  .muted { color: var(--muted); }
+  small, .small { font-size: 12px; }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+  /* Header */
+  .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 3px solid var(--ink); }
+  .top p { margin: 6px 0 0; max-width: 520px; }
+  .name-line { margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .name-line span { display: inline-block; min-width: 180px; border-bottom: 1px solid var(--ink); margin: 0 14px 0 6px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--ink);
+    background: var(--ink); color: #fff;
   }
-  .day {
-    border: 1px solid #c8c2b4;
-    padding: 10px 10px 8px;
-    background: #fff;
-    font-size: 11px;
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-  }
-  .day.push  { background: #f1f7ee; }
-  .day.pull  { background: #eef3f8; }
-  .day.legs  { background: #faefe7; }
-  .day.core  { background: #fbf5e0; }
-  .day.full  { background: #f4ecf6; }
-  .day.rest  { background: #f3f3f3; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:focus-visible, .box:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .progress { margin-top: 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; }
+  .bar { flex: 1; height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+  .bar i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
 
-  .day-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #bbb4a4;
-    padding-bottom: 4px;
+  /* Intro */
+  .intro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0; }
+  .intro div { background: var(--soft); border-radius: 10px; padding: 14px 16px; }
+  .intro h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .intro ul { margin: 0; padding-left: 18px; font-size: 13px; }
+  .intro li { margin: 3px 0; }
+
+  /* Setup */
+  .setup { border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 8px; }
+  .setup-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .setup-head p { margin: 4px 0 0; font-size: 13px; }
+  .unit { display: inline-flex; border: 1px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .unit button { font: inherit; font-size: 13px; font-weight: 600; border: 0; padding: 6px 14px; background: transparent; cursor: pointer; color: var(--ink); }
+  .unit button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  table { width: 100%; border-collapse: collapse; }
+  .setup th, .setup td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .setup th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+  .setup input { width: 64px; font: inherit; font-weight: 700; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+  .path { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .path b { color: var(--ink); }
+
+  /* Weeks */
+  .week { margin-top: 34px; }
+  .week-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .week-head .goal { font-size: 13px; font-weight: 600; }
+  .week-head .goal em { font-style: normal; color: var(--accent); }
+
+  .day { display: grid; grid-template-columns: 74px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); break-inside: avoid; page-break-inside: avoid; }
+  .day-num { text-align: center; }
+  .day-num b { display: block; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .day-num span { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
+  .day-num .box { margin: 8px auto 0; width: 26px; height: 26px; }
+  .day-num .done-lbl { display: block; font-size: 9px; margin-top: 2px; }
+  .day.done .day-num b { color: var(--ok); }
+
+  .day-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+  .pill.light { background: var(--soft); color: var(--muted); }
+  .date { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .date span { display: inline-block; width: 90px; border-bottom: 1px solid var(--muted); }
+
+  .ex th { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); text-align: left; font-weight: 700; padding: 4px 6px; border-bottom: 1px solid var(--ink); }
+  .ex td { padding: 6px; border-bottom: 1px dotted var(--line); vertical-align: middle; font-size: 13px; }
+  .ex tr:last-child td { border-bottom: 0; }
+  .ex .name b { display: block; }
+  .ex .name small { color: var(--muted); }
+  .ex .num { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+  .ex .wt { font-weight: 800; }
+  .sets { display: flex; gap: 5px; }
+
+  .box {
+    width: 22px; height: 22px; flex: none; padding: 0; cursor: pointer;
+    border: 1.6px solid var(--ink); border-radius: 4px; background: #fff;
+    display: inline-grid; place-items: center; font: 700 15px/1 sans-serif; color: var(--ok);
   }
-  .day-num {
-    font-weight: 700;
-    font-size: 13px;
-  }
-  .day-tag {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    padding: 2px 5px;
-    background: rgba(0,0,0,0.06);
-    border-radius: 2px;
-    color: #333;
-  }
-  .check {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid #444;
-    background: #fff;
-    vertical-align: middle;
-  }
-  ul.ex {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 6px;
-    flex-grow: 1;
-  }
-  ul.ex li {
-    padding: 2px 0;
-    border-bottom: 1px dotted #c7c1b3;
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-  }
-  ul.ex li:last-child { border-bottom: none; }
-  .ex-name { color: #1f1f1f; }
-  .ex-spec { color: #555; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .rest-note {
-    font-size: 10px;
-    color: #555;
-    margin-top: auto;
-    padding-top: 4px;
-    border-top: 1px solid #c8c2b4;
-    font-style: italic;
-  }
-  .rest-day-body {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-    font-style: italic;
-    text-align: center;
-    padding: 0 6px;
+  .box[aria-pressed="true"]::after { content: "\2713"; }
+  .box[aria-pressed="true"] { background: #eaf3ea; border-color: var(--ok); }
+
+  .line-item { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 4px 0; }
+  .warm { background: var(--soft); border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; }
+  .foot { display: flex; gap: 22px; margin-top: 8px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .foot span.fill { display: inline-block; border-bottom: 1px solid var(--muted); vertical-align: bottom; }
+  .mob { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+  .day.lite { padding: 9px 0; }
+  .day.lite .day-num b { font-size: 22px; }
+
+  .test-note { font-size: 13px; margin: 0 0 6px; }
+  .end { margin-top: 30px; background: var(--soft); border-radius: 12px; padding: 16px 18px; font-size: 13px; break-inside: avoid; }
+  .end h2 { font-size: 16px; margin-bottom: 6px; }
+  .end ul { margin: 0; padding-left: 18px; }
+  .footer { margin-top: 24px; font-size: 11px; color: var(--muted); }
+
+  @media (max-width: 680px) {
+    body { padding: 20px 14px 48px; }
+    .intro { grid-template-columns: 1fr; }
+    .day { grid-template-columns: 52px 1fr; gap: 10px; }
+    .ex thead { display: none; }
+    .ex tr { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 6px 0; border-bottom: 1px dotted var(--line); }
+    .ex td { border: 0; padding: 2px 0; }
+    .ex td.name { grid-column: 1 / -1; }
+    .mob { grid-template-columns: 1fr; }
+    .setup .path { display: none; }
   }
 
-  .week-label {
-    grid-column: 1 / -1;
-    background: #1f1f1f;
-    color: #fff;
-    padding: 6px 10px;
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
-  .week-label:first-child { margin-top: 0; }
-  .week-label .pct {
-    float: right;
-    font-weight: normal;
-    color: #ddd;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  .footer {
-    margin-top: 24px;
-    padding-top: 14px;
-    border-top: 2px solid #1f1f1f;
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    font-size: 12px;
-  }
-  .footer h3 {
-    margin: 0 0 8px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .footer ul {
-    margin: 0;
-    padding-left: 18px;
-    color: #333;
-  }
-  .footer ul li { margin-bottom: 4px; }
-  .notes-box {
-    border: 1px solid #c8c2b4;
-    min-height: 110px;
-    padding: 8px;
-    background: #fafaf6;
-    background-image: repeating-linear-gradient(transparent, transparent 19px, #e5e0d2 19px, #e5e0d2 20px);
-  }
+  @page { size: auto; margin: 12mm 12mm 14mm; }
   @media print {
-    body { background: #fff; padding: 0; }
-    .page { border: none; box-shadow: none; padding: 0; }
+    html, body { background: #fff; }
+    body { max-width: none; padding: 0; box-shadow: none; font-size: 10.5pt; }
+    .no-print { display: none !important; }
+    .top { padding-bottom: 10px; }
+    h1 { font-size: 24pt; }
+    .intro { margin: 12px 0; gap: 10px; }
+    .intro div { padding: 10px 12px; }
+    .setup { padding: 12px; }
+    .setup input { border: 0; padding: 0; width: 48px; background: transparent; }
+    .week { margin-top: 0; break-before: page; page-break-before: always; }
+    .day { padding: 8px 0; }
+    .ex td { padding: 4px 6px; }
+    .box { width: 18px; height: 18px; }
+    .day-num .box { width: 22px; height: 22px; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
 <body>
-<div class="page">
 
-  <header>
-    <div>
-      <h1>30-Day Beginner Strength Tracker</h1>
-      <div class="subtitle">3 working sets unless noted &middot; rest 60-90s between sets &middot; tick the box when the workout is done</div>
-    </div>
-    <div class="meta">
-      Name <span class="line"></span>
-      <label>Start date <span class="line"></span></label>
-      <label>Bodyweight <span class="line"></span></label>
-    </div>
-  </header>
-
-  <div class="legend">
-    <span><span class="swatch sw-push"></span>Push</span>
-    <span><span class="swatch sw-pull"></span>Pull</span>
-    <span><span class="swatch sw-legs"></span>Legs</span>
-    <span><span class="swatch sw-core"></span>Core</span>
-    <span><span class="swatch sw-full"></span>Full Body</span>
-    <span><span class="swatch sw-rest"></span>Rest / Mobility</span>
-    <span style="margin-left:auto;color:#555">DB = dumbbell &middot; BW = bodyweight &middot; AMRAP = as many reps as possible</span>
+<header class="top">
+  <div>
+    <div class="eyebrow">30-day beginner program</div>
+    <h1>Strength Tracker</h1>
+    <p class="muted">Three full-body sessions a week with dumbbells. Small, steady weight jumps. Tick each set as you finish it, then tick the day.</p>
+    <div class="name-line">Name<span></span>Start date<span></span></div>
   </div>
-
-  <div class="grid">
-
-    <!-- WEEK 1: Foundation -->
-    <div class="week-label">Week 1 &mdash; Foundation (learn the movements, light loads) <span class="pct">Target effort: 5-6 / 10</span></div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 1</span><span class="day-tag">Full Body</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
-        <li><span class="ex-name">Push-up (knee)</span><span class="ex-spec">3 x 8</span></li>
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
-        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 20s</span></li>
-      </ul>
-      <div class="rest-note">Rest 90s. Focus: form.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 2</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Walk 20-30 min<br>+ 5 min stretching</div>
-    </div>
-
-    <div class="day legs">
-      <div class="day-head"><span class="day-num">Day 3</span><span class="day-tag">Legs + Core</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Bodyweight Squat</span><span class="ex-spec">3 x 12</span></li>
-        <li><span class="ex-name">Reverse Lunge</span><span class="ex-spec">3 x 8/side</span></li>
-        <li><span class="ex-name">Glute Bridge</span><span class="ex-spec">3 x 12</span></li>
-        <li><span class="ex-name">Dead Bug</span><span class="ex-spec">3 x 8/side</span></li>
-      </ul>
-      <div class="rest-note">Rest 60s. Slow tempo.</div>
-    </div>
-
-    <div class="day push">
-      <div class="day-head"><span class="day-num">Day 4</span><span class="day-tag">Push</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Incline Push-up</span><span class="ex-spec">3 x 8</span></li>
-        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">3 x 8 / 10 lb</span></li>
-        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
-        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 25s</span></li>
-      </ul>
-      <div class="rest-note">Rest 90s.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 5</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Light yoga<br>or easy bike ride</div>
-    </div>
-
-    <div class="day pull">
-      <div class="day-head"><span class="day-num">Day 6</span><span class="day-tag">Pull</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 15 lb</span></li>
-        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">3 x 8 / 20 lb</span></li>
-        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 10 / 10 lb</span></li>
-        <li><span class="ex-name">Superman Hold</span><span class="ex-spec">3 x 20s</span></li>
-      </ul>
-      <div class="rest-note">Rest 75s.</div>
-    </div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 7</span><span class="day-tag">Full Body</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 20 lb</span></li>
-        <li><span class="ex-name">Push-up (knee)</span><span class="ex-spec">3 x 10</span></li>
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 17.5 lb</span></li>
-        <li><span class="ex-name">Side Plank</span><span class="ex-spec">2 x 20s/side</span></li>
-      </ul>
-      <div class="rest-note">First week done!</div>
-    </div>
-
-    <!-- WEEK 2: Build -->
-    <div class="week-label">Week 2 &mdash; Build (add a rep or 2-3 lb where it feels easy) <span class="pct">Target effort: 6-7 / 10</span></div>
-
-    <div class="day legs">
-      <div class="day-head"><span class="day-num">Day 8</span><span class="day-tag">Legs</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 22.5 lb</span></li>
-        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">3 x 8 / 20 lb</span></li>
-        <li><span class="ex-name">Walking Lunge</span><span class="ex-spec">3 x 10/side</span></li>
-        <li><span class="ex-name">Calf Raise</span><span class="ex-spec">3 x 15</span></li>
-      </ul>
-      <div class="rest-note">Rest 90s.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 9</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Mobility:<br>hips + thoracic spine<br>10 min</div>
-    </div>
-
-    <div class="day push">
-      <div class="day-head"><span class="day-num">Day 10</span><span class="day-tag">Push</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Push-up (full)</span><span class="ex-spec">3 x 6</span></li>
-        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">3 x 10 / 12.5 lb</span></li>
-        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">3 x 10 / 17.5 lb</span></li>
-        <li><span class="ex-name">Tricep Kickback</span><span class="ex-spec">3 x 10 / 8 lb</span></li>
-      </ul>
-      <div class="rest-note">Rest 75s.</div>
-    </div>
-
-    <div class="day core">
-      <div class="day-head"><span class="day-num">Day 11</span><span class="day-tag">Core</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 30s</span></li>
-        <li><span class="ex-name">Dead Bug</span><span class="ex-spec">3 x 10/side</span></li>
-        <li><span class="ex-name">Bird Dog</span><span class="ex-spec">3 x 8/side</span></li>
-        <li><span class="ex-name">Russian Twist</span><span class="ex-spec">3 x 20 / 10 lb</span></li>
-      </ul>
-      <div class="rest-note">Rest 45s.</div>
-    </div>
-
-    <div class="day pull">
-      <div class="day-head"><span class="day-num">Day 12</span><span class="day-tag">Pull</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 20 lb</span></li>
-        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">3 x 8 / 25 lb</span></li>
-        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 10 / 12.5 lb</span></li>
-        <li><span class="ex-name">Face Pull (band)</span><span class="ex-spec">3 x 15</span></li>
-      </ul>
-      <div class="rest-note">Rest 75s.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 13</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Walk 30-40 min<br>foam roll quads + back</div>
-    </div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 14</span><span class="day-tag">Full Body</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 10 / 25 lb</span></li>
-        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 8</span></li>
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 10 / 22.5 lb</span></li>
-        <li><span class="ex-name">Plank</span><span class="ex-spec">2 x 40s</span></li>
-      </ul>
-      <div class="rest-note">Halfway! Log how you feel.</div>
-    </div>
-
-    <!-- WEEK 3: Strength -->
-    <div class="week-label">Week 3 &mdash; Strength (heavier loads, lower reps on key lifts) <span class="pct">Target effort: 7-8 / 10</span></div>
-
-    <div class="day legs">
-      <div class="day-head"><span class="day-num">Day 15</span><span class="day-tag">Legs</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">4 x 6 / 30 lb</span></li>
-        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">4 x 6 / 30 lb</span></li>
-        <li><span class="ex-name">Bulgarian Split Sq.</span><span class="ex-spec">3 x 8/side / 10 lb</span></li>
-        <li><span class="ex-name">Calf Raise</span><span class="ex-spec">3 x 20</span></li>
-      </ul>
-      <div class="rest-note">Rest 2 min on heavy sets.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 16</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Easy walk<br>+ hip flexor stretch</div>
-    </div>
-
-    <div class="day push">
-      <div class="day-head"><span class="day-num">Day 17</span><span class="day-tag">Push</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Push-up</span><span class="ex-spec">4 x 8</span></li>
-        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">4 x 6 / 17.5 lb</span></li>
-        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">4 x 6 / 22.5 lb</span></li>
-        <li><span class="ex-name">Lateral Raise</span><span class="ex-spec">3 x 12 / 7.5 lb</span></li>
-      </ul>
-      <div class="rest-note">Rest 90s.</div>
-    </div>
-
-    <div class="day pull">
-      <div class="day-head"><span class="day-num">Day 18</span><span class="day-tag">Pull</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">4 x 6 / 27.5 lb</span></li>
-        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">4 x 6 / 35 lb</span></li>
-        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 8 / 15 lb</span></li>
-        <li><span class="ex-name">Inverted Row</span><span class="ex-spec">3 x AMRAP</span></li>
-      </ul>
-      <div class="rest-note">Rest 90s.</div>
-    </div>
-
-    <div class="day core">
-      <div class="day-head"><span class="day-num">Day 19</span><span class="day-tag">Core</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 45s</span></li>
-        <li><span class="ex-name">Side Plank</span><span class="ex-spec">3 x 25s/side</span></li>
-        <li><span class="ex-name">Hollow Hold</span><span class="ex-spec">3 x 20s</span></li>
-        <li><span class="ex-name">Hanging Knee Raise</span><span class="ex-spec">3 x 6</span></li>
-      </ul>
-      <div class="rest-note">Rest 60s.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 20</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Full rest day<br>extra sleep tonight</div>
-    </div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 21</span><span class="day-tag">Full Body</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 30 lb</span></li>
-        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 10</span></li>
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 27.5 lb</span></li>
-        <li><span class="ex-name">Farmer Carry</span><span class="ex-spec">3 x 30s / 30 lb</span></li>
-      </ul>
-      <div class="rest-note">Sustained effort.</div>
-    </div>
-
-    <!-- WEEK 4: Peak -->
-    <div class="week-label">Week 4 &mdash; Peak &amp; Test (push hardest sets, finish strong) <span class="pct">Target effort: 8-9 / 10</span></div>
-
-    <div class="day legs">
-      <div class="day-head"><span class="day-num">Day 22</span><span class="day-tag">Legs</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">4 x 5 / 35 lb</span></li>
-        <li><span class="ex-name">DB Romanian DL</span><span class="ex-spec">4 x 5 / 40 lb</span></li>
-        <li><span class="ex-name">Reverse Lunge</span><span class="ex-spec">3 x 8/side / 15 lb</span></li>
-        <li><span class="ex-name">Glute Bridge</span><span class="ex-spec">3 x 12 / 25 lb</span></li>
-      </ul>
-      <div class="rest-note">Rest 2 min.</div>
-    </div>
-
-    <div class="day push">
-      <div class="day-head"><span class="day-num">Day 23</span><span class="day-tag">Push</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Push-up</span><span class="ex-spec">4 x 10</span></li>
-        <li><span class="ex-name">DB Shoulder Press</span><span class="ex-spec">4 x 5 / 20 lb</span></li>
-        <li><span class="ex-name">DB Floor Press</span><span class="ex-spec">4 x 5 / 25 lb</span></li>
-        <li><span class="ex-name">Lateral Raise</span><span class="ex-spec">3 x 12 / 10 lb</span></li>
-      </ul>
-      <div class="rest-note">Rest 2 min.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 24</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Walk + mobility<br>20 min</div>
-    </div>
-
-    <div class="day pull">
-      <div class="day-head"><span class="day-num">Day 25</span><span class="day-tag">Pull</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">4 x 5 / 30 lb</span></li>
-        <li><span class="ex-name">DB Deadlift</span><span class="ex-spec">4 x 5 / 40 lb</span></li>
-        <li><span class="ex-name">DB Curl</span><span class="ex-spec">3 x 8 / 17.5 lb</span></li>
-        <li><span class="ex-name">Inverted Row</span><span class="ex-spec">3 x AMRAP</span></li>
-      </ul>
-      <div class="rest-note">Rest 2 min.</div>
-    </div>
-
-    <div class="day core">
-      <div class="day-head"><span class="day-num">Day 26</span><span class="day-tag">Core</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Plank</span><span class="ex-spec">3 x 60s</span></li>
-        <li><span class="ex-name">Side Plank</span><span class="ex-spec">3 x 30s/side</span></li>
-        <li><span class="ex-name">Hollow Hold</span><span class="ex-spec">3 x 30s</span></li>
-        <li><span class="ex-name">Hanging Knee Raise</span><span class="ex-spec">3 x 8</span></li>
-      </ul>
-      <div class="rest-note">Tight bracing.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 27</span><span class="day-tag">Rest</span><span class="check"></span></div>
-      <div class="rest-day-body">Full rest<br>prep for test days</div>
-    </div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 28</span><span class="day-tag">Full Body</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Goblet Squat</span><span class="ex-spec">3 x 8 / 35 lb</span></li>
-        <li><span class="ex-name">Push-up</span><span class="ex-spec">3 x 12</span></li>
-        <li><span class="ex-name">DB Row</span><span class="ex-spec">3 x 8 / 30 lb</span></li>
-        <li><span class="ex-name">Farmer Carry</span><span class="ex-spec">3 x 40s / 35 lb</span></li>
-      </ul>
-      <div class="rest-note">Last build day.</div>
-    </div>
-
-    <div class="day rest">
-      <div class="day-head"><span class="day-num">Day 29</span><span class="day-tag">Deload</span><span class="check"></span></div>
-      <div class="rest-day-body">Easy 20-min walk<br>stretch hips, chest, lats</div>
-    </div>
-
-    <div class="day full">
-      <div class="day-head"><span class="day-num">Day 30</span><span class="day-tag">Test Day</span><span class="check"></span></div>
-      <ul class="ex">
-        <li><span class="ex-name">Max Push-ups</span><span class="ex-spec">1 x AMRAP</span></li>
-        <li><span class="ex-name">Goblet Squat 5RM</span><span class="ex-spec">work up</span></li>
-        <li><span class="ex-name">DB Row 5RM</span><span class="ex-spec">work up</span></li>
-        <li><span class="ex-name">Max Plank Hold</span><span class="ex-spec">1 x max</span></li>
-      </ul>
-      <div class="rest-note">Compare vs Day 1!</div>
-    </div>
-
+  <div class="actions no-print">
+    <button class="btn" type="button" onclick="window.print()">Print</button>
+    <button class="btn ghost" type="button" id="clear">Clear ticks</button>
   </div>
+</header>
 
-  <div class="footer">
-    <div>
-      <h3>How to use this tracker</h3>
-      <ul>
-        <li>Warm up 5 minutes: light cardio + arm circles + bodyweight squats before every workout.</li>
-        <li>If a set feels easier than RPE 7, add 1-2 reps or 2.5-5 lb next session.</li>
-        <li>If form breaks down, stop the set. Quality beats quantity every time.</li>
-        <li>Rest days are non-negotiable &mdash; muscle grows when you recover.</li>
-        <li>Eat ~0.7 g protein per lb bodyweight and sleep 7-9 hours nightly.</li>
-        <li>Missed a day? Just resume on the next scheduled day &mdash; don't double up.</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Notes &amp; PRs</h3>
-      <div class="notes-box"></div>
-    </div>
-  </div>
-
+<div class="progress no-print">
+  <span id="prog-text">0 / 30 days done</span>
+  <div class="bar" aria-hidden="true"><i id="prog-bar"></i></div>
 </div>
+
+<section class="intro">
+  <div>
+    <h3>How it works</h3>
+    <ul>
+      <li>Workout A and B alternate, 3 days a week.</li>
+      <li>Rest days: walk or stretch. They matter.</li>
+      <li>Warm up 5 minutes before every session.</li>
+      <li>Best started on a Monday.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Progression rules</h3>
+    <ul>
+      <li>Leave 1 to 2 reps "in the tank" on every set.</li>
+      <li>Missed reps or form broke down? Repeat that weight next time.</li>
+      <li>Felt easy with 3+ reps to spare? Go up one step early.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Rest between sets</h3>
+    <ul>
+      <li><b>90 s</b> on big lifts (squat, press, deadlift)</li>
+      <li><b>60 s</b> on rows and lunges</li>
+      <li><b>45 s</b> on core work</li>
+      <li>Stop if you feel sharp pain. Mild soreness is normal.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="setup">
+  <div class="setup-head">
+    <div>
+      <h2>Your starting weights</h2>
+      <p class="muted">Pick a weight you could lift about 15 times. Every target below updates from these numbers.</p>
+    </div>
+    <div class="unit no-print" role="group" aria-label="Units">
+      <button type="button" data-unit="kg">kg</button>
+      <button type="button" data-unit="lb">lb</button>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Exercise</th><th>Start</th><th>Step</th><th class="path">Week 1 &rarr; 2 &rarr; 3 &rarr; 4</th></tr></thead>
+    <tbody id="setup-rows"></tbody>
+  </table>
+</section>
+
+<main id="plan"></main>
+
+<section class="end">
+  <h2>After day 30</h2>
+  <ul>
+    <li>Compare your Day 30 test reps with the 10 reps you did on Day 1. That gap is your new strength.</li>
+    <li>Keep going: repeat weeks 3 and 4, raising every starting weight by one step.</li>
+    <li>Once dumbbells get too light, move the squat and deadlift to a barbell.</li>
+  </ul>
+</section>
+
+<p class="footer">General fitness guidance, not medical advice. Check with a doctor first if you have an injury, heart condition, or are pregnant.</p>
+
+<script>
+(function () {
+  "use strict";
+
+  var EX = {
+    squat: { name: "Goblet Squat", cue: "Hold one dumbbell at chest, sit between heels", hold: "1 DB", rest: 90 },
+    bench: { name: "Dumbbell Bench Press", cue: "Elbows at 45°, lower to mid-chest", hold: "each hand", rest: 90 },
+    row:   { name: "One-Arm Dumbbell Row", cue: "Flat back, pull elbow to hip", hold: "1 DB", rest: 60, side: true },
+    rdl:   { name: "Dumbbell Romanian Deadlift", cue: "Soft knees, push hips back, flat back", hold: "each hand", rest: 90 },
+    press: { name: "Standing Shoulder Press", cue: "Squeeze glutes, press straight up", hold: "each hand", rest: 90 },
+    lunge: { name: "Reverse Lunge", cue: "Step back, back knee hovers above floor", hold: "each hand", rest: 60, side: true },
+    plank: { name: "Plank", cue: "Straight line head to heels, breathe", core: true, rest: 45 },
+    bug:   { name: "Dead Bug", cue: "Low back pressed into floor, move slowly", core: true, rest: 45, side: true }
+  };
+  var LIFTS = ["squat", "bench", "row", "rdl", "press", "lunge"];
+  var DEF = {
+    kg: { squat: [8, 2], bench: [6, 1], row: [8, 2], rdl: [8, 2], press: [4, 1], lunge: [0, 2] },
+    lb: { squat: [20, 5], bench: [10, 5], row: [15, 5], rdl: [15, 5], press: [8, 2], lunge: [0, 5] }
+  };
+  var WORKOUT = { A: ["squat", "bench", "row", "plank"], B: ["rdl", "press", "lunge", "bug"] };
+
+  // n = how many weight steps above the starting weight
+  var WEEKS = [
+    { sets: 2, reps: 10, n: 0, plank: 20, bug: 6,  goal: "Learn the moves", how: "2 sets, light weight, perfect form" },
+    { sets: 3, reps: 8,  n: 1, plank: 30, bug: 8,  goal: "Add a set, add weight", how: "3 sets, +1 step" },
+    { sets: 3, reps: 10, n: 1, plank: 40, bug: 10, goal: "Same weight, more reps", how: "3 sets, +2 reps" },
+    { sets: 3, reps: 8,  n: 2, plank: 45, bug: 10, goal: "Heavier again", how: "3 sets, +1 more step" }
+  ];
+  var SCHED = [
+    ["A", "walk", "B", "mob", "A", "walk", "rest"],
+    ["B", "walk", "A", "mob", "B", "walk", "rest"],
+    ["A", "walk", "B", "mob", "A", "walk", "rest"],
+    ["B", "walk", "A", "mob", "B", "walk", "rest"],
+    ["rest", "test"]
+  ];
+  var MOBILITY = [
+    "Cat-cow × 10", "Hip flexor stretch 30 s / side",
+    "World's greatest stretch × 5 / side", "Thoracic rotations × 8 / side",
+    "Glute bridge × 15", "Child's pose 60 s"
+  ];
+
+  var KEY = "strength30-v1";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { state = {}; }
+  state.unit = state.unit || "kg";
+  state.w = state.w || {};
+  state.ticks = state.ticks || {};
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function cfg(id) {
+    var d = DEF[state.unit][id], s = (state.w[state.unit] || {})[id] || {};
+    return { start: s.start != null ? s.start : d[0], step: s.step != null ? s.step : d[1] };
+  }
+  function fmt(v) { return String(Math.round(v * 100) / 100); }
+  function weightAt(id, n) {
+    var c = cfg(id), v = c.start + c.step * n;
+    return v <= 0 ? "Bodyweight" : fmt(v) + " " + state.unit;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function box(k, label, extra) {
+    return '<button type="button" class="box' + (extra || "") + '" data-k="' + k + '" aria-pressed="' + (!!state.ticks[k]) + '" aria-label="' + esc(label) + '"></button>';
+  }
+
+  /* ---------- Setup table ---------- */
+  function renderSetup() {
+    document.querySelectorAll(".unit button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.unit === state.unit);
+    });
+    document.getElementById("setup-rows").innerHTML = LIFTS.map(function (id) {
+      var c = cfg(id), ex = EX[id];
+      var path = WEEKS.map(function (w, i) {
+        var v = c.start + c.step * w.n;
+        var t = v <= 0 ? "BW" : fmt(v);
+        return i === 3 ? "<b>" + t + "</b>" : t;
+      }).join(" &rarr; ");
+      return "<tr><td><b>" + ex.name + "</b> <small class='muted'>(" + ex.hold + ")</small></td>" +
+        '<td><input type="number" min="0" step="0.5" inputmode="decimal" data-id="' + id + '" data-f="start" value="' + c.start + '" aria-label="' + ex.name + ' starting weight"> ' + state.unit + "</td>" +
+        '<td>+<input type="number" min="0" step="0.5" inputmode="decimal" data-id="' + id + '" data-f="step" value="' + c.step + '" aria-label="' + ex.name + ' step size"> ' + state.unit + "</td>" +
+        '<td class="path">' + path + "</td></tr>";
+    }).join("");
+  }
+
+  /* ---------- Day renderers ---------- */
+  function dayShell(num, cls, inner) {
+    var k = "d" + num + "-done";
+    return '<article class="day ' + cls + (state.ticks[k] ? " done" : "") + '" data-day="' + num + '">' +
+      '<div class="day-num"><span>Day</span><b>' + num + "</b>" + box(k, "Day " + num + " done", " day-done") +
+      '<span class="done-lbl">done</span></div><div>' + inner + "</div></article>";
+  }
+
+  function workout(num, type, w) {
+    var wk = WEEKS[w];
+    var rows = WORKOUT[type].map(function (id) {
+      var ex = EX[id];
+      var reps = id === "plank" ? wk.plank + " s" : id === "bug" ? wk.bug + " / side" : wk.reps + (ex.side ? " / side" : "");
+      var wt = ex.core ? "Body" : weightAt(id, wk.n);
+      var hold = ex.core || wt === "Bodyweight" ? "" : ' <small class="muted">' + ex.hold + "</small>";
+      var sets = "";
+      for (var s = 1; s <= wk.sets; s++) sets += box("d" + num + "-" + id + "-" + s, "Day " + num + " " + ex.name + " set " + s);
+      return '<tr><td class="name"><b>' + ex.name + "</b><small>" + ex.cue + "</small></td>" +
+        '<td class="num">' + wk.sets + " × " + reps + "</td>" +
+        '<td class="num wt">' + wt + hold + "</td>" +
+        '<td class="num">' + ex.rest + " s</td>" +
+        '<td><div class="sets">' + sets + "</div></td></tr>";
+    }).join("");
+    var inner =
+      '<div class="day-title"><h3>Workout ' + type + '</h3><span class="pill">' + wk.how + '</span><span class="date">Date <span></span></span></div>' +
+      '<div class="line-item warm">' + box("d" + num + "-warm", "Day " + num + " warm-up") +
+      "<span><b>Warm-up 5 min:</b> march in place, arm circles, 10 bodyweight squats, 10 glute bridges</span></div>" +
+      '<table class="ex"><thead><tr><th>Exercise</th><th>Sets × reps</th><th>Target</th><th>Rest</th><th>Tick each set</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+      '<div class="foot"><span>Effort 1 to 10: <span class="fill" style="width:40px"></span></span>' +
+      '<span style="flex:1">Notes: <span class="fill" style="width:calc(100% - 50px)"></span></span></div>';
+    return dayShell(num, "work", inner);
+  }
+
+  function walk(num) {
+    return dayShell(num, "lite",
+      '<div class="day-title"><h3>Active rest</h3><span class="pill light">easy pace</span></div>' +
+      '<div class="line-item">' + box("d" + num + "-walk", "Day " + num + " walk") + "<span>Walk 20 to 30 minutes. Breathing a little harder, still able to talk.</span></div>");
+  }
+
+  function mob(num) {
+    var items = MOBILITY.map(function (m, i) {
+      return '<div class="line-item">' + box("d" + num + "-mob" + i, "Day " + num + " " + m) + "<span>" + m + "</span></div>";
+    }).join("");
+    return dayShell(num, "lite",
+      '<div class="day-title"><h3>Mobility</h3><span class="pill light">10 to 15 min</span></div><div class="mob">' + items + "</div>");
+  }
+
+  function rest(num, note) {
+    return dayShell(num, "lite",
+      '<div class="day-title"><h3>Full rest</h3><span class="pill light">recover</span></div>' +
+      '<div class="line-item">' + box("d" + num + "-sleep", "Day " + num + " slept 7 hours") + "<span>" + note + "</span></div>");
+  }
+
+  function test(num) {
+    var lifts = ["squat", "bench", "row", "rdl", "press"];
+    var rows = lifts.map(function (id) {
+      var ex = EX[id];
+      return '<tr><td class="name"><b>' + ex.name + "</b><small>Day 1 you did 10" + (ex.side ? " / side" : "") + "</small></td>" +
+        '<td class="num wt">' + weightAt(id, 0) + "</td>" +
+        '<td class="num muted">now training ' + weightAt(id, 2) + "</td>" +
+        '<td class="num">Reps: <span class="fill" style="display:inline-block;width:50px;border-bottom:1px solid #6b6560"></span></td>' +
+        "<td>" + box("d" + num + "-" + id, "Day " + num + " test " + ex.name) + "</td></tr>";
+    }).join("");
+    rows += '<tr><td class="name"><b>Plank</b><small>Day 1 you held 20 s</small></td><td class="num wt">Body</td><td class="num muted">max hold</td>' +
+      '<td class="num">Secs: <span style="display:inline-block;width:50px;border-bottom:1px solid #6b6560"></span></td><td>' + box("d" + num + "-plank", "Day " + num + " test plank") + "</td></tr>";
+    var inner =
+      '<div class="day-title"><h3>Progress test</h3><span class="pill">1 set each, max clean reps</span><span class="date">Date <span></span></span></div>' +
+      '<p class="test-note">Warm up, then use your <b>Week 1 weight</b> and do as many good-form reps as you can. Stop when form slips. Rest 2 to 3 minutes between lifts.</p>' +
+      '<table class="ex"><thead><tr><th>Lift</th><th>Test weight</th><th>Progress</th><th>Result</th><th>Done</th></tr></thead><tbody>' + rows + "</tbody></table>";
+    return dayShell(num, "work", inner);
+  }
+
+  /* ---------- Plan ---------- */
+  function renderPlan() {
+    var day = 0, html = "";
+    SCHED.forEach(function (week, w) {
+      var wk = WEEKS[w];
+      var head = wk
+        ? '<div class="week-head"><div><div class="eyebrow">Week ' + (w + 1) + "</div><h2>Days " + (day + 1) + " to " + (day + 7) + '</h2></div><div class="goal">Focus: <em>' + wk.goal + "</em></div></div>"
+        : '<div class="week-head"><div><div class="eyebrow">Finish line</div><h2>Days 29 to 30</h2></div><div class="goal">Focus: <em>See how far you have come</em></div></div>';
+      var days = week.map(function (t) {
+        day++;
+        if (t === "A" || t === "B") return workout(day, t, w);
+        if (t === "walk") return walk(day);
+        if (t === "mob") return mob(day);
+        if (t === "test") return test(day);
+        return rest(day, day === 29 ? "Rest up for tomorrow's test. Sleep 7+ hours, eat a protein-rich dinner." : "Sleep 7+ hours. Protein at every meal. Drink water.");
+      }).join("");
+      html += '<section class="week">' + head + days + "</section>";
+    });
+    document.getElementById("plan").innerHTML = html;
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var n = 0;
+    for (var i = 1; i <= 30; i++) if (state.ticks["d" + i + "-done"]) n++;
+    document.getElementById("prog-text").textContent = n + " / 30 days done";
+    document.getElementById("prog-bar").style.width = (n / 30 * 100) + "%";
+  }
+
+  /* ---------- Events ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".box");
+    if (b) {
+      var k = b.dataset.k, on = !state.ticks[k];
+      if (on) state.ticks[k] = 1; else delete state.ticks[k];
+      b.setAttribute("aria-pressed", on);
+      if (b.classList.contains("day-done")) {
+        b.closest(".day").classList.toggle("done", on);
+        updateProgress();
+      }
+      save();
+      return;
+    }
+    var u = e.target.closest(".unit button");
+    if (u && u.dataset.unit !== state.unit) {
+      state.unit = u.dataset.unit;
+      save(); renderSetup(); renderPlan();
+    }
+  });
+
+  document.getElementById("setup-rows").addEventListener("change", function (e) {
+    var inp = e.target;
+    if (!inp.dataset.id) return;
+    var v = parseFloat(inp.value);
+    if (isNaN(v) || v < 0) v = 0;
+    var u = state.w[state.unit] = state.w[state.unit] || {};
+    u[inp.dataset.id] = u[inp.dataset.id] || {};
+    u[inp.dataset.id][inp.dataset.f] = v;
+    save(); renderSetup(); renderPlan();
+  });
+
+  document.getElementById("clear").addEventListener("click", function () {
+    if (!confirm("Clear all ticks? Your starting weights are kept.")) return;
+    state.ticks = {};
+    save(); renderPlan();
+  });
+
+  renderSetup();
+  renderPlan();
+})();
+</script>
 </body>
 </html>

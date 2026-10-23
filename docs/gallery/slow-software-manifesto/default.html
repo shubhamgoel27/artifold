@@ -1,147 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Manifesto for Slow, File-Based, Anti-Bloat Software</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Slow Software Manifesto</title>
+<meta name="description" content="Twelve principles for slow, file-based, anti-bloat software.">
 <style>
+  :root {
+    --paper: #f4efe4;
+    --ink: #1d1b17;
+    --muted: #6b6457;
+    --rule: #cfc5b0;
+    --accent: #a8361f;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #17150f;
+      --ink: #ece4d2;
+      --muted: #9d937f;
+      --rule: #3a352b;
+      --accent: #e0745a;
+    }
+  }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 19px;
     line-height: 1.6;
-    color: #222;
-    background: #fff;
-    margin: 0;
-    padding: 0;
-  }
-  header {
-    background: linear-gradient(135deg, #2c3e50, #4a6789);
-    color: #fff;
-    padding: 60px 20px;
-    text-align: center;
-  }
-  header h1 {
-    margin: 0 0 12px;
-    font-size: 2.4em;
-    font-weight: 600;
-  }
-  header p {
-    margin: 0;
-    font-size: 1.15em;
-    opacity: 0.9;
+    text-rendering: optimizeLegibility;
   }
   main {
-    max-width: 760px;
+    max-width: 44rem;
     margin: 0 auto;
-    padding: 40px 24px 60px;
+    padding: 5rem 1.5rem 4rem;
   }
-  .intro {
-    font-size: 1.05em;
-    color: #444;
-    border-left: 4px solid #4a6789;
-    padding: 12px 18px;
-    background: #f7f9fc;
-    margin-bottom: 40px;
+  header { margin-bottom: 4rem; }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1.5rem;
   }
-  .point {
-    margin-bottom: 32px;
-  }
-  .point h2 {
-    font-size: 1.25em;
-    margin: 0 0 8px;
-    color: #2c3e50;
-  }
-  .point h2 span {
-    display: inline-block;
-    color: #4a6789;
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 4.4rem);
+    line-height: 1.02;
     font-weight: 700;
-    margin-right: 8px;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.75rem;
   }
-  .point p {
+  h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .lede {
+    font-size: 1.2rem;
+    color: var(--muted);
+    max-width: 34rem;
     margin: 0;
-    color: #333;
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: point;
+  }
+  li {
+    counter-increment: point;
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0 1rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  li::before {
+    content: counter(point, upper-roman);
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    padding-top: 0.35rem;
+  }
+  h2 {
+    font-size: 1.55rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.6rem;
+  }
+  li p { margin: 0; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    background: color-mix(in srgb, var(--rule) 45%, transparent);
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
   }
   footer {
-    text-align: center;
-    color: #888;
-    font-size: 0.9em;
-    padding: 30px 20px;
-    border-top: 1px solid #eee;
+    border-top: 3px double var(--rule);
+    margin-top: 1rem;
+    padding-top: 2.5rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  footer p { margin: 0 0 0.75rem; }
+  .colophon {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2rem;
+  }
+  @media (max-width: 560px) {
+    body { font-size: 17px; }
+    main { padding-top: 3rem; }
+    li { grid-template-columns: 1fr; }
+    li::before { padding: 0 0 0.25rem; }
+  }
+  @media print {
+    :root { --paper: #fff; --ink: #000; --muted: #444; --rule: #bbb; --accent: #000; }
+    body { font-size: 11.5pt; }
+    main { padding: 0; max-width: none; }
+    li { break-inside: avoid; padding: 1rem 0; }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>A Manifesto for Slow, File-Based, Anti-Bloat Software</h1>
-  <p>In defense of tools that load fast, store plainly, and respect your time.</p>
-</header>
 <main>
-  <p class="intro">
-    Software has gotten heavy. It syncs constantly, demands accounts, hides your data behind APIs, and ships a browser inside a browser. This is a manifesto for the other path: small programs, plain files, and the patience to build things that last.
-  </p>
+  <header>
+    <p class="kicker">A manifesto in twelve points</p>
+    <h1>Slow Software,<br><em>on purpose.</em></h1>
+    <p class="lede">For tools that open instantly, keep your work in files you can see, and are still there in ten years. Software should be a quiet instrument, not a subscription to someone else's roadmap.</p>
+  </header>
 
-  <div class="point">
-    <h2><span>1.</span>Your data belongs in a file.</h2>
-    <p>A file you can see, copy, email, back up, and open in twenty years. Not a row in someone's database. Not an opaque blob synced to a cloud. If the company disappears tomorrow, your work should still exist on your disk.</p>
-  </div>
+  <ol>
+    <li>
+      <div>
+        <h2>Keep the work in files.</h2>
+        <p>Plain text, a format with a published spec, a folder you can open in any file browser. If the only way to reach your writing is through an app that is still running, on servers that are still paid for, by a company that still exists, you do not own it. You are renting it.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Work offline first.</h2>
+        <p>The network is a feature, not a foundation. Software that launches on a plane, saves without a connection, and syncs when it can is software that trusts the person in front of it more than the cloud behind it.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Count dependencies like debts.</h2>
+        <p>Every package you install is a stranger with commit access to your product. You pay interest on it in upgrades, audits, and surprise breakage. Borrow only when writing the thing yourself is genuinely worse, and write down why.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Choose boring formats.</h2>
+        <p>Markdown, CSV, JSON, <code>.sqlite</code>, PNG. A format that dozens of tools can read will outlive the tool that wrote it. Cleverness belongs in the program, never in the file.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Do one thing, then stop.</h2>
+        <p>A text editor does not need to become a chat app, a calendar, and a social feed. Scope is a promise to your users. Finished is a feature, and it is the rarest one in our industry.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Change slowly.</h2>
+        <p>Every redesign spends your users' attention without asking. Muscle memory is a gift you gave them; do not take it back to hit a quarterly goal. Move a button only when moving it is clearly, measurably kinder.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Make it fit in one head.</h2>
+        <p>If no single person can explain how the whole system works, nobody can fix it at three in the morning. Smallness is not nostalgia. It is a security property, a reliability property, and a kindness to whoever maintains it next.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Respect the machine.</h2>
+        <p>A note-taking app does not need two gigabytes of memory and a bundled browser. Measure startup time, memory use, and download size. Treat every regression as a bug, because to the person on an old laptop, it is one.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Never demand an account for local work.</h2>
+        <p>Asking someone to sign in before they can open their own file is a toll booth on their front door. Identity belongs to sharing and syncing, and only when the user chooses either.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Leave the door open.</h2>
+        <p>Export everything, in a documented format, in one step. The surest way to earn loyalty is to make leaving painless. Lock-in is an admission that the product could not keep people on its merits.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Delete more than you add.</h2>
+        <p>Features carry a cost long after the launch post fades. Retire what nobody uses, collapse what overlaps, and celebrate the pull request that removes a thousand lines. Code you delete can never break.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h2>Build it to be finished.</h2>
+        <p>Aim for a 1.0 that could honestly be the last release. Maintenance should mean fixing bugs and keeping the lights on, not feeding a treadmill of updates. The best software is the kind you forget is software at all.</p>
+      </div>
+    </li>
+  </ol>
 
-  <div class="point">
-    <h2><span>2.</span>Plain text outlasts everything.</h2>
-    <p>Markdown, CSV, JSON, YAML, SQLite. These formats have outlived a thousand proprietary apps and will outlive a thousand more. Prefer them. They are readable by humans, by scripts, and by tools that haven't been invented yet.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>3.</span>Local first, network second.</h2>
-    <p>An app should work on a plane. It should work when the wifi is bad. It should work when the vendor's servers go down. Cloud sync is a feature, not a foundation. Build for the offline case and the online case becomes free.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>4.</span>Startup time is a moral issue.</h2>
-    <p>Every second of cold-start latency is a second stolen from your user. A note-taking app should open faster than you can blink. If your launcher needs a splash screen, you have failed. Respect the clock.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>5.</span>Do one thing. Compose the rest.</h2>
-    <p>The Unix philosophy still works. Small tools that do one job well, joined together by pipes and files, beat monolithic suites every time. Stop trying to be a platform. Be a verb.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>6.</span>No account required.</h2>
-    <p>Why does a text editor need to know my email address? Why does a calculator want me to "sign in to sync"? Defaults matter. If your software demands an identity before it draws a single pixel, it is not serving the user — it is serving the funnel.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>7.</span>Ship in megabytes, not gigabytes.</h2>
-    <p>A chat app does not need 400MB of disk. A music player does not need a Chromium runtime. The bloat is not a law of nature. It is a choice — usually one made for the developer's convenience at the user's expense.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>8.</span>Configuration is a text file.</h2>
-    <p>Settings should live in a file you can read, version-control, copy between machines, and edit with any tool. GUI preference panes are fine. Hidden binary preference blobs are not. Configuration is documentation.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>9.</span>Backwards compatibility is a feature.</h2>
-    <p>Files written by version 1 should open in version 10. The user did not consent to a rewrite. If you must change formats, provide migration tools and keep the old reader around. Forever is a long time, but it is the right target.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>10.</span>Updates are opt-in, not ambushes.</h2>
-    <p>The software the user installed yesterday should be the software they use today. Auto-updates that move buttons, remove features, or change defaults overnight are a betrayal of trust. Stability is a deliverable.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>11.</span>The filesystem is the API.</h2>
-    <p>If your app stores its data as files in a folder, every other tool on the system can read, search, sync, and back it up for free. You do not need to build an integration with Dropbox. Dropbox already exists. So does grep.</p>
-  </div>
-
-  <div class="point">
-    <h2><span>12.</span>Slow software is patient software.</h2>
-    <p>Slow does not mean sluggish. It means deliberate. It means refusing to chase the next framework, the next paradigm, the next funding round. It means building something today that you will be proud of in ten years — and that your users will still be using.</p>
-  </div>
+  <footer>
+    <p>None of this is new. Most of it is simply old enough to have been forgotten.</p>
+    <p>Print it. Save it. It is one file, and it will still open long after the frameworks have moved on.</p>
+    <p class="colophon">One HTML file &middot; No scripts &middot; No trackers &middot; No dependencies</p>
+  </footer>
 </main>
-<footer>
-  Written in plain HTML. No trackers. No fonts. No JavaScript.
-</footer>
 </body>
 </html>

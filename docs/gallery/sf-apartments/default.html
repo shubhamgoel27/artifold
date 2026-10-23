@@ -2,291 +2,209 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SF Apartment Comparison — 989 20th vs 400 Beale vs NEMA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SF Apartment Showdown: Dogpatch vs Rincon Hill vs SoMa</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: linear-gradient(135deg, #f4f6fb 0%, #e8eef7 100%);
-    color: #1f2733;
-    line-height: 1.55;
-    padding: 40px 20px;
+  :root {
+    --bg: #f6f3ee; --card: #fff; --ink: #1f2328; --muted: #6b7280; --line: #e5e0d8;
+    --dog: #e07a3f; --rin: #2f6fb0; --nema: #7a4fb3; --good: #2e8b57; --mid: #d4a017; --bad: #c0392b;
   }
-  .page {
-    max-width: 1100px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 6px 30px rgba(20, 30, 60, 0.08);
-    overflow: hidden;
-  }
-  header {
-    padding: 36px 40px 28px;
-    background: linear-gradient(120deg, #1f3a8a, #3155c4);
-    color: #fff;
-  }
-  header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-  }
-  header p {
-    margin-top: 6px;
-    font-size: 14px;
-    opacity: 0.85;
-  }
-  .meta {
-    margin-top: 14px;
-    font-size: 12px;
-    opacity: 0.7;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  section {
-    padding: 32px 40px;
-  }
-  h2 {
-    font-size: 18px;
-    color: #1f3a8a;
-    margin-bottom: 16px;
-    border-bottom: 2px solid #e3e8f3;
-    padding-bottom: 8px;
-  }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 8px;
-  }
-  .card {
-    border: 1px solid #e3e8f3;
-    border-radius: 10px;
-    padding: 18px;
-    background: #fafbff;
-  }
-  .card h3 {
-    font-size: 15px;
-    color: #1f3a8a;
-    margin-bottom: 4px;
-  }
-  .card .sub {
-    font-size: 12px;
-    color: #6b7280;
-    margin-bottom: 10px;
-  }
-  .price {
-    font-size: 22px;
-    font-weight: 700;
-    color: #0f766e;
-    margin-bottom: 8px;
-  }
-  .tag {
-    display: inline-block;
-    background: #eef2ff;
-    color: #3155c4;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  th, td {
-    padding: 12px 14px;
-    text-align: left;
-    border-bottom: 1px solid #eef1f7;
-    vertical-align: top;
-  }
-  th {
-    background: #f4f6fb;
-    font-size: 12px;
-    color: #4b5563;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-  td.criterion {
-    font-weight: 600;
-    color: #1f2733;
-    width: 18%;
-  }
-  .score {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 6px;
-  }
-  .s-good { background: #d1fae5; color: #065f46; }
-  .s-ok   { background: #fef3c7; color: #92400e; }
-  .s-bad  { background: #fee2e2; color: #991b1b; }
-  .recommendation {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    border-left: 5px solid #0f766e;
-    border-radius: 8px;
-    padding: 22px 26px;
-    margin-top: 8px;
-  }
-  .recommendation h2 {
-    border: none;
-    color: #064e3b;
-    padding-bottom: 4px;
-  }
-  .recommendation strong {
-    color: #064e3b;
-  }
-  .recommendation ul {
-    margin-top: 10px;
-    padding-left: 22px;
-  }
-  .recommendation li {
-    margin-bottom: 4px;
-    font-size: 14px;
-  }
-  footer {
-    padding: 18px 40px;
-    background: #f4f6fb;
-    font-size: 12px;
-    color: #6b7280;
-    text-align: center;
-  }
-  @media (max-width: 780px) {
-    .cards { grid-template-columns: 1fr; }
-    section, header, footer { padding-left: 22px; padding-right: 22px; }
-  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  header { padding: 40px 24px 24px; max-width: 1100px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.02em; }
+  h2 { font-size: 20px; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0; }
+  main { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .apt { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; border-top: 5px solid var(--c); position: relative; }
+  .apt h3 { margin: 0; font-size: 19px; }
+  .apt .hood { color: var(--c); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  .apt p { margin: 10px 0 0; color: #374151; font-size: 14px; }
+  .apt .total { font-size: 40px; font-weight: 750; color: var(--c); line-height: 1; margin-top: 14px; }
+  .apt .total small { font-size: 15px; color: var(--muted); font-weight: 500; }
+  .apt .rank { position: absolute; top: 16px; right: 16px; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: #f1ede6; color: var(--muted); }
+  .apt .rank.win { background: var(--c); color: #fff; }
+  ul.pc { margin: 12px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+  ul.pc li { padding: 2px 0 2px 20px; position: relative; }
+  ul.pc li::before { position: absolute; left: 0; font-weight: 700; }
+  ul.pc li.p::before { content: "+"; color: var(--good); }
+  ul.pc li.c::before { content: "\2212"; color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  td.s { width: 150px; }
+  .bar { height: 8px; border-radius: 4px; background: #eee; overflow: hidden; margin-top: 4px; }
+  .bar > i { display: block; height: 100%; }
+  .num { font-weight: 700; }
+  .note { color: var(--muted); font-size: 12.5px; }
+  .crit { font-weight: 600; white-space: nowrap; }
+  .weights { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 24px; }
+  .weights label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; }
+  .weights input { width: 100%; accent-color: var(--ink); }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .presets button { border: 1px solid var(--line); background: #faf8f4; border-radius: 99px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+  .presets button:hover, .presets button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .verdict { border-left: 5px solid var(--c, var(--ink)); }
+  .verdict h2 span { color: var(--c); }
+  .scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+  .scen div { background: #faf8f4; border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+  .scen b { display: block; margin-bottom: 2px; }
+  .legend { display: flex; gap: 16px; font-size: 13px; margin-bottom: 10px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: 6px; }
+  footer { color: var(--muted); font-size: 12.5px; max-width: 1100px; margin: 0 auto; padding: 0 24px 40px; }
 </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <h1>SF Apartment Comparison — Three Finalists</h1>
-      <p>Decision one-pager for a two-person household commuting to Meta's Mission Bay office.</p>
-      <div class="meta">Prepared May 2026 · 1-bed / 1-bed+den targets · 12-month lease</div>
-    </header>
+<header>
+  <h1>SF Apartment Showdown for Two</h1>
+  <p class="sub">989 20th St (Dogpatch) vs 400 Beale (Rincon Hill) vs NEMA (8 10th St, SoMa / Mid-Market). Scored 1 to 10 on eight criteria, weighted to your priorities.</p>
+</header>
 
-    <section>
-      <h2>The Contenders</h2>
-      <div class="cards">
-        <div class="card">
-          <h3>989 20th Street</h3>
-          <div class="sub">Dogpatch · Newer mid-rise</div>
-          <div class="price">$5,000/mo</div>
-          <span class="tag">Quiet</span><span class="tag">Near 280</span><span class="tag">New build</span>
-        </div>
-        <div class="card">
-          <h3>400 Beale Street</h3>
-          <div class="sub">Rincon Hill · High-rise tower</div>
-          <div class="price">$5,800/mo</div>
-          <span class="tag">Bay views</span><span class="tag">Embarcadero</span><span class="tag">Iconic</span>
-        </div>
-        <div class="card">
-          <h3>NEMA</h3>
-          <div class="sub">SoMa · 8th & Market</div>
-          <div class="price">$5,200/mo</div>
-          <span class="tag">Amenity-heavy</span><span class="tag">Transit-adjacent</span><span class="tag">Large complex</span>
-        </div>
-      </div>
-    </section>
+<main>
+  <div class="cards" id="cards"></div>
 
-    <section>
-      <h2>Head-to-Head Comparison</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Criterion</th>
-            <th>989 20th (Dogpatch)</th>
-            <th>400 Beale (Rincon Hill)</th>
-            <th>NEMA (SoMa)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="criterion">Commute to Mission Bay (Meta SF)</td>
-            <td><span class="score s-good">Best</span>~12 min walk or 6 min bike along Illinois/3rd</td>
-            <td><span class="score s-ok">OK</span>~20 min Muni T-Line or 12 min bike via Embarcadero</td>
-            <td><span class="score s-ok">OK</span>~22 min by Muni; bike via 7th + Mission Creek path</td>
-          </tr>
-          <tr>
-            <td class="criterion">Morning sun exposure</td>
-            <td><span class="score s-good">Strong</span>East-facing units catch direct sun; Dogpatch fog-free most mornings</td>
-            <td><span class="score s-good">Strong</span>East/north tower faces over bay; unobstructed sunrise from upper floors</td>
-            <td><span class="score s-bad">Weak</span>Frequent SoMa marine layer; mid-block units shadowed by neighboring towers</td>
-          </tr>
-          <tr>
-            <td class="criterion">Neighborhood vibe</td>
-            <td>Quiet, residential, walkable. Wineries, coffee, Crane Cove Park. Limited nightlife.</td>
-            <td>Polished, professional, quiet evenings. Ferry Building + Embarcadero on doorstep.</td>
-            <td>Energetic, dense, gritty edges around Mid-Market. Best restaurant variety of the three.</td>
-          </tr>
-          <tr>
-            <td class="criterion">Amenities</td>
-            <td>Rooftop deck, co-work lounge, package room. Modest but well-maintained.</td>
-            <td>Pool, sky lounge, screening room, concierge. Premium finish.</td>
-            <td><span class="score s-good">Best</span>Two pools, basketball court, two gyms, demo kitchen, game room, dog spa.</td>
-          </tr>
-          <tr>
-            <td class="criterion">Parking</td>
-            <td><span class="score s-good">Easy</span>Deeded EV-ready spot ~$250/mo; street parking also feasible</td>
-            <td>Valet only ~$425/mo; tight turnaround for daily use</td>
-            <td>Self-park garage ~$375/mo; EV chargers limited, waitlist common</td>
-          </tr>
-          <tr>
-            <td class="criterion">Dog-friendliness</td>
-            <td><span class="score s-good">Best</span>Crane Cove + Esprit Park within 5 min; no breed/weight limit</td>
-            <td>Small rooftop dog run; 10 min walk to nearest real park (Rincon)</td>
-            <td>On-site dog spa + run; Civic Center plaza is the nearest grass — mixed quality</td>
-          </tr>
-          <tr>
-            <td class="criterion">Gym</td>
-            <td>Mid-size, Peloton + free weights. Rarely crowded.</td>
-            <td>Boutique-style, Technogym equipment, yoga studio. Quiet hours.</td>
-            <td><span class="score s-good">Best</span>Two full gyms, sauna, group classes, basketball court</td>
-          </tr>
-          <tr>
-            <td class="criterion">Monthly price (base rent)</td>
-            <td><span class="score s-good">$5,000</span></td>
-            <td><span class="score s-bad">$5,800</span></td>
-            <td><span class="score s-ok">$5,200</span></td>
-          </tr>
-          <tr>
-            <td class="criterion">All-in (rent + parking)</td>
-            <td>~$5,250</td>
-            <td>~$6,225</td>
-            <td>~$5,575</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <section class="verdict" id="verdict"></section>
 
-    <section>
-      <div class="recommendation">
-        <h2>Recommendation: 989 20th Street (Dogpatch)</h2>
-        <p>
-          For a couple optimizing a Mission Bay commute, sunny mornings, and an EV-friendly daily routine,
-          <strong>989 20th Street is the best fit</strong>. It wins on the three highest-weighted criteria
-          (commute, morning sun, dog-friendliness) while being the cheapest all-in by ~$300–$1,000/month.
-        </p>
-        <ul>
-          <li><strong>Commute math:</strong> a 6-minute bike or 12-minute walk eliminates Muni dependency entirely — a meaningful daily quality-of-life win versus the two SoMa-side options.</li>
-          <li><strong>Microclimate:</strong> Dogpatch sits in one of the city's reliable sun pockets; NEMA in particular loses on grey-morning frequency.</li>
-          <li><strong>Total cost:</strong> ~$5,250 all-in vs ~$6,225 at 400 Beale frees ~$11,700/year — enough to fund travel or a future move-up.</li>
-          <li><strong>Dog logistics:</strong> Crane Cove + Esprit Park beat any rooftop run; no breed/weight limits removes future risk.</li>
-        </ul>
-        <p style="margin-top:12px;">
-          <strong>Consider 400 Beale only if</strong> the view premium and Embarcadero lifestyle outweigh ~$1k/mo and a longer commute.
-          <strong>NEMA</strong> is the right pick only if the amenity stack (two gyms, pools, courts) is used heavily — otherwise the marine layer and Mid-Market friction outweigh it.
-        </p>
-      </div>
-    </section>
+  <section>
+    <h2>Tune the weights</h2>
+    <div class="presets" id="presets"></div>
+    <div class="weights" id="weights"></div>
+    <p class="note" style="margin-top:12px">Weights are normalized automatically, so only their relative size matters. Scores and rankings update live.</p>
+  </section>
 
-    <footer>
-      Comparison based on May 2026 listed pricing and on-site tours. Verify current availability and concessions before signing.
-    </footer>
-  </div>
+  <section>
+    <h2>Scorecard</h2>
+    <div class="legend">
+      <span style="--c:var(--dog)">989 20th</span>
+      <span style="--c:var(--rin)">400 Beale</span>
+      <span style="--c:var(--nema)">NEMA</span>
+    </div>
+    <div style="overflow-x:auto"><table id="table"></table></div>
+  </section>
+</main>
+
+<footer>
+  Scores are a judgment-based comparison using neighborhood character, transit access, typical building amenities and approximate 2026 market rents. Rents, parking fees, pet policies and unit availability change often; confirm specifics (pet rent, breed and weight limits, garage cost, current concessions) with each leasing office before signing. Visit each at 5 pm on a weekday and on a Saturday morning: that is when commute noise, sun and street feel are most honest.
+</footer>
+
+<script>
+const APTS = [
+  { id: "dog", name: "989 20th St", hood: "Dogpatch", color: "var(--dog)",
+    blurb: "Low-rise, sunny, neighborhood-y pocket on the east side. Third St restaurants, breweries and Crane Cove Park are a short walk.",
+    pros: ["Sunniest microclimate of the three", "Walkable, local vibe with great food and coffee", "22nd St Caltrain and T Third nearby for South Bay commuters", "Easiest parking situation"],
+    cons: ["Slowest trip to FiDi (T Third or bike, ~20 to 30 min)", "Building amenities likely leaner than the towers", "Fewer late-night options than SoMa"] },
+  { id: "rin", name: "400 Beale", hood: "Rincon Hill", color: "var(--rin)",
+    blurb: "Polished high-rise living by the Bay Bridge. Walk to FiDi, Salesforce Transit Center, Embarcadero BART and the Ferry Building.",
+    pros: ["Best downtown commute: walk or one BART stop", "Bay and bridge views from upper floors", "Embarcadero waterfront for runs and dog walks", "Quiet, clean, well-kept blocks"],
+    cons: ["Most expensive per square foot", "Quieter, more corporate feel on evenings and weekends", "Garage parking is pricey; windy afternoons"] },
+  { id: "nema", name: "NEMA", hood: "SoMa / Mid-Market", color: "var(--nema)",
+    blurb: "Amenity-heavy twin towers at 10th and Market. Hotel-style lobby, big fitness center, rooftop decks, dog run and pet spa.",
+    pros: ["Best-in-class amenities and gym", "Very dog-friendly building (dog run, pet spa)", "Civic Center BART and Muni at the door; easy reach of Hayes Valley", "Frequent move-in concessions bring the net rent down"],
+    cons: ["Street conditions on Market can be rough, especially at night", "Busy, transient feel in a large building", "Parking is limited and costly"] },
+];
+
+const CRITERIA = [
+  { k: "commute", label: "Commute", w: 20, s: { dog: 6, rin: 9, nema: 8 },
+    why: { dog: "Great if one of you goes south (22nd St Caltrain). Downtown is T Third or a 15 min bike.", rin: "Walk to FiDi and SoMa offices; Embarcadero BART, ferry and Transit Center all close.", nema: "Civic Center BART/Muni at the door covers most of the city and East Bay in one ride." } },
+  { k: "sun", label: "Sun", w: 10, s: { dog: 9, rin: 7, nema: 7 },
+    why: { dog: "East side banana belt; fog usually burns off first here.", rin: "Bright on the east side but breezy; light depends heavily on floor and exposure.", nema: "Decent SoMa weather; tower orientation matters, south and east units get the most light." } },
+  { k: "vibe", label: "Vibe", w: 15, s: { dog: 9, rin: 6, nema: 5 },
+    why: { dog: "Indie, creative, very walkable. Feels like a neighborhood.", rin: "Safe and calm but corporate; quiet after 7 pm.", nema: "Energetic and central, but Mid-Market street conditions are a real trade-off." } },
+  { k: "amenities", label: "Amenities", w: 10, s: { dog: 6, rin: 8, nema: 10 },
+    why: { dog: "Likely a smaller building; expect basics plus roof deck at best.", rin: "Full-service tower: lounge, roof deck, concierge, package room.", nema: "Rooftop decks, lounges, concierge, screening and co-working space; among the best in SF." } },
+  { k: "parking", label: "Parking", w: 10, s: { dog: 7, rin: 6, nema: 5 },
+    why: { dog: "Street parking is workable and garages are cheaper.", rin: "Garage available but expensive; street parking near-zero.", nema: "Limited garage spots at a premium; plan to go car-light." } },
+  { k: "dogs", label: "Dogs", w: 10, s: { dog: 9, rin: 7, nema: 9 },
+    why: { dog: "Esprit Park and Crane Cove Park nearby; lots of dog owners.", rin: "Rincon Park and the Embarcadero are great walks, little grass.", nema: "On-site dog run and pet spa; Patricia's Green and Duboce Park reachable." } },
+  { k: "gym", label: "Gym", w: 10, s: { dog: 6, rin: 8, nema: 9 },
+    why: { dog: "Modest on-site gym (if any); good boutique studios on Third St.", rin: "Solid on-site fitness center with views.", nema: "Large, well-equipped fitness center plus classes." } },
+  { k: "price", label: "Price / value", w: 15, s: { dog: 7, rin: 5, nema: 6 },
+    why: { dog: "Est. 2BR ~$4,600 to $5,400/mo. Best space for the money.", rin: "Est. 2BR ~$5,800 to $7,000+/mo. You pay for location and views.", nema: "Est. 2BR ~$5,000 to $6,000/mo before concessions; free weeks are common." } },
+];
+
+const PRESETS = {
+  "Balanced (default)": null,
+  "Both work in FiDi": { commute: 30, sun: 8, vibe: 12, amenities: 10, parking: 5, dogs: 10, gym: 10, price: 15 },
+  "One commutes to South Bay": { commute: 25, sun: 10, vibe: 15, amenities: 8, parking: 15, dogs: 10, gym: 7, price: 10 },
+  "We have a dog": { commute: 15, sun: 10, vibe: 15, amenities: 10, parking: 8, dogs: 25, gym: 7, price: 10 },
+  "Budget first": { commute: 15, sun: 8, vibe: 12, amenities: 8, parking: 7, dogs: 10, gym: 5, price: 35 },
+  "Amenity lovers": { commute: 15, sun: 5, vibe: 10, amenities: 25, parking: 5, dogs: 10, gym: 20, price: 10 },
+};
+const DEFAULTS = Object.fromEntries(CRITERIA.map(c => [c.k, c.w]));
+const W = { ...DEFAULTS };
+
+function totals() {
+  const sum = Object.values(W).reduce((a, b) => a + b, 0) || 1;
+  return APTS.map(a => ({ ...a, total: CRITERIA.reduce((t, c) => t + c.s[a.id] * W[c.k], 0) / sum }))
+             .sort((x, y) => y.total - x.total);
+}
+const colorFor = v => v >= 8 ? "var(--good)" : v >= 6 ? "var(--mid)" : "var(--bad)";
+
+function render() {
+  const ranked = totals();
+  const rankOf = Object.fromEntries(ranked.map((a, i) => [a.id, i + 1]));
+
+  document.getElementById("cards").innerHTML = APTS.map(a => {
+    const t = ranked.find(r => r.id === a.id).total;
+    const r = rankOf[a.id];
+    return `<div class="apt" style="--c:${a.color}">
+      <span class="rank ${r === 1 ? "win" : ""}">${r === 1 ? "TOP PICK" : "#" + r}</span>
+      <div class="hood">${a.hood}</div><h3>${a.name}</h3>
+      <div class="total">${t.toFixed(1)}<small> / 10</small></div>
+      <p>${a.blurb}</p>
+      <ul class="pc">${a.pros.map(p => `<li class="p">${p}</li>`).join("")}${a.cons.map(c => `<li class="c">${c}</li>`).join("")}</ul>
+    </div>`;
+  }).join("");
+
+  const sum = Object.values(W).reduce((a, b) => a + b, 0) || 1;
+  document.getElementById("table").innerHTML =
+    `<tr><th>Criterion</th><th>Weight</th>${APTS.map(a => `<th style="color:${a.color}">${a.name}</th>`).join("")}</tr>` +
+    CRITERIA.map(c => `<tr><td class="crit">${c.label}</td><td>${Math.round(W[c.k] / sum * 100)}%</td>` +
+      APTS.map(a => { const v = c.s[a.id]; return `<td class="s"><span class="num">${v}</span>
+        <div class="bar"><i style="width:${v * 10}%;background:${colorFor(v)}"></i></div>
+        <div class="note">${c.why[a.id]}</div></td>`; }).join("") + `</tr>`).join("") +
+    `<tr><td class="crit">Weighted total</td><td></td>${APTS.map(a => `<td class="num" style="font-size:18px;color:${a.color}">${ranked.find(r => r.id === a.id).total.toFixed(2)}</td>`).join("")}</tr>`;
+
+  const [w, second] = ranked;
+  const gap = w.total - second.total;
+  const v = document.getElementById("verdict");
+  v.style.setProperty("--c", w.color);
+  v.innerHTML = `<h2>Recommendation: <span>${w.name} (${w.hood})</span></h2>
+    <p>With these weights, ${w.name} leads ${second.name} by ${gap.toFixed(2)} points${gap < 0.2 ? ", which is close enough that a site visit should decide it" : ""}.
+    ${w.id === "dog" ? "It gives a couple the most livable day-to-day: the most sun, a real neighborhood, easy dog walks and the best space per dollar. The cost is a slower trip downtown."
+      : w.id === "rin" ? "It wins on commute and polish: walk to work, waterfront at your door, quiet safe blocks. The cost is rent and a sleepier evening scene."
+      : "It wins on amenities and dog-friendliness with a transit hub at the door, and concessions make the price competitive. The cost is Mid-Market street conditions."}</p>
+    <div class="scen">
+      <div><b>Pick 989 20th if...</b>you want sun, a neighborhood feel, more space for the money, or one of you takes Caltrain south.</div>
+      <div><b>Pick 400 Beale if...</b>both of you work in FiDi or SoMa, you value calm and views, and budget has headroom.</div>
+      <div><b>Pick NEMA if...</b>you'll use the gym and amenities daily, have a dog, want central transit, and are comfortable with Mid-Market streets.</div>
+    </div>`;
+}
+
+function buildControls() {
+  const wEl = document.getElementById("weights");
+  wEl.innerHTML = CRITERIA.map(c => `<div><label for="w-${c.k}">${c.label}<span id="v-${c.k}">${W[c.k]}</span></label>
+    <input type="range" id="w-${c.k}" min="0" max="40" value="${W[c.k]}"></div>`).join("");
+  CRITERIA.forEach(c => document.getElementById("w-" + c.k).addEventListener("input", e => {
+    W[c.k] = +e.target.value; document.getElementById("v-" + c.k).textContent = W[c.k];
+    document.querySelectorAll(".presets button").forEach(b => b.classList.remove("on"));
+    render();
+  }));
+
+  const pEl = document.getElementById("presets");
+  pEl.innerHTML = Object.keys(PRESETS).map((n, i) => `<button class="${i === 0 ? "on" : ""}">${n}</button>`).join("");
+  pEl.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    Object.assign(W, PRESETS[b.textContent] || DEFAULTS);
+    CRITERIA.forEach(c => { document.getElementById("w-" + c.k).value = W[c.k]; document.getElementById("v-" + c.k).textContent = W[c.k]; });
+    pEl.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on");
+    render();
+  }));
+}
+
+buildControls();
+render();
+</script>
 </body>
 </html>

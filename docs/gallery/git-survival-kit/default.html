@@ -2,222 +2,975 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Git Cheatsheet for New Developers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git Survival Kit: 12 Commands for Your First 90 Days</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.5;
-    color: #222;
-    background: #ffffff;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 32px 20px;
+  :root {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --ink: #1d1b18;
+    --muted: #6b665e;
+    --line: #e4dfd5;
+    --accent: #e8572a;
+    --accent-soft: #fde9e1;
+    --ok: #2f7d4f;
+    --ok-soft: #e3f2e8;
+    --warn: #a86a00;
+    --warn-soft: #fbf0d9;
+    --term-bg: #1e1d1b;
+    --term-ink: #e9e4da;
+    --term-dim: #8f897d;
+    --term-green: #8fd18f;
+    --term-red: #f08a7a;
+    --term-yellow: #f0cf7a;
+    --radius: 14px;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   }
-  header {
-    border-bottom: 2px solid #2563eb;
-    padding-bottom: 16px;
-    margin-bottom: 24px;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141312;
+      --surface: #1d1c1a;
+      --ink: #eeeae2;
+      --muted: #a39d92;
+      --line: #2f2d2a;
+      --accent: #ff7a4d;
+      --accent-soft: #3a2219;
+      --ok: #7fcf9b;
+      --ok-soft: #1c2e23;
+      --warn: #f0c060;
+      --warn-soft: #33290f;
+      --term-bg: #0d0d0c;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  code { font-family: var(--mono); font-size: 0.9em; }
+  :not(pre) > code {
+    background: var(--accent-soft);
+    padding: 0.1em 0.4em;
+    border-radius: 5px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  header.hero { padding: 72px 0 40px; }
+  .eyebrow {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
   h1 {
-    margin: 0 0 8px 0;
-    font-size: 2rem;
-    color: #1e3a8a;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 14px 0 18px;
+    max-width: 16ch;
   }
-  header p {
-    margin: 0;
-    color: #555;
-  }
-  .grid {
+  .lede { font-size: 1.15rem; color: var(--muted); max-width: 60ch; margin: 0; }
+
+  .timeline {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 36px;
   }
-  .card {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
     padding: 16px 18px;
-    background: #fafafa;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    transition: border-color .15s, transform .15s;
   }
-  .card h2 {
-    margin: 0 0 6px 0;
-    font-size: 1.05rem;
-    color: #2563eb;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  .phase:hover { transform: translateY(-2px); }
+  .phase[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .phase .days { font: 600 12px var(--mono); color: var(--accent); }
+  .phase .name { font-weight: 700; font-size: 1.05rem; margin: 4px 0 2px; }
+  .phase .cmds { font: 13px var(--mono); color: var(--muted); }
+
+  /* Toolbar */
+  .toolbar {
+    position: sticky; top: 0; z-index: 5;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0;
   }
-  .card p {
-    margin: 0 0 10px 0;
-    font-size: 0.92rem;
-    color: #444;
+  .toolbar .wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .search {
+    flex: 1 1 260px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font: 15px var(--sans);
   }
-  pre {
-    background: #f1f3f5;
-    border: 1px solid #e0e3e7;
+  .search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .jump { display: flex; gap: 6px; flex-wrap: wrap; }
+  .jump a {
+    font: 600 12px var(--mono);
+    text-decoration: none;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: var(--surface);
+  }
+  .jump a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Command cards */
+  main { padding: 32px 0 40px; }
+  .cards { display: grid; gap: 22px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    scroll-margin-top: 80px;
+  }
+  .card[hidden] { display: none; }
+  .card-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: start;
+    padding: 24px 26px 6px;
+  }
+  .num {
+    font: 700 13px var(--mono);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 8px;
+    padding: 6px 9px;
+    margin-top: 4px;
+  }
+  .card h2 { margin: 0; font: 700 1.5rem/1.2 var(--mono); letter-spacing: -0.02em; }
+  .card .why { margin: 6px 0 0; color: var(--muted); }
+  .tag {
+    font: 600 11px var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 5px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .card-body {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 22px;
+    padding: 18px 26px 26px;
+  }
+  @media (max-width: 820px) {
+    .card-body { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 1fr; }
+    .card-head { grid-template-columns: auto 1fr; }
+    .card-head .tag { grid-column: 2; justify-self: start; }
+  }
+  h3 {
+    font: 700 11px var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+
+  .term {
+    background: var(--term-bg);
+    color: var(--term-ink);
+    border-radius: 10px;
+    font: 13.5px/1.65 var(--mono);
+    position: relative;
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #ffffff14;
+  }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #ffffff22; display: block; }
+  .copy {
+    margin-left: auto;
+    font: 600 11px var(--mono);
+    background: #ffffff12;
+    color: var(--term-ink);
+    border: 0;
     border-radius: 6px;
-    padding: 10px 12px;
+    padding: 4px 9px;
+    cursor: pointer;
+  }
+  .copy:hover { background: #ffffff24; }
+  .copy.done { background: var(--ok); color: #fff; }
+  .term pre { margin: 0; padding: 14px 16px 16px; overflow-x: auto; white-space: pre; }
+  .term .p { color: var(--term-dim); user-select: none; }
+  .term .c { color: var(--term-dim); font-style: italic; }
+  .term .g { color: var(--term-green); }
+  .term .r { color: var(--term-red); }
+  .term .y { color: var(--term-yellow); }
+
+  .flags { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+  .flags li { display: grid; grid-template-columns: minmax(130px, auto) 1fr; gap: 12px; font-size: 14.5px; }
+  .flags code { background: none !important; padding: 0 !important; color: var(--accent); font-weight: 600; }
+
+  .rescue {
+    background: var(--ok-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .rescue h3 { color: var(--ok); }
+  .rescue dl { margin: 0; }
+  .rescue dt { font-weight: 700; font-size: 14.5px; }
+  .rescue dd { margin: 4px 0 14px; font-size: 14.5px; }
+  .rescue dd:last-child { margin-bottom: 0; }
+  .rescue pre {
+    margin: 6px 0 0;
+    font: 13px/1.5 var(--mono);
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 8px 10px;
     overflow-x: auto;
-    font-size: 0.85rem;
-    margin: 0;
   }
-  code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  footer {
-    margin-top: 32px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 0.85rem;
-    color: #777;
-    text-align: center;
-  }
-  .tip {
-    background: #fffbea;
-    border-left: 4px solid #f59e0b;
+  .gotcha {
+    margin-top: 14px;
+    background: var(--warn-soft);
+    border-radius: 10px;
     padding: 12px 16px;
-    margin: 24px 0;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 14.5px;
+  }
+  .gotcha strong { color: var(--warn); }
+
+  .empty { text-align: center; color: var(--muted); padding: 48px 0; display: none; }
+
+  /* Panic table */
+  section.panic { padding: 24px 0 40px; }
+  section.panic h2, section.rules h2 { font-size: 1.9rem; letter-spacing: -0.02em; margin: 0 0 6px; }
+  section.panic p.sub, section.rules p.sub { color: var(--muted); margin: 0 0 22px; }
+  .table {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 20px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--line);
+    align-items: center;
+  }
+  .row:first-child { border-top: 0; background: var(--bg); font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .row code { background: none !important; padding: 0 !important; color: var(--accent); font-weight: 600; word-break: break-word; }
+  .row .note { display: block; color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+  @media (max-width: 720px) { .row { grid-template-columns: 1fr; gap: 4px; } }
+
+  section.rules { padding: 24px 0 64px; }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .rule {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .rule b { display: block; margin-bottom: 4px; }
+  .rule span { color: var(--muted); font-size: 14.5px; }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 48px; color: var(--muted); font-size: 14px; }
+
+  @media print {
+    .toolbar, .copy, .timeline { display: none; }
+    .card { break-inside: avoid; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Git Survival Kit</h1>
-  <p>The 14 essential git commands every new developer should know, with working examples.</p>
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Git Survival Kit</div>
+    <h1>12 commands for your first 90 days.</h1>
+    <p class="lede">Git has over 150 commands. You need about a dozen to do real work on a team, and one more to get yourself out of almost any mess. Each one below comes with a working example and a recovery tip for when it goes sideways.</p>
+
+    <div class="timeline" role="group" aria-label="Filter by phase">
+      <button class="phase" data-phase="1" aria-pressed="false">
+        <div class="days">DAYS 1 to 30</div>
+        <div class="name">Ship your first change</div>
+        <div class="cmds">clone, status, add, commit, log</div>
+      </button>
+      <button class="phase" data-phase="2" aria-pressed="false">
+        <div class="days">DAYS 31 to 60</div>
+        <div class="name">Work with the team</div>
+        <div class="cmds">switch, pull, push, diff</div>
+      </button>
+      <button class="phase" data-phase="3" aria-pressed="false">
+        <div class="days">DAYS 61 to 90</div>
+        <div class="name">Fix your own mistakes</div>
+        <div class="cmds">stash, restore, reflog</div>
+      </button>
+    </div>
+  </div>
 </header>
 
-<div class="grid">
-
-  <div class="card">
-    <h2>git init</h2>
-    <p>Create a new git repository in the current directory.</p>
-<pre><code>git init
-git init my-project</code></pre>
+<div class="toolbar">
+  <div class="wrap">
+    <input class="search" id="search" type="search" placeholder="Search commands, flags, or problems (e.g. &quot;undo&quot;, &quot;conflict&quot;)" aria-label="Search commands">
+    <nav class="jump" id="jump" aria-label="Jump to command"></nav>
   </div>
-
-  <div class="card">
-    <h2>git clone</h2>
-    <p>Copy an existing remote repository to your local machine.</p>
-<pre><code>git clone https://github.com/user/repo.git
-git clone git@github.com:user/repo.git my-folder</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git status</h2>
-    <p>Show which files are modified, staged, or untracked.</p>
-<pre><code>git status
-git status -s   # short format</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git add</h2>
-    <p>Stage changes to be included in the next commit.</p>
-<pre><code>git add README.md
-git add .              # stage everything
-git add -p             # interactively pick hunks</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git commit</h2>
-    <p>Record staged changes to the repository history.</p>
-<pre><code>git commit -m "Add login form"
-git commit -am "Quick fix"   # add tracked + commit
-git commit --amend           # edit last commit</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git log</h2>
-    <p>View commit history with various formatting options.</p>
-<pre><code>git log
-git log --oneline
-git log --graph --oneline --all</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git diff</h2>
-    <p>Show changes between commits, branches, or working tree.</p>
-<pre><code>git diff               # unstaged changes
-git diff --staged      # staged changes
-git diff main feature  # compare branches</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git branch</h2>
-    <p>List, create, or delete branches.</p>
-<pre><code>git branch                 # list local branches
-git branch new-feature     # create branch
-git branch -d old-feature  # delete merged branch</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git checkout / switch</h2>
-    <p>Switch between branches or restore files.</p>
-<pre><code>git switch main
-git switch -c new-feature   # create + switch
-git checkout -- file.txt    # discard changes</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git merge</h2>
-    <p>Combine changes from another branch into the current one.</p>
-<pre><code>git switch main
-git merge feature-branch
-git merge --no-ff feature-branch</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git pull</h2>
-    <p>Fetch from remote and merge into the current branch.</p>
-<pre><code>git pull
-git pull origin main
-git pull --rebase</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git push</h2>
-    <p>Upload local commits to a remote repository.</p>
-<pre><code>git push
-git push origin main
-git push -u origin new-feature   # set upstream</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git reset</h2>
-    <p>Undo commits or unstage files. Use with care.</p>
-<pre><code>git reset HEAD file.txt     # unstage
-git reset --soft HEAD~1     # undo last commit, keep changes
-git reset --hard HEAD~1     # discard last commit</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git stash</h2>
-    <p>Temporarily shelve uncommitted changes so you can switch context.</p>
-<pre><code>git stash
-git stash list
-git stash pop</code></pre>
-  </div>
-
-  <div class="card">
-    <h2>git remote</h2>
-    <p>Manage the set of remote repositories tracked by your project.</p>
-<pre><code>git remote -v
-git remote add origin https://github.com/user/repo.git
-git remote remove origin</code></pre>
-  </div>
-
 </div>
 
-<div class="tip">
-  <strong>Pro tip:</strong> Run <code>git config --global user.name "Your Name"</code> and
-  <code>git config --global user.email "you@example.com"</code> once when setting up a new machine,
-  so your commits are attributed properly.
-</div>
+<main>
+  <div class="wrap">
+    <div class="cards" id="cards">
+
+      <!-- 1 clone -->
+      <article class="card" id="clone" data-phase="1">
+        <div class="card-head">
+          <span class="num">01</span>
+          <div>
+            <h2>git clone</h2>
+            <p class="why">Get your own full copy of the repository, history included. Usually the very first thing you do on day one.</p>
+          </div>
+          <span class="tag">Day 1</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git clone git@github.com:acme/web-app.git
+<span class="p">$ </span>cd web-app
+
+<span class="c"># clone into a folder with a different name</span>
+<span class="p">$ </span>git clone git@github.com:acme/web-app.git acme-web</pre></div>
+            <ul class="flags">
+              <li><code>--depth 1</code><span>Only the latest snapshot. Faster for huge repos, but no history.</span></li>
+              <li><code>-b &lt;branch&gt;</code><span>Check out a specific branch right away.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>"Permission denied (publickey)"</dt>
+                <dd>Your SSH key is not set up with the host. Either add your key, or use the HTTPS URL instead. Test with:
+                  <pre>ssh -T git@github.com</pre></dd>
+                <dt>Cloned into the wrong folder?</dt>
+                <dd>Nothing is linked to the path. Just move or delete the folder; a clone is fully self-contained.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2 status -->
+      <article class="card" id="status" data-phase="1">
+        <div class="card-head">
+          <span class="num">02</span>
+          <div>
+            <h2>git status</h2>
+            <p class="why">Your "where am I?" command. Run it before and after everything else. It is read-only, so it can never hurt you.</p>
+          </div>
+          <span class="tag">Day 1</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git status
+On branch feature/login-form
+Changes to be committed:
+  <span class="g">modified:   src/Login.tsx</span>
+
+Changes not staged for commit:
+  <span class="r">modified:   src/api.ts</span>
+
+Untracked files:
+  <span class="r">notes.txt</span>
+
+<span class="c"># compact view</span>
+<span class="p">$ </span>git status -sb</pre></div>
+            <ul class="flags">
+              <li><code>-s</code><span>Short output, one line per file.</span></li>
+              <li><code>-b</code><span>Show the branch and how far ahead/behind the remote you are.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>How to read it</h3>
+              <dl>
+                <dt>Green = staged</dt>
+                <dd>Will go into the next commit.</dd>
+                <dt>Red = not staged or untracked</dt>
+                <dd>Changed on disk, but Git will ignore it at commit time until you <code>git add</code> it.</dd>
+                <dt>"HEAD detached at abc123"</dt>
+                <dd>You are not on a branch. Get back with <code>git switch main</code>, or keep your work with <code>git switch -c my-branch</code>.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 add -->
+      <article class="card" id="add" data-phase="1">
+        <div class="card-head">
+          <span class="num">03</span>
+          <div>
+            <h2>git add</h2>
+            <p class="why">Choose exactly which changes go into your next commit. Think of the staging area as a shopping cart.</p>
+          </div>
+          <span class="tag">Day 1</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git add src/Login.tsx
+<span class="p">$ </span>git add src/            <span class="c"># a whole folder</span>
+
+<span class="c"># review each chunk before staging it</span>
+<span class="p">$ </span>git add -p
+Stage this hunk [y,n,q,a,d,s,e,?]? <span class="y">y</span></pre></div>
+            <ul class="flags">
+              <li><code>-p</code><span>Patch mode. Stage piece by piece. The best habit you can build.</span></li>
+              <li><code>-A</code><span>Stage everything, including deletions. Use with care.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>Staged the wrong file?</dt>
+                <dd>Unstage it. Your edits stay on disk.
+                  <pre>git restore --staged notes.txt</pre></dd>
+                <dt>Staged a secret or a huge file?</dt>
+                <dd>Unstage it as above, then add it to <code>.gitignore</code> so it never happens again.</dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Gotcha:</strong> <code>git add .</code> grabs everything in the current folder, including <code>.env</code> files if they are not ignored. Check <code>git status</code> first.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4 commit -->
+      <article class="card" id="commit" data-phase="1">
+        <div class="card-head">
+          <span class="num">04</span>
+          <div>
+            <h2>git commit</h2>
+            <p class="why">Save a snapshot of whatever is staged, with a message explaining why. Commits are your undo points.</p>
+          </div>
+          <span class="tag">Day 1</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git commit -m "Add validation to login form"
+[feature/login-form 4f2a9c1] Add validation to login form
+ 1 file changed, 24 insertions(+), 3 deletions(-)
+
+<span class="c"># forgot a file? add it to the last commit</span>
+<span class="p">$ </span>git add src/api.ts
+<span class="p">$ </span>git commit --amend --no-edit</pre></div>
+            <ul class="flags">
+              <li><code>-m "msg"</code><span>Message inline. Omit it to open your editor for a longer one.</span></li>
+              <li><code>--amend</code><span>Replace the last commit. Only before you push.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>Typo in the last message (not pushed)?</dt>
+                <dd><pre>git commit --amend -m "Better message"</pre></dd>
+                <dt>Want to un-commit but keep the changes (not pushed)?</dt>
+                <dd><pre>git reset --soft HEAD~1</pre></dd>
+                <dt>Already pushed a bad commit?</dt>
+                <dd>Do not rewrite shared history. Make a new commit that undoes it:
+                  <pre>git revert 4f2a9c1</pre></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5 log -->
+      <article class="card" id="log" data-phase="1">
+        <div class="card-head">
+          <span class="num">05</span>
+          <div>
+            <h2>git log</h2>
+            <p class="why">Read the project's history. Find who changed what, when, and (if they wrote a good message) why.</p>
+          </div>
+          <span class="tag">Week 1</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git log --oneline --graph -10
+* <span class="y">4f2a9c1</span> (HEAD -&gt; feature/login-form) Add validation
+* <span class="y">9b1e0d7</span> (origin/main, main) Bump deps
+* <span class="y">2c7f3aa</span> Fix header overlap on mobile
+
+<span class="c"># history of one file</span>
+<span class="p">$ </span>git log -p -- src/api.ts
+
+<span class="c"># search commit messages</span>
+<span class="p">$ </span>git log --grep="timeout"</pre></div>
+            <ul class="flags">
+              <li><code>--oneline</code><span>One commit per line.</span></li>
+              <li><code>--graph</code><span>Draw branches and merges.</span></li>
+              <li><code>--author=</code><span>Filter by person.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>Stuck in a screen with a <code>:</code> at the bottom?</dt>
+                <dd>That is the pager. Press <code>q</code> to quit, arrow keys or space to scroll.</dd>
+                <dt>Need to know who wrote a specific line?</dt>
+                <dd><pre>git blame -L 40,60 src/api.ts</pre></dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Tip:</strong> make a shortcut once and use it forever: <code>git config --global alias.lg "log --oneline --graph --decorate -20"</code></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6 switch -->
+      <article class="card" id="switch" data-phase="2">
+        <div class="card-head">
+          <span class="num">06</span>
+          <div>
+            <h2>git switch</h2>
+            <p class="why">Create and move between branches. One branch per task keeps your work isolated and reviewable.</p>
+          </div>
+          <span class="tag">Month 2</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="c"># start new work from an up-to-date main</span>
+<span class="p">$ </span>git switch main
+<span class="p">$ </span>git pull
+<span class="p">$ </span>git switch -c fix/cart-total
+
+<span class="c"># jump back to the previous branch</span>
+<span class="p">$ </span>git switch -
+
+<span class="c"># list branches; delete a merged one</span>
+<span class="p">$ </span>git branch
+<span class="p">$ </span>git branch -d fix/cart-total</pre></div>
+            <ul class="flags">
+              <li><code>-c &lt;name&gt;</code><span>Create and switch in one step.</span></li>
+              <li><code>-</code><span>Toggle to the last branch you were on.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>"Your local changes would be overwritten"</dt>
+                <dd>You have uncommitted work. Commit it, or <code>git stash</code> it, then switch.</dd>
+                <dt>Committed on <code>main</code> by accident (not pushed)?</dt>
+                <dd>Move the commit to a new branch and reset main:
+                  <pre>git switch -c my-feature
+git switch main
+git reset --hard origin/main</pre></dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Older docs</strong> use <code>git checkout</code> for this. It still works, but <code>switch</code> does one job and is harder to misuse.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 7 diff -->
+      <article class="card" id="diff" data-phase="2">
+        <div class="card-head">
+          <span class="num">07</span>
+          <div>
+            <h2>git diff</h2>
+            <p class="why">See exactly what changed, line by line. Review your own work before anyone else has to.</p>
+          </div>
+          <span class="tag">Month 2</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git diff                <span class="c"># unstaged changes</span>
+<span class="p">$ </span>git diff --staged       <span class="c"># what you are about to commit</span>
+<span class="p">$ </span>git diff main...HEAD    <span class="c"># everything on your branch</span>
+
+@@ -12,7 +12,7 @@ export function total(items) {
+<span class="r">-  return items.reduce((s, i) =&gt; s + i.price, 0);</span>
+<span class="g">+  return items.reduce((s, i) =&gt; s + i.price * i.qty, 0);</span></pre></div>
+            <ul class="flags">
+              <li><code>--staged</code><span>Compare staged changes to the last commit.</span></li>
+              <li><code>--stat</code><span>Just the file list and line counts.</span></li>
+              <li><code>-w</code><span>Ignore whitespace noise.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt><code>git diff</code> shows nothing, but you changed files?</dt>
+                <dd>They are probably already staged. Use <code>git diff --staged</code>.</dd>
+                <dt>Whole file shows as changed?</dt>
+                <dd>Usually line endings or a formatter. Try <code>git diff -w</code> to confirm, then check your editor's settings.</dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Habit:</strong> run <code>git diff --staged</code> before every commit. It catches debug logs, stray TODOs, and secrets.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 8 pull -->
+      <article class="card" id="pull" data-phase="2">
+        <div class="card-head">
+          <span class="num">08</span>
+          <div>
+            <h2>git pull</h2>
+            <p class="why">Bring your teammates' changes into your branch. It is a <code>fetch</code> followed by a merge (or rebase).</p>
+          </div>
+          <span class="tag">Month 2</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git pull
+<span class="p">$ </span>git pull --rebase       <span class="c"># keep history linear</span>
+
+<span class="c"># when there is a conflict</span>
+<span class="r">CONFLICT (content): Merge conflict in src/cart.ts</span>
+<span class="p">$ </span>code src/cart.ts       <span class="c"># fix the &lt;&lt;&lt;&lt;&lt;&lt;&lt; markers</span>
+<span class="p">$ </span>git add src/cart.ts
+<span class="p">$ </span>git commit             <span class="c"># or: git rebase --continue</span></pre></div>
+            <ul class="flags">
+              <li><code>--rebase</code><span>Replay your commits on top of the latest remote work.</span></li>
+              <li><code>--ff-only</code><span>Refuse anything except a clean fast-forward. Safe default.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>Conflict looks scary, want out?</dt>
+                <dd>Abort and you are back where you started:
+                  <pre>git merge --abort
+git rebase --abort</pre></dd>
+                <dt>Pull finished but something broke?</dt>
+                <dd>Git records where you were before the pull:
+                  <pre>git reset --hard ORIG_HEAD</pre></dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Tip:</strong> commit or stash before pulling. Pulling into a dirty working tree makes conflicts harder to untangle.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 9 push -->
+      <article class="card" id="push" data-phase="2">
+        <div class="card-head">
+          <span class="num">09</span>
+          <div>
+            <h2>git push</h2>
+            <p class="why">Publish your commits so others (and CI) can see them. This is the moment local work becomes shared.</p>
+          </div>
+          <span class="tag">Month 2</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="c"># first push of a new branch</span>
+<span class="p">$ </span>git push -u origin fix/cart-total
+
+<span class="c"># after that, just</span>
+<span class="p">$ </span>git push
+
+<span class="c"># after amending/rebasing YOUR OWN branch</span>
+<span class="p">$ </span>git push --force-with-lease</pre></div>
+            <ul class="flags">
+              <li><code>-u</code><span>Remember the remote branch so plain <code>git push</code> works next time.</span></li>
+              <li><code>--force-with-lease</code><span>Overwrite only if nobody else pushed in the meantime.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>"Updates were rejected (fetch first)"</dt>
+                <dd>Someone pushed before you. Pull, resolve, push again:
+                  <pre>git pull --rebase && git push</pre></dd>
+                <dt>Pushed something you should not have?</dt>
+                <dd>For a bad change: <code>git revert</code> it and push. For a leaked secret: rotate the credential <em>immediately</em>. Removing it from history is not enough.</dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Never</strong> use plain <code>--force</code> on <code>main</code> or any branch someone else works on. Use <code>--force-with-lease</code>, and only on your own branches.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10 stash -->
+      <article class="card" id="stash" data-phase="3">
+        <div class="card-head">
+          <span class="num">10</span>
+          <div>
+            <h2>git stash</h2>
+            <p class="why">Park unfinished work so you can switch context (urgent bug, quick review) and come back to it later.</p>
+          </div>
+          <span class="tag">Month 3</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git stash push -u -m "half-done cart refactor"
+<span class="p">$ </span>git switch main         <span class="c"># go fix the urgent thing</span>
+<span class="p">$ </span>git switch -            <span class="c"># come back</span>
+<span class="p">$ </span>git stash pop
+
+<span class="p">$ </span>git stash list
+stash@{0}: On fix/cart: half-done cart refactor</pre></div>
+            <ul class="flags">
+              <li><code>-u</code><span>Include untracked (new) files too.</span></li>
+              <li><code>-m "msg"</code><span>Label it. Future you will be grateful.</span></li>
+              <li><code>apply</code><span>Like <code>pop</code>, but keeps the stash around.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt><code>stash pop</code> hit a conflict?</dt>
+                <dd>The stash is <em>not</em> deleted when pop conflicts. Fix the files, <code>git add</code> them, then <code>git stash drop</code>.</dd>
+                <dt>Accidentally dropped a stash?</dt>
+                <dd>It is usually recoverable for a while:
+                  <pre>git fsck --unreachable | grep commit
+git stash apply &lt;sha&gt;</pre></dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Gotcha:</strong> stashes are easy to forget. If <code>git stash list</code> is longer than three, turn them into branches or delete them.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 11 restore -->
+      <article class="card" id="restore" data-phase="3">
+        <div class="card-head">
+          <span class="num">11</span>
+          <div>
+            <h2>git restore</h2>
+            <p class="why">Throw away changes to a file, or unstage it. The everyday "undo" for work you have not committed yet.</p>
+          </div>
+          <span class="tag">Month 3</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="c"># discard edits to one file</span>
+<span class="p">$ </span>git restore src/api.ts
+
+<span class="c"># unstage, but keep your edits</span>
+<span class="p">$ </span>git restore --staged src/api.ts
+
+<span class="c"># bring back a file as it was on main</span>
+<span class="p">$ </span>git restore --source main src/config.ts</pre></div>
+            <ul class="flags">
+              <li><code>--staged</code><span>Only touch the staging area.</span></li>
+              <li><code>--source &lt;ref&gt;</code><span>Restore from a branch or commit.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>Recovery tips</h3>
+              <dl>
+                <dt>Restored a file and lost edits you wanted?</dt>
+                <dd>If they were never staged or committed, Git cannot get them back. Check your editor's local history (VS Code and JetBrains both keep one).</dd>
+                <dt>Deleted a file by mistake?</dt>
+                <dd><pre>git restore path/to/file</pre></dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Warning:</strong> <code>git restore &lt;file&gt;</code> without <code>--staged</code> permanently discards uncommitted edits. When unsure, <code>git stash</code> instead; it is reversible.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 12 reflog -->
+      <article class="card" id="reflog" data-phase="3">
+        <div class="card-head">
+          <span class="num">12</span>
+          <div>
+            <h2>git reflog</h2>
+            <p class="why">Your safety net. Git's private diary of everywhere <code>HEAD</code> has been, including after resets and botched rebases.</p>
+          </div>
+          <span class="tag">Month 3</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3>Example</h3>
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><button class="copy">Copy</button></div><pre><span class="p">$ </span>git reflog
+<span class="y">7d3e1b2</span> HEAD@{0}: reset: moving to HEAD~3
+<span class="y">a91c4f0</span> HEAD@{1}: commit: Add checkout tests
+<span class="y">5be2d88</span> HEAD@{2}: commit: Wire up payment form
+
+<span class="c"># "oops, I didn't mean to reset". Go back:</span>
+<span class="p">$ </span>git reset --hard a91c4f0
+
+<span class="c"># or rescue it onto a new branch, safely</span>
+<span class="p">$ </span>git branch rescue a91c4f0</pre></div>
+            <ul class="flags">
+              <li><code>HEAD@{n}</code><span>Where HEAD was n moves ago.</span></li>
+              <li><code>show &lt;branch&gt;</code><span>History of one branch tip.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="rescue">
+              <h3>When to reach for it</h3>
+              <dl>
+                <dt>After a bad <code>reset --hard</code></dt>
+                <dd>Committed work is almost never truly gone. Find the SHA in the reflog and reset back to it.</dd>
+                <dt>After a rebase went wrong</dt>
+                <dd>Find the entry just before "rebase (start)" and reset to it.</dd>
+                <dt>Deleted a branch you needed</dt>
+                <dd>Find its last commit and recreate it with <code>git branch &lt;name&gt; &lt;sha&gt;</code>.</dd>
+              </dl>
+            </div>
+            <div class="gotcha"><strong>Limits:</strong> the reflog is local only and entries expire (90 days by default). It cannot recover changes that were never committed.</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+    <p class="empty" id="empty">No commands match that search. Try "undo", "branch", or "conflict".</p>
+  </div>
+</main>
+
+<section class="panic" id="panic">
+  <div class="wrap">
+    <h2>"I did something bad." Now what?</h2>
+    <p class="sub">Find your situation, run the fix. First rule: stop, breathe, run <code>git status</code>.</p>
+    <div class="table">
+      <div class="row"><span>Situation</span><span>Fix</span></div>
+      <div class="row"><span>Want to discard edits to a file</span><span><code>git restore &lt;file&gt;</code><span class="note">Permanent for uncommitted work.</span></span></div>
+      <div class="row"><span>Staged something by mistake</span><span><code>git restore --staged &lt;file&gt;</code></span></div>
+      <div class="row"><span>Bad commit message, not pushed</span><span><code>git commit --amend -m "new message"</code></span></div>
+      <div class="row"><span>Undo last commit, keep the changes, not pushed</span><span><code>git reset --soft HEAD~1</code></span></div>
+      <div class="row"><span>Undo a commit that is already pushed</span><span><code>git revert &lt;sha&gt;</code><span class="note">Creates a new commit. Safe for shared branches.</span></span></div>
+      <div class="row"><span>Committed to main instead of a branch</span><span><code>git switch -c feature &amp;&amp; git switch main &amp;&amp; git reset --hard origin/main</code></span></div>
+      <div class="row"><span>Merge or rebase conflict, want out</span><span><code>git merge --abort</code> or <code>git rebase --abort</code></span></div>
+      <div class="row"><span>Push rejected</span><span><code>git pull --rebase &amp;&amp; git push</code></span></div>
+      <div class="row"><span>Reset or rebase destroyed commits</span><span><code>git reflog</code> then <code>git reset --hard &lt;sha&gt;</code></span></div>
+      <div class="row"><span>Deleted a branch</span><span><code>git reflog</code> then <code>git branch &lt;name&gt; &lt;sha&gt;</code></span></div>
+      <div class="row"><span>Pushed a password or API key</span><span><strong>Rotate the secret now.</strong><span class="note">Then tell your lead. Rewriting history is a cleanup step, not a fix.</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="rules">
+  <div class="wrap">
+    <h2>Six habits that prevent most disasters</h2>
+    <p class="sub">The commands matter less than the routine around them.</p>
+    <div class="rule-grid">
+      <div class="rule"><b>Status before and after</b><span>Run <code>git status</code> around every other command. It costs nothing.</span></div>
+      <div class="rule"><b>Never work on main</b><span>Branch for every task, even a one-line fix.</span></div>
+      <div class="rule"><b>Commit small and often</b><span>Commits are checkpoints. More checkpoints means cheaper mistakes.</span></div>
+      <div class="rule"><b>Diff before you commit</b><span><code>git diff --staged</code> is your last line of review.</span></div>
+      <div class="rule"><b>Rewrite only what is yours</b><span>Amend, rebase, and force-push only on branches nobody else uses.</span></div>
+      <div class="rule"><b>Ask early</b><span>A two-minute question beats a two-hour recovery. Everyone has broken Git once.</span></div>
+    </div>
+  </div>
+</section>
 
 <footer>
-  Git Cheatsheet &middot; Keep this open in a tab until the commands feel natural.
+  <div class="wrap">Git Survival Kit. Commands shown assume Git 2.23 or newer (for <code>switch</code> and <code>restore</code>). Check yours with <code>git --version</code>.</div>
 </footer>
 
+<script>
+  (function () {
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    var search = document.getElementById('search');
+    var empty = document.getElementById('empty');
+    var jump = document.getElementById('jump');
+    var phases = Array.prototype.slice.call(document.querySelectorAll('.phase'));
+    var activePhase = null;
+
+    cards.forEach(function (card) {
+      var a = document.createElement('a');
+      a.href = '#' + card.id;
+      a.textContent = card.id;
+      jump.appendChild(a);
+    });
+
+    function apply() {
+      var q = search.value.trim().toLowerCase();
+      var shown = 0;
+      cards.forEach(function (card) {
+        var matchText = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+        var matchPhase = !activePhase || card.dataset.phase === activePhase;
+        var visible = matchText && matchPhase;
+        card.hidden = !visible;
+        if (visible) shown++;
+      });
+      empty.style.display = shown ? 'none' : 'block';
+    }
+
+    search.addEventListener('input', apply);
+
+    phases.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var p = btn.dataset.phase;
+        activePhase = activePhase === p ? null : p;
+        phases.forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.dataset.phase === activePhase));
+        });
+        apply();
+        document.getElementById('cards').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    document.querySelectorAll('.copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pre = btn.closest('.term').querySelector('pre');
+        var lines = pre.innerText.split('\n')
+          .filter(function (l) { return l.indexOf('$ ') === 0; })
+          .map(function (l) { return l.slice(2).replace(/\s+#.*$/, ''); });
+        var text = lines.join('\n');
+        var done = function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('done');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400);
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          ta.remove();
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== search) {
+        e.preventDefault();
+        search.focus();
+      }
+    });
+  })();
+</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Artifold /craft — gallery (carousel preview)</title>
+<title>Artifold /craft gallery</title>
 <style>
   :root {
     --bg: #f9f8f5;
@@ -25,7 +25,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* — masthead (compact, single band) ——————— */
+  /* - masthead (compact, single band) - */
   header {
     max-width: var(--maxw);
     margin: 0 auto;
@@ -60,7 +60,7 @@
   .masthead-meta a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
   .masthead-meta a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* — carousel chrome ——————————————————————— */
+  /* - carousel chrome - */
   main { max-width: var(--maxw); margin: 0 auto; padding: 14px 32px 32px; }
 
   .carousel-bar {
@@ -96,7 +96,7 @@
   }
   @media (max-width: 760px) { .keys { display: none; } }
 
-  /* — stage ————————————————————————————————— */
+  /* - stage - */
   .stage { position: relative; min-height: 480px; }
   .slide {
     display: none; opacity: 0;
@@ -176,7 +176,7 @@
   }
   .thumb:hover::after { opacity: 1; }
 
-  /* — nav arrows ————————————————————————————— */
+  /* - nav arrows - */
   .nav {
     position: fixed; top: 50%; transform: translateY(-50%);
     width: 52px; height: 52px; border-radius: 50%;
@@ -198,7 +198,7 @@
     .nav.prev { left: 10px; } .nav.next { right: 10px; }
   }
 
-  /* — overview modal ———————————————————————— */
+  /* - overview modal - */
   .overview {
     position: fixed; inset: 0; z-index: 100;
     background: rgba(22,24,29,0.85); backdrop-filter: blur(8px);
@@ -251,7 +251,7 @@
     color: var(--accent); margin-top: 4px;
   }
 
-  /* — footer ——————————————————————————————— */
+  /* - footer - */
   footer {
     max-width: var(--maxw); margin: 80px auto 60px; padding: 32px;
     border-top: 1px solid var(--line);
@@ -284,7 +284,7 @@
       <h1>Same prompt. <em>Different output.</em></h1>
     </div>
     <div class="masthead-meta">
-      <span><b>11</b> topics · <b>11</b> modes · <b>opus 4.7</b></span>
+      <span id="stats"></span>
       <span><a href="https://github.com/shubhamgoel27/artifold/blob/main/artifold/skills/craft/SKILL.md">SKILL.md ↗</a></span>
       <span><a href="https://github.com/shubhamgoel27/artifold">repo ↗</a></span>
     </div>
@@ -311,7 +311,7 @@
 <div class="overview" id="overview" role="dialog" aria-modal="true" aria-label="All gallery topics">
   <div class="overview-inner">
     <button class="overview-close" id="overview-close" aria-label="Close overview">×</button>
-    <h3>11 topics · 11 design modes · 11 voice registers</h3>
+    <h3 id="ov-title"></h3>
     <p class="sub">Click any tile to jump to that comparison.</p>
     <div class="ov-grid" id="overview-grid"></div>
   </div>
@@ -319,21 +319,17 @@
 
 <footer>
   <p>
-    <strong>What's happening here.</strong> Both columns came from <code>claude-opus-4-7</code>,
-    same prompt, same day. The right column went through the <code>/craft</code> skill, which:
-    (1) reads the user's existing Artifold library to see overused patterns, (2) deliberately
-    picks a different direction, and (3) applies 12 design principles distilled from
-    Refactoring UI, Linear, and Vercel/Geist — while actively avoiding 15 specific AI-slop
-    signatures.
+    <strong>What's happening here.</strong> Each topic got one plain prompt, sent twice to
+    <code id="model-a"></code>. The left column is Claude with no skill. The right column is the
+    same prompt through <code>/craft</code> <span id="ver"></span>, which sizes the page to the job,
+    edits the content first, then picks a layout, a design mode, and a voice for that subject,
+    checks the result in a headless browser, and saves it to the Artifold inbox. Nobody told
+    either side what style to use.
   </p>
   <p>
-    <code>/craft</code> picks from 15 named design modes and 9 voice registers, each matched
-    to the format convention of the topic. On this gallery: <b>swiss-grid · data-dashboard ·
-    technical-blueprint · magazine-fashion · field-guide · brutalist-web · museum-label ·
-    terminal-tui · monochrome-poster · handwritten-journal · corporate-memo</b>. The skill
-    reads the user's library + recent <code>/craft</code> outputs and refuses to repeat any
-    of the last three modes — so the library reads as a portfolio of distinct work, not 20
-    variations of one template.
+    Modes on this gallery: <b id="mode-list"></b>. The skill has <span id="mode-total">77</span>
+    to choose from, and it avoids repeating a layout and mode pair from the last five pages, so a
+    library reads as distinct work, not one template in different colors.
   </p>
   <a class="repo-cta" href="https://github.com/shubhamgoel27/artifold">
     <span>Artifold on GitHub →</span>
@@ -343,52 +339,114 @@
 
 <script>
 (() => {
-  const TOPICS = [
-    { slug: "30-day-tracker", name: "30-day strength tracker for a beginner",
-      prompt: '"Daily exercise plan with sets, reps, weight progression, and rest periods. Printable, scannable."',
-      mode: "swiss-grid", voice: "coach-imperative",
-      formatRef: "Whoop / Strava / coach's spreadsheet" },
-    { slug: "sf-apartments", name: "Comparing three SF apartments",
-      prompt: '"989 20th vs 400 Beale vs NEMA — for a couple deciding between them. Compare commute, sun, amenities, vibe, price."',
-      mode: "data-dashboard", voice: "spec-sheet",
-      formatRef: "Compass / Wirecutter buyers' guide / Bloomberg matrix" },
-    { slug: "transformers", name: "How transformers work",
-      prompt: '"Explainer for someone who understands LSTMs but hasn’t studied attention. Covers QKV, multi-head, positional encoding, scaling."',
-      mode: "technical-blueprint", voice: "encyclopedic",
-      formatRef: "Distill.pub / The Pudding / 3Blue1Brown" },
-    { slug: "coffee-tier-list", name: "SF coffee shop tier list",
-      prompt: '"S/A/B/C tiers of 10 SF coffee shops, ranked by pour-over quality, ambience, and seating."',
-      mode: "magazine-fashion", voice: "enthusiast",
-      formatRef: "Eater Heatmap / tiermaker / r/anime tier-list" },
-    { slug: "yosemite-climbing", name: "Yosemite trad climbing route guide",
-      prompt: '"A guide to the most famous trad climbing routes in Yosemite — El Cap, Half Dome, Astroman, Snake Dike. Include grade, length, gear, season."',
-      mode: "field-guide", voice: "enthusiast",
-      formatRef: "AAC American Alpine Journal + Sibley field guide" },
-    { slug: "slow-software-manifesto", name: "Manifesto for slow software",
-      prompt: '"A 12-point manifesto for slow, file-based, anti-bloat software. Each point: a sharp imperative + a short paragraph."',
-      mode: "brutalist-web", voice: "pitch-deck",
-      formatRef: "Cluetrain / bretvictor.com / jwz.org" },
-    { slug: "macintosh-1984", name: "History of the original Macintosh",
-      prompt: '"History of the original 1984 Apple Macintosh — specs, key people, cultural impact."',
-      mode: "museum-label", voice: "encyclopedic",
-      formatRef: "MoMA / Cooper Hewitt wall labels" },
-    { slug: "git-survival-kit", name: "Git survival kit for new devs",
-      prompt: '"The 12 git commands a new developer needs in their first 90 days. With examples and recovery tips."',
-      mode: "terminal-tui", voice: "spec-sheet",
-      formatRef: "lazygit / htop / k9s" },
-    { slug: "climate-in-7-charts", name: "Climate change in 7 charts",
-      prompt: '"Climate change explained in 7 charts — CO2, temperature, sea ice, sea level, disasters, emissions, carbon budget."',
-      mode: "monochrome-poster", voice: "wire-news",
-      formatRef: "Ed Hawkins climate stripes / Vignelli subway / IPCC" },
-    { slug: "kid-morning-routine", name: "Kids' morning routine chart",
-      prompt: '"A morning routine chart for kids 5-8 — printable, with checkboxes and gold stars."',
-      mode: "handwritten-journal", voice: "intimate-letter",
-      formatRef: "parent's fridge / Montessori card" },
-    { slug: "gemini-embedding-2", name: "arXiv paper explainer — Gemini Embedding 2",
-      prompt: '"Explainer for this arxiv paper: https://arxiv.org/abs/2605.27295 — Gemini Embedding 2."',
-      mode: "corporate-memo", voice: "pitch-deck",
-      formatRef: "Google internal product-review memo / Amazon 6-pager" },
-  ];
+  // gallery:data start (generated by scripts/build_gallery.py)
+  const GALLERY = {
+  "model": "claude-opus-5-5",
+  "version": "0.15.0",
+  "modeTotal": 77,
+  "topics": [
+    {
+      "slug": "climate-in-7-charts",
+      "name": "Climate change in 7 charts",
+      "prompt": "Climate change explained in 7 charts: CO2, temperature, sea ice, sea level, disasters, emissions, carbon budget.",
+      "mode": "warming-stripes",
+      "layout": "full-bleed-deck",
+      "voice": "encyclopedic"
+    },
+    {
+      "slug": "coffee-tier-list",
+      "name": "SF coffee tier list",
+      "prompt": "Tier list (S/A/B/C) of 10 great SF coffee shops, ranked by pour-over quality, ambience, and seating availability",
+      "mode": "indie-cafe-menu×TierMaker",
+      "layout": "comparison-matrix-first",
+      "voice": "enthusiast"
+    },
+    {
+      "slug": "sf-apartments",
+      "name": "SF apartment comparison",
+      "prompt": "Compare three SF apartments for a couple: 989 20th Dogpatch, 400 Beale Rincon, NEMA SoMa. Score commute/sun/vibe/amenities/parking/dogs/gym/price, recommend.",
+      "mode": "racing-form",
+      "layout": "comparison-matrix-first",
+      "voice": "almanac-terse"
+    },
+    {
+      "slug": "slow-software-manifesto",
+      "name": "Slow software manifesto",
+      "prompt": "A 12-point manifesto for slow, file-based, anti-bloat software. Each point: a sharp imperative + a short paragraph.",
+      "mode": "greenbar-fanfold",
+      "layout": "single-object",
+      "voice": "manifesto"
+    },
+    {
+      "slug": "30-day-tracker",
+      "name": "30-day strength tracker",
+      "prompt": "30-day strength tracker for a beginner. Daily exercise plan with sets, reps, weight progression, rest. Printed, ticked off.",
+      "mode": "glance-utility",
+      "layout": "calendar-grid",
+      "voice": "coach-plainspoken"
+    },
+    {
+      "slug": "git-survival-kit",
+      "name": "Git survival kit",
+      "prompt": "The 12 git commands a new developer needs in their first 90 days. With examples and recovery tips.",
+      "mode": "transit-map×terminal-tui",
+      "layout": "timeline-spine",
+      "voice": "coach-imperative"
+    },
+    {
+      "slug": "kid-morning-routine",
+      "name": "Kids&#x27; morning routine",
+      "prompt": "A morning routine chart for kids 5-8, printable, with checkboxes and gold stars.",
+      "mode": "kids-picture-book",
+      "layout": "calendar-grid",
+      "voice": "first-person kid"
+    },
+    {
+      "slug": "macintosh-1984",
+      "name": "History of the original Macintosh",
+      "prompt": "History of the original 1984 Apple Macintosh: specs, key people, cultural impact.",
+      "mode": "system-one-desktop",
+      "layout": "radial-centerpiece",
+      "voice": "museum-docent"
+    },
+    {
+      "slug": "yosemite-climbing",
+      "name": "Yosemite climbing route guide",
+      "prompt": "A guide to ~10 of Yosemite&#x27;s most famous trad / multi-pitch / aid climbing routes.",
+      "mode": "supertopo-guidebook",
+      "layout": "card-stack-dossier",
+      "voice": "enthusiast"
+    },
+    {
+      "slug": "transformers",
+      "name": "Transformers explainer",
+      "prompt": "Explainer of how Transformers work for someone who knows LSTMs and convolutions but not self-attention. Include real formulas and an inline SVG architecture diagram.",
+      "mode": "patent-filing",
+      "layout": "radial-centerpiece",
+      "voice": "encyclopedic"
+    },
+    {
+      "slug": "gemini-embedding-2",
+      "name": "arXiv paper explainer: Gemini Embedding 2",
+      "prompt": "Explainer for this arxiv paper: https://arxiv.org/abs/2605.27295 (Gemini Embedding 2).",
+      "mode": "google-modality",
+      "layout": "radial-centerpiece",
+      "voice": "museum-docent"
+    }
+  ]
+};
+  // gallery:data end
+  const TOPICS = GALLERY.topics;
+  const modes = [...new Set(TOPICS.map(t => t.mode))];
+  const voices = [...new Set(TOPICS.map(t => t.voice).filter(Boolean))];
+  document.getElementById("stats").innerHTML =
+    `<b>${TOPICS.length}</b> topics · <b>${modes.length}</b> modes · <b>${GALLERY.model}</b> · craft v${GALLERY.version}`;
+  document.getElementById("ov-title").textContent =
+    `${TOPICS.length} topics · ${modes.length} design modes` + (voices.length ? ` · ${voices.length} voice registers` : "");
+  document.getElementById("model-a").textContent = GALLERY.model;
+  document.getElementById("ver").textContent = `(Artifold v${GALLERY.version})`;
+  document.getElementById("mode-list").textContent = modes.join(" · ");
+  document.getElementById("mode-total").textContent = GALLERY.modeTotal;
 
   const stage   = document.getElementById("stage");
   const dotsEl  = document.getElementById("dots");
@@ -412,11 +470,11 @@
         <h2>${t.name}</h2>
         <div class="mode-strip">
           <span>/craft picked <span class="pill">${t.mode}</span></span>
-          <span>voice: <b>${t.voice}</b></span>
-          <span>ref: <b>${t.formatRef}</b></span>
+          ${t.layout ? `<span>layout: <b>${t.layout}</b></span>` : ""}
+          ${t.voice ? `<span>voice: <b>${t.voice}</b></span>` : ""}
         </div>
       </div>
-      <div class="prompt">${t.prompt}</div>
+      <div class="prompt">"${t.prompt}"</div>
       <div class="pair">
         <div class="col">
           <div class="col-head">

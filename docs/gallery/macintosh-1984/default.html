@@ -2,215 +2,401 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Original 1984 Apple Macintosh</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macintosh, 1984: The Computer for the Rest of Us</title>
 <style>
+  :root {
+    --beige: #e8e1cf;
+    --beige-dark: #cfc6ae;
+    --ink: #111;
+    --paper: #fff;
+    --muted: #555;
+    --accent: #c0392b;
+    --rainbow: linear-gradient(to bottom, #61bb46 0 16.6%, #fdb827 16.6% 33.3%, #f5821f 33.3% 50%, #e03a3e 50% 66.6%, #963d97 66.6% 83.3%, #009ddc 83.3% 100%);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    color: #222;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-  }
-  header {
-    background: linear-gradient(135deg, #0066cc, #6699ff);
-    color: white;
-    padding: 40px 30px;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  header h1 {
     margin: 0;
-    font-size: 2.4em;
+    background: #d9d9d9;
+    background-image:
+      radial-gradient(#bdbdbd 1px, transparent 1px);
+    background-size: 4px 4px;
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
   }
-  header p {
-    margin: 10px 0 0;
-    font-size: 1.1em;
-    opacity: 0.95;
+  .ui { font-family: "Chicago", "ChicagoFLF", "Geneva", -apple-system, "Helvetica Neue", Arial, sans-serif; font-weight: 700; letter-spacing: .02em; }
+  .mono { font-family: "Monaco", "Menlo", "Courier New", monospace; }
+
+  /* Menu bar */
+  .menubar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--paper);
+    border-bottom: 2px solid var(--ink);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 12px; height: 32px; font-size: 14px;
+    overflow-x: auto; white-space: nowrap;
   }
-  h2 {
-    color: #0066cc;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 6px;
-    margin-top: 40px;
+  .menubar .apple {
+    width: 16px; height: 20px; margin-right: 18px; flex: none;
+    background: var(--rainbow);
+    -webkit-mask: radial-gradient(circle at 50% 62%, #000 7px, transparent 7.5px), radial-gradient(ellipse 3px 5px at 62% 18%, #000 98%, transparent 100%);
+    mask: radial-gradient(circle at 50% 62%, #000 7px, transparent 7.5px), radial-gradient(ellipse 3px 5px at 62% 18%, #000 98%, transparent 100%);
   }
-  h3 {
-    color: #333;
-    margin-bottom: 4px;
+  .menubar a { color: var(--ink); text-decoration: none; padding: 5px 12px; }
+  .menubar a:hover, .menubar a:focus { background: var(--ink); color: var(--paper); outline: none; }
+
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 18px 80px; }
+
+  /* Window chrome */
+  .window {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    margin: 0 0 40px;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 15px 0;
+  .titlebar {
+    position: relative; height: 26px;
+    border-bottom: 2px solid var(--ink);
+    background: repeating-linear-gradient(to bottom, var(--paper) 0 2px, var(--ink) 2px 3px);
+    background-clip: content-box; padding: 4px 3px;
+    display: flex; justify-content: center; align-items: center;
   }
-  th, td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+  .titlebar::before {
+    content: ""; position: absolute; left: 12px; top: 6px;
+    width: 13px; height: 13px; background: var(--paper); border: 1.5px solid var(--ink);
+    box-shadow: 0 0 0 3px var(--paper);
   }
-  th {
-    background-color: #f5f5f7;
-    color: #333;
+  .titlebar h2, .titlebar span {
+    margin: 0; background: var(--paper); padding: 0 12px;
+    font-size: 15px; line-height: 18px;
   }
-  .person {
-    background-color: #f9f9fb;
-    padding: 14px 18px;
-    border-left: 4px solid #0066cc;
-    margin-bottom: 12px;
-    border-radius: 4px;
+  .window-body { padding: 28px 34px; }
+  .window-body h3 { font-size: 1.25rem; margin: 1.6em 0 .4em; }
+  .window-body h3:first-child { margin-top: 0; }
+  .window-body p { margin: 0 0 1em; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; align-items: center; }
+  .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; margin: 0 0 .3em; }
+  .hero .kicker { font-size: 13px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-bottom: 10px; }
+  .hero .lede { font-size: 1.15rem; }
+  .stat-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .stat { border: 2px solid var(--ink); padding: 6px 12px; font-size: 13px; background: var(--paper); }
+  .stat b { display: block; font-size: 20px; }
+
+  /* CSS Macintosh */
+  .mac-wrap { display: flex; justify-content: center; }
+  .mac {
+    width: 260px; height: 330px; position: relative;
+    background: linear-gradient(160deg, #f1ecdd, var(--beige) 50%, var(--beige-dark));
+    border-radius: 14px 14px 6px 6px;
+    border: 2px solid #8d856f;
+    box-shadow: inset -8px -6px 0 rgba(0,0,0,.06), 10px 12px 0 rgba(0,0,0,.18);
   }
-  .quote {
-    font-style: italic;
-    color: #555;
-    border-left: 3px solid #ccc;
-    padding-left: 14px;
-    margin: 20px 0;
+  .mac .bezel {
+    position: absolute; left: 26px; right: 26px; top: 24px; height: 178px;
+    background: #d8d0bb; border-radius: 10px;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,.25), inset -2px -2px 4px rgba(255,255,255,.6);
+    padding: 14px;
   }
-  footer {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-    text-align: center;
-    color: #888;
-    font-size: 0.9em;
+  .mac .screen {
+    width: 100%; height: 100%; border-radius: 14px / 18px;
+    background: #f4f6f2; position: relative; overflow: hidden;
+    box-shadow: inset 0 0 18px rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mac .screen::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,.05) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+  .hello {
+    font-family: "Brush Script MT", "Snell Roundhand", "Segoe Script", cursive;
+    font-size: 46px; color: #111; position: relative;
+    clip-path: inset(0 100% 0 0);
+    animation: write 3.2s steps(28) .6s forwards;
+  }
+  @keyframes write { to { clip-path: inset(0 0 0 0); } }
+  .happy {
+    position: absolute; width: 40px; height: 48px; border: 2px solid #111; border-radius: 3px;
+    background: #fff; opacity: 1; animation: fadeout .4s ease .3s forwards;
+  }
+  .happy::before { content: ""; position: absolute; left: 9px; top: 10px; width: 4px; height: 6px; background: #111; box-shadow: 14px 0 0 #111; }
+  .happy::after { content: ""; position: absolute; left: 9px; top: 24px; width: 18px; height: 8px; border: 2px solid #111; border-top: none; border-radius: 0 0 10px 10px; }
+  @keyframes fadeout { to { opacity: 0; } }
+  .mac .logo { position: absolute; left: 30px; top: 216px; width: 12px; height: 14px; background: var(--rainbow); border-radius: 50% 50% 45% 45%; }
+  .mac .slot {
+    position: absolute; right: 34px; top: 236px; width: 88px; height: 8px;
+    background: #2a2a2a; border-radius: 2px; box-shadow: 0 2px 0 #fff8;
+  }
+  .mac .vents { position: absolute; left: 0; right: 0; top: 0; height: 18px;
+    background: repeating-linear-gradient(to right, transparent 0 8px, rgba(0,0,0,.15) 8px 10px);
+    border-radius: 12px 12px 0 0; margin: 0 60px; height: 6px; top: 8px; }
+  .mac .foot { position: absolute; left: -2px; right: -2px; bottom: -24px; height: 26px; background: linear-gradient(#cfc6ae, #b8ae93); border: 2px solid #8d856f; border-top: none; border-radius: 0 0 8px 8px; }
+  .mac .foot::after { content: ""; position: absolute; left: 24px; right: 24px; top: 6px; height: 4px; border-top: 2px solid rgba(0,0,0,.18); }
+
+  /* Specs */
+  table.specs { width: 100%; border-collapse: collapse; font-size: 15px; }
+  table.specs th, table.specs td { text-align: left; padding: 9px 12px; border-bottom: 1px dotted #999; vertical-align: top; }
+  table.specs th { width: 32%; font-family: inherit; }
+  table.specs tr:nth-child(odd) td, table.specs tr:nth-child(odd) th { background: #f6f6f3; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+
+  /* Comparison bars */
+  .bars { margin-top: 10px; }
+  .bar-row { display: grid; grid-template-columns: 170px 1fr 90px; align-items: center; gap: 10px; margin: 8px 0; font-size: 14px; }
+  .bar { height: 18px; border: 2px solid var(--ink); background: #fff; position: relative; }
+  .bar > i { position: absolute; inset: 0 auto 0 0; background: repeating-linear-gradient(45deg, var(--ink) 0 2px, #fff 2px 5px); }
+  .bar.mac > i { background: var(--ink); }
+
+  /* Timeline */
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 26px; border-left: 3px solid var(--ink); }
+  .timeline li { position: relative; margin: 0 0 22px; padding-left: 10px; }
+  .timeline li::before { content: ""; position: absolute; left: -36px; top: 6px; width: 14px; height: 14px; background: var(--paper); border: 3px solid var(--ink); }
+  .timeline li.key::before { background: var(--ink); }
+  .timeline .date { font-size: 13px; display: block; }
+
+  /* People */
+  .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .person { border: 2px solid var(--ink); padding: 14px 16px 12px; background: #fff; position: relative; }
+  .person .icon {
+    width: 36px; height: 36px; border: 2px solid var(--ink); margin-bottom: 8px;
+    display: grid; place-items: center; font-size: 16px; background: #fff;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .person h4 { margin: 0; font-size: 16px; }
+  .person .role { font-size: 12px; color: var(--muted); margin: 2px 0 8px; display: block; }
+  .person p { margin: 0; font-size: 14px; line-height: 1.5; }
+
+  /* Ad section */
+  .ad { background: #1b1d1f; color: #d8dcd8; border-color: var(--ink); }
+  .ad .window-body { background: linear-gradient(180deg, #2b3134, #15181a); }
+  .ad blockquote {
+    margin: 0 0 22px; padding: 18px 22px; border-left: 6px solid #e0a43a;
+    font-size: 1.3rem; font-style: italic; color: #fff; background: rgba(255,255,255,.04);
+  }
+  .ad h3 { color: #fff; }
+  .ad .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 18px; }
+  .ad .facts div { border: 1px solid #555; padding: 10px 12px; font-size: 14px; }
+  .ad .facts b { display: block; color: #e0a43a; font-size: 18px; }
+
+  /* Impact */
+  .impact { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+  .impact > div { border-top: 3px solid var(--ink); padding-top: 10px; }
+  .impact h4 { margin: 0 0 6px; font-size: 16px; }
+  .impact p { margin: 0; font-size: 15px; }
+
+  .pull { font-size: 1.35rem; font-style: italic; border-left: 4px solid var(--ink); padding: 6px 0 6px 18px; margin: 20px 0; }
+  .pull cite { display: block; font-size: 13px; font-style: normal; color: var(--muted); margin-top: 6px; }
+
+  .signatures {
+    margin-top: 16px; padding: 18px; background: #d7cfb9; border: 2px dashed #8d856f;
+    font-family: "Brush Script MT", "Snell Roundhand", cursive; font-size: 22px; color: #6c6450;
+    display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: center;
+  }
+
+  footer { text-align: center; font-size: 13px; color: #333; }
+  footer .window-body { padding: 18px 24px; }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; }
+    .window-body { padding: 22px 18px; }
+    .bar-row { grid-template-columns: 110px 1fr 70px; font-size: 12px; }
+    table.specs th { width: 40%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hello { animation: none; clip-path: none; }
+    .happy { display: none; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>The Original 1984 Apple Macintosh</h1>
-  <p>The computer that put a graphical user interface in the hands of everyday users.</p>
-</header>
+<nav class="menubar ui" aria-label="Sections">
+  <span class="apple" aria-hidden="true"></span>
+  <a href="#top">File</a>
+  <a href="#origins">Origins</a>
+  <a href="#specs">Specs</a>
+  <a href="#people">People</a>
+  <a href="#ad">1984</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#impact">Impact</a>
+</nav>
 
-<section>
-  <h2>Introduction</h2>
-  <p>
-    On <strong>January 24, 1984</strong>, Apple Computer introduced the Macintosh, a compact all-in-one
-    personal computer that became one of the most influential products in the history of consumer
-    technology. Unveiled by Steve Jobs at Apple's annual shareholders meeting in Cupertino, California,
-    the Macintosh was the first mass-market personal computer to feature a graphical user interface
-    and a mouse, fundamentally changing how people interacted with computers.
-  </p>
-  <p>
-    Priced at <strong>$2,495</strong> at launch, the Mac was marketed as "the computer for the rest
-    of us" — a deliberate rejection of the command-line interfaces that dominated the IBM PC era.
-  </p>
-</section>
+<main id="top">
 
-<section>
-  <h2>Technical Specifications</h2>
-  <table>
-    <tr><th>Component</th><th>Specification</th></tr>
-    <tr><td>Processor</td><td>Motorola 68000 @ 8 MHz</td></tr>
-    <tr><td>RAM</td><td>128 KB</td></tr>
-    <tr><td>ROM</td><td>64 KB</td></tr>
-    <tr><td>Display</td><td>9-inch monochrome CRT, 512 × 342 pixels</td></tr>
-    <tr><td>Storage</td><td>Single 3.5-inch 400 KB floppy drive</td></tr>
-    <tr><td>Operating System</td><td>System 1.0 (Macintosh System Software)</td></tr>
-    <tr><td>Input</td><td>Keyboard and single-button mouse</td></tr>
-    <tr><td>Sound</td><td>8-bit mono audio, 22 kHz</td></tr>
-    <tr><td>Dimensions</td><td>13.6" H × 9.6" W × 10.9" D</td></tr>
-    <tr><td>Weight</td><td>~16.5 lbs (7.5 kg)</td></tr>
-    <tr><td>Launch Price</td><td>$2,495 USD</td></tr>
-    <tr><td>Release Date</td><td>January 24, 1984</td></tr>
-  </table>
-</section>
+  <!-- HERO -->
+  <section class="window">
+    <div class="titlebar ui"><span>Macintosh</span></div>
+    <div class="window-body hero">
+      <div>
+        <div class="kicker ui">January 24, 1984 &middot; Cupertino, California</div>
+        <h1 class="ui">Hello.<br>I'm Macintosh.</h1>
+        <p class="lede">The original Apple Macintosh was a small beige box with a 9-inch screen, a single-button mouse, and an ambition far larger than its 128 kilobytes of memory: to make the personal computer something ordinary people could simply <em>use</em>.</p>
+        <div class="stat-row ui">
+          <div class="stat"><b>$2,495</b>launch price</div>
+          <div class="stat"><b>128 KB</b>RAM</div>
+          <div class="stat"><b>512&times;342</b>pixels</div>
+          <div class="stat"><b>16.5 lb</b>all-in-one</div>
+        </div>
+      </div>
+      <div class="mac-wrap" aria-hidden="true">
+        <div class="mac">
+          <div class="vents"></div>
+          <div class="bezel"><div class="screen"><div class="happy"></div><div class="hello">hello</div></div></div>
+          <div class="logo"></div>
+          <div class="slot"></div>
+          <div class="foot"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<section>
-  <h2>Key People Behind the Macintosh</h2>
+  <!-- ORIGINS -->
+  <section class="window" id="origins">
+    <div class="titlebar ui"><h2>Origins</h2></div>
+    <div class="window-body">
+      <h3 class="ui">Raskin's appliance</h3>
+      <p>The Macintosh project began in 1979 as the brainchild of <strong>Jef Raskin</strong>, an Apple employee and human-interface thinker who imagined an inexpensive, self-contained "information appliance" that anyone could take out of the box and use. He named it after his favorite apple variety, the McIntosh, deliberately misspelled to sidestep a trademark held by the audio company McIntosh Laboratory.</p>
 
-  <div class="person">
-    <h3>Jef Raskin</h3>
-    <p>Started the Macintosh project at Apple in 1979. He envisioned an inexpensive, easy-to-use
-    appliance computer and named the project after his favorite variety of apple, the McIntosh.</p>
-  </div>
+      <h3 class="ui">Xerox PARC and the graphical turn</h3>
+      <p>In December 1979, Steve Jobs and a group of Apple engineers toured Xerox's Palo Alto Research Center, where they saw the Alto: a machine with a bitmapped display, overlapping windows, and a mouse. Apple's Lisa project absorbed those ideas first. The Lisa shipped in January 1983 at $9,995, impressive but far too expensive to sell widely.</p>
 
-  <div class="person">
-    <h3>Steve Jobs</h3>
-    <p>Took over leadership of the Mac project in 1981 after being pushed out of the Lisa team.
-    Jobs drove the product's design, marketing, and uncompromising attention to detail, famously
-    insisting on elegance in both hardware and software.</p>
-  </div>
+      <h3 class="ui">Jobs takes over</h3>
+      <p>After being pushed off the Lisa team, Jobs took control of the small Macintosh group in early 1981. Raskin left Apple the following year. Under Jobs, the Mac shifted from Raskin's text-centered, 6809-based appliance to a Motorola 68000 machine with a full graphical interface, effectively a "Lisa for the rest of us." The team worked out of a building on Bandley Drive that flew a pirate flag, embodying Jobs's maxim: <em>"It's better to be a pirate than to join the Navy."</em></p>
 
-  <div class="person">
-    <h3>Burrell Smith</h3>
-    <p>The hardware wizard whose elegant digital design squeezed remarkable performance from
-    minimal components. Smith designed the Mac's main logic board.</p>
-  </div>
+      <div class="pull">"Real artists ship."<cite>Steve Jobs, to the Macintosh team as deadlines pressed in early 1984</cite></div>
 
-  <div class="person">
-    <h3>Andy Hertzfeld</h3>
-    <p>A core member of the original Macintosh software team. Hertzfeld wrote much of the
-    Macintosh's system software, including key parts of the user interface toolbox.</p>
-  </div>
+      <p>Jobs insisted that the inside be as carefully considered as the outside. The signatures of the team members were molded into the inside of every case, visible only to anyone who cracked it open with a long-handled Torx driver.</p>
+      <div class="signatures" aria-label="Representative names from the case signatures">
+        <span>Steven Jobs</span><span>Andy Hertzfeld</span><span>Burrell Smith</span><span>Bill Atkinson</span><span>Jerry Manock</span><span>Joanna Hoffman</span><span>Bud Tribble</span><span>Steve Capps</span><span>Bruce Horn</span><span>Chris Espinosa</span>
+      </div>
+    </div>
+  </section>
 
-  <div class="person">
-    <h3>Susan Kare</h3>
-    <p>Designed the Macintosh's original icons, fonts, and visual elements — including the
-    Happy Mac, the Command key symbol, and bitmap fonts like Chicago and Geneva. Her work
-    defined the visual personality of the platform.</p>
-  </div>
+  <!-- SPECS -->
+  <section class="window" id="specs">
+    <div class="titlebar ui"><h2>About This Macintosh</h2></div>
+    <div class="window-body">
+      <table class="specs">
+        <tbody>
+          <tr><th class="ui">Model</th><td>Macintosh (later called Macintosh 128K), model M0001</td></tr>
+          <tr><th class="ui">Announced</th><td>January 24, 1984, at Apple's shareholder meeting, Flint Center, De Anza College</td></tr>
+          <tr><th class="ui">Price</th><td>US $2,495 (roughly $7,500 to $8,000 in today's money)</td></tr>
+          <tr><th class="ui">Processor</th><td>Motorola 68000 at 7.8336 MHz (16-bit external bus, 32-bit internal registers)</td></tr>
+          <tr><th class="ui">Memory</th><td>128 KB DRAM, not user-upgradeable without soldering; 64 KB ROM containing the Toolbox and QuickDraw</td></tr>
+          <tr><th class="ui">Display</th><td>Built-in 9-inch monochrome CRT, 512 &times; 342 pixels, about 72 dpi (chosen so that one pixel matched one printer's point)</td></tr>
+          <tr><th class="ui">Storage</th><td>Internal Sony 3.5-inch single-sided floppy drive, 400 KB per disk; no hard drive</td></tr>
+          <tr><th class="ui">Input</th><td>Single-button mouse; keyboard with no arrow keys or numeric keypad (intentionally, to push people toward the mouse)</td></tr>
+          <tr><th class="ui">Ports</th><td>Two serial ports (RS-422, DE-9), mouse port, external floppy port, mono audio out</td></tr>
+          <tr><th class="ui">Sound</th><td>8-bit mono audio at approximately 22 kHz</td></tr>
+          <tr><th class="ui">Cooling</th><td>None. No fan, relying on convection through the top vents, per Jobs's insistence on quiet</td></tr>
+          <tr><th class="ui">Software</th><td>System 1.0 and Finder 1.0; bundled MacWrite and MacPaint</td></tr>
+          <tr><th class="ui">Weight</th><td>About 16.5 lb (7.5 kg), with a carrying handle molded into the top</td></tr>
+          <tr><th class="ui">Case design</th><td>Jerry Manock and Terry Oyama; beige ABS plastic, vertical footprint to save desk space</td></tr>
+        </tbody>
+      </table>
 
-  <div class="person">
-    <h3>Jerry Manock</h3>
-    <p>Led the industrial design of the Macintosh, giving it the distinctive vertical
-    all-in-one enclosure that housed the CRT, motherboard, and floppy drive in a single unit.</p>
-  </div>
-</section>
+      <h3 class="ui" style="margin-top:28px">Then and now: price versus memory</h3>
+      <div class="bars ui" role="img" aria-label="Comparison of 1984 machine prices: Apple Lisa $9,995, IBM PC XT about $5,000, Macintosh $2,495">
+        <div class="bar-row"><span>Apple Lisa (1983)</span><div class="bar"><i style="width:100%"></i></div><span>$9,995</span></div>
+        <div class="bar-row"><span>IBM PC XT (1983)</span><div class="bar"><i style="width:50%"></i></div><span>~$5,000</span></div>
+        <div class="bar-row"><span>Macintosh (1984)</span><div class="bar mac"><i style="width:25%"></i></div><span>$2,495</span></div>
+      </div>
+      <p class="note">Prices are typical list prices for base configurations at introduction. The 128 KB of RAM quickly proved tight; the "Fat Mac" 512K followed in September 1984.</p>
+    </div>
+  </section>
 
-<section>
-  <h2>The "1984" Commercial</h2>
-  <p>
-    Two days before the Macintosh launch, Apple aired its now-legendary <strong>"1984"</strong>
-    television commercial during Super Bowl XVIII on January 22, 1984. Directed by Ridley Scott,
-    the 60-second ad depicted a dystopian world inspired by George Orwell's novel <em>1984</em>,
-    with a young woman hurling a sledgehammer at a giant screen displaying a Big Brother figure —
-    a clear allusion to IBM's dominance of the personal computer market.
-  </p>
-  <p class="quote">
-    "On January 24th, Apple Computer will introduce Macintosh. And you'll see why 1984 won't be like '1984.'"
-  </p>
-</section>
+  <!-- PEOPLE -->
+  <section class="window" id="people">
+    <div class="titlebar ui"><h2>The Team</h2></div>
+    <div class="window-body">
+      <p>The core Macintosh group was small, often fewer than 50 people, and young. Many were in their twenties. A few of the key figures:</p>
+      <div class="people">
+        <div class="person"><div class="icon ui">SJ</div><h4 class="ui">Steve Jobs</h4><span class="role ui">Project leader &amp; Apple co-founder</span><p>Took over the project in 1981, drove its aesthetic and its deadlines, and introduced the Mac on stage by pulling it out of a bag.</p></div>
+        <div class="person"><div class="icon ui">JR</div><h4 class="ui">Jef Raskin</h4><span class="role ui">Project founder</span><p>Conceived the Macintosh in 1979 as an affordable, easy-to-use computer and gave it its name.</p></div>
+        <div class="person"><div class="icon ui">AH</div><h4 class="ui">Andy Hertzfeld</h4><span class="role ui">System software</span><p>Wrote much of the Macintosh Toolbox and system software; later chronicled the era at folklore.org.</p></div>
+        <div class="person"><div class="icon ui">BS</div><h4 class="ui">Burrell Smith</h4><span class="role ui">Hardware design</span><p>Self-taught engineer who designed the Mac's remarkably compact digital board.</p></div>
+        <div class="person"><div class="icon ui">BA</div><h4 class="ui">Bill Atkinson</h4><span class="role ui">QuickDraw &amp; MacPaint</span><p>Created QuickDraw, the fast graphics engine behind the interface, and the landmark MacPaint application.</p></div>
+        <div class="person"><div class="icon ui">SK</div><h4 class="ui">Susan Kare</h4><span class="role ui">Icons &amp; typefaces</span><p>Designed the Happy Mac, trash can, Command-key symbol, and fonts such as Chicago, Geneva, and Monaco.</p></div>
+        <div class="person"><div class="icon ui">JM</div><h4 class="ui">Jerry Manock</h4><span class="role ui">Industrial design</span><p>Led the case design with Terry Oyama, creating the friendly, face-like upright form.</p></div>
+        <div class="person"><div class="icon ui">JH</div><h4 class="ui">Joanna Hoffman</h4><span class="role ui">Marketing</span><p>Early team member who wrote the first user-interface guidelines and was famously willing to stand up to Jobs.</p></div>
+        <div class="person"><div class="icon ui">BT</div><h4 class="ui">Bud Tribble</h4><span class="role ui">Software manager</span><p>Coined the term "reality distortion field" to describe Jobs's persuasive powers.</p></div>
+        <div class="person"><div class="icon ui">BH</div><h4 class="ui">Bruce Horn &amp; Steve Capps</h4><span class="role ui">The Finder</span><p>Built the Finder, the desktop file manager that became the Mac's public face.</p></div>
+        <div class="person"><div class="icon ui">RW</div><h4 class="ui">Randy Wigginton</h4><span class="role ui">MacWrite</span><p>Early Apple employee who led development of MacWrite, the bundled word processor.</p></div>
+        <div class="person"><div class="icon ui">LC</div><h4 class="ui">Lee Clow &amp; Ridley Scott</h4><span class="role ui">The "1984" ad</span><p>Chiat/Day creative director Clow and director Scott made the commercial that launched the machine.</p></div>
+      </div>
+    </div>
+  </section>
 
-<section>
-  <h2>Cultural Impact</h2>
-  <p>
-    The Macintosh popularized the graphical user interface (GUI), the mouse, and the
-    desktop metaphor for the average consumer. While Xerox PARC had pioneered many of these
-    concepts in the 1970s with the Alto, it was the Mac that brought them into homes,
-    schools, and small businesses.
-  </p>
-  <p>
-    The Macintosh became the cornerstone of the <strong>desktop publishing revolution</strong>,
-    especially after the introduction of the Apple LaserWriter (1985) and Aldus PageMaker.
-    For the first time, individuals and small organizations could design professional-quality
-    documents from a desktop computer.
-  </p>
-  <p>
-    The Mac also influenced design culture broadly — its emphasis on typography, friendly
-    iconography, and human-centered interaction shaped how generations of users would expect
-    software to look and feel. Even today, modern operating systems (including Windows, iOS,
-    and Android) trace their conceptual lineage to ideas the Mac brought to the mainstream.
-  </p>
-</section>
+  <!-- AD -->
+  <section class="window ad" id="ad">
+    <div class="titlebar ui"><h2>1984.mov</h2></div>
+    <div class="window-body">
+      <blockquote>"On January 24th, Apple Computer will introduce Macintosh. And you'll see why 1984 won't be like <span style="white-space:nowrap">'1984.'"</span></blockquote>
+      <p>The Macintosh was announced to the world by a single television commercial that aired nationally once, during the third quarter of Super Bowl XVIII on <strong>January 22, 1984</strong>. Directed by <strong>Ridley Scott</strong>, fresh off <em>Blade Runner</em>, and created by the agency <strong>Chiat/Day</strong> (art director Brent Thomas, copywriter Steve Hayden, creative director Lee Clow), it showed a lone athlete, played by Anya Major, sprinting through a gray Orwellian hall and hurling a sledgehammer into a giant screen of Big Brother.</p>
+      <p>Apple's board reportedly hated the ad and asked Chiat/Day to sell back the airtime. The agency quietly sold only part of it, and the full 60-second spot ran anyway. It became one of the most celebrated commercials in history and helped turn the Super Bowl itself into an advertising event.</p>
 
-<section>
-  <h2>Legacy</h2>
-  <p>
-    Although the original 128K Macintosh sold modestly compared to the IBM PC and its clones —
-    constrained by its limited RAM and single floppy drive — it laid the foundation for a
-    product line that would, over the next four decades, transform Apple into the world's
-    most valuable company. The Macintosh remains a landmark in computing history: the moment
-    the personal computer became truly personal.
-  </p>
-</section>
+      <h3 class="ui">The unveiling</h3>
+      <p>Two days later, at the shareholder meeting in Cupertino, Jobs recited a Bob Dylan verse, showed the ad, then walked to a small table and pulled the Macintosh out of a canvas bag. With "Chariots of Fire" playing, the screen filled with demos, and then the machine spoke for itself through text-to-speech: <em>"Hello, I'm Macintosh. It sure is great to get out of that bag."</em> The audience gave a prolonged standing ovation.</p>
 
-<footer>
-  <p>A brief history of the 1984 Apple Macintosh.</p>
-</footer>
+      <div class="facts ui">
+        <div><b>1</b>national airing</div>
+        <div><b>~$900K</b>reported production cost</div>
+        <div><b>60 sec</b>running time</div>
+        <div><b>Jan 22</b>Super Bowl XVIII</div>
+      </div>
+    </div>
+  </section>
 
+  <!-- TIMELINE -->
+  <section class="window" id="timeline">
+    <div class="titlebar ui"><h2>Timeline</h2></div>
+    <div class="window-body">
+      <ol class="timeline">
+        <li><span class="date ui">1979</span>Jef Raskin starts the Macintosh project inside Apple. In December, Jobs and engineers visit Xerox PARC.</li>
+        <li><span class="date ui">1981</span>Steve Jobs takes over the Macintosh team; the design pivots to the Motorola 68000 and a full graphical interface.</li>
+        <li><span class="date ui">January 1983</span>Apple Lisa launches at $9,995, previewing the GUI ideas the Mac will bring to a wider market.</li>
+        <li class="key"><span class="date ui">January 22, 1984</span>The "1984" commercial airs during Super Bowl XVIII.</li>
+        <li class="key"><span class="date ui">January 24, 1984</span>Macintosh is introduced at the Flint Center and goes on sale at $2,495.</li>
+        <li><span class="date ui">Spring 1984</span>Sales start strongly, with roughly 70,000 units sold in the first 100 days, before slowing later in the year.</li>
+        <li><span class="date ui">September 1984</span>Macintosh 512K, the "Fat Mac," quadruples memory; the original is renamed Macintosh 128K.</li>
+        <li><span class="date ui">1985</span>The LaserWriter printer and Aldus PageMaker arrive, launching the desktop publishing revolution. In September, Jobs leaves Apple after a boardroom struggle with John Sculley.</li>
+        <li><span class="date ui">January 1986</span>Macintosh Plus brings 1 MB RAM, an 800 KB drive, and SCSI, finally making the Mac a capable workhorse.</li>
+        <li><span class="date ui">1997 onward</span>Jobs returns to Apple; the Mac line continues to this day, a direct descendant of the 1984 machine.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section class="window" id="impact">
+    <div class="titlebar ui"><h2>Cultural Impact</h2></div>
+    <div class="window-body">
+      <p>Commercially, the original Mac was a mixed result. Its small memory, lack of a hard drive, and closed design frustrated power users, and sales fell well short of Apple's projections after a strong launch. Its influence, however, far outstripped its sales figures.</p>
+      <div class="impact">
+        <div><h4 class="ui">The GUI goes mainstream</h4><p>The Mac was the first commercially successful personal computer with a mouse-driven graphical interface. Windows, icons, menus, and the pointer became the default way people would expect to use computers, and Microsoft Windows followed in its wake.</p></div>
+        <div><h4 class="ui">Desktop publishing</h4><p>Paired with the LaserWriter, PostScript, and PageMaker, the Mac let individuals produce typeset-quality documents, transforming graphic design, printing, and small-press publishing almost overnight.</p></div>
+        <div><h4 class="ui">Typography for everyone</h4><p>Proportional, multiple fonts on screen and a "what you see is what you get" approach introduced millions of people to typefaces, an idea Jobs later traced to a calligraphy class he took at Reed College.</p></div>
+        <div><h4 class="ui">Design as a product value</h4><p>The friendly, face-like case, Susan Kare's warm icons, and the smiling startup Mac made computers feel approachable. This attention to industrial design became central to Apple's identity.</p></div>
+        <div><h4 class="ui">Advertising as event</h4><p>"1984" redefined what a product launch could be and turned Super Bowl commercials into cultural spectacles in their own right.</p></div>
+        <div><h4 class="ui">The "rest of us"</h4><p>Apple's tagline, "The computer for the rest of us," framed computing as a tool for creative and everyday people rather than specialists, a framing that still shapes the industry.</p></div>
+      </div>
+
+      <div class="pull">"The Macintosh was the first computer you could actually fall in love with."<cite>A sentiment widely echoed by early users and the press in 1984</cite></div>
+
+      <p>Today the original Macintosh sits in the permanent collections of museums including the Smithsonian and the Computer History Museum, and its pixel-perfect icons and Chicago typeface remain shorthand for the dawn of friendly computing.</p>
+    </div>
+  </section>
+
+  <footer class="window">
+    <div class="titlebar ui"><span>Read Me</span></div>
+    <div class="window-body">
+      A short history of the 1984 Apple Macintosh. Figures reflect commonly cited historical sources; inflation estimates are approximate.
+    </div>
+  </footer>
+
+</main>
 </body>
 </html>

@@ -3,704 +3,747 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yosemite — A Field Guide to Ten Storied Routes</title>
-<meta name="artifold:intent" content="Field-guide to ten famous Yosemite trad, multi-pitch, and aid climbing routes">
+<title>Ten Yosemite climbs, from Nutcracker to the Dawn Wall</title>
+<meta name="description" content="A guide to ten famous Yosemite trad, multi-pitch and aid routes, drawn to scale.">
+<meta name="artifold:intent" content="Guide to ten famous Yosemite trad, multi-pitch and aid routes, drawn to scale as topos">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
-<meta name="artifold:prompt" content="A guide to ~10 of Yosemite's most famous trad / multi-pitch / aid climbing routes — field-guide mode, enthusiast voice.">
-<meta name="artifold:design-mode" content="field-guide">
+<meta name="artifold:prompt" content="A guide to ~10 of Yosemite's most famous trad / multi-pitch / aid climbing routes.">
+<meta name="artifold:scale" content="read">
+<meta name="artifold:conceit" content="none">
+<meta name="artifold:layout-archetype" content="card-stack-dossier">
+<meta name="artifold:design-mode" content="supertopo-guidebook (forged: hand-drawn topo line art, red route line) × NPS Unigrid black band">
 <meta name="artifold:voice-register" content="enthusiast">
+<meta name="artifold:signature-device" content="hero-dataviz: to-scale route skyline plus a generated pitch topo per card; quiet second: persistent tick boxes">
+<meta name="artifold:ad-scores" content="4/4/4/4/4/3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23161719'/%3E%3Cpolyline points='16,29 14,22 18,15 15,8 16,3' fill='none' stroke='%23e0482f' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  /* palette — ivory NOT cream, four formation colors */
-  :root{
-    --paper:#f9f6ef; --paper-2:#f3efe4; --ink:#1a1a17; --ink-2:#2c2a24;
-    --muted:#6b6657; --rule:#d9d2c0; --rule-soft:#e6e0cf;
-    --elcap:#b8915a; --halfdome:#4a6741; --wacol:#5b6c8a; --cathedral:#a04f3b;
-    --serif:"Charter","Source Serif Pro","Iowan Old Style","Georgia",ui-serif,serif;
-    --sans:"Inter Tight","Inter","Helvetica Neue","Helvetica","Arial",ui-sans-serif,sans-serif;
-    --mono:"JetBrains Mono","SF Mono","Menlo","Consolas",ui-monospace,monospace;
-  }
-  html,body{ background:var(--paper); }
-  body{ margin:0; color:var(--ink); font-family:var(--serif); font-size:14px; line-height:1.55;
-        font-feature-settings:"onum","liga","kern"; -webkit-font-smoothing:antialiased; }
-  .page{ max-width:1100px; margin:0 auto; padding:56px 64px 96px; background:var(--paper); }
+:root{
+  --serif:"Source Serif 4", Georgia, "Iowan Old Style", system-ui, serif;
+  --sans:"Source Sans 3", "Helvetica Neue", Arial, system-ui, sans-serif;
+  /* 1.25 scale */
+  --step--2:.75rem; --step--1:.875rem; --step-0:1.0625rem; --step-1:1.3125rem; --step-2:1.625rem;
+  --step-3:2.0625rem; --step-4:2.5625rem; --step-5:clamp(2.5rem, 1.6rem + 3.6vw, 4rem);
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-6:1.5rem; --s-8:2rem; --s-12:3rem; --s-16:4rem; --s-24:6rem;
+  --radius:3px;
+  --bg:#f5f5f2; --surface:#ffffff; --ink:#1d1f21; --dim:#5b5c58; --faint:#8a8a84;
+  --rule:#d8d7d0; --granite:#ebeae5; --granite-2:#e2e1db;
+  --route:#c2321c; --route-soft:#c2321c22;
+  --band:#161719; --band-ink:#f2f1ec; --band-dim:#a9a8a2;
+  --shadow-color:40 8% 30%;
+  --shadow:0 1px 2px hsl(var(--shadow-color)/.08), 0 4px 10px hsl(var(--shadow-color)/.06), 0 14px 32px hsl(var(--shadow-color)/.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#131518; --surface:#1b1e22; --ink:#e7e5de; --dim:#a7a69f; --faint:#7d7d77;
+  --rule:#30343a; --granite:#1d2025; --granite-2:#23272c;
+  --route:#f0735a; --route-soft:#f0735a26;
+  --band:#0a0b0d; --band-ink:#ecebe5; --band-dim:#94938d;
+  --shadow-color:220 30% 2%;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#131518; --surface:#1b1e22; --ink:#e7e5de; --dim:#a7a69f; --faint:#7d7d77;
+  --rule:#30343a; --granite:#1d2025; --granite-2:#23272c;
+  --route:#f0735a; --route-soft:#f0735a26;
+  --band:#0a0b0d; --band-ink:#ecebe5; --band-dim:#94938d;
+  --shadow-color:220 30% 2%;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--step-0)/1.6 var(--sans);font-variant-numeric:tabular-nums}
+::selection{background:var(--route);color:var(--surface)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--route);outline-offset:3px;border-radius:var(--radius)}
+h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;margin:0}
+p{text-wrap:pretty;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--s-6)}
 
-  /* masthead */
-  .mast{ border-top:2px solid var(--ink); border-bottom:1px solid var(--ink); padding:18px 0 22px;
-         display:grid; grid-template-columns:1fr auto; align-items:end; gap:24px; }
-  .mast h1{ font-family:var(--sans); font-weight:600; font-stretch:condensed; font-size:34px;
-            line-height:1.05; letter-spacing:-0.01em; margin:0; color:var(--ink); }
-  .mast h1 .amp{ color:var(--muted); font-weight:400; }
-  .mast .sub{ font-style:italic; color:var(--muted); font-size:14px; margin-top:6px; }
-  .mast .meta{ font-family:var(--sans); font-size:11px; font-variant:small-caps;
-               letter-spacing:0.06em; color:var(--muted); text-align:right; line-height:1.4; }
-  .mast .meta strong{ color:var(--ink-2); font-weight:600; }
+/* NPS Unigrid band */
+.band-top{background:var(--band);color:var(--band-ink)}
+.band-top .wrap{display:flex;align-items:center;gap:var(--s-6);min-height:64px}
+.band-top .park{font:700 var(--step-1)/1.1 var(--sans);letter-spacing:-.01em}
+.band-top .park span{display:block;font-weight:400;font-size:var(--step--1);color:var(--band-dim);letter-spacing:0}
+.band-top .ticks{margin-left:auto;font-size:var(--step--1);color:var(--band-dim)}
+.band-top .ticks b{color:var(--band-ink);font-weight:600}
+.theme-btn{white-space:nowrap;font:600 var(--step--1)/1 var(--sans);color:var(--band-ink);background:transparent;border:1px solid #ffffff40;border-radius:var(--radius);min-height:44px;padding:0 var(--s-4);cursor:pointer;display:inline-flex;align-items:center;gap:var(--s-2)}
+.theme-btn:hover{border-color:#ffffff90}
+.theme-btn svg{width:16px;height:16px}
 
-  /* lede + map */
-  .lede-row{ display:grid; grid-template-columns:1.35fr 1fr; gap:48px; padding:28px 0 8px;
-             border-bottom:1px solid var(--rule); }
-  .lede{ font-size:15px; line-height:1.6; color:var(--ink-2); }
-  .lede .dropcap{ float:left; font-weight:700; font-size:46px; line-height:0.86;
-                  padding:6px 8px 0 0; color:var(--ink); }
-  .lede p{ margin:0 0 10px; }
+/* hero */
+.hero{padding:var(--s-16) 0 var(--s-8)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:var(--s-12);align-items:end}
+.hero h1{font-size:var(--step-5);line-height:1.04;letter-spacing:-.022em;font-weight:700}
+.hero h1 em{font-style:normal;color:var(--route)}
+.dek{font:400 var(--step-1)/1.45 var(--serif);color:var(--dim);margin-top:var(--s-6);max-width:36em}
+.key{border-top:2px solid var(--ink);padding-top:var(--s-3)}
+.key h2{font:700 var(--step--1)/1.3 var(--sans);margin-bottom:var(--s-3)}
+.key dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:var(--s-2) var(--s-4);font-size:var(--step--1);line-height:1.4}
+.key dt{font-weight:700;white-space:nowrap}
+.key dd{margin:0;color:var(--dim)}
 
-  .map{ position:relative; height:260px; border:1px solid var(--rule);
-        background: linear-gradient(transparent 0 95%, var(--rule-soft) 95% 100%) 0 0/22px 22px,
-                    linear-gradient(90deg, transparent 0 95%, var(--rule-soft) 95% 100%) 0 0/22px 22px,
-                    var(--paper-2); }
-  .map svg{ position:absolute; inset:0; width:100%; height:100%; }
-  .map .scale, .map .compass, .map .valley{
-    position:absolute; font-family:var(--sans); font-size:9px; letter-spacing:0.08em;
-    color:var(--muted); text-transform:uppercase; }
-  .map .scale{ bottom:8px; right:10px; }
-  .map .compass{ top:8px; right:10px; line-height:1.1; text-align:center; }
-  .map .compass .n{ display:block; font-weight:700; color:var(--ink); font-size:11px; }
-  .map .valley{ top:8px; left:10px; letter-spacing:0.18em; }
-  .map .lbl{ position:absolute; font-family:var(--sans); font-size:10px; font-weight:600;
-             letter-spacing:0.04em; color:var(--ink); background:var(--paper); padding:2px 6px;
-             border:1px solid var(--ink); text-transform:uppercase; }
-  .map .lbl::before{ content:""; display:inline-block; width:7px; height:7px; margin-right:6px;
-                     transform:translateY(1px); border:1px solid var(--ink-2); }
-  .lbl.elcap{ left:6%;  top:32%; }    .lbl.elcap::before{ background:var(--elcap); }
-  .lbl.hd   { right:6%;  top:18%; }   .lbl.hd::before   { background:var(--halfdome); }
-  .lbl.wac  { right:30%; top:62%; }   .lbl.wac::before  { background:var(--wacol); }
-  .lbl.cat  { left:24%;  bottom:10%; } .lbl.cat::before { background:var(--cathedral); }
-  .map .river{ position:absolute; font-style:italic; font-size:10px; color:var(--wacol);
-               left:38%; top:43%; }
+/* chart */
+.chart{margin:var(--s-8) 0 0;padding:var(--s-8) var(--s-6) var(--s-6);background:var(--surface);box-shadow:var(--shadow);border-radius:var(--radius)}
+.skyline{display:block;width:100%;height:auto}
+.skyline .band{fill:var(--granite)}
+.skyline .band-vi{fill:var(--granite-2)}
+.skyline .band-label{font:700 13px var(--sans);fill:var(--ink)}
+.skyline .band-rule{stroke:var(--ink);stroke-width:1}
+.skyline .grid{stroke:var(--rule);stroke-width:1;stroke-dasharray:2 4}
+.skyline .axis{font:400 12px var(--sans);fill:var(--faint)}
+.route{fill:none;stroke:var(--route);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.belay{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.skyline .num{font:700 12px var(--sans);fill:var(--ink)}
+.skyline .rname{font:600 13px var(--sans);fill:var(--ink)}
+.skyline .floor,.topo .floor{stroke:var(--ink);stroke-width:1.5}
+.hatch{stroke:var(--faint);stroke-width:1}
+.skyline .floor-label{font:italic 400 12px var(--sans);fill:var(--faint)}
+.skyline .col:hover .route,.skyline .col:focus-visible .route{stroke-width:4}
+.skyline .col{outline:none}
+.skyline .col:focus-visible .num{fill:var(--route)}
+.chart figcaption{display:flex;justify-content:space-between;gap:var(--s-6);align-items:baseline;margin-top:var(--s-4);padding-top:var(--s-3);border-top:1px solid var(--rule)}
+.chart .take{font:600 var(--step-0)/1.45 var(--serif);max-width:44em}
+.chart .src{font-size:var(--step--2);color:var(--faint);max-width:30em}
+.legend-mobile{display:none}
 
-  /* legend + key */
-  .legend{ display:grid; grid-template-columns:repeat(4,1fr); margin:22px 0 8px;
-           border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
-  .legend .item{ padding:10px 14px; border-right:1px solid var(--rule);
-                 display:flex; align-items:center; gap:10px; }
-  .legend .item:last-child{ border-right:none; }
-  .legend .swatch{ width:14px; height:14px; flex:0 0 14px; border:1px solid var(--ink-2); }
-  .legend .nm{ font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:0.04em;
-               text-transform:uppercase; color:var(--ink); }
-  .legend .ct{ font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:auto; }
-  .key{ display:flex; gap:22px; flex-wrap:wrap; padding:10px 0 22px;
-        font-family:var(--sans); font-size:11px; color:var(--muted);
-        border-bottom:1px solid var(--rule); margin-bottom:20px; }
-  .key b{ color:var(--ink); font-weight:600; font-variant:small-caps;
-          letter-spacing:0.04em; margin-right:6px; }
-  .glyph{ display:inline-block; width:14px; text-align:center; color:var(--ink); }
+/* groups + cards */
+main{padding-bottom:0}
+.group{margin-top:var(--s-24);display:flex;flex-direction:column;gap:var(--s-6)}
+.group-head{display:grid;grid-template-columns:auto 1fr;column-gap:var(--s-8);align-items:end;padding-bottom:var(--s-4);border-bottom:2px solid var(--ink);margin-bottom:var(--s-2)}
+.g-grade{grid-row:span 2;font:700 clamp(3rem, 2rem + 4vw, 5.5rem)/.8 var(--serif);color:var(--route);letter-spacing:-.02em;align-self:end}
+.g-grade span{display:block;font:700 var(--step--1)/1 var(--sans);color:var(--dim);letter-spacing:0;margin-bottom:var(--s-2)}
+.group-head h2{font-size:var(--step-4);line-height:1.05;letter-spacing:-.015em}
+.g-dek{color:var(--dim);font-size:var(--step-0)}
 
-  /* route entry */
-  .route{ display:grid; grid-template-columns:24px 1fr; gap:22px; padding:26px 0 28px;
-          border-top:1px solid var(--rule); page-break-inside:avoid; }
-  .route:first-of-type{ border-top:1px solid var(--ink); }
-  .band{ background:var(--band, var(--elcap)); position:relative; }
-  .band::after{ content:attr(data-num); position:absolute; top:0; left:50%;
-                transform:translate(-50%,0); writing-mode:vertical-rl;
-                font-family:var(--sans); font-size:9px; letter-spacing:0.18em;
-                color:var(--paper); padding:6px 0; font-weight:700; text-transform:uppercase; }
-  .body{ display:grid; grid-template-columns:38% 62%; gap:30px; }
+.card{background:var(--surface);box-shadow:var(--shadow);border-radius:var(--radius);scroll-margin-top:var(--s-6)}
+.card-head{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:var(--s-4);padding:var(--s-4) var(--s-6);border-bottom:1px solid var(--rule)}
+.no{font:700 var(--step-2)/1.15 var(--serif);color:var(--route);min-width:2ch}
+.card h3{font-size:var(--step-2);line-height:1.15}
+.where{font-size:var(--step--1);color:var(--dim);margin-top:2px}
+.tick{align-self:center;display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;padding:0 var(--s-2);cursor:pointer;font-size:var(--step--1);color:var(--dim);user-select:none}
+.tick input{position:absolute;opacity:0;width:1px;height:1px}
+.tick .box{width:22px;height:22px;border:1.5px solid var(--faint);border-radius:2px;display:grid;place-items:center;background:var(--surface)}
+.tick input:checked + .box{border-color:var(--route);background:var(--route)}
+.tick input:checked + .box::after{content:"";width:6px;height:11px;border:solid var(--surface);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.tick input:checked ~ .tick-text{color:var(--route);font-weight:600}
+.tick input:focus-visible + .box{outline:2px solid var(--route);outline-offset:3px}
+.card.done .no{color:var(--faint)}
 
-  .col-l .name{ font-family:var(--sans); font-weight:600; font-stretch:condensed; font-size:22px;
-                line-height:1.08; letter-spacing:-0.005em; color:var(--ink); margin:0 0 4px; }
-  .col-l .scientific{ font-style:italic; color:var(--muted); font-size:12.5px; margin-bottom:10px; }
-  .badge{ display:inline-flex; align-items:center; gap:6px; font-family:var(--sans);
-          font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
-          color:var(--ink); padding:3px 8px 3px 6px; border:1px solid var(--ink);
-          background:var(--paper); }
-  .badge .sw{ width:9px; height:9px; background:var(--band, var(--elcap));
-              border:1px solid var(--ink-2); }
+.card-body{display:grid;grid-template-columns:168px minmax(0,1fr) 250px;grid-template-areas:"topo copy spec";gap:var(--s-8);padding:var(--s-6)}
+.topo-wrap{grid-area:topo;margin:0}
+.topo{display:block;width:168px;height:auto}
+.topo .ghost{stroke:var(--rule);stroke-width:1.5;stroke-dasharray:1 5;stroke-linecap:round}
+.topo .ghost-tick{stroke:var(--faint);stroke-width:1}
+.topo .ghost-label,.topo .top-label{font:400 12px var(--sans);fill:var(--faint)}
+.topo .summit{stroke:var(--ink);stroke-width:1.5}
+.topo .mark{fill:var(--route-soft);stroke:var(--route);stroke-width:1.5}
+.topo .leader{fill:none;stroke:var(--route);stroke-width:1}
+.topo .mark-label{font:italic 600 13px var(--sans);fill:var(--route)}
+.copy{grid-area:copy;display:flex;flex-direction:column;gap:var(--s-3);max-width:62ch}
+.claim{font:600 var(--step-1)/1.3 var(--serif);letter-spacing:-.005em}
+.beta{margin-top:var(--s-3);padding-top:var(--s-3);border-top:1px solid var(--rule);font-size:var(--step--1);color:var(--dim)}
+.beta span{font-weight:700;color:var(--ink);margin-right:var(--s-1)}
+.spec{grid-area:spec;margin:0;display:flex;flex-direction:column;font-size:var(--step--1);line-height:1.4;align-self:start}
+.spec .row{display:grid;grid-template-columns:88px 1fr;gap:var(--s-3);padding:var(--s-2) 0;border-top:1px solid var(--rule)}
+.spec .row:first-child{border-top:2px solid var(--ink)}
+.spec dt{color:var(--dim)}
+.spec dd{margin:0}
+.spec .grade{font:700 var(--step-1)/1 var(--sans);color:var(--route)}
 
-  table.stats{ width:100%; margin-top:14px; border-collapse:collapse; font-size:12.5px; }
-  table.stats th, table.stats td{ text-align:left; padding:5px 0;
-                                   border-bottom:1px dotted var(--rule); vertical-align:top; }
-  table.stats th{ font-family:var(--sans); font-weight:500; font-size:10.5px;
-                  letter-spacing:0.05em; text-transform:uppercase; color:var(--muted);
-                  width:42%; padding-right:12px; }
-  table.stats td{ color:var(--ink-2); font-variant-numeric:tabular-nums oldstyle-nums; }
-  table.stats td .mono{ font-family:var(--mono); font-size:11.5px; color:var(--ink); }
+/* end */
+.end{margin-top:var(--s-24);padding-bottom:var(--s-4);display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:var(--s-12);align-items:start;border-top:2px solid var(--ink);padding-top:var(--s-8)}
+.kicker{font:600 var(--step-3)/1.15 var(--serif);letter-spacing:-.015em}
+.kicker a{color:var(--route);text-decoration-thickness:2px;text-underline-offset:4px}
+.colophon{font-size:var(--step--1);color:var(--dim);display:flex;flex-direction:column;gap:var(--s-2)}
+.colophon b{color:var(--ink);font-weight:600}
+footer.band-top{margin-top:var(--s-16)}
+footer.band-top .wrap{font-size:var(--step--1);color:var(--band-dim);min-height:56px}
 
-  .col-r .beta{ font-size:13.5px; line-height:1.62; color:var(--ink-2); margin:0 0 12px; }
-  .col-r p + p{ margin-top:8px; }
-  .term{ color:var(--muted); font-style:italic; font-size:0.92em; }
-  .term::before{ content:" ("; } .term::after{ content:")"; }
-
-  .gear{ margin-top:10px; padding:10px 12px 11px; background:var(--paper-2);
-         border-left:2px solid var(--band, var(--elcap));
-         font-size:12.5px; line-height:1.55; }
-  .gear .lbl{ display:block; font-family:var(--sans); font-size:10px;
-              letter-spacing:0.08em; text-transform:uppercase; color:var(--ink);
-              font-weight:700; margin-bottom:3px; }
-  .gear b{ color:var(--ink); font-weight:600; }
-
-  .season{ margin-top:14px; display:grid; grid-template-columns:auto 1fr;
-           gap:10px; align-items:center; }
-  .season .lab{ font-family:var(--sans); font-size:10px; font-weight:600;
-                letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); }
-  .strip{ display:grid; grid-template-columns:repeat(12,1fr); gap:2px;
-          border:1px solid var(--rule); padding:2px; background:var(--paper); }
-  .strip .m{ height:14px; background:var(--paper-2); font-family:var(--sans);
-             font-size:8px; color:var(--muted); text-align:center;
-             line-height:14px; letter-spacing:0.02em; }
-  .strip .m.go{ background:var(--band, var(--elcap)); color:var(--paper); font-weight:700; }
-  .strip .m.shoulder{ background:color-mix(in srgb, var(--band, var(--elcap)) 35%, var(--paper-2));
-                      color:var(--ink-2); }
-
-  .fa{ margin-top:10px; font-size:12px; color:var(--muted); font-style:italic;
-       border-top:1px solid var(--rule); padding-top:8px; }
-  .fa b{ font-style:normal; color:var(--ink-2); font-weight:600; }
-
-  /* closing note */
-  .coda{ margin-top:48px; padding:24px 26px 26px; background:var(--paper-2);
-         border:1px solid var(--rule); border-left:4px solid var(--ink);
-         display:grid; grid-template-columns:1fr 1fr; gap:28px; }
-  .coda h2{ grid-column:1/-1; font-family:var(--sans); font-stretch:condensed; font-weight:600;
-            font-size:18px; margin:0 0 4px; letter-spacing:-0.005em; }
-  .coda h2 .small{ font-family:var(--serif); font-style:italic; font-weight:400;
-                   color:var(--muted); font-size:13px; margin-left:8px; }
-  .coda h3{ font-family:var(--sans); font-size:10.5px; letter-spacing:0.08em;
-            text-transform:uppercase; color:var(--ink); margin:6px 0 6px; font-weight:700; }
-  .coda p{ margin:0 0 8px; font-size:13px; line-height:1.58; color:var(--ink-2); }
-  .coda .contact{ grid-column:1/-1; border-top:1px dotted var(--rule); padding-top:10px;
-                  font-family:var(--mono); font-size:11px; color:var(--muted);
-                  display:flex; gap:24px; flex-wrap:wrap; }
-  .coda .contact b{ color:var(--ink); font-weight:700; }
-
-  .colophon{ margin-top:40px; padding-top:14px; border-top:1px solid var(--ink);
-             display:flex; justify-content:space-between; align-items:baseline;
-             font-family:var(--sans); font-size:10px; letter-spacing:0.06em;
-             text-transform:uppercase; color:var(--muted); }
-  .colophon .l b{ color:var(--ink); font-weight:600; }
-
-  @media (max-width:820px){
-    .page{ padding:24px 18px 60px; }
-    .body, .lede-row, .coda, .mast{ grid-template-columns:1fr; }
-    .lede-row{ gap:24px; } .body{ gap:18px; }
-    .legend{ grid-template-columns:repeat(2,1fr); }
-    .mast .meta{ text-align:left; }
-  }
+@media (max-width: 960px){
+  .card-body{grid-template-columns:168px minmax(0,1fr);grid-template-areas:"copy copy" "topo spec";gap:var(--s-6)}
+  .hero-grid,.end{grid-template-columns:1fr;gap:var(--s-8)}
+}
+@media (max-width: 640px){
+  .wrap{padding:0 var(--s-4)}
+  .band-top .ticks{display:none}
+  .band-top .park{font-size:var(--step-0)}
+  .theme-btn{margin-left:auto}
+  .hero{padding-top:var(--s-8)}
+  .chart{padding:var(--s-4) var(--s-2) var(--s-4);margin-left:calc(-1 * var(--s-2));margin-right:calc(-1 * var(--s-2))}
+  .skyline .rname,.skyline .floor-label,.skyline .band-label{display:none}
+  .skyline .num{font-size:30px}
+  .skyline .axis{font-size:26px}
+  .chart .src{text-align:left}
+  .chart figcaption{flex-direction:column;gap:var(--s-2);padding-inline:var(--s-2)}
+  .legend-mobile{display:block;margin:var(--s-3) var(--s-2) 0;padding:0 0 0 1.4em;font-size:var(--step--1);color:var(--dim);columns:2;column-gap:var(--s-6)}
+  .legend-mobile li{padding-left:2px}
+  .card-head{padding:var(--s-3) var(--s-4);gap:var(--s-3)}
+  .card-body{grid-template-columns:150px minmax(0,1fr);padding:var(--s-4);gap:var(--s-6) var(--s-4)}
+  .topo{width:150px}
+  .spec .row{grid-template-columns:1fr;gap:0}
+  .group-head{grid-template-columns:1fr;row-gap:var(--s-2)}
+  .g-grade{grid-row:auto;justify-self:start}
+  .group{margin-top:var(--s-16)}
+  .group-head h2{font-size:var(--step-3)}
+  .band-top .park span{display:none}
+  .kicker{font-size:var(--step-2)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.theme-btn{display:none}.card{box-shadow:none;break-inside:avoid;border:1px solid var(--rule)}}
 </style>
 </head>
 <body>
-<div class="page">
+<header class="band-top">
+  <div class="wrap">
+    <p class="park">Yosemite Valley<span>Ten classic climbs, drawn to scale</span></p>
+    <p class="ticks" id="tickcount" hidden>You’ve ticked <b>0</b> of 10</p>
+  </div>
+</header>
 
-  <!-- ============== MASTHEAD ============== -->
-  <header class="mast">
-    <div>
-      <h1>Yosemite Valley <span class="amp">·</span> A Field Guide to Ten Storied Routes</h1>
-      <div class="sub">Trad, multi&#8209;pitch, and big&#8209;wall lines on the granite of the Sierra Nevada</div>
+<main>
+  <div class="wrap">
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-grid">
+        <div>
+          <h1 id="title">Ten lines up the Valley, from a 5&#8209;pitch morning to <em>3,500 feet of El&nbsp;Cap</em>.</h1>
+          <p class="dek">Climb these in order and the walls get taller, the nights get longer, and the history gets better. Each one is here because a guidebook, a legend, or a few thousand tick lists put it there.</p>
+        </div>
+        <aside class="key" aria-labelledby="key-h">
+          <h2 id="key-h">Reading the grades</h2>
+          <dl>
+            <dt>5.7 → 5.14d</dt><dd>How hard the hardest moves are (Yosemite Decimal System).</dd>
+            <dt>II → VI</dt><dd>How long it takes: a few hours up to several days on the wall.</dd>
+            <dt>A0, C1, C2</dt><dd>Aid: you pull or stand on gear. C means clean, no hammer.</dd>
+            <dt>R</dt><dd>Runout. Long gaps between protection.</dd>
+          </dl>
+        </aside>
+      </div>
+
+      <figure class="chart">
+        <svg class="skyline" viewBox="0 0 1000 470" role="img" aria-labelledby="sky-t sky-d">
+<title id="sky-t">The ten routes drawn to scale</title>
+<desc id="sky-d">Each route is a vertical line as tall as the climb, with a dot at every belay. They run from Nutcracker at 500 feet to the Salathé Wall at 3,500 feet; the five Grade VI walls are all 1,800 feet or more.</desc>
+<rect class="band band-lo" x="44" y="4" width="277" height="396" />
+<text class="band-label" x="182.5" y="452" text-anchor="middle">Grade II–III</text>
+<line class="band-rule" x1="44" x2="321" y1="434" y2="434"/>
+<rect class="band band-lo" x="329" y="4" width="182" height="396" />
+<text class="band-label" x="420.0" y="452" text-anchor="middle">Grade IV–V</text>
+<line class="band-rule" x1="329" x2="511" y1="434" y2="434"/>
+<rect class="band band-vi" x="519" y="4" width="467" height="396" />
+<text class="band-label" x="752.5" y="452" text-anchor="middle">Grade VI</text>
+<line class="band-rule" x1="519" x2="986" y1="434" y2="434"/>
+<line class="grid" x1="34" x2="990" y1="305.7" y2="305.7"/>
+<text class="axis" x="34" y="299.7">1,000&#8239;ft</text>
+<line class="grid" x1="34" x2="990" y1="211.4" y2="211.4"/>
+<text class="axis" x="34" y="205.4">2,000&#8239;ft</text>
+<line class="grid" x1="34" x2="990" y1="117.1" y2="117.1"/>
+<text class="axis" x="34" y="111.1">3,000&#8239;ft</text>
+<a href="#nutcracker" class="col" aria-label="Nutcracker, 500 feet, 5 pitches">
+<polyline class="route" points="87.5,400.0 86.7,388.2 85.9,376.4 84.5,364.6 87.5,352.9"/>
+<circle class="belay" cx="86.7" cy="390.6" r="2.6"/>
+<circle class="belay" cx="85.9" cy="381.1" r="2.6"/>
+<circle class="belay" cx="85.9" cy="371.7" r="2.6"/>
+<circle class="belay" cx="84.5" cy="362.3" r="2.6"/>
+<circle class="belay" cx="87.5" cy="352.9" r="2.6"/>
+<text class="num" x="87.5" y="340.9" text-anchor="middle">1</text>
+<text class="rname" x="87.5" y="320.9" text-anchor="middle">Nutcracker</text>
+</a>
+<a href="#snake-dike" class="col" aria-label="Snake Dike, 1,000 feet, 9 pitches">
+<polyline class="route" points="182.5,400.0 178.1,384.3 183.1,368.6 183.6,352.9 186.2,337.1 179.7,321.4 182.5,305.7"/>
+<circle class="belay" cx="178.1" cy="389.5" r="2.6"/>
+<circle class="belay" cx="178.1" cy="379.0" r="2.6"/>
+<circle class="belay" cx="183.1" cy="368.6" r="2.6"/>
+<circle class="belay" cx="183.6" cy="358.1" r="2.6"/>
+<circle class="belay" cx="183.6" cy="347.6" r="2.6"/>
+<circle class="belay" cx="186.2" cy="337.1" r="2.6"/>
+<circle class="belay" cx="179.7" cy="326.7" r="2.6"/>
+<circle class="belay" cx="179.7" cy="316.2" r="2.6"/>
+<circle class="belay" cx="182.5" cy="305.7" r="2.6"/>
+<text class="num" x="182.5" y="293.7" text-anchor="middle">2</text>
+<text class="rname" x="182.5" y="273.7" text-anchor="middle">Snake Dike</text>
+</a>
+<a href="#royal-arches" class="col" aria-label="Royal Arches, 2,000 feet, 16 pitches">
+<polyline class="route" points="277.5,400.0 277.6,385.5 280.8,371.0 278.3,356.5 275.7,342.0 274.5,327.5 279.1,313.0 279.9,298.5 278.8,284.0 274.1,269.5 276.2,254.9 278.2,240.4 281.3,225.9 277.5,211.4"/>
+<circle class="belay" cx="277.6" cy="388.2" r="2.6"/>
+<circle class="belay" cx="280.8" cy="376.4" r="2.6"/>
+<circle class="belay" cx="280.8" cy="364.6" r="2.6"/>
+<circle class="belay" cx="278.3" cy="352.9" r="2.6"/>
+<circle class="belay" cx="275.7" cy="341.1" r="2.6"/>
+<circle class="belay" cx="274.5" cy="329.3" r="2.6"/>
+<circle class="belay" cx="279.1" cy="317.5" r="2.6"/>
+<circle class="belay" cx="279.1" cy="305.7" r="2.6"/>
+<circle class="belay" cx="279.9" cy="293.9" r="2.6"/>
+<circle class="belay" cx="278.8" cy="282.1" r="2.6"/>
+<circle class="belay" cx="274.1" cy="270.4" r="2.6"/>
+<circle class="belay" cx="276.2" cy="258.6" r="2.6"/>
+<circle class="belay" cx="278.2" cy="246.8" r="2.6"/>
+<circle class="belay" cx="278.2" cy="235.0" r="2.6"/>
+<circle class="belay" cx="281.3" cy="223.2" r="2.6"/>
+<circle class="belay" cx="277.5" cy="211.4" r="2.6"/>
+<text class="num" x="277.5" y="199.4" text-anchor="middle">3</text>
+<text class="rname" x="277.5" y="164.4" text-anchor="middle">Royal</text>
+<text class="rname" x="277.5" y="179.4" text-anchor="middle">Arches</text>
+</a>
+<a href="#astroman" class="col" aria-label="Astroman, 1,000 feet, 10 pitches">
+<polyline class="route" points="372.5,400.0 376.5,384.3 371.5,368.6 370.6,352.9 369.9,337.1 375.4,321.4 372.5,305.7"/>
+<circle class="belay" cx="376.5" cy="390.6" r="2.6"/>
+<circle class="belay" cx="376.5" cy="381.1" r="2.6"/>
+<circle class="belay" cx="371.5" cy="371.7" r="2.6"/>
+<circle class="belay" cx="371.5" cy="362.3" r="2.6"/>
+<circle class="belay" cx="370.6" cy="352.9" r="2.6"/>
+<circle class="belay" cx="369.9" cy="343.4" r="2.6"/>
+<circle class="belay" cx="369.9" cy="334.0" r="2.6"/>
+<circle class="belay" cx="375.4" cy="324.6" r="2.6"/>
+<circle class="belay" cx="375.4" cy="315.1" r="2.6"/>
+<circle class="belay" cx="372.5" cy="305.7" r="2.6"/>
+<text class="num" x="372.5" y="293.7" text-anchor="middle">4</text>
+<text class="rname" x="372.5" y="273.7" text-anchor="middle">Astroman</text>
+</a>
+<a href="#steck-salathe" class="col" aria-label="Steck-Salathé, 1,500 feet, 15 pitches">
+<polyline class="route" points="467.5,400.0 467.9,385.9 463.0,371.7 468.5,357.6 468.7,343.4 470.9,329.3 464.3,315.1 466.2,301.0 466.2,286.9 471.9,272.7 467.5,258.6"/>
+<circle class="belay" cx="467.9" cy="390.6" r="2.6"/>
+<circle class="belay" cx="467.9" cy="381.1" r="2.6"/>
+<circle class="belay" cx="463.0" cy="371.7" r="2.6"/>
+<circle class="belay" cx="468.5" cy="362.3" r="2.6"/>
+<circle class="belay" cx="468.5" cy="352.9" r="2.6"/>
+<circle class="belay" cx="468.7" cy="343.4" r="2.6"/>
+<circle class="belay" cx="470.9" cy="334.0" r="2.6"/>
+<circle class="belay" cx="470.9" cy="324.6" r="2.6"/>
+<circle class="belay" cx="464.3" cy="315.1" r="2.6"/>
+<circle class="belay" cx="466.2" cy="305.7" r="2.6"/>
+<circle class="belay" cx="466.2" cy="296.3" r="2.6"/>
+<circle class="belay" cx="466.2" cy="286.9" r="2.6"/>
+<circle class="belay" cx="471.9" cy="277.4" r="2.6"/>
+<circle class="belay" cx="471.9" cy="268.0" r="2.6"/>
+<circle class="belay" cx="467.5" cy="258.6" r="2.6"/>
+<text class="num" x="467.5" y="246.6" text-anchor="middle">5</text>
+<text class="rname" x="467.5" y="211.6" text-anchor="middle">Steck-</text>
+<text class="rname" x="467.5" y="226.6" text-anchor="middle">Salathé</text>
+</a>
+<a href="#zodiac" class="col" aria-label="Zodiac, 1,800 feet, 16 pitches">
+<polyline class="route" points="562.5,400.0 560.4,385.9 562.7,371.7 566.1,357.6 562.8,343.4 560.7,329.3 559.5,315.1 564.6,301.0 564.6,286.9 563.7,272.7 558.7,258.6 561.7,244.4 562.5,230.3"/>
+<circle class="belay" cx="560.4" cy="389.4" r="2.6"/>
+<circle class="belay" cx="562.7" cy="378.8" r="2.6"/>
+<circle class="belay" cx="562.7" cy="368.2" r="2.6"/>
+<circle class="belay" cx="566.1" cy="357.6" r="2.6"/>
+<circle class="belay" cx="562.8" cy="347.0" r="2.6"/>
+<circle class="belay" cx="560.7" cy="336.4" r="2.6"/>
+<circle class="belay" cx="560.7" cy="325.8" r="2.6"/>
+<circle class="belay" cx="559.5" cy="315.1" r="2.6"/>
+<circle class="belay" cx="564.6" cy="304.5" r="2.6"/>
+<circle class="belay" cx="564.6" cy="293.9" r="2.6"/>
+<circle class="belay" cx="564.6" cy="283.3" r="2.6"/>
+<circle class="belay" cx="563.7" cy="272.7" r="2.6"/>
+<circle class="belay" cx="558.7" cy="262.1" r="2.6"/>
+<circle class="belay" cx="558.7" cy="251.5" r="2.6"/>
+<circle class="belay" cx="561.7" cy="240.9" r="2.6"/>
+<circle class="belay" cx="562.5" cy="230.3" r="2.6"/>
+<text class="num" x="562.5" y="218.3" text-anchor="middle">6</text>
+<text class="rname" x="562.5" y="198.3" text-anchor="middle">Zodiac</text>
+</a>
+<a href="#regular-nw" class="col" aria-label="Regular Northwest Face, 2,200 feet, 23 pitches">
+<polyline class="route" points="657.5,400.0 658.3,385.2 661.2,370.4 656.4,355.6 655.3,340.7 655.5,325.9 660.4,311.1 659.4,296.3 657.2,281.5 654.0,266.7 657.3,251.8 659.7,237.0 659.9,222.2 655.7,207.4 657.5,192.6"/>
+<circle class="belay" cx="658.3" cy="391.0" r="2.6"/>
+<circle class="belay" cx="658.3" cy="382.0" r="2.6"/>
+<circle class="belay" cx="661.2" cy="372.9" r="2.6"/>
+<circle class="belay" cx="661.2" cy="363.9" r="2.6"/>
+<circle class="belay" cx="656.4" cy="354.9" r="2.6"/>
+<circle class="belay" cx="655.3" cy="345.9" r="2.6"/>
+<circle class="belay" cx="655.3" cy="336.9" r="2.6"/>
+<circle class="belay" cx="655.5" cy="327.9" r="2.6"/>
+<circle class="belay" cx="655.5" cy="318.8" r="2.6"/>
+<circle class="belay" cx="660.4" cy="309.8" r="2.6"/>
+<circle class="belay" cx="659.4" cy="300.8" r="2.6"/>
+<circle class="belay" cx="659.4" cy="291.8" r="2.6"/>
+<circle class="belay" cx="657.2" cy="282.8" r="2.6"/>
+<circle class="belay" cx="654.0" cy="273.7" r="2.6"/>
+<circle class="belay" cx="654.0" cy="264.7" r="2.6"/>
+<circle class="belay" cx="657.3" cy="255.7" r="2.6"/>
+<circle class="belay" cx="657.3" cy="246.7" r="2.6"/>
+<circle class="belay" cx="659.7" cy="237.7" r="2.6"/>
+<circle class="belay" cx="659.9" cy="228.6" r="2.6"/>
+<circle class="belay" cx="659.9" cy="219.6" r="2.6"/>
+<circle class="belay" cx="655.7" cy="210.6" r="2.6"/>
+<circle class="belay" cx="655.7" cy="201.6" r="2.6"/>
+<circle class="belay" cx="657.5" cy="192.6" r="2.6"/>
+<text class="num" x="657.5" y="180.6" text-anchor="middle">7</text>
+<text class="rname" x="657.5" y="145.6" text-anchor="middle">Regular</text>
+<text class="rname" x="657.5" y="160.6" text-anchor="middle">NW Face</text>
+</a>
+<a href="#dawn-wall" class="col" aria-label="Dawn Wall, 2,500 feet, 32 pitches">
+<polyline class="route" points="752.5,400.0 753.2,385.3 752.6,370.5 748.1,355.8 753.9,341.1 753.9,326.3 755.7,311.6 749.1,296.9 751.3,282.1 751.5,267.4 756.9,252.7 752.2,237.9 751.5,223.2 748.7,208.5 755.0,193.8 754.1,179.0 752.5,164.3"/>
+<circle class="belay" cx="753.2" cy="392.6" r="2.6"/>
+<circle class="belay" cx="753.2" cy="385.3" r="2.6"/>
+<circle class="belay" cx="753.2" cy="377.9" r="2.6"/>
+<circle class="belay" cx="752.6" cy="370.5" r="2.6"/>
+<circle class="belay" cx="748.1" cy="363.2" r="2.6"/>
+<circle class="belay" cx="748.1" cy="355.8" r="2.6"/>
+<circle class="belay" cx="753.9" cy="348.4" r="2.6"/>
+<circle class="belay" cx="753.9" cy="341.1" r="2.6"/>
+<circle class="belay" cx="753.9" cy="333.7" r="2.6"/>
+<circle class="belay" cx="753.9" cy="326.3" r="2.6"/>
+<circle class="belay" cx="755.7" cy="319.0" r="2.6"/>
+<circle class="belay" cx="755.7" cy="311.6" r="2.6"/>
+<circle class="belay" cx="755.7" cy="304.2" r="2.6"/>
+<circle class="belay" cx="749.1" cy="296.9" r="2.6"/>
+<circle class="belay" cx="751.3" cy="289.5" r="2.6"/>
+<circle class="belay" cx="751.3" cy="282.1" r="2.6"/>
+<circle class="belay" cx="751.3" cy="274.8" r="2.6"/>
+<circle class="belay" cx="751.5" cy="267.4" r="2.6"/>
+<circle class="belay" cx="751.5" cy="260.0" r="2.6"/>
+<circle class="belay" cx="756.9" cy="252.7" r="2.6"/>
+<circle class="belay" cx="756.9" cy="245.3" r="2.6"/>
+<circle class="belay" cx="752.2" cy="237.9" r="2.6"/>
+<circle class="belay" cx="751.5" cy="230.6" r="2.6"/>
+<circle class="belay" cx="751.5" cy="223.2" r="2.6"/>
+<circle class="belay" cx="751.5" cy="215.8" r="2.6"/>
+<circle class="belay" cx="748.7" cy="208.5" r="2.6"/>
+<circle class="belay" cx="755.0" cy="201.1" r="2.6"/>
+<circle class="belay" cx="755.0" cy="193.8" r="2.6"/>
+<circle class="belay" cx="755.0" cy="186.4" r="2.6"/>
+<circle class="belay" cx="754.1" cy="179.0" r="2.6"/>
+<circle class="belay" cx="752.5" cy="171.7" r="2.6"/>
+<circle class="belay" cx="752.5" cy="164.3" r="2.6"/>
+<text class="num" x="752.5" y="152.3" text-anchor="middle">8</text>
+<text class="rname" x="752.5" y="132.3" text-anchor="middle">Dawn Wall</text>
+</a>
+<a href="#nose" class="col" aria-label="The Nose, 3,000 feet, 31 pitches">
+<polyline class="route" points="847.5,400.0 844.5,385.9 845.8,371.7 847.7,357.6 851.3,343.4 847.2,329.3 845.8,315.1 844.5,301.0 850.1,286.9 849.3,272.7 848.5,258.6 843.4,244.4 847.2,230.3 848.4,216.1 851.4,202.0 845.5,187.9 845.8,173.7 845.3,159.6 851.4,145.4 848.3,131.3 847.5,117.1"/>
+<circle class="belay" cx="844.5" cy="390.9" r="2.6"/>
+<circle class="belay" cx="844.5" cy="381.8" r="2.6"/>
+<circle class="belay" cx="845.8" cy="372.6" r="2.6"/>
+<circle class="belay" cx="847.7" cy="363.5" r="2.6"/>
+<circle class="belay" cx="847.7" cy="354.4" r="2.6"/>
+<circle class="belay" cx="851.3" cy="345.3" r="2.6"/>
+<circle class="belay" cx="847.2" cy="336.1" r="2.6"/>
+<circle class="belay" cx="847.2" cy="327.0" r="2.6"/>
+<circle class="belay" cx="845.8" cy="317.9" r="2.6"/>
+<circle class="belay" cx="845.8" cy="308.8" r="2.6"/>
+<circle class="belay" cx="844.5" cy="299.6" r="2.6"/>
+<circle class="belay" cx="850.1" cy="290.5" r="2.6"/>
+<circle class="belay" cx="850.1" cy="281.4" r="2.6"/>
+<circle class="belay" cx="849.3" cy="272.3" r="2.6"/>
+<circle class="belay" cx="848.5" cy="263.1" r="2.6"/>
+<circle class="belay" cx="848.5" cy="254.0" r="2.6"/>
+<circle class="belay" cx="843.4" cy="244.9" r="2.6"/>
+<circle class="belay" cx="847.2" cy="235.8" r="2.6"/>
+<circle class="belay" cx="847.2" cy="226.6" r="2.6"/>
+<circle class="belay" cx="848.4" cy="217.5" r="2.6"/>
+<circle class="belay" cx="851.4" cy="208.4" r="2.6"/>
+<circle class="belay" cx="851.4" cy="199.3" r="2.6"/>
+<circle class="belay" cx="845.5" cy="190.1" r="2.6"/>
+<circle class="belay" cx="845.5" cy="181.0" r="2.6"/>
+<circle class="belay" cx="845.8" cy="171.9" r="2.6"/>
+<circle class="belay" cx="845.3" cy="162.8" r="2.6"/>
+<circle class="belay" cx="845.3" cy="153.6" r="2.6"/>
+<circle class="belay" cx="851.4" cy="144.5" r="2.6"/>
+<circle class="belay" cx="848.3" cy="135.4" r="2.6"/>
+<circle class="belay" cx="848.3" cy="126.3" r="2.6"/>
+<circle class="belay" cx="847.5" cy="117.1" r="2.6"/>
+<text class="num" x="847.5" y="105.1" text-anchor="middle">9</text>
+<text class="rname" x="847.5" y="85.1" text-anchor="middle">The Nose</text>
+</a>
+<a href="#salathe" class="col" aria-label="Salathé Wall, 3,500 feet, 35 pitches">
+<polyline class="route" points="942.5,400.0 941.7,385.7 943.8,371.3 945.8,357.0 941.3,342.6 940.0,328.3 941.0,313.9 945.4,299.6 944.4,285.2 941.6,270.9 939.3,256.5 942.3,242.2 945.2,227.8 944.4,213.5 940.7,199.1 939.6,184.8 942.9,170.4 945.3,156.1 944.0,141.7 939.9,127.4 940.4,113.0 943.0,98.7 946.0,84.3 942.5,70.0"/>
+<circle class="belay" cx="941.7" cy="390.6" r="2.6"/>
+<circle class="belay" cx="941.7" cy="381.1" r="2.6"/>
+<circle class="belay" cx="943.8" cy="371.7" r="2.6"/>
+<circle class="belay" cx="945.8" cy="362.3" r="2.6"/>
+<circle class="belay" cx="945.8" cy="352.9" r="2.6"/>
+<circle class="belay" cx="941.3" cy="343.4" r="2.6"/>
+<circle class="belay" cx="940.0" cy="334.0" r="2.6"/>
+<circle class="belay" cx="940.0" cy="324.6" r="2.6"/>
+<circle class="belay" cx="941.0" cy="315.1" r="2.6"/>
+<circle class="belay" cx="945.4" cy="305.7" r="2.6"/>
+<circle class="belay" cx="945.4" cy="296.3" r="2.6"/>
+<circle class="belay" cx="944.4" cy="286.9" r="2.6"/>
+<circle class="belay" cx="941.6" cy="277.4" r="2.6"/>
+<circle class="belay" cx="941.6" cy="268.0" r="2.6"/>
+<circle class="belay" cx="939.3" cy="258.6" r="2.6"/>
+<circle class="belay" cx="942.3" cy="249.1" r="2.6"/>
+<circle class="belay" cx="942.3" cy="239.7" r="2.6"/>
+<circle class="belay" cx="945.2" cy="230.3" r="2.6"/>
+<circle class="belay" cx="945.2" cy="220.9" r="2.6"/>
+<circle class="belay" cx="944.4" cy="211.4" r="2.6"/>
+<circle class="belay" cx="940.7" cy="202.0" r="2.6"/>
+<circle class="belay" cx="940.7" cy="192.6" r="2.6"/>
+<circle class="belay" cx="939.6" cy="183.1" r="2.6"/>
+<circle class="belay" cx="942.9" cy="173.7" r="2.6"/>
+<circle class="belay" cx="942.9" cy="164.3" r="2.6"/>
+<circle class="belay" cx="945.3" cy="154.9" r="2.6"/>
+<circle class="belay" cx="944.0" cy="145.4" r="2.6"/>
+<circle class="belay" cx="944.0" cy="136.0" r="2.6"/>
+<circle class="belay" cx="939.9" cy="126.6" r="2.6"/>
+<circle class="belay" cx="940.4" cy="117.1" r="2.6"/>
+<circle class="belay" cx="940.4" cy="107.7" r="2.6"/>
+<circle class="belay" cx="943.0" cy="98.3" r="2.6"/>
+<circle class="belay" cx="946.0" cy="88.9" r="2.6"/>
+<circle class="belay" cx="946.0" cy="79.4" r="2.6"/>
+<circle class="belay" cx="942.5" cy="70.0" r="2.6"/>
+<text class="num" x="942.5" y="58.0" text-anchor="middle">10</text>
+<text class="rname" x="942.5" y="23.0" text-anchor="middle">Salathé</text>
+<text class="rname" x="942.5" y="38.0" text-anchor="middle">Wall</text>
+</a>
+<line class="floor" x1="34" x2="990" y1="400" y2="400"/>
+<line class="hatch" x1="40" y1="400" x2="32" y2="408"/><line class="hatch" x1="52" y1="400" x2="44" y2="408"/><line class="hatch" x1="64" y1="400" x2="56" y2="408"/><line class="hatch" x1="76" y1="400" x2="68" y2="408"/><line class="hatch" x1="88" y1="400" x2="80" y2="408"/><line class="hatch" x1="100" y1="400" x2="92" y2="408"/><line class="hatch" x1="112" y1="400" x2="104" y2="408"/><line class="hatch" x1="124" y1="400" x2="116" y2="408"/><line class="hatch" x1="136" y1="400" x2="128" y2="408"/><line class="hatch" x1="148" y1="400" x2="140" y2="408"/><line class="hatch" x1="160" y1="400" x2="152" y2="408"/><line class="hatch" x1="172" y1="400" x2="164" y2="408"/><line class="hatch" x1="184" y1="400" x2="176" y2="408"/><line class="hatch" x1="196" y1="400" x2="188" y2="408"/><line class="hatch" x1="208" y1="400" x2="200" y2="408"/><line class="hatch" x1="220" y1="400" x2="212" y2="408"/><line class="hatch" x1="232" y1="400" x2="224" y2="408"/><line class="hatch" x1="244" y1="400" x2="236" y2="408"/><line class="hatch" x1="256" y1="400" x2="248" y2="408"/><line class="hatch" x1="268" y1="400" x2="260" y2="408"/><line class="hatch" x1="280" y1="400" x2="272" y2="408"/><line class="hatch" x1="292" y1="400" x2="284" y2="408"/><line class="hatch" x1="304" y1="400" x2="296" y2="408"/><line class="hatch" x1="316" y1="400" x2="308" y2="408"/><line class="hatch" x1="328" y1="400" x2="320" y2="408"/><line class="hatch" x1="340" y1="400" x2="332" y2="408"/><line class="hatch" x1="352" y1="400" x2="344" y2="408"/><line class="hatch" x1="364" y1="400" x2="356" y2="408"/><line class="hatch" x1="376" y1="400" x2="368" y2="408"/><line class="hatch" x1="388" y1="400" x2="380" y2="408"/><line class="hatch" x1="400" y1="400" x2="392" y2="408"/><line class="hatch" x1="412" y1="400" x2="404" y2="408"/><line class="hatch" x1="424" y1="400" x2="416" y2="408"/><line class="hatch" x1="436" y1="400" x2="428" y2="408"/><line class="hatch" x1="448" y1="400" x2="440" y2="408"/><line class="hatch" x1="460" y1="400" x2="452" y2="408"/><line class="hatch" x1="472" y1="400" x2="464" y2="408"/><line class="hatch" x1="484" y1="400" x2="476" y2="408"/><line class="hatch" x1="496" y1="400" x2="488" y2="408"/><line class="hatch" x1="508" y1="400" x2="500" y2="408"/><line class="hatch" x1="520" y1="400" x2="512" y2="408"/><line class="hatch" x1="532" y1="400" x2="524" y2="408"/><line class="hatch" x1="544" y1="400" x2="536" y2="408"/><line class="hatch" x1="556" y1="400" x2="548" y2="408"/><line class="hatch" x1="568" y1="400" x2="560" y2="408"/><line class="hatch" x1="580" y1="400" x2="572" y2="408"/><line class="hatch" x1="592" y1="400" x2="584" y2="408"/><line class="hatch" x1="604" y1="400" x2="596" y2="408"/><line class="hatch" x1="616" y1="400" x2="608" y2="408"/><line class="hatch" x1="628" y1="400" x2="620" y2="408"/><line class="hatch" x1="640" y1="400" x2="632" y2="408"/><line class="hatch" x1="652" y1="400" x2="644" y2="408"/><line class="hatch" x1="664" y1="400" x2="656" y2="408"/><line class="hatch" x1="676" y1="400" x2="668" y2="408"/><line class="hatch" x1="688" y1="400" x2="680" y2="408"/><line class="hatch" x1="700" y1="400" x2="692" y2="408"/><line class="hatch" x1="712" y1="400" x2="704" y2="408"/><line class="hatch" x1="724" y1="400" x2="716" y2="408"/><line class="hatch" x1="736" y1="400" x2="728" y2="408"/><line class="hatch" x1="748" y1="400" x2="740" y2="408"/><line class="hatch" x1="760" y1="400" x2="752" y2="408"/><line class="hatch" x1="772" y1="400" x2="764" y2="408"/><line class="hatch" x1="784" y1="400" x2="776" y2="408"/><line class="hatch" x1="796" y1="400" x2="788" y2="408"/><line class="hatch" x1="808" y1="400" x2="800" y2="408"/><line class="hatch" x1="820" y1="400" x2="812" y2="408"/><line class="hatch" x1="832" y1="400" x2="824" y2="408"/><line class="hatch" x1="844" y1="400" x2="836" y2="408"/><line class="hatch" x1="856" y1="400" x2="848" y2="408"/><line class="hatch" x1="868" y1="400" x2="860" y2="408"/><line class="hatch" x1="880" y1="400" x2="872" y2="408"/><line class="hatch" x1="892" y1="400" x2="884" y2="408"/><line class="hatch" x1="904" y1="400" x2="896" y2="408"/><line class="hatch" x1="916" y1="400" x2="908" y2="408"/><line class="hatch" x1="928" y1="400" x2="920" y2="408"/><line class="hatch" x1="940" y1="400" x2="932" y2="408"/><line class="hatch" x1="952" y1="400" x2="944" y2="408"/><line class="hatch" x1="964" y1="400" x2="956" y2="408"/><line class="hatch" x1="976" y1="400" x2="968" y2="408"/><line class="hatch" x1="988" y1="400" x2="980" y2="408"/>
+<text class="floor-label" x="988" y="422" text-anchor="end">Valley floor, about 4,000&#8239;ft above sea level</text>
+</svg>
+        <ol class="legend-mobile">
+          <li><a href="#nutcracker">Nutcracker</a></li><li><a href="#snake-dike">Snake Dike</a></li><li><a href="#royal-arches">Royal Arches</a></li><li><a href="#astroman">Astroman</a></li><li><a href="#steck-salathe">Steck-Salathé</a></li><li><a href="#zodiac">Zodiac</a></li><li><a href="#regular-nw">Regular Northwest Face</a></li><li><a href="#dawn-wall">Dawn Wall</a></li><li><a href="#nose">The Nose</a></li><li><a href="#salathe">Salathé Wall</a></li>
+        </ol>
+        <figcaption>
+          <p class="take">The jump to Grade VI is height, not difficulty: the Nose is only 5.9 with aid, but it’s six Nutcrackers stacked end to end.</p>
+          <p class="src">Each dot is a belay. Lengths as listed on Mountain Project; Snake Dike is the roped section only, Steck-Salathé an estimate.</p>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="group" aria-labelledby="g-0"><header class="group-head"><p class="g-grade"><span>Grade</span>II–III</p><h2 id="g-0">One day, car to car</h2><p class="g-dek">Three routes you can climb and still make dinner.</p></header>
+
+<article class="card" id="nutcracker" aria-labelledby="nutcracker-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">01</span>
+    <div class="titles">
+      <h3 id="nutcracker-h">Nutcracker</h3>
+      <p class="where">Manure Pile Buttress</p>
     </div>
-    <div class="meta">
-      <strong>Vol. I · No. 1</strong><br>
-      Compiled May 2026<br>
-      Yosemite National Park, California
-    </div>
+    <label class="tick"><input type="checkbox" data-route="nutcracker"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
   </header>
-
-  <!-- ============== LEDE + MAP ============== -->
-  <section class="lede-row">
-    <div class="lede">
-      <p><span class="dropcap">Y</span>osemite did not invent American rock climbing, but the Valley is where the modern game was forged. Between 1957 and 1975 a handful of dirtbags living out of Camp 4 worked out a vocabulary — sustained crack technique, hammered pitons, jumar ascents on fixed lines, eventually clean protection and bold free climbing — that the rest of the climbing world is still translating.</p>
-      <p>The ten routes that follow are not a "best of" list. They are the lines a thoughtful visiting climber should know: the audacious first ascents, the rite-of-passage moderates, the modern free testpieces, and the casual day-out that introduces ten thousand people each summer to multi-pitch granite. Each entry collects the standard beta <span class="term">the working knowledge a climber carries to a route</span> plus the gear, season, and historical notes a guidebook tends to bury.</p>
-      <p>Grades are YDS technical (5.x) paired with an aid grade (C# for clean, A# for hammered) and, where useful, the NCCS commitment grade. Times are guidebook estimates for a competent party in good conditions — your party may be neither.</p>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 5 pitches over 500 feet, drawn on the same 3,500-foot scale as every route here. Landmark: The mantel."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 33.4,240.0 32.8,232.0 31.6,224.0 34.0,216.0"/><circle class="belay" cx="33.4" cy="241.6" r="2.4"/><circle class="belay" cx="32.8" cy="235.2" r="2.4"/><circle class="belay" cx="32.8" cy="228.8" r="2.4"/><circle class="belay" cx="31.6" cy="222.4" r="2.4"/><circle class="belay" cx="34.0" cy="216.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="216.0" y2="216.0"/><circle class="mark" cx="34.0" cy="217.0" r="7"/><polyline class="leader" points="41.0,217.0 56,217.0 62,217.0"/><text class="mark-label" x="65" y="221.0">The mantel</text><text class="top-label" x="48" y="208.0">500&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.8</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade II</dd></div><div class="row"><dt>Length</dt><dd>500&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>5</dd></div><div class="row"><dt>First ascent</dt><dd>Royal &amp; Liz Robbins, 1967</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The Valley’s first multi-pitch, for almost everyone.</p>
+      <p>Five pitches of every Yosemite crack type in miniature: fingers, hands, a flake, a slab, and a mantel at the very top that has humbled people who just led everything below it. The Robbinses climbed it on nuts alone, an argument against the piton hammer that the whole Valley eventually accepted.</p>
+      <p class="beta"><span>Beta</span> Ten minutes from the road. Go early: by 9 a.m. there is a line.</p>
     </div>
-
-    <div class="map" aria-label="Schematic map of four climbing formations in Yosemite Valley">
-      <div class="valley">Yosemite Valley · schematic</div>
-      <svg viewBox="0 0 400 260" preserveAspectRatio="none">
-        <!-- merced river -->
-        <path d="M 10 150 Q 120 130 180 160 T 390 145" stroke="#5b6c8a" stroke-width="1.4" fill="none" stroke-dasharray="0"/>
-        <!-- trail from cathedral to half dome -->
-        <path d="M 110 215 Q 200 180 300 80" stroke="#1a1a17" stroke-width="0.7" fill="none" stroke-dasharray="2 3"/>
-        <!-- el cap to washington col -->
-        <path d="M 70 110 Q 160 130 250 175" stroke="#1a1a17" stroke-width="0.7" fill="none" stroke-dasharray="2 3"/>
-        <!-- formation rectangles -->
-        <rect x="30"  y="90"  width="100" height="40" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
-        <rect x="270" y="50"  width="100" height="40" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
-        <rect x="200" y="155" width="80"  height="34" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
-        <rect x="90"  y="200" width="80"  height="30" fill="none" stroke="#1a1a17" stroke-width="1.2"/>
-      </svg>
-      <span class="lbl elcap">El Capitan</span>
-      <span class="lbl hd">Half Dome</span>
-      <span class="lbl wac">Washington Col.</span>
-      <span class="lbl cat">Cathedral Pk.</span>
-      <span class="river">Merced R.</span>
-      <div class="compass"><span class="n">N</span>↑</div>
-      <div class="scale">≈ 6 mi / 10 km W&ndash;E</div>
-    </div>
-  </section>
-
-  <!-- ============== LEGEND ============== -->
-  <div class="legend">
-    <div class="item"><span class="swatch" style="background:#b8915a"></span><span class="nm">El Capitan</span><span class="ct">4 routes</span></div>
-    <div class="item"><span class="swatch" style="background:#4a6741"></span><span class="nm">Half Dome</span><span class="ct">2 routes</span></div>
-    <div class="item"><span class="swatch" style="background:#5b6c8a"></span><span class="nm">Wash. Column &amp; Arches</span><span class="ct">3 routes</span></div>
-    <div class="item"><span class="swatch" style="background:#a04f3b"></span><span class="nm">Cathedral / High Country</span><span class="ct">1 route</span></div>
   </div>
+</article>
 
-  <!-- ============== KEY ============== -->
-  <div class="key">
-    <span><b>Grade</b><span class="glyph">◆</span> YDS technical · C/A aid</span>
-    <span><b>Pitches</b><span class="glyph">▤</span> distinct rope-lengths</span>
-    <span><b>Season</b><span class="glyph">☀</span> filled = prime · half = shoulder</span>
-    <span><b>Protection</b><span class="glyph">✕</span> R = runout · X = ground-fall</span>
-    <span><b>FA</b><span class="glyph">★</span> First ascent party &amp; year</span>
+<article class="card" id="snake-dike" aria-labelledby="snake-dike-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">02</span>
+    <div class="titles">
+      <h3 id="snake-dike-h">Snake Dike</h3>
+      <p class="where">Half Dome, southwest face</p>
+    </div>
+    <label class="tick"><input type="checkbox" data-route="snake-dike"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 9 pitches over 1,000 feet, drawn on the same 3,500-foot scale as every route here. Landmark: Onto the dike."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 30.5,232.0 34.5,216.0 34.9,200.0 34.0,184.0"/><circle class="belay" cx="34.0" cy="240.9" r="2.4"/><circle class="belay" cx="30.5" cy="233.8" r="2.4"/><circle class="belay" cx="30.5" cy="226.7" r="2.4"/><circle class="belay" cx="34.5" cy="219.6" r="2.4"/><circle class="belay" cx="34.5" cy="212.4" r="2.4"/><circle class="belay" cx="34.9" cy="205.3" r="2.4"/><circle class="belay" cx="34.9" cy="198.2" r="2.4"/><circle class="belay" cx="34.0" cy="191.1" r="2.4"/><circle class="belay" cx="34.0" cy="184.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="184.0" y2="184.0"/><circle class="mark" cx="30.5" cy="232.0" r="7"/><polyline class="leader" points="37.5,232.0 56,218.0 62,218.0"/><text class="mark-label" x="65" y="222.0">Onto the dike</text><text class="top-label" x="48" y="188.0">1,000&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.7 R</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade III</dd></div><div class="row"><dt>Length</dt><dd>1,000&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>9</dd></div><div class="row"><dt>First ascent</dt><dd>Eric Beck, Jim Bridwell, Chris Fredericks, 1965</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The easiest roped way to the top of Half Dome.</p>
+      <p>You follow a single dike of rock up a smooth granite apron, where the R in the grade means long runouts on easy rock (a few bolts were added low down in 2025). The climbing is never hard. The approach is the real test, then the summit slabs, then the walk down the cables among day hikers in sneakers.</p>
+      <p class="beta"><span>Beta</span> Budget a long day: the hike in and out is longer than the climb.</p>
+    </div>
   </div>
+</article>
 
-  <!-- =========================================================
-       ROUTE 01 — THE NOSE
-       ========================================================= -->
-  <article class="route" style="--band:var(--elcap);">
-    <div class="band" data-num="01 · El Capitan"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">The Nose</div>
-        <div class="scientific">El Capitan, southwest prow</div>
-        <span class="badge"><span class="sw"></span>El Capitan</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.9 C2</span> <span class="term">5.14a if freed</span></td></tr>
-          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
-          <tr><th>Pitches</th>         <td>31</td></tr>
-          <tr><th>Length</th>          <td>≈ 2,900 ft / 880 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>3–5 days (in a day: 1.5–24 hr)</td></tr>
-          <tr><th>Approach</th>        <td>10 min from El Cap Meadow</td></tr>
-          <tr><th>Descent</th>         <td>East Ledges raps + walk-off</td></tr>
-          <tr><th>Style</th>           <td>Big-wall aid; rare free attempts</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta"><b>The Nose</b> is the most famous rock climb in the world, and it earns the reputation. Warren Harding's audacious sustained 47-day siege, completed November 1958, established the line up the unbroken prow that splits El Capitan into a south and southeast face — a feature so obvious it had to be climbed once climbers believed it could be. Modern parties typically blast <span class="term">push hard and fast, often with fixed lines</span> the first 11 pitches to Sickle Ledge, then commit to the headwall above Dolt Tower.</p>
-        <p class="beta">The crux for a competent aid party is rarely technical — it is the King Swing (a wild pendulum off Boot Flake), routefinding through the Great Roof, and the sustained pin-scarred <span class="term">cracks widened and pocketed by decades of piton placement</span> seams on Pancake Flake and the Glowering Spot. Two parties on the route is normal; four is a traffic jam; six is a war story.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Aid:</b> single set of cams to #4 with doubles in finger sizes, full nut set, 2–3 sets of offset nuts and offset cams (essential in pin scars), aiders, daisies, ascenders, haulbag, portaledge for 3+ day parties. <b>Fixed gear is reliable</b> on the standard line — the bolt ladders on Boot Flake, Pancake, and the Great Roof are in good shape as of recent reports.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
-            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
-            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Warren Harding, Wayne Merry, George Whitmore · Nov 1958 · <b>FFA</b> Lynn Hill, 1993 (and in a day, 1994).</div>
-      </div>
+<article class="card" id="royal-arches" aria-labelledby="royal-arches-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">03</span>
+    <div class="titles">
+      <h3 id="royal-arches-h">Royal Arches</h3>
+      <p class="where">Royal Arches Rock, below North Dome</p>
     </div>
-  </article>
-
-  <!-- =========================================================
-       ROUTE 02 — HALF DOME NW REGULAR
-       ========================================================= -->
-  <article class="route" style="--band:var(--halfdome);">
-    <div class="band" data-num="02 · Half Dome"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Regular Northwest Face</div>
-        <div class="scientific">Half Dome, northwest face</div>
-        <span class="badge"><span class="sw"></span>Half Dome</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.9 C1</span> (5.12 if freed)</td></tr>
-          <tr><th>Commitment</th>      <td>NCCS V</td></tr>
-          <tr><th>Pitches</th>         <td>23</td></tr>
-          <tr><th>Length</th>          <td>≈ 2,000 ft / 610 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>1–3 days</td></tr>
-          <tr><th>Approach</th>        <td>4–6 hr from Mirror Lake</td></tr>
-          <tr><th>Descent</th>         <td>Cables route (south side)</td></tr>
-          <tr><th>Style</th>           <td>Wall route; mostly free with C1</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">The first Grade VI in North America. Royal Robbins, Mike Sherrick, and Jerry Gallwas climbed the Regular Route over five days in June 1957 — a leap in commitment so far beyond what had been attempted that the climbing establishment took years to absorb it. The line follows the natural weakness up the left side of the imposing northwest face, threading a series of corner systems, the Robbins Traverse, and the Zigzags to the Visor.</p>
-        <p class="beta">As a moderate big wall it is a near-perfect introduction — sustained but rarely desperate, with bivy ledges (Big Sandy, Thank God Ledge) at sensible intervals. The traverse across Thank God Ledge is the photograph everyone has seen; it is also genuinely runout <span class="term">long stretches with no protection between pieces</span> if you don't fiddle in small cams behind the flake. Bring extra water — the descent down the cables in afternoon thunderstorm season is its own adventure.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Mixed free/aid:</b> double cams .3–#3, single #4, full nut set, offset nuts useful, 12 alpine draws, two ropes (60 m) for the rappel descent if bailing. Helmet mandatory — the route catches rockfall from parties above. Haul one bag if going in 2 days; carry-over possible for fast strong parties.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
-            <div class="m shoulder">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
-            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Royal Robbins, Mike Sherrick, Jerry Gallwas · June 1957 — North America's first Grade VI.</div>
-      </div>
+    <label class="tick"><input type="checkbox" data-route="royal-arches"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 16 pitches over 2,000 feet, drawn on the same 3,500-foot scale as every route here. Landmark: The pendulum."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 34.1,233.8 36.6,219.6 34.7,205.3 32.5,191.1 31.6,176.9 35.2,162.7 35.9,148.4 35.0,134.2 34.0,120.0"/><circle class="belay" cx="34.1" cy="240.0" r="2.4"/><circle class="belay" cx="34.1" cy="232.0" r="2.4"/><circle class="belay" cx="36.6" cy="224.0" r="2.4"/><circle class="belay" cx="36.6" cy="216.0" r="2.4"/><circle class="belay" cx="34.7" cy="208.0" r="2.4"/><circle class="belay" cx="34.7" cy="200.0" r="2.4"/><circle class="belay" cx="32.5" cy="192.0" r="2.4"/><circle class="belay" cx="32.5" cy="184.0" r="2.4"/><circle class="belay" cx="31.6" cy="176.0" r="2.4"/><circle class="belay" cx="35.2" cy="168.0" r="2.4"/><circle class="belay" cx="35.2" cy="160.0" r="2.4"/><circle class="belay" cx="35.9" cy="152.0" r="2.4"/><circle class="belay" cx="35.9" cy="144.0" r="2.4"/><circle class="belay" cx="35.0" cy="136.0" r="2.4"/><circle class="belay" cx="35.0" cy="128.0" r="2.4"/><circle class="belay" cx="34.0" cy="120.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="120.0" y2="120.0"/><circle class="mark" cx="31.6" cy="177.6" r="7"/><polyline class="leader" points="38.6,177.6 56,177.6 62,177.6"/><text class="mark-label" x="65" y="181.6">The pendulum</text><text class="top-label" x="48" y="124.0">2,000&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.7 A0</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade III</dd></div><div class="row"><dt>Length</dt><dd>2,000&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>16</dd></div><div class="row"><dt>First ascent</dt><dd>Kenneth Adam, Morgan Harris, Kenneth Davis, 1936</dd></div></dl>
+    <div class="copy">
+      <p class="claim">Sixteen pitches of moderate rock, plus one swing.</p>
+      <p>Climbed in 1936, decades before El Cap, and still the long route most people do first. Ledges, chimneys and slabs wander up beside the great arches, and halfway there’s a pendulum: hang on the rope and run across the slab, or free it at 5.10.</p>
+      <p class="beta"><span>Beta</span> The descent is long and has its own accidents; go down in daylight.</p>
     </div>
-  </article>
+  </div>
+</article>
+</section>
+<section class="group" aria-labelledby="g-3"><header class="group-head"><p class="g-grade"><span>Grade</span>IV–V</p><h2 id="g-3">Long free days</h2><p class="g-dek">No hauling, no bivy. Just sustained climbing from dawn.</p></header>
 
-  <!-- =========================================================
-       ROUTE 03 — ASTROMAN
-       ========================================================= -->
-  <article class="route" style="--band:var(--wacol);">
-    <div class="band" data-num="03 · Wash. Column"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Astroman</div>
-        <div class="scientific">Washington Column, east face</div>
-        <span class="badge"><span class="sw"></span>Washington Column</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.11c</span></td></tr>
-          <tr><th>Commitment</th>      <td>NCCS V</td></tr>
-          <tr><th>Pitches</th>         <td>11</td></tr>
-          <tr><th>Length</th>          <td>≈ 1,100 ft / 335 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>6–10 hr car-to-car</td></tr>
-          <tr><th>Approach</th>        <td>1 hr from North Pines</td></tr>
-          <tr><th>Descent</th>         <td>North Dome Gully (loose, attentive)</td></tr>
-          <tr><th>Style</th>           <td>Free; the Valley's first 5.11c link-up</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">When John Bachar, Ron Kauk, and John Long freed the East Face of Washington Column in 1975 — link-up of the Enduro Corner, the Harding Slot, and the Boulder Problem pitch — they did not just establish a hard route. They announced that the Valley's old aid lines were now free terrain, and the standards-of-the-day jumped a full grade. Astroman remains, fifty years on, the metric by which a Yosemite free climber is measured.</p>
-        <p class="beta">Eleven pitches of sustained 5.10 and 5.11 in immaculate corner systems, capped by the Harding Slot — an off-width <span class="term">crack too wide for hands, too narrow for a body</span> body-jam that has demoralized stronger climbers than you. The route faces east and bakes in summer; September mornings are the sweet spot. Don't underestimate the descent, which has killed more parties than the climbing.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Free rack:</b> doubles .3–#3, single #4, full nuts, several long slings. <b>No #5 needed</b> — the Harding Slot eats bodies, not cams. Approach shoes for the descent. Bring a 70 m rope; one rap on the descent is full-length.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m shoulder">A</div>
-            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
-            <div class="m go">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FFA</b> John Bachar, Ron Kauk, John Long · 1975 (original aid line: Warren Harding, Glen Denny, Chuck Pratt, 1959).</div>
-      </div>
+<article class="card" id="astroman" aria-labelledby="astroman-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">04</span>
+    <div class="titles">
+      <h3 id="astroman-h">Astroman</h3>
+      <p class="where">Washington Column, east face</p>
     </div>
-  </article>
-
-  <!-- =========================================================
-       ROUTE 04 — SNAKE DIKE
-       ========================================================= -->
-  <article class="route" style="--band:var(--halfdome);">
-    <div class="band" data-num="04 · Half Dome"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Snake Dike</div>
-        <div class="scientific">Half Dome, southwest face</div>
-        <span class="badge"><span class="sw"></span>Half Dome</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.7 R</span></td></tr>
-          <tr><th>Pitches</th>         <td>8</td></tr>
-          <tr><th>Length</th>          <td>≈ 800 ft of climbing (16 mi day)</td></tr>
-          <tr><th>Guidebook time</th>  <td>12–16 hr car-to-car</td></tr>
-          <tr><th>Approach</th>        <td>4 hr / 6 mi from Happy Isles</td></tr>
-          <tr><th>Descent</th>         <td>Cables route + Mist/JMT</td></tr>
-          <tr><th>Style</th>           <td>Friction &amp; the famous dike</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">Snake Dike's 5.7 grade is among Yosemite's most generous — but the R rating is honest. The route follows an improbable raised dike of harder rock that snakes up the southwest shoulder of Half Dome, with stretches of 60-foot runouts on low-angle slab between bolts. Climbers comfortable on the grade move easily; climbers at their limit experience a long, quiet kind of attention.</p>
-        <p class="beta">The real adventure is the day: 16 miles round trip, 4,800 ft of elevation gain, and an exposed cables descent in afternoon thunderstorm season. Start by 5 AM in summer. The dike itself is so featured it can be climbed in approach shoes by the bold, and the summit experience — sharing the Visor with the day-hiker crowd you just out-flanked — is unmatched in the Valley.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Minimal:</b> a single set of nuts, a few small to mid cams (.4–#2), 8 alpine draws, 60 m rope. Bring a pack with descent shoes, 3+ L water, headlamp, and rain shell. Gloves for the cables. <b>The bolts</b> on the dike are old-school 1/4" replaced by newer hardware on most pitches — verify before committing.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
-            <div class="m shoulder">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
-            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Eric Beck, Jim Bridwell, Chris Fredericks · 1965.</div>
-      </div>
+    <label class="tick"><input type="checkbox" data-route="astroman"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 10 pitches over 1,000 feet, drawn on the same 3,500-foot scale as every route here. Landmark: Harding Slot."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 37.2,232.0 33.2,216.0 32.5,200.0 34.0,184.0"/><circle class="belay" cx="34.0" cy="241.6" r="2.4"/><circle class="belay" cx="37.2" cy="235.2" r="2.4"/><circle class="belay" cx="37.2" cy="228.8" r="2.4"/><circle class="belay" cx="33.2" cy="222.4" r="2.4"/><circle class="belay" cx="33.2" cy="216.0" r="2.4"/><circle class="belay" cx="33.2" cy="209.6" r="2.4"/><circle class="belay" cx="32.5" cy="203.2" r="2.4"/><circle class="belay" cx="32.5" cy="196.8" r="2.4"/><circle class="belay" cx="34.0" cy="190.4" r="2.4"/><circle class="belay" cx="34.0" cy="184.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="184.0" y2="184.0"/><circle class="mark" cx="32.5" cy="196.8" r="7"/><polyline class="leader" points="39.5,196.8 56,196.8 62,196.8"/><text class="mark-label" x="65" y="200.8">Harding Slot</text><text class="top-label" x="48" y="176.0">1,000&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.11c</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade IV</dd></div><div class="row"><dt>Length</dt><dd>1,000&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>10</dd></div><div class="row"><dt>First ascent</dt><dd>Warren Harding, Glen Denny, Chuck Pratt, 1959 (aid)</dd></div><div class="row"><dt>First free</dt><dd>John Bachar, John Long, Ron Kauk, 1975</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The best long free climb in America. Ask anyone.</p>
+      <p>Three Stonemasters took Harding’s aid line and freed every pitch in 1975, which reset the bar for what a free climb could be. It’s steep, sustained, and never easy. Most stories are about the Harding Slot, a squeeze chimney that is easier for the thin.</p>
+      <p class="beta"><span>Beta</span> Enduro Corner, a long 5.11 crack, comes early. If it feels desperate, rappel.</p>
     </div>
-  </article>
+  </div>
+</article>
 
-  <!-- =========================================================
-       ROUTE 05 — ROYAL ARCHES
-       ========================================================= -->
-  <article class="route" style="--band:var(--wacol);">
-    <div class="band" data-num="05 · Royal Arches"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Royal Arches</div>
-        <div class="scientific">North wall, behind Ahwahnee</div>
-        <span class="badge"><span class="sw"></span>Washington Column</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.7 A0</span> <span class="term">5.9 if freed</span></td></tr>
-          <tr><th>Pitches</th>         <td>16</td></tr>
-          <tr><th>Length</th>          <td>≈ 1,500 ft / 460 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>6–9 hr</td></tr>
-          <tr><th>Approach</th>        <td>15 min from Ahwahnee Hotel</td></tr>
-          <tr><th>Descent</th>         <td>Fixed-rope rappels (route)</td></tr>
-          <tr><th>Style</th>           <td>Easy multi-pitch w/ pendulum</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">The Valley's most-climbed long route, and for good reason: 16 pitches of moderate corners, slabs, and ledges with one notorious feature — the Pendulum Pitch, a fixed rope <span class="term">A0 means you pull on the rope or gear rather than free climb a move</span> swing that is either delightful or terrifying depending on the leader's notion of dignity. The original line goes free at 5.9 but the A0 pendulum is what most parties use, and what the grade reflects.</p>
-        <p class="beta">Best treated as a long single-day outing rather than a wall: most parties go light, with a single rack and one rope, and rappel the line on the well-established fixed anchors. The route is north-facing and stays cool in summer, which makes it the rare Valley moderate that is sensible in July. The Rotten Log traverse — a leaning, polished cedar wedged across a chimney — is exactly as alarming as it sounds; it has been there since the 1930s and shows no inclination to leave.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Light:</b> single rack cams .3–#3, half set of nuts, 10 draws, two 60 m ropes (recommended for descent — single 70 m possible but tight on two raps). Approach shoes clipped to harness; the upper traverses go better in sticky rubber. Helmet for the popular-route rockfall risk.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
-            <div class="m go">M</div><div class="m go">J</div><div class="m go">J</div><div class="m go">A</div>
-            <div class="m go">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Morgan Harris, Ken Davis, Kenneth Adam · October 1936 — predating the modern Valley era.</div>
-      </div>
+<article class="card" id="steck-salathe" aria-labelledby="steck-salathe-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">05</span>
+    <div class="titles">
+      <h3 id="steck-salathe-h">Steck-Salathé</h3>
+      <p class="where">Sentinel Rock, north face</p>
     </div>
-  </article>
-
-  <!-- =========================================================
-       ROUTE 06 — SALATHE WALL
-       ========================================================= -->
-  <article class="route" style="--band:var(--elcap);">
-    <div class="band" data-num="06 · El Capitan"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Salathé Wall</div>
-        <div class="scientific">El Capitan, southwest face</div>
-        <span class="badge"><span class="sw"></span>El Capitan</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.9 C2</span> · <span class="mono">5.13b</span> free</td></tr>
-          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
-          <tr><th>Pitches</th>         <td>35</td></tr>
-          <tr><th>Length</th>          <td>≈ 3,000 ft / 915 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>4–6 days (aid); 2–4 (push)</td></tr>
-          <tr><th>Approach</th>        <td>30 min via Heart Ledges fixed lines</td></tr>
-          <tr><th>Descent</th>         <td>East Ledges</td></tr>
-          <tr><th>Style</th>           <td>Big wall; the aesthete's El Cap line</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">If the Nose is the obvious line, the Salathé is the elegant one. Royal Robbins, Tom Frost, and Chuck Pratt's 1961 ascent introduced a new ethic — capsule style, minimum bolts, no fixed lines past Heart Ledges — and the resulting route remains the proudest piece of climbing on El Capitan. The line threads features no one quite believes will connect: the Hollow Flake, the Ear, the Roof, and the splitter <span class="term">a perfectly parallel-sided crack, the platonic ideal</span> headwall finger crack visible from El Cap Meadow.</p>
-        <p class="beta">Free-climbed by Todd Skinner and Paul Piana in 1988, refined by the Huber brothers, and now sometimes linked with Free Rider in a single day by the genuinely gifted. Most ascents are still aid or French-free hybrids; the Headwall pitch (5.13b free, C2 with aiders) is the single most photographed pitch on El Cap. Bring patience and a tolerance for fixed pin scars that take only the most precise micro-cams.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Aid rack:</b> triples in finger cams, doubles to #3, one #4 and one #5 (Hollow Flake), full nut set with two sets of offsets, offset cams essential, 6–10 cam hooks. Haulbag, portaledge. <b>Water:</b> 1 gallon per person per day, minimum. Fixed lines on Heart go in and out — verify before relying.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
-            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
-            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Royal Robbins, Tom Frost, Chuck Pratt · September 1961 · <b>FFA</b> Todd Skinner, Paul Piana, 1988.</div>
-      </div>
+    <label class="tick"><input type="checkbox" data-route="steck-salathe"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 15 pitches over 1,500 feet, drawn on the same 3,500-foot scale as every route here. Landmark: The Narrows."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 34.3,232.0 30.4,216.0 34.8,200.0 35.0,184.0 36.8,168.0 34.0,152.0"/><circle class="belay" cx="34.0" cy="241.6" r="2.4"/><circle class="belay" cx="34.3" cy="235.2" r="2.4"/><circle class="belay" cx="34.3" cy="228.8" r="2.4"/><circle class="belay" cx="30.4" cy="222.4" r="2.4"/><circle class="belay" cx="30.4" cy="216.0" r="2.4"/><circle class="belay" cx="30.4" cy="209.6" r="2.4"/><circle class="belay" cx="34.8" cy="203.2" r="2.4"/><circle class="belay" cx="34.8" cy="196.8" r="2.4"/><circle class="belay" cx="35.0" cy="190.4" r="2.4"/><circle class="belay" cx="35.0" cy="184.0" r="2.4"/><circle class="belay" cx="35.0" cy="177.6" r="2.4"/><circle class="belay" cx="36.8" cy="171.2" r="2.4"/><circle class="belay" cx="36.8" cy="164.8" r="2.4"/><circle class="belay" cx="34.0" cy="158.4" r="2.4"/><circle class="belay" cx="34.0" cy="152.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="152.0" y2="152.0"/><circle class="mark" cx="35.0" cy="183.7" r="7"/><polyline class="leader" points="42.0,183.7 56,183.7 62,183.7"/><text class="mark-label" x="65" y="187.7">The Narrows</text><text class="top-label" x="48" y="156.0">1,500&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.10b</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade V</dd></div><div class="row"><dt>Length</dt><dd>1,500&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>15</dd></div><div class="row"><dt>First ascent</dt><dd>Allen Steck &amp; John Salathé, 1950</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The Valley’s great chimney, and its oldest sandbag.</p>
+      <p>Steck and Salathé spent five days on the face in the summer of 1950, short on water the whole way. Climbers now do it in a day, but it’s still dark, wide and physical, and the grade feels light. Near the top the Narrows pinches down to a body-width slot you wriggle through.</p>
+      <p class="beta"><span>Beta</span> Pack small: anything on your harness will snag in the Narrows.</p>
     </div>
-  </article>
+  </div>
+</article>
+</section>
+<section class="group" aria-labelledby="g-5"><header class="group-head"><p class="g-grade"><span>Grade</span>VI</p><h2 id="g-5">The walls</h2><p class="g-dek">Multi-day. You sleep on a ledge or a portaledge, and you haul.</p></header>
 
-  <!-- =========================================================
-       ROUTE 07 — FREERIDER
-       ========================================================= -->
-  <article class="route" style="--band:var(--elcap);">
-    <div class="band" data-num="07 · El Capitan"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Freerider</div>
-        <div class="scientific">El Capitan, southwest face variation</div>
-        <span class="badge"><span class="sw"></span>El Capitan</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.13a</span></td></tr>
-          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
-          <tr><th>Pitches</th>         <td>33</td></tr>
-          <tr><th>Length</th>          <td>≈ 3,000 ft / 915 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>2–5 days; record &lt; 4 hr (solo)</td></tr>
-          <tr><th>Approach</th>        <td>30 min, base of Salathé start</td></tr>
-          <tr><th>Descent</th>         <td>East Ledges</td></tr>
-          <tr><th>Style</th>           <td>Free wall, sustained at the grade</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">The Hubers' 1998 variation of the Salathé that bypasses the 5.13b Headwall via the Teflon Corner and Round Table, bringing the grade down to a more attainable (if you can call it that) 5.13a. Made globally famous by Alex Honnold's June 2017 free solo, documented in the film of the same name — a feat so far outside the bell curve of human performance that the climbing community has largely declined to integrate it.</p>
-        <p class="beta">For mortals, Freerider is a multi-day free push: the Boulder Problem (5.13a) and the Enduro Corner are the named cruxes <span class="term">the hardest move or section of a pitch or route</span>, but the route is sustained 5.11+ for the entire upper half. Most parties redpoint individual pitches over a season before attempting a ground-up push. The Monster Off-Width on pitch 17 is genuinely awful; this is normal.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Free rack:</b> triples small cams, doubles to #3, single #4, two #5 and one #6 for the Monster, full nuts, 16 alpine draws. Bring tape gloves and a knee pad. <b>Sustainability:</b> most teams establish a basecamp at El Cap Spire or Long Ledge and work pitches over days.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m shoulder">A</div>
-            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m">A</div>
-            <div class="m shoulder">S</div><div class="m go">O</div><div class="m shoulder">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FFA</b> Alexander &amp; Thomas Huber · 1998 · Free solo: Alex Honnold, June 3, 2017.</div>
-      </div>
+<article class="card" id="zodiac" aria-labelledby="zodiac-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">06</span>
+    <div class="titles">
+      <h3 id="zodiac-h">Zodiac</h3>
+      <p class="where">El Capitan, southeast face</p>
     </div>
-  </article>
-
-  <!-- =========================================================
-       ROUTE 08 — SERENITY CRACK to SONS OF YESTERDAY
-       ========================================================= -->
-  <article class="route" style="--band:var(--wacol);">
-    <div class="band" data-num="08 · Royal Arches"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Serenity Crack to Sons of Yesterday</div>
-        <div class="scientific">Royal Arches apron, linked route</div>
-        <span class="badge"><span class="sw"></span>Washington Column</span>
-
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.10d</span></td></tr>
-          <tr><th>Pitches</th>         <td>3 (Serenity) + 4 (Sons) = 7</td></tr>
-          <tr><th>Length</th>          <td>≈ 700 ft / 215 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>4–6 hr</td></tr>
-          <tr><th>Approach</th>        <td>15 min from Ahwahnee</td></tr>
-          <tr><th>Descent</th>         <td>Rappel the route (double 60s)</td></tr>
-          <tr><th>Style</th>           <td>Pin-scar fingers; the Valley classic</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">The quintessential Valley free-climbing link-up — and a brutal sandbag <span class="term">a route graded easier than it climbs</span> for anyone whose finger crack technique was learned anywhere other than Yosemite. The first three pitches (Serenity Crack, 5.10d) ascend a continuously thinning seam pocked with old pin scars that demand precise small-cam and offset placements; the upper four pitches (Sons of Yesterday, 5.10a) widen progressively to hands and fists for one of the most aesthetic finishes in the Valley.</p>
-        <p class="beta">North-facing, shaded most of the day, possible nearly year-round when the Valley is dry. Expect a line at the base on weekends. The crux <span class="term">already defined above; here referring to the third pitch's thin section</span> third pitch of Serenity will humble climbers who onsight 5.11 elsewhere; the trick is to trust the small gear and keep moving rather than over-fiddle placements.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Free rack:</b> doubles .2–#2, single #3, full set of nuts, full set of offset nuts and 4–5 offset cams (Metolius or Totem). Two 60 m ropes for the descent. Tape gloves. Skip the larger gear — nothing above #3 sees daylight.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m shoulder">F</div><div class="m go">M</div><div class="m go">A</div>
-            <div class="m go">M</div><div class="m shoulder">J</div><div class="m">J</div><div class="m shoulder">A</div>
-            <div class="m go">S</div><div class="m go">O</div><div class="m go">N</div><div class="m shoulder">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Serenity Crack: Bob Kamps &amp; Tom Higgins, 1965 · Sons of Yesterday: John Bachar &amp; Ron Kauk, 1977.</div>
-      </div>
+    <label class="tick"><input type="checkbox" data-route="zodiac"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 16 pitches over 1,800 feet, drawn on the same 3,500-foot scale as every route here. Landmark: Black Tower."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 32.3,233.6 34.1,219.2 36.9,204.8 34.2,190.4 32.6,176.0 31.6,161.6 35.7,147.2 34.0,132.8"/><circle class="belay" cx="34.0" cy="240.8" r="2.4"/><circle class="belay" cx="32.3" cy="233.6" r="2.4"/><circle class="belay" cx="32.3" cy="226.4" r="2.4"/><circle class="belay" cx="34.1" cy="219.2" r="2.4"/><circle class="belay" cx="36.9" cy="212.0" r="2.4"/><circle class="belay" cx="36.9" cy="204.8" r="2.4"/><circle class="belay" cx="36.9" cy="197.6" r="2.4"/><circle class="belay" cx="34.2" cy="190.4" r="2.4"/><circle class="belay" cx="32.6" cy="183.2" r="2.4"/><circle class="belay" cx="32.6" cy="176.0" r="2.4"/><circle class="belay" cx="31.6" cy="168.8" r="2.4"/><circle class="belay" cx="31.6" cy="161.6" r="2.4"/><circle class="belay" cx="31.6" cy="154.4" r="2.4"/><circle class="belay" cx="35.7" cy="147.2" r="2.4"/><circle class="belay" cx="34.0" cy="140.0" r="2.4"/><circle class="belay" cx="34.0" cy="132.8" r="2.4"/><line class="summit" x1="25" x2="43" y1="132.8" y2="132.8"/><circle class="mark" cx="34.2" cy="190.4" r="7"/><polyline class="leader" points="41.2,190.4 56,190.4 62,190.4"/><text class="mark-label" x="65" y="194.4">Black Tower</text><text class="top-label" x="48" y="136.8">1,800&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.7 C3</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade VI</dd></div><div class="row"><dt>Length</dt><dd>1,800&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>16</dd></div><div class="row"><dt>First ascent</dt><dd>Charlie Porter, solo, 1972</dd></div><div class="row"><dt>First free</dt><dd>Alexander &amp; Thomas Huber, 2003 (5.13d)</dd></div></dl>
+    <div class="copy">
+      <p class="claim">Steep, clean aid, and the classic first hard wall.</p>
+      <p>Charlie Porter soloed it alone in 1972 up the steepest part of El Cap’s right side. It overhangs almost the whole way, so dropped gear falls clear and you live in space. Most parties now climb it hammerless, with cams and hooks.</p>
+      <p class="beta"><span>Beta</span> Haul bags hang free here. Practice hauling first.</p>
     </div>
-  </article>
+  </div>
+</article>
 
-  <!-- =========================================================
-       ROUTE 09 — LURKING FEAR
-       ========================================================= -->
-  <article class="route" style="--band:var(--elcap);">
-    <div class="band" data-num="09 · El Capitan"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Lurking Fear</div>
-        <div class="scientific">El Capitan, far west face</div>
-        <span class="badge"><span class="sw"></span>El Capitan</span>
+<article class="card" id="regular-nw" aria-labelledby="regular-nw-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">07</span>
+    <div class="titles">
+      <h3 id="regular-nw-h">Regular Northwest Face</h3>
+      <p class="where">Half Dome</p>
+    </div>
+    <label class="tick"><input type="checkbox" data-route="regular-nw"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 23 pitches over 2,200 feet, drawn on the same 3,500-foot scale as every route here. Landmark: Thank God Ledge."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 34.7,233.9 37.0,219.8 33.1,205.8 32.3,191.7 32.4,177.6 36.3,163.5 35.5,149.4 33.7,135.4 31.2,121.3 34.0,107.2"/><circle class="belay" cx="34.0" cy="241.9" r="2.4"/><circle class="belay" cx="34.7" cy="235.8" r="2.4"/><circle class="belay" cx="34.7" cy="229.6" r="2.4"/><circle class="belay" cx="37.0" cy="223.5" r="2.4"/><circle class="belay" cx="37.0" cy="217.4" r="2.4"/><circle class="belay" cx="33.1" cy="211.3" r="2.4"/><circle class="belay" cx="33.1" cy="205.1" r="2.4"/><circle class="belay" cx="33.1" cy="199.0" r="2.4"/><circle class="belay" cx="32.3" cy="192.9" r="2.4"/><circle class="belay" cx="32.3" cy="186.8" r="2.4"/><circle class="belay" cx="32.4" cy="180.7" r="2.4"/><circle class="belay" cx="32.4" cy="174.5" r="2.4"/><circle class="belay" cx="36.3" cy="168.4" r="2.4"/><circle class="belay" cx="36.3" cy="162.3" r="2.4"/><circle class="belay" cx="35.5" cy="156.2" r="2.4"/><circle class="belay" cx="35.5" cy="150.1" r="2.4"/><circle class="belay" cx="35.5" cy="143.9" r="2.4"/><circle class="belay" cx="33.7" cy="137.8" r="2.4"/><circle class="belay" cx="33.7" cy="131.7" r="2.4"/><circle class="belay" cx="31.2" cy="125.6" r="2.4"/><circle class="belay" cx="31.2" cy="119.4" r="2.4"/><circle class="belay" cx="34.0" cy="113.3" r="2.4"/><circle class="belay" cx="34.0" cy="107.2" r="2.4"/><line class="summit" x1="25" x2="43" y1="107.2" y2="107.2"/><circle class="mark" cx="31.2" cy="124.1" r="7"/><polyline class="leader" points="38.2,124.1 56,124.1 62,124.1"/><text class="mark-label" x="65" y="128.1">Thank God Ledge</text><text class="top-label" x="48" y="111.2">2,200&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.9 C1</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade VI</dd></div><div class="row"><dt>Length</dt><dd>2,200&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>23</dd></div><div class="row"><dt>First ascent</dt><dd>Royal Robbins, Mike Sherrick, Jerry Gallwas, 1957</dd></div></dl>
+    <div class="copy">
+      <p class="claim">America’s first Grade VI, and it still looks it.</p>
+      <p>Robbins, Sherrick and Gallwas took five days in 1957 to climb the face Ansel Adams photographed. It was the first route of its size in the country. The famous moment comes high up: Thank God Ledge, a sloping shelf you shuffle along, or crawl, two thousand feet up.</p>
+      <p class="beta"><span>Beta</span> Bivy at Big Sandy if you go in two days. Water is the heavy part.</p>
+    </div>
+  </div>
+</article>
 
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.7 C2</span></td></tr>
-          <tr><th>Commitment</th>      <td>NCCS VI</td></tr>
-          <tr><th>Pitches</th>         <td>19</td></tr>
-          <tr><th>Length</th>          <td>≈ 2,000 ft / 610 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>2–4 days</td></tr>
-          <tr><th>Approach</th>        <td>40 min west of El Cap Meadow</td></tr>
-          <tr><th>Descent</th>         <td>East Ledges (long carry-over)</td></tr>
-          <tr><th>Style</th>           <td>Beginner-friendly El Cap wall</td></tr>
-        </table>
+<article class="card" id="dawn-wall" aria-labelledby="dawn-wall-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">08</span>
+    <div class="titles">
+      <h3 id="dawn-wall-h">Dawn Wall</h3>
+      <p class="where">El Capitan, southeast face</p>
+    </div>
+    <label class="tick"><input type="checkbox" data-route="dawn-wall"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 32 pitches over 2,500 feet, drawn on the same 3,500-foot scale as every route here. Landmark: The traverses."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 34.5,233.5 34.1,218.9 30.5,204.4 35.1,189.8 35.1,175.3 36.5,160.7 31.3,146.2 33.0,131.6 33.2,117.1 37.5,102.5 34.0,88.0"/><circle class="belay" cx="34.0" cy="243.0" r="2.4"/><circle class="belay" cx="34.5" cy="238.0" r="2.4"/><circle class="belay" cx="34.5" cy="233.0" r="2.4"/><circle class="belay" cx="34.5" cy="228.0" r="2.4"/><circle class="belay" cx="34.1" cy="223.0" r="2.4"/><circle class="belay" cx="34.1" cy="218.0" r="2.4"/><circle class="belay" cx="34.1" cy="213.0" r="2.4"/><circle class="belay" cx="30.5" cy="208.0" r="2.4"/><circle class="belay" cx="30.5" cy="203.0" r="2.4"/><circle class="belay" cx="30.5" cy="198.0" r="2.4"/><circle class="belay" cx="35.1" cy="193.0" r="2.4"/><circle class="belay" cx="35.1" cy="188.0" r="2.4"/><circle class="belay" cx="35.1" cy="183.0" r="2.4"/><circle class="belay" cx="35.1" cy="178.0" r="2.4"/><circle class="belay" cx="35.1" cy="173.0" r="2.4"/><circle class="belay" cx="36.5" cy="168.0" r="2.4"/><circle class="belay" cx="36.5" cy="163.0" r="2.4"/><circle class="belay" cx="36.5" cy="158.0" r="2.4"/><circle class="belay" cx="31.3" cy="153.0" r="2.4"/><circle class="belay" cx="31.3" cy="148.0" r="2.4"/><circle class="belay" cx="31.3" cy="143.0" r="2.4"/><circle class="belay" cx="33.0" cy="138.0" r="2.4"/><circle class="belay" cx="33.0" cy="133.0" r="2.4"/><circle class="belay" cx="33.0" cy="128.0" r="2.4"/><circle class="belay" cx="33.2" cy="123.0" r="2.4"/><circle class="belay" cx="33.2" cy="118.0" r="2.4"/><circle class="belay" cx="33.2" cy="113.0" r="2.4"/><circle class="belay" cx="37.5" cy="108.0" r="2.4"/><circle class="belay" cx="37.5" cy="103.0" r="2.4"/><circle class="belay" cx="37.5" cy="98.0" r="2.4"/><circle class="belay" cx="34.0" cy="93.0" r="2.4"/><circle class="belay" cx="34.0" cy="88.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="88.0" y2="88.0"/><circle class="mark" cx="35.1" cy="176.0" r="7"/><polyline class="leader" points="42.1,176.0 56,176.0 62,176.0"/><text class="mark-label" x="65" y="180.0">The traverses</text><text class="top-label" x="48" y="92.0">2,500&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.14d</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade VI</dd></div><div class="row"><dt>Length</dt><dd>2,500&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>32</dd></div><div class="row"><dt>First ascent</dt><dd>Warren Harding &amp; Dean Caldwell, 1970 (aid, as Wall of Early Morning Light)</dd></div><div class="row"><dt>First free</dt><dd>Tommy Caldwell &amp; Kevin Jorgeson, 2015</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The hardest big-wall free climb ever done.</p>
+      <p>Caldwell worked it for seven years. In January 2015 he and Jorgeson lived on the wall for 19 days, and Jorgeson fell on the traverse pitch again and again until he sent it. Adam Ondra repeated it in 2016; Seb Berthe made it three in 2025. You probably won’t climb it, but you can watch it from El Cap Meadow.</p>
+      <p class="beta"><span>Beta</span> Bring binoculars and a folding chair to the meadow.</p>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="nose" aria-labelledby="nose-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">09</span>
+    <div class="titles">
+      <h3 id="nose-h">The Nose</h3>
+      <p class="where">El Capitan, south buttress</p>
+    </div>
+    <label class="tick"><input type="checkbox" data-route="nose"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 31 pitches over 3,000 feet, drawn on the same 3,500-foot scale as every route here. Landmark: Great Roof."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 31.6,233.2 32.6,218.5 34.2,203.7 37.1,188.9 33.7,174.2 32.6,159.4 31.6,144.6 36.1,129.8 35.4,115.1 34.8,100.3 30.7,85.5 33.8,70.8 34.0,56.0"/><circle class="belay" cx="34.0" cy="241.8" r="2.4"/><circle class="belay" cx="31.6" cy="235.6" r="2.4"/><circle class="belay" cx="31.6" cy="229.4" r="2.4"/><circle class="belay" cx="32.6" cy="223.2" r="2.4"/><circle class="belay" cx="32.6" cy="217.0" r="2.4"/><circle class="belay" cx="34.2" cy="210.8" r="2.4"/><circle class="belay" cx="34.2" cy="204.6" r="2.4"/><circle class="belay" cx="34.2" cy="198.5" r="2.4"/><circle class="belay" cx="37.1" cy="192.3" r="2.4"/><circle class="belay" cx="37.1" cy="186.1" r="2.4"/><circle class="belay" cx="33.7" cy="179.9" r="2.4"/><circle class="belay" cx="33.7" cy="173.7" r="2.4"/><circle class="belay" cx="33.7" cy="167.5" r="2.4"/><circle class="belay" cx="32.6" cy="161.3" r="2.4"/><circle class="belay" cx="32.6" cy="155.1" r="2.4"/><circle class="belay" cx="31.6" cy="148.9" r="2.4"/><circle class="belay" cx="31.6" cy="142.7" r="2.4"/><circle class="belay" cx="36.1" cy="136.5" r="2.4"/><circle class="belay" cx="36.1" cy="130.3" r="2.4"/><circle class="belay" cx="36.1" cy="124.1" r="2.4"/><circle class="belay" cx="35.4" cy="117.9" r="2.4"/><circle class="belay" cx="35.4" cy="111.7" r="2.4"/><circle class="belay" cx="34.8" cy="105.5" r="2.4"/><circle class="belay" cx="34.8" cy="99.4" r="2.4"/><circle class="belay" cx="34.8" cy="93.2" r="2.4"/><circle class="belay" cx="30.7" cy="87.0" r="2.4"/><circle class="belay" cx="30.7" cy="80.8" r="2.4"/><circle class="belay" cx="33.8" cy="74.6" r="2.4"/><circle class="belay" cx="33.8" cy="68.4" r="2.4"/><circle class="belay" cx="34.0" cy="62.2" r="2.4"/><circle class="belay" cx="34.0" cy="56.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="56.0" y2="56.0"/><circle class="mark" cx="35.4" cy="109.8" r="7"/><polyline class="leader" points="42.4,109.8 56,109.8 62,109.8"/><text class="mark-label" x="65" y="113.8">Great Roof</text><text class="top-label" x="48" y="60.0">3,000&#8239;ft</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.9 C2</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade VI</dd></div><div class="row"><dt>Length</dt><dd>3,000&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>31</dd></div><div class="row"><dt>First ascent</dt><dd>Warren Harding, Wayne Merry, George Whitmore, 1958</dd></div><div class="row"><dt>First free</dt><dd>Lynn Hill, 1993</dd></div></dl>
+    <div class="copy">
+      <p class="claim">The most famous climb on earth goes up the middle.</p>
+      <p>Harding’s team took 47 days spread over 16 months, using fixed ropes and siege tactics, and topped out at dawn on November 12, 1958. In 1993 Lynn Hill freed it, then did it free in under a day the next year. Every big-wall climber eventually queues here.</p>
+      <p class="beta"><span>Beta</span> Fall is prime season and the crowds come too. A weekday start helps.</p>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="salathe" aria-labelledby="salathe-h">
+  <header class="card-head">
+    <span class="no" aria-hidden="true">10</span>
+    <div class="titles">
+      <h3 id="salathe-h">Salathé Wall</h3>
+      <p class="where">El Capitan, southwest face</p>
+    </div>
+    <label class="tick"><input type="checkbox" data-route="salathe"><span class="box" aria-hidden="true"></span><span class="tick-text">Ticked</span></label>
+  </header>
+  <div class="card-body">
+    <figure class="topo-wrap"><svg class="topo" viewBox="0 0 168 262" role="img" aria-label="Topo sketch: 35 pitches over 3,500 feet, drawn on the same 3,500-foot scale as every route here. Landmark: The Headwall."><line class="ghost" x1="34" x2="34" y1="248" y2="24"/><line class="ghost-tick" x1="28" x2="40" y1="24" y2="24"/><text class="ghost-label" x="44" y="28">3,500&#8239;ft</text><polyline class="route" points="34.0,248.0 33.4,234.0 35.1,220.0 36.7,206.0 33.0,192.0 32.0,178.0 32.8,164.0 36.3,150.0 35.6,136.0 33.2,122.0 31.4,108.0 33.9,94.0 36.1,80.0 35.5,66.0 32.6,52.0 31.7,38.0 34.0,24.0"/><circle class="belay" cx="34.0" cy="241.6" r="2.4"/><circle class="belay" cx="33.4" cy="235.2" r="2.4"/><circle class="belay" cx="33.4" cy="228.8" r="2.4"/><circle class="belay" cx="35.1" cy="222.4" r="2.4"/><circle class="belay" cx="35.1" cy="216.0" r="2.4"/><circle class="belay" cx="36.7" cy="209.6" r="2.4"/><circle class="belay" cx="36.7" cy="203.2" r="2.4"/><circle class="belay" cx="33.0" cy="196.8" r="2.4"/><circle class="belay" cx="33.0" cy="190.4" r="2.4"/><circle class="belay" cx="32.0" cy="184.0" r="2.4"/><circle class="belay" cx="32.0" cy="177.6" r="2.4"/><circle class="belay" cx="32.0" cy="171.2" r="2.4"/><circle class="belay" cx="32.8" cy="164.8" r="2.4"/><circle class="belay" cx="32.8" cy="158.4" r="2.4"/><circle class="belay" cx="36.3" cy="152.0" r="2.4"/><circle class="belay" cx="36.3" cy="145.6" r="2.4"/><circle class="belay" cx="35.6" cy="139.2" r="2.4"/><circle class="belay" cx="35.6" cy="132.8" r="2.4"/><circle class="belay" cx="33.2" cy="126.4" r="2.4"/><circle class="belay" cx="33.2" cy="120.0" r="2.4"/><circle class="belay" cx="31.4" cy="113.6" r="2.4"/><circle class="belay" cx="31.4" cy="107.2" r="2.4"/><circle class="belay" cx="33.9" cy="100.8" r="2.4"/><circle class="belay" cx="33.9" cy="94.4" r="2.4"/><circle class="belay" cx="33.9" cy="88.0" r="2.4"/><circle class="belay" cx="36.1" cy="81.6" r="2.4"/><circle class="belay" cx="36.1" cy="75.2" r="2.4"/><circle class="belay" cx="35.5" cy="68.8" r="2.4"/><circle class="belay" cx="35.5" cy="62.4" r="2.4"/><circle class="belay" cx="32.6" cy="56.0" r="2.4"/><circle class="belay" cx="32.6" cy="49.6" r="2.4"/><circle class="belay" cx="31.7" cy="43.2" r="2.4"/><circle class="belay" cx="31.7" cy="36.8" r="2.4"/><circle class="belay" cx="34.0" cy="30.4" r="2.4"/><circle class="belay" cx="34.0" cy="24.0" r="2.4"/><line class="summit" x1="25" x2="43" y1="24.0" y2="24.0"/><circle class="mark" cx="32.6" cy="46.4" r="7"/><polyline class="leader" points="39.6,46.4 56,58.0 62,58.0"/><text class="mark-label" x="65" y="62.0">The Headwall</text><line class="floor" x1="6" x2="162" y1="248" y2="248"/><line class="hatch" x1="12" y1="248" x2="6" y2="254"/><line class="hatch" x1="22" y1="248" x2="16" y2="254"/><line class="hatch" x1="32" y1="248" x2="26" y2="254"/><line class="hatch" x1="42" y1="248" x2="36" y2="254"/><line class="hatch" x1="52" y1="248" x2="46" y2="254"/><line class="hatch" x1="62" y1="248" x2="56" y2="254"/><line class="hatch" x1="72" y1="248" x2="66" y2="254"/><line class="hatch" x1="82" y1="248" x2="76" y2="254"/><line class="hatch" x1="92" y1="248" x2="86" y2="254"/><line class="hatch" x1="102" y1="248" x2="96" y2="254"/><line class="hatch" x1="112" y1="248" x2="106" y2="254"/><line class="hatch" x1="122" y1="248" x2="116" y2="254"/><line class="hatch" x1="132" y1="248" x2="126" y2="254"/><line class="hatch" x1="142" y1="248" x2="136" y2="254"/><line class="hatch" x1="152" y1="248" x2="146" y2="254"/><line class="hatch" x1="162" y1="248" x2="156" y2="254"/></svg></figure>
+    <dl class="spec"><div class="row"><dt>Grade</dt><dd><b class="grade">5.9 C2</b></dd></div><div class="row"><dt>Commitment</dt><dd>Grade VI</dd></div><div class="row"><dt>Length</dt><dd>3,500&nbsp;ft</dd></div><div class="row"><dt>Pitches</dt><dd>35</dd></div><div class="row"><dt>First ascent</dt><dd>Royal Robbins, Tom Frost, Chuck Pratt, 1961</dd></div><div class="row"><dt>First free</dt><dd>Todd Skinner &amp; Paul Piana, 1988</dd></div></dl>
+    <div class="copy">
+      <p class="claim">Plenty of people call it the best climb in the world.</p>
+      <p>The second route up El Cap, done in 1961 with fixed ropes for only the first third. The Headwall near the top is a steep, airy crack. The Freerider variation is the line Alex Honnold climbed ropeless in 2017.</p>
+      <p class="beta"><span>Beta</span> Haul light to Heart Ledge, then commit. Retreat above it is hard.</p>
+    </div>
+  </div>
+</article>
+</section>
+
+    <section class="end" aria-label="Where to start">
+      <p class="kicker">Start on <a href="#nutcracker">Nutcracker</a>. Everyone does, and everyone remembers the mantel.</p>
+      <div class="colophon">
+        <p><b>Made for Shubham</b> in late October 2026, the heart of the fall season, when El Cap’s summer heat is gone and the winter storms haven’t come.</p>
+        <p>Grades, lengths and first ascents checked October 22, 2026 against Mountain Project, SuperTopo and the climbing press. Topo landmarks are placed by eye; carry a real topo on the wall.</p>
+        <p>Ticks stay in this browser and nowhere else.</p>
       </div>
+    </section>
+  </div>
+</main>
 
-      <div class="col-r">
-        <p class="beta">The first-time El Cap aspirant's route. Lurking Fear takes the far west edge of the Captain — sun-baked, lower-angle, and (by the standards of the place) reasonable. The aid is straightforward C2, the bolt ladders are friendly, and most of the wall offers ledges or near-ledges for hauling and bivying. Parties who would be shut down on the Salathé or even the Nose's middle pitches routinely succeed here.</p>
-        <p class="beta">That doesn't make it casual. 19 pitches of vertical-ish granite still demand competence with the full aid system — short-fixing, hauling, ascending lines, managing a portaledge in wind. Use it as the training wall it is. The descent off the top is the longest of the El Cap walk-offs; budget half a day, carry water, and know the East Ledges raps.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Aid rack:</b> single cams to #4, doubles in finger sizes, full nut set, single set of offsets, 6 cam hooks, aiders, ascenders, full haul system. <b>Water heavy</b> — west face bakes in afternoon sun; 1.5 gal/person/day in shoulder season. Helmet for rockfall from above parties on adjacent routes.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m shoulder">M</div><div class="m go">A</div>
-            <div class="m go">M</div><div class="m">J</div><div class="m">J</div><div class="m">A</div>
-            <div class="m shoulder">S</div><div class="m go">O</div><div class="m go">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA</b> Jim Bridwell, Jim Pettigrew, Kim Schmitz · 1970 · An early statement that El Cap had moderate lines too.</div>
-      </div>
-    </div>
-  </article>
+<footer class="band-top">
+  <div class="wrap"><p>Yosemite National Park, California · On the walls, everything you carry up comes back down with you.</p></div>
+</footer>
 
-  <!-- =========================================================
-       ROUTE 10 — CATHEDRAL PEAK SE BUTTRESS
-       ========================================================= -->
-  <article class="route" style="--band:var(--cathedral);">
-    <div class="band" data-num="10 · Cathedral"></div>
-    <div class="body">
-      <div class="col-l">
-        <div class="name">Southeast Buttress</div>
-        <div class="scientific">Cathedral Peak, Tuolumne Meadows</div>
-        <span class="badge"><span class="sw"></span>Cathedral Peak</span>
+<script>
+(function(){
+  var root=document.documentElement, KEY="yosemite-ten-theme", TK="yosemite-ten-ticks";
+  try{var saved=localStorage.getItem(KEY); if(saved) root.setAttribute("data-theme",saved);}catch(e){}
+  function isDark(){var t=root.getAttribute("data-theme"); return t? t==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;}
+  var btn=document.createElement("button"); btn.className="theme-btn"; btn.type="button";
+  function paint(){var d=isDark();
+    btn.innerHTML=(d?'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.4" fill="currentColor"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></g></svg>Daylight':'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.5 10.5A5.5 5.5 0 0 1 5.5 2.6 6 6 0 1 0 13.4 10a5.5 5.5 0 0 1-1.9.5z" fill="currentColor"/></svg>Night on the wall');
+    btn.setAttribute("aria-label", d? "Switch to light theme" : "Switch to dark theme");}
+  btn.addEventListener("click",function(){var n=isDark()?"light":"dark"; root.setAttribute("data-theme",n); try{localStorage.setItem(KEY,n);}catch(e){} paint();});
+  paint(); document.querySelector(".band-top .wrap").appendChild(btn);
 
-        <table class="stats">
-          <tr><th>Grade</th>           <td><span class="mono">5.6</span></td></tr>
-          <tr><th>Pitches</th>         <td>5</td></tr>
-          <tr><th>Length</th>          <td>≈ 700 ft / 215 m</td></tr>
-          <tr><th>Guidebook time</th>  <td>3–5 hr on route</td></tr>
-          <tr><th>Approach</th>        <td>1.5 hr from Cathedral Lakes TH</td></tr>
-          <tr><th>Descent</th>         <td>3rd-class scramble + walk</td></tr>
-          <tr><th>Style</th>           <td>Alpine-feeling moderate, 10,900 ft</td></tr>
-        </table>
-      </div>
-
-      <div class="col-r">
-        <p class="beta">John Muir soloed Cathedral in 1869 in hobnailed boots, calling it "the most exquisitely finished and most sublime peak I ever saw." That endorsement still holds. The Southeast Buttress is the standard line — five pitches of clean knobby <span class="term">protruding feldspar crystals that form positive holds and chickenheads</span> granite at a generous 5.6, with one short crux pitch and a summit block that takes three climbers at a squeeze.</p>
-        <p class="beta">The alpine setting — 10,940 ft, panoramic Sierra view, glacial-polish meadows below — makes this the most-photographed easy multi-pitch in California. Afternoon thunderstorms are not a possibility, they are a schedule: be off the summit by 1 PM in July and August. Tioga Pass opens in late May or June depending on snowpack; closes with the first heavy storm in October.</p>
-        <div class="gear">
-          <span class="lbl">Gear &amp; rack</span>
-          <b>Light rack:</b> single cams .3–#3, single set of nuts, 8 alpine draws, 60 m rope. Approach shoes for the summit downclimb. Helmet. Rain shell is mandatory equipment, not optional, given the afternoon storm pattern.
-        </div>
-        <div class="season">
-          <div class="lab">Season</div>
-          <div class="strip">
-            <div class="m">J</div><div class="m">F</div><div class="m">M</div><div class="m">A</div>
-            <div class="m">M</div><div class="m shoulder">J</div><div class="m go">J</div><div class="m go">A</div>
-            <div class="m go">S</div><div class="m shoulder">O</div><div class="m">N</div><div class="m">D</div>
-          </div>
-        </div>
-        <div class="fa"><b>FA (technical)</b> Charles Michael, 1920 · <b>First ascent (any style)</b> John Muir, solo, September 1869.</div>
-      </div>
-    </div>
-  </article>
-
-  <!-- ============== CODA / RANGER NOTE ============== -->
-  <section class="coda">
-    <h2>Climbing in Yosemite <span class="small">a brief note on the things you cannot put on a topo</span></h2>
-
-    <div>
-      <h3>Camp 4 &amp; the dirtbag inheritance</h3>
-      <p>Camp 4 — listed on the National Register of Historic Places in 2003 — is the spiritual home of American rock climbing. The first-come walk-up system still works; arrive before 7 AM in season. The boulders behind the campground (Midnight Lightning, the Wave) are where Bachar and Kauk trained in the 1970s and where everyone since has paid their respects.</p>
-
-      <h3>Fixed lines &amp; the politics</h3>
-      <p>The Park has tolerated, restricted, and re-tolerated fixed lines on El Cap and the Column for half a century. Current policy: fixed lines may stay in place for up to seven consecutive days; abandoned lines are cut by rangers. Do not be the party that gets a line cut and ruins the relationship for everyone behind you.</p>
-    </div>
-
-    <div>
-      <h3>Leave No Trace, vertical edition</h3>
-      <p>Pack out all human waste from walls — wag bags are required equipment, available free from the Search &amp; Rescue cache near Camp 4. Pack out tape, energy gel wrappers, and especially abandoned fixed gear. The Valley's cleanliness is downstream of every party's individual discipline.</p>
-
-      <h3>Season &amp; weather</h3>
-      <p>Prime Valley season is April–May and September–November. June and July bake the south- and west-facing walls; afternoon thunderstorms are a near-daily feature in the high country (Cathedral, Half Dome). Winter climbing exists for the dedicated. Tioga Road typically opens late May–June, closes November.</p>
-    </div>
-
-    <div class="contact">
-      <span><b>Permits &amp; SAR</b> — Yosemite Search &amp; Rescue: (209) 372-0480</span>
-      <span><b>Wilderness Center</b> — required for overnight bivouacs above Valley rim</span>
-      <span><b>Big-wall permits</b> — not required; self-register at SAR for safety</span>
-      <span><b>Climbing rangers</b> — daily coffee at Camp 4 kiosk, spring &amp; fall</span>
-    </div>
-  </section>
-
-  <!-- ============== COLOPHON ============== -->
-  <footer class="colophon">
-    <div class="l"><b>Yosemite Field Guide</b> · Vol. I, No. 1 · Ten Storied Routes</div>
-    <div class="r">Set in Charter &amp; Inter Tight · Printed on ivory · 2026</div>
-  </footer>
-
-</div>
+  var boxes=[].slice.call(document.querySelectorAll(".tick input")), out=document.getElementById("tickcount"), ticks={};
+  try{ticks=JSON.parse(localStorage.getItem(TK)||"{}");}catch(e){}
+  function sync(){var n=0; boxes.forEach(function(b){ if(b.checked)n++; b.closest(".card").classList.toggle("done",b.checked);});
+    out.hidden=false; out.querySelector("b").textContent=n;}
+  boxes.forEach(function(b){ b.checked=!!ticks[b.dataset.route];
+    b.addEventListener("change",function(){ ticks[b.dataset.route]=b.checked; try{localStorage.setItem(TK,JSON.stringify(ticks));}catch(e){} sync();});});
+  sync();
+})();
+</script>
 </body>
 </html>

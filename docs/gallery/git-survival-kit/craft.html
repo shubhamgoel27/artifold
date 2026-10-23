@@ -1,887 +1,555 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="artifold:design-mode" content="terminal-tui">
-<meta name="artifold:voice-register" content="spec-sheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twelve git commands for your first 90 days, and the way back from each</title>
+<meta name="description" content="A line guide to the twelve git commands a new developer meets in their first 90 days, with examples and a way out for every mistake.">
+<meta name="artifold:intent" content="Line-map guide to twelve git commands for new developers, each with recovery steps">
+<meta name="artifold:generator" content="craft">
 <meta name="artifold:tool" content="claude">
-<title>git-survival-kit — TUI</title>
+<meta name="artifold:prompt" content="The 12 git commands a new developer needs in their first 90 days. With examples and recovery tips.">
+<meta name="artifold:scale" content="read">
+<meta name="artifold:conceit" content="Your first 90 days as a metro line: commands are stops, branches are lines, the reflog is a ghost line that logs every move">
+<meta name="artifold:layout-archetype" content="timeline-spine">
+<meta name="artifold:design-mode" content="transit-map×terminal-tui">
+<meta name="artifold:voice-register" content="coach-imperative">
+<meta name="artifold:signature-device" content="commit-graph spine drawn as a Beck line diagram (fork, merge, interchange); quiet second: dashed ghost line logging each HEAD move">
+<meta name="artifold:ad-scores" content="4/4/4/3/3/4 (pre-fix review; palette and phone craft fixed after)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 2v28M10 12c0 8 12 6 12 14v4' stroke='%230019a8' stroke-width='5' fill='none'/%3E%3Ccircle cx='10' cy='12' r='5' fill='%23fff' stroke='%231c1c1c' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:        #0d1117;
-    --bg-alt:    #161b22;
-    --bg-deep:   #010409;
-    --bg-row:    #1c2128;
-    --bg-sel:    #21262d;
-    --fg:        #c9d1d9;
-    --fg-dim:    #8b949e;
-    --fg-faint:  #484f58;
-    --cyan:      #79c0ff;
-    --cyan-2:    #56d4dd;
-    --green:     #56d364;
-    --yellow:    #e3b341;
-    --red:       #f85149;
-    --magenta:   #d2a8ff;
-    --border:    #30363d;
-    --border-2:  #21262d;
-  }
+:root{
+  --font-head:"Jost", "Futura", "Avenir Next", system-ui, sans-serif;
+  --font-body:"Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  --t-1:.8125rem; --t0:1.0625rem; --t1:1.3125rem; --t2:1.625rem; --t3:2.0625rem;
+  --t-hero:clamp(2.5rem, 1.4rem + 3.8vw, 4.5rem);
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-5:1.25rem; --s-6:1.5rem; --s-8:2rem; --s-10:2.5rem; --s-12:3rem; --s-16:4rem; --s-24:6rem;
+  --r:6px;
 
-  html, body {
-    background: var(--bg-deep);
-    color: var(--fg);
-    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-    font-size: 13px;
-    line-height: 1.3;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
+  --bg:#ffffff; --zone-bg:#f3f4f1; --ink:#1c1c1c; --ink-2:#50545a; --ink-3:#6b7077;
+  --rule:#dcdfd8;
+  --main:#0019a8; --branch:#00782a; --ghost:#8d929a; --danger:#c8211b; --danger-bg:#fdecea;
+  --ring-ink:#1c1c1c;
+  --plate-bg:#ffffff; --plate-head:#1c1c1c; --plate-head-ink:#ffffff;
+  --term-bg:#15181d; --term-ink:#e7e9ec; --term-dim:#8b939e; --term-ps:#6f86ff; --term-danger:#ff7a70;
+  --shadow-color:220 20% 30%;
+  --shadow:0 1px 2px hsl(var(--shadow-color)/.10), 0 4px 10px hsl(var(--shadow-color)/.07), 0 12px 24px hsl(var(--shadow-color)/.05);
+  --sel:#cfd7ff;
 
-  body {
-    padding: 14px;
-    min-height: 100vh;
+  --zone-w:9.5rem; --rail:96px; --xg:14px; --xm:44px; --xb:76px; --st:20px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1217; --zone-bg:#151a21; --ink:#e7e9ec; --ink-2:#adb3bc; --ink-3:#8d949e;
+    --rule:#2a313b;
+    --main:#6f86ff; --branch:#3cbf6c; --ghost:#6c7480; --danger:#ff6b60; --danger-bg:#3a1d1c;
+    --ring-ink:#e7e9ec;
+    --plate-bg:#181d25; --plate-head:#262d38; --plate-head-ink:#e7e9ec;
+    --term-bg:#1a1f27; --term-ink:#e7e9ec; --term-dim:#828b97;
+    --shadow-color:220 40% 2%; --sel:#2c3a7a;
+    color-scheme:dark;
   }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1217; --zone-bg:#151a21; --ink:#e7e9ec; --ink-2:#adb3bc; --ink-3:#8d949e;
+  --rule:#2a313b;
+  --main:#6f86ff; --branch:#3cbf6c; --ghost:#6c7480; --danger:#ff6b60; --danger-bg:#3a1d1c;
+  --ring-ink:#e7e9ec;
+  --plate-bg:#181d25; --plate-head:#262d38; --plate-head-ink:#e7e9ec;
+  --term-bg:#1a1f27; --term-ink:#e7e9ec; --term-dim:#828b97;
+  --shadow-color:220 40% 2%; --sel:#2c3a7a;
+  color-scheme:dark;
+}
 
-  .term {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-  }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--t0)/1.6 var(--font-body);font-feature-settings:"cv11"}
+::selection{background:var(--sel);color:var(--ink)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--main);outline-offset:3px;border-radius:3px}
+code,kbd,.strip a{font-family:var(--font-mono);font-size:.88em;font-variant-ligatures:none;font-feature-settings:"calt" 0,"liga" 0}
+p code, h4 code{background:var(--zone-bg);padding:.08em .32em;border-radius:4px;white-space:nowrap}
+.zone.alt p code,.zone.alt h4 code{background:var(--bg)}
+.plate p code{background:var(--zone-bg)}
+kbd{border:1px solid var(--rule);border-bottom-width:2px;border-radius:4px;padding:0 .35em;background:var(--bg)}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+p{text-wrap:pretty;margin:0}
 
-  /* ─── chrome ─── */
-  .chrome {
-    background: var(--bg-alt);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--fg-dim);
-  }
-  .chrome .dot { width: 11px; height: 11px; background: var(--border); display: inline-block; }
-  .chrome .dot.r { background: #f85149; }
-  .chrome .dot.y { background: #e3b341; }
-  .chrome .dot.g { background: #56d364; }
-  .chrome .title { margin-left: 10px; }
-  .chrome .right { margin-left: auto; color: var(--fg-faint); }
+.wrap{max-width:1280px;margin:0 auto;padding-inline:var(--s-8)}
 
-  /* ─── status bar ─── */
-  .statusbar {
-    background: var(--cyan);
-    color: #0d1117;
-    padding: 3px 10px;
-    font-weight: 600;
-    display: flex;
-    gap: 18px;
-    font-size: 12px;
-  }
-  .statusbar .seg { display: flex; gap: 6px; }
-  .statusbar .k { opacity: 0.6; font-weight: 400; }
-  .statusbar .v { font-weight: 600; }
-  .statusbar .pipe { color: #0d1117; opacity: 0.35; }
-  .statusbar .right { margin-left: auto; }
+/* masthead */
+.top{display:flex;justify-content:space-between;align-items:center;gap:var(--s-4);padding-block:var(--s-6)}
+.top .line-name{font:600 var(--t0)/1 var(--font-head);display:flex;align-items:center;gap:var(--s-3)}
+.top .line-name i{width:28px;height:6px;background:var(--main);border-radius:3px;display:block}
+.toggle{white-space:nowrap;flex:none;font:500 var(--t-1)/1 var(--font-body);color:var(--ink);background:var(--bg);border:1.5px solid var(--ink);border-radius:999px;padding:0 var(--s-4);min-height:44px;cursor:pointer;display:inline-flex;align-items:center;gap:var(--s-2)}
+.toggle svg{width:16px;height:16px}
 
-  /* ─── tabs ─── */
-  .tabs {
-    background: var(--bg);
-    padding: 4px 10px 0;
-    display: flex;
-    gap: 2px;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--fg-dim);
-  }
-  .tab { padding: 3px 10px; cursor: default; }
-  .tab.active { color: var(--cyan); }
-  .tab .b { color: var(--fg-faint); }
-  .tab.active .b { color: var(--cyan); }
-  .tab-meta { margin-left: auto; color: var(--fg-faint); padding: 3px 10px; }
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:var(--s-16);align-items:end;padding-block:var(--s-10) var(--s-12)}
+.hero h1{font:600 var(--t-hero)/1.02 var(--font-head);letter-spacing:-.025em;max-width:13ch}
+.hero .lede{margin-top:var(--s-6);font-size:var(--t1);line-height:1.5;color:var(--ink-2);max-width:36ch}
 
-  /* ─── main grid ─── */
-  .main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    background: var(--bg);
-  }
-  .main > .panel + .panel { border-left: 1px solid var(--border); }
+.key{border-top:6px solid var(--ink);padding-top:var(--s-4)}
+.key h2{font:600 var(--t0)/1.2 var(--font-head);margin-bottom:var(--s-4)}
+.key ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-3)}
+.key li{display:grid;grid-template-columns:44px 1fr;gap:var(--s-3);align-items:center;font-size:.9375rem;line-height:1.4;color:var(--ink-2)}
+.key li b{color:var(--ink);font-weight:600}
+.key svg{width:44px;height:22px;overflow:visible}
 
-  .panel {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
+/* strip map index */
+.strip{margin:0 0 var(--s-12);padding:0;list-style:none;display:flex}
+.strip li{flex:1;position:relative;padding-top:var(--s-6)}
+.strip li::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:var(--main)}
+.strip li.sm-branch::before{background:var(--branch)}
+.strip li:first-child::before{left:50%}
+.strip li:last-child::before{right:50%}
+.strip li::after{content:"";position:absolute;top:6px;left:calc(50% - 3px);width:6px;height:10px;background:var(--main)}
+.strip li.sm-branch::after{background:var(--branch)}
+.strip li.sm-ring::after{top:-8px;left:calc(50% - 11px);width:22px;height:22px;border-radius:50%;background:var(--bg);border:4px solid var(--ring-ink)}
+.strip a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font:500 .875rem/1.2 var(--font-mono);padding:var(--s-2) 0;min-height:44px;border-radius:4px}
+.strip a:hover{color:var(--main)}
+.strip .sm-n{font:500 .75rem/1 var(--font-body);color:var(--ink-3);font-variant-numeric:tabular-nums}
 
-  .panel-head {
-    padding: 4px 10px;
-    background: var(--bg);
-    color: var(--fg-dim);
-    font-size: 11px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .panel-head .lbl { color: var(--cyan); }
-  .panel-head .ct { color: var(--fg-faint); margin-left: auto; }
-  .panel-head .pre { color: var(--fg-faint); }
+/* zones + stops */
+.zone{background:var(--bg)}
+.zone.alt{background:var(--zone-bg)}
+.zone-in{display:grid;grid-template-columns:var(--zone-w) minmax(0,1fr)}
+.zone-label{padding-top:var(--s-8);position:relative}
+.zone-label > *{position:sticky}
+.zone-label h2{top:var(--s-6);display:flex;flex-direction:column;gap:var(--s-1)}
+.zone-label .zn{font:500 var(--t-1)/1 var(--font-body);color:var(--ink-3);display:inline-flex;align-items:center;gap:var(--s-2)}
+.zone-label .zw{font:600 var(--t2)/1.05 var(--font-head);letter-spacing:-.01em}
+.zone-label p{top:calc(var(--s-6) + 3.6rem);margin-top:var(--s-2);font-size:.9375rem;line-height:1.35;color:var(--ink-2);max-width:12ch}
+.zone-label{display:flex;flex-direction:column}
+.zone-label h2,.zone-label p{position:sticky}
 
-  /* ─── row layout ─── */
-  .row {
-    display: grid;
-    grid-template-columns: 18px 1fr;
-    padding: 6px 10px 7px;
-    border-bottom: 1px dotted var(--border-2);
-    font-size: 12px;
-    gap: 0;
-  }
-  .row:last-child { border-bottom: none; }
-  .row.sel {
-    background: var(--bg-sel);
-  }
-  .row .bar {
-    color: transparent;
-    border-left: 2px solid transparent;
-  }
-  .row.sel .bar {
-    border-left-color: var(--cyan);
-  }
-  .row .body { min-width: 0; }
+.stop{display:grid;grid-template-columns:var(--rail) minmax(0,1fr) minmax(0,21.5rem);column-gap:var(--s-8);padding-block:var(--s-8) var(--s-10);scroll-margin-top:var(--s-4)}
 
-  .row .line1 {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 2px;
-  }
-  .row .num { color: var(--fg-faint); width: 22px; text-align: right; font-variant-numeric: tabular-nums; }
-  .row .cmd { color: var(--cyan); font-weight: 600; }
-  .row .desc { color: var(--fg); flex: 1; }
-  .row .tag {
-    font-size: 10px;
-    padding: 0 5px;
-    border: 1px solid currentColor;
-    line-height: 1.4;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .tag.safe   { color: var(--green); }
-  .tag.read   { color: var(--cyan-2); }
-  .tag.write  { color: var(--yellow); }
-  .tag.danger { color: var(--red); }
+.rail{position:relative;margin-block:calc(-1 * var(--s-8)) calc(-1 * var(--s-10));grid-row:1 / span 2}
+.rail{--st-off:calc(var(--st) + var(--s-8))}
+.ln{position:absolute;top:0;bottom:0;width:6px;margin-left:-3px;display:block}
+.ln.main{left:var(--xm);background:var(--main)}
+.ln.branch{left:var(--xb);background:var(--branch)}
+.ln.ghost{left:var(--xg);width:0;margin-left:-1px;border-left:2px dashed var(--ghost)}
+.ln.to-st{bottom:auto;height:var(--st-off)}
+.ln.from-st{top:var(--st-off)}
+.ln.from-fork{top:calc(var(--st-off) + 48px)}
+.ln.to-merge{bottom:auto;height:calc(var(--st-off) - 48px)}
+.curve{position:absolute;left:var(--xm);width:calc(var(--xb) - var(--xm));height:48px;overflow:visible}
+.curve path{fill:none;stroke:var(--branch);stroke-width:6;vector-effect:non-scaling-stroke}
+.curve.fork{top:var(--st-off)}
+.curve.merge{top:calc(var(--st-off) - 48px)}
+.tick{position:absolute;top:calc(var(--st-off) - 3px);width:12px;height:6px;display:block}
+.tick.on-main{left:calc(var(--xm) + 3px);background:var(--main)}
+.tick.on-branch{left:calc(var(--xb) + 3px);background:var(--branch)}
+.ring{position:absolute;top:calc(var(--st-off) - 11px);width:22px;height:22px;border-radius:50%;border:4px solid var(--ring-ink);background:var(--bg);display:block;z-index:2}
+.zone.alt .ring,.zone.alt .link,.zone.alt .gdot{background:var(--zone-bg)}
+.ring.on-main{left:calc(var(--xm) - 11px)}
+.ring.on-ghost{left:calc(var(--xg) - 11px)}
+.link{position:absolute;top:calc(var(--st-off) - 6px);left:var(--xg);width:calc(var(--xm) - var(--xg));height:12px;border-block:4px solid var(--ring-ink);background:var(--bg);display:block;z-index:1}
+.gdot{position:absolute;top:calc(var(--st-off) - 6px);left:calc(var(--xg) - 6px);width:12px;height:12px;border-radius:50%;border:2px solid var(--ghost);background:var(--bg);display:block}
+.bar{position:absolute;top:calc(var(--st-off) - 3px);left:calc(var(--xm) - 14px);width:28px;height:6px;background:var(--main);display:block}
 
-  .row .meta {
-    margin-left: 32px;
-    color: var(--fg-dim);
-    font-size: 11.5px;
-  }
-  .row .meta .k {
-    color: var(--fg-faint);
-    display: inline-block;
-    width: 64px;
-  }
-  .row .meta .v.ex {
-    color: var(--green);
-  }
-  .row .meta .v.rec {
-    color: var(--yellow);
-  }
-  .row .meta .prompt {
-    color: var(--magenta);
-    margin-right: 4px;
-  }
-  .row .meta .pfx {
-    color: var(--fg-faint);
-    margin-right: 4px;
-  }
+.stop-main{min-width:0;display:flex;flex-direction:column}
+.stop h3{display:flex;flex-direction:column;gap:var(--s-1)}
+.stop h3 code{font:600 var(--t2)/40px var(--font-mono);letter-spacing:-.01em;color:var(--ink)}
+.stop h3 .dek{font:500 var(--t1)/1.3 var(--font-head);color:var(--ink)}
+.meta{margin-top:var(--s-2);font-size:var(--t-1);line-height:1.5;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:var(--s-1) var(--s-4)}
+.logged{display:inline-flex;align-items:center;gap:var(--s-2)}
+.logged i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ghost);display:inline-block}
+.stop .body{margin-top:var(--s-4);max-width:60ch}
 
-  /* ─── fire panel ─── */
-  .fire {
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-  }
-  .fire-head {
-    padding: 5px 10px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    color: var(--red);
-    font-size: 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .fire-head .marquee { color: var(--fg-faint); margin-left: auto; font-size: 11px; }
-  .fire-head .blink {
-    color: var(--red);
-    animation: blink 1.2s steps(2, end) infinite;
-  }
-  @keyframes blink { 50% { opacity: 0.25; } }
+.term{border:1px solid var(--rule);margin:var(--s-5) 0 0;background:var(--term-bg);color:var(--term-ink);border-radius:var(--r);padding:var(--s-4) var(--s-5);font:400 .875rem/1.65 var(--font-mono);overflow-x:auto;box-shadow:var(--shadow)}
+.term code{font-size:inherit;display:flex;flex-direction:column}
+.term span{white-space:pre}
+.t-ps{color:var(--term-ps);user-select:none}
+.t-cmd{color:var(--term-ink);font-weight:600}
+.t-cm{color:var(--term-dim);font-weight:400}
+.t-out{color:var(--term-dim)}
+.t-blank{height:.8em}
+.t-danger{box-shadow:inset 3px 0 0 var(--term-danger);margin-left:calc(-1 * var(--s-5));padding-left:calc(var(--s-5) - 0px)}
+.t-danger .t-cm{color:var(--term-danger)}
 
-  .fire-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .fire-cell {
-    padding: 8px 12px 10px;
-    border-right: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .fire-cell:last-child { border-right: none; }
-  .fire-cell .h {
-    color: var(--red);
-    margin-bottom: 4px;
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-  }
-  .fire-cell .h .sigil { color: var(--red); }
-  .fire-cell .h .name { color: var(--cyan); font-weight: 600; }
-  .fire-cell .d {
-    color: var(--fg-dim);
-    font-size: 11.5px;
-    margin-bottom: 6px;
-    line-height: 1.35;
-  }
-  .fire-cell .ex {
-    color: var(--green);
-    background: var(--bg-deep);
-    border-left: 2px solid var(--green);
-    padding: 3px 6px;
-    font-size: 11.5px;
-  }
-  .fire-cell .ex .p { color: var(--magenta); margin-right: 4px; }
-  .fire-cell .note {
-    color: var(--fg-faint);
-    font-size: 10.5px;
-    margin-top: 5px;
-    line-height: 1.3;
-  }
+.plate{align-self:start;background:var(--plate-bg);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-top:var(--s-1)}
+.plate-head{background:var(--plate-head);color:var(--plate-head-ink);font:600 var(--t0)/1 var(--font-head);padding:var(--s-3) var(--s-4);display:flex;align-items:center;gap:var(--s-3);letter-spacing:.01em}
+.arrow{width:22px;height:14px;display:inline-block;background:currentColor;clip-path:polygon(0 40%,62% 40%,62% 0,100% 50%,62% 100%,62% 60%,0 60%)}
+.exit{padding:var(--s-4);display:flex;flex-direction:column;gap:var(--s-2)}
+.exit + .exit{border-top:1px solid var(--rule)}
+.exit h4{font:600 .9375rem/1.35 var(--font-body);color:var(--ink)}
+.exit p{font-size:.9375rem;line-height:1.55;color:var(--ink-2)}
+.exit.is-danger{box-shadow:inset 4px 0 0 var(--danger)}
+.warn{display:inline-block;margin-left:var(--s-2);font:600 .6875rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--danger);border:1.5px solid currentColor;border-radius:3px;padding:3px 5px 2px;vertical-align:2px;white-space:nowrap}
 
-  /* ─── right side widgets ─── */
-  .widget {
-    border-bottom: 1px solid var(--border);
-    padding: 7px 10px 8px;
-    font-size: 11.5px;
-  }
-  .widget:last-child { border-bottom: none; }
-  .widget .wh {
-    color: var(--cyan);
-    margin-bottom: 4px;
-    font-size: 11px;
-  }
-  .widget .wh .b { color: var(--fg-faint); }
+/* depot + terminus */
+.end .stop{grid-template-columns:var(--rail) minmax(0,1fr)}
+.end .stop-main{max-width:62ch}
+.depot .stop{padding-block:var(--s-8) var(--s-8)}
+.depot .zw{font:600 var(--t2)/1.05 var(--font-head)}
+.terminus .stop{padding-block:var(--s-8) var(--s-16)}
+.terminus h3 .dek{font-size:var(--t2);line-height:1.2;letter-spacing:-.01em}
+.terminus .body{font-size:var(--t1);line-height:1.5;color:var(--ink-2)}
+.ps{margin-top:var(--s-8);padding-top:var(--s-6);border-top:1px solid var(--rule);color:var(--ink-2);max-width:60ch}
+.ps b{color:var(--ink)}
+.checked{margin-top:var(--s-6);font-size:var(--t-1);color:var(--ink-3);max-width:70ch;line-height:1.55}
 
-  .reflog .e {
-    display: grid;
-    grid-template-columns: 64px 80px 1fr;
-    gap: 8px;
-    color: var(--fg-dim);
-    font-size: 11px;
-    padding: 1px 0;
-  }
-  .reflog .e .sha { color: var(--yellow); }
-  .reflog .e .op  { color: var(--cyan-2); }
-  .reflog .e .msg { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .reflog .e.cur .msg::after { content: ' ← HEAD'; color: var(--green); }
-
-  .diff pre {
-    font-family: inherit;
-    font-size: 11px;
-    line-height: 1.4;
-    color: var(--fg-dim);
-    overflow-x: auto;
-  }
-  .diff .add { color: var(--green); background: rgba(86,211,100,0.06); }
-  .diff .del { color: var(--red);   background: rgba(248,81,73,0.06); }
-  .diff .hdr { color: var(--magenta); }
-  .diff .ctx { color: var(--fg-faint); }
-  .diff .at  { color: var(--cyan-2); }
-
-  .legend {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px 12px;
-    font-size: 11px;
-    color: var(--fg-dim);
-  }
-  .legend .sw { display: inline-block; width: 10px; text-align: center; }
-
-  .keymap .k {
-    display: grid;
-    grid-template-columns: 50px 1fr;
-    color: var(--fg-dim);
-    font-size: 11px;
-    padding: 1px 0;
-  }
-  .keymap .k .kc { color: var(--yellow); }
-
-  .gauge {
-    display: grid;
-    grid-template-columns: 90px 1fr 50px;
-    gap: 8px;
-    align-items: center;
-    color: var(--fg-dim);
-    font-size: 11px;
-    padding: 2px 0;
-  }
-  .gauge .bar {
-    background: var(--bg-deep);
-    height: 9px;
-    border: 1px solid var(--border);
-    position: relative;
-  }
-  .gauge .bar .fill {
-    background: var(--cyan);
-    height: 100%;
-  }
-  .gauge .bar .fill.g { background: var(--green); }
-  .gauge .bar .fill.y { background: var(--yellow); }
-  .gauge .bar .fill.r { background: var(--red); }
-  .gauge .v { color: var(--fg); text-align: right; font-variant-numeric: tabular-nums; }
-
-  .branchtree {
-    color: var(--fg-dim);
-    font-size: 11px;
-    line-height: 1.45;
-  }
-  .branchtree .g { color: var(--green); }
-  .branchtree .y { color: var(--yellow); }
-  .branchtree .c { color: var(--cyan); }
-  .branchtree .m { color: var(--magenta); }
-  .branchtree .f { color: var(--fg-faint); }
-  .branchtree .hd { color: var(--red); }
-
-  /* ─── bottom help bar ─── */
-  .helpbar {
-    background: var(--bg-alt);
-    border-top: 1px solid var(--border);
-    color: var(--fg-dim);
-    padding: 4px 10px;
-    font-size: 11px;
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-  .helpbar .kb { color: var(--yellow); }
-  .helpbar .right {
-    margin-left: auto;
-    color: var(--fg-faint);
-    display: flex;
-    gap: 14px;
-  }
-  .helpbar .blink-c::after {
-    content: '█';
-    color: var(--cyan);
-    animation: blink 1s steps(2, end) infinite;
-    margin-left: 2px;
-  }
-
-  /* ─── command palette overlay (visual only) ─── */
-  .palette {
-    position: relative;
-    margin: 0;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 4px 10px;
-    color: var(--fg-dim);
-    font-size: 11.5px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .palette .p { color: var(--magenta); }
-  .palette .q { color: var(--fg); }
-  .palette .hint { margin-left: auto; color: var(--fg-faint); }
-
-  ::selection { background: var(--cyan); color: var(--bg); }
+@media (max-width: 1080px){
+  .stop{grid-template-columns:var(--rail) minmax(0,1fr)}
+  .plate{grid-column:2;margin-top:var(--s-6)}
+  .hero{grid-template-columns:1fr;gap:var(--s-10)}
+  .key{max-width:34rem}
+}
+@media (max-width: 760px){
+  :root{--zone-w:0px;--rail:46px;--xg:6px;--xm:25px;--xb:40px}
+  .brand-x{display:none}
+  .ring{width:18px;height:18px;border-width:3px;top:calc(var(--st-off) - 9px)}
+  .ring.on-main{left:calc(var(--xm) - 9px)} .ring.on-ghost{left:calc(var(--xg) - 9px)}
+  .link{height:10px;top:calc(var(--st-off) - 5px);border-block-width:3px}
+  .ps code{white-space:normal;overflow-wrap:anywhere}
+  .terminus h3 .dek{font-size:var(--t1)} .terminus .body{font-size:var(--t0)}
+  .wrap{padding-inline:var(--s-4)}
+  .zone-in{grid-template-columns:1fr}
+  .zone-label{padding:var(--s-8) 0 0 calc(var(--rail) + var(--s-3));flex-direction:row;align-items:baseline;gap:var(--s-3);flex-wrap:wrap;
+    background:
+      linear-gradient(var(--main),var(--main)) calc(var(--xm) - 3px) 0 / 6px 100% no-repeat,
+      repeating-linear-gradient(to bottom,var(--ghost) 0 6px,transparent 6px 12px) calc(var(--xg) - 1px) 0 / 2px 100% no-repeat}
+  .zone-label.has-branch{background:
+      linear-gradient(var(--main),var(--main)) calc(var(--xm) - 3px) 0 / 6px 100% no-repeat,
+      linear-gradient(var(--branch),var(--branch)) calc(var(--xb) - 3px) 0 / 6px 100% no-repeat,
+      repeating-linear-gradient(to bottom,var(--ghost) 0 6px,transparent 6px 12px) calc(var(--xg) - 1px) 0 / 2px 100% no-repeat}
+  .depot .zone-label,.terminus .zone-label{display:none}
+  .zone-label h2,.zone-label p{position:static}
+  .zone-label h2{flex-direction:row;align-items:baseline;gap:var(--s-3)}
+  .zone-label p{margin:0;max-width:none}
+  .zone-label .zw{font-size:var(--t1)}
+  .stop{column-gap:var(--s-3);padding-block:var(--s-6) var(--s-8)}
+  .rail{margin-block:calc(-1 * var(--s-6)) calc(-1 * var(--s-8))}
+  .rail{--st-off:calc(var(--st) + var(--s-6))}
+  .stop h3 code{font-size:var(--t1);line-height:28px}
+  :root{--st:14px}
+  .stop h3 .dek{font-size:1.125rem}
+  .strip{display:none}
+  .key ul{grid-template-columns:1fr}
+  .hero{padding-block:var(--s-6) var(--s-10)}
+  .term{font-size:.8125rem;padding:var(--s-3) var(--s-4)}
+  .t-danger{margin-left:calc(-1 * var(--s-4));padding-left:var(--s-4)}
+  .t-cm{display:block}
+  .term{font-size:.75rem;padding:var(--s-3)}
+  .t-danger{margin-left:calc(-1 * var(--s-3));padding-left:var(--s-3)}
+  .hero .lede{font-size:1.1875rem}
+  .depot .stop,.terminus .stop{padding-top:var(--s-6)}
+}
+@media print{.toggle{display:none}.term{box-shadow:none}}
 </style>
 </head>
 <body>
-
-<div class="term">
-
-  <!-- terminal chrome -->
-  <div class="chrome">
-    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-    <span class="title">git-survival-kit — zsh — 188×54</span>
-    <span class="right">pid 48217 · tty s001 · uptime 04:12:38</span>
+<div class="wrap">
+  <div class="top">
+    <span class="line-name"><i aria-hidden="true"></i>The git line<span class="brand-x">, first 90 days</span></span>
+    <span id="toggle-slot"></span>
   </div>
 
-  <!-- status bar (inverted) -->
-  <div class="statusbar">
-    <span class="seg"><span class="v">~/projects/web-app</span></span>
-    <span class="pipe">│</span>
-    <span class="seg"><span class="k">branch:</span><span class="v">main</span></span>
-    <span class="pipe">│</span>
-    <span class="seg"><span class="v">↑3 ↓0</span></span>
-    <span class="pipe">│</span>
-    <span class="seg"><span class="k">staged:</span><span class="v">0</span></span>
-    <span class="pipe">│</span>
-    <span class="seg"><span class="k">modified:</span><span class="v">2</span></span>
-    <span class="pipe">│</span>
-    <span class="seg"><span class="k">untracked:</span><span class="v">1</span></span>
-    <span class="right">
-      <span class="seg"><span class="k">git</span><span class="v">2.44.0</span></span>
-    </span>
-  </div>
-
-  <!-- tabs -->
-  <div class="tabs">
-    <span class="tab active"><span class="b">[</span> Basics <span class="b">]</span></span>
-    <span class="tab">  Branching  </span>
-    <span class="tab">  Stashing  </span>
-    <span class="tab">  Recovery  </span>
-    <span class="tab">  Config  </span>
-    <span class="tab-meta">12/12 cmds · loaded in 0.04s</span>
-  </div>
-
-  <!-- main two-col -->
-  <div class="main">
-
-    <!-- LEFT PANEL: commands 1–6 -->
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">┌─</span>
-        <span class="lbl">SURVIVAL · BASICS</span>
-        <span class="pre">─</span>
-        <span style="color:var(--fg-faint)">use first. break least.</span>
-        <span class="ct">6 cmds ─┐</span>
-      </div>
-
-      <!-- 01 status -->
-      <div class="row sel">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">01</span>
-            <span class="cmd">git status</span>
-            <span class="desc">Lists tracked, staged, modified files.</span>
-            <span class="tag read">read</span>
-          </div>
-          <div class="meta"><span class="k">when</span> before every other git command.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git status -sb</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. cannot mutate repo.</span></div>
-        </div>
-      </div>
-
-      <!-- 02 add -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">02</span>
-            <span class="cmd">git add</span>
-            <span class="desc">Stages changes for next commit.</span>
-            <span class="tag write">stage</span>
-          </div>
-          <div class="meta"><span class="k">when</span> after editing, before commit.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git add -p src/api.ts</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git restore --staged &lt;file&gt;</span></div>
-        </div>
-      </div>
-
-      <!-- 03 commit -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">03</span>
-            <span class="cmd">git commit</span>
-            <span class="desc">Snapshots staged changes to local history.</span>
-            <span class="tag write">write</span>
-          </div>
-          <div class="meta"><span class="k">when</span> logical unit of work done.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git commit -m "fix: null guard in parser"</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git commit --amend  (last commit only)</span></div>
-        </div>
-      </div>
-
-      <!-- 04 push -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">04</span>
-            <span class="cmd">git push</span>
-            <span class="desc">Uploads local commits to remote branch.</span>
-            <span class="tag danger">remote</span>
-          </div>
-          <div class="meta"><span class="k">when</span> sharing work. opening PR.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git push -u origin feat/auth</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git push --force-with-lease  (never plain --force)</span></div>
-        </div>
-      </div>
-
-      <!-- 05 pull / fetch -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">05</span>
-            <span class="cmd">git pull --rebase</span>
-            <span class="desc">Fetches remote then replays your commits.</span>
-            <span class="tag write">sync</span>
-          </div>
-          <div class="meta"><span class="k">when</span> teammate pushed. before push.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git fetch origin && git pull --rebase</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git rebase --abort  (during conflict)</span></div>
-        </div>
-      </div>
-
-      <!-- 06 log -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">06</span>
-            <span class="cmd">git log</span>
-            <span class="desc">Prints commit history. one-line form best.</span>
-            <span class="tag read">read</span>
-          </div>
-          <div class="meta"><span class="k">when</span> auditing. blame hunting. lost?</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git log --oneline --graph --decorate -n 20</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. press q to exit pager.</span></div>
-        </div>
-      </div>
+  <header class="hero">
+    <div>
+      <h1>Almost nothing in git is permanent.</h1>
+      <p class="lede">Twelve commands for your first 90 days, in the order you’ll meet them. Every stop has a way out for the mistake people make there.</p>
     </div>
-
-    <!-- RIGHT PANEL: commands 7-12 -->
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">┌─</span>
-        <span class="lbl">SURVIVAL · BRANCHING + RECOVERY</span>
-        <span class="pre">─</span>
-        <span style="color:var(--fg-faint)">history surgery. handle with care.</span>
-        <span class="ct">6 cmds ─┐</span>
-      </div>
-
-      <!-- 07 diff -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">07</span>
-            <span class="cmd">git diff</span>
-            <span class="desc">Shows unstaged changes. line by line.</span>
-            <span class="tag read">read</span>
-          </div>
-          <div class="meta"><span class="k">when</span> review before staging or commit.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git diff --staged           # what'll commit</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">harmless. pager only.</span></div>
-        </div>
-      </div>
-
-      <!-- 08 branch -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">08</span>
-            <span class="cmd">git branch</span>
-            <span class="desc">Lists, creates, deletes branches.</span>
-            <span class="tag safe">local</span>
-          </div>
-          <div class="meta"><span class="k">when</span> new feature. cleanup stale heads.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git branch -vv          # show tracking</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git branch &lt;name&gt; &lt;sha-from-reflog&gt;</span></div>
-        </div>
-      </div>
-
-      <!-- 09 switch / checkout -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">09</span>
-            <span class="cmd">git switch</span>
-            <span class="desc">Changes active branch. modern checkout.</span>
-            <span class="tag write">move</span>
-          </div>
-          <div class="meta"><span class="k">when</span> hop between features. start fresh.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git switch -c feat/login origin/main</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git switch -            # back to prev</span></div>
-        </div>
-      </div>
-
-      <!-- 10 merge -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">10</span>
-            <span class="cmd">git merge</span>
-            <span class="desc">Joins another branch into current. preserves history.</span>
-            <span class="tag write">write</span>
-          </div>
-          <div class="meta"><span class="k">when</span> integrating feature. updating local main.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git merge --no-ff feat/auth</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git merge --abort  /  git reset --hard ORIG_HEAD</span></div>
-        </div>
-      </div>
-
-      <!-- 11 rebase -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">11</span>
-            <span class="cmd">git rebase</span>
-            <span class="desc">Replays commits onto new base. rewrites SHAs.</span>
-            <span class="tag danger">rewrites</span>
-          </div>
-          <div class="meta"><span class="k">when</span> linear history. before merging PR.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git rebase -i origin/main</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git rebase --abort  /  git reset --hard ORIG_HEAD</span></div>
-        </div>
-      </div>
-
-      <!-- 12 stash -->
-      <div class="row">
-        <span class="bar">▌</span>
-        <div class="body">
-          <div class="line1">
-            <span class="num">12</span>
-            <span class="cmd">git stash</span>
-            <span class="desc">Shelves dirty changes. clean tree restored.</span>
-            <span class="tag safe">save</span>
-          </div>
-          <div class="meta"><span class="k">when</span> urgent switch with work in progress.</div>
-          <div class="meta"><span class="k">example</span> <span class="prompt">$</span><span class="v ex">git stash push -m "wip: parser refactor"</span></div>
-          <div class="meta"><span class="k">recover</span> <span class="pfx">▸</span><span class="v rec">git stash list && git stash pop stash@{0}</span></div>
-        </div>
-      </div>
+    <div class="key">
+      <h2>Reading the map</h2>
+      <ul>
+        <li><svg viewBox="0 0 44 22" aria-hidden="true"><path d="M2 11h40" stroke="var(--main)" stroke-width="6"/></svg><span><b>Main line.</b> The branch everyone shares.</span></li>
+        <li><svg viewBox="0 0 44 22" aria-hidden="true"><path d="M2 11h40" stroke="var(--branch)" stroke-width="6"/></svg><span><b>Branch line.</b> Your own branch, where the work happens.</span></li>
+        <li><svg viewBox="0 0 44 22" aria-hidden="true"><path d="M2 11h40" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="6 6"/><circle cx="22" cy="11" r="5" fill="var(--bg)" stroke="var(--ghost)" stroke-width="2"/></svg><span><b>Ghost line.</b> The reflog. A dot means git logged that move.</span></li>
+        <li><svg viewBox="0 0 44 22" aria-hidden="true"><path d="M2 11h40" stroke="var(--main)" stroke-width="6"/><circle cx="22" cy="11" r="8" fill="var(--bg)" stroke="var(--ring-ink)" stroke-width="4"/></svg><span><b>Interchange.</b> Where lines split or meet.</span></li>
+        <li><svg viewBox="0 0 44 22" aria-hidden="true"><rect x="2" y="2" width="40" height="18" rx="3" fill="none" stroke="var(--danger)" stroke-width="2"/><path d="M10 11h24" stroke="var(--danger)" stroke-width="2"/></svg><span><b>Loses work.</b> Read twice before you press enter.</span></li>
+      </ul>
     </div>
-  </div>
+  </header>
 
-  <!-- command palette / search bar (fake but consistent) -->
-  <div class="palette">
-    <span class="p">:</span><span class="q">filter</span>
-    <span style="color:var(--fg-faint)">─</span>
-    <span style="color:var(--fg)">git&nbsp;</span><span style="color:var(--cyan)">█</span>
-    <span class="hint">3 matches · ↑↓ to navigate · enter to expand · esc to clear</span>
-  </div>
-
-  <!-- secondary widgets row -->
-  <div class="main" style="grid-template-columns: 1.2fr 1fr 0.9fr;">
-
-    <!-- reflog widget -->
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">├─</span>
-        <span class="lbl">REFLOG</span>
-        <span class="pre">─</span>
-        <span style="color:var(--fg-faint)">git reflog · last 8 entries</span>
-        <span class="ct">~/.git/logs/HEAD</span>
-      </div>
-      <div class="widget reflog" style="border-bottom:none; padding-top:5px;">
-        <div class="e cur"><span class="sha">a4f1c0e</span><span class="op">HEAD@{0}</span><span class="msg">commit: fix: null guard in parser</span></div>
-        <div class="e"><span class="sha">9d3b21a</span><span class="op">HEAD@{1}</span><span class="msg">rebase (finish): returning to refs/heads/main</span></div>
-        <div class="e"><span class="sha">6e0fa12</span><span class="op">HEAD@{2}</span><span class="msg">rebase (pick): refactor: extract token cache</span></div>
-        <div class="e"><span class="sha">2bc81d4</span><span class="op">HEAD@{3}</span><span class="msg">rebase (start): checkout origin/main</span></div>
-        <div class="e"><span class="sha">f7a09cb</span><span class="op">HEAD@{4}</span><span class="msg">commit: feat: add SSO callback handler</span></div>
-        <div class="e"><span class="sha">11e4d8f</span><span class="op">HEAD@{5}</span><span class="msg">reset: moving to HEAD~1</span></div>
-        <div class="e"><span class="sha">5a92c3b</span><span class="op">HEAD@{6}</span><span class="msg">commit: chore: bump deps</span></div>
-        <div class="e"><span class="sha">3df02e8</span><span class="op">HEAD@{7}</span><span class="msg">checkout: moving from feat/auth to main</span></div>
-      </div>
-    </div>
-
-    <!-- diff preview -->
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">├─</span>
-        <span class="lbl">DIFF · PREVIEW</span>
-        <span class="pre">─</span>
-        <span style="color:var(--fg-faint)">src/parser.ts</span>
-        <span class="ct">+4 -1</span>
-      </div>
-      <div class="widget diff" style="border-bottom:none; padding-top:5px;">
-<pre><span class="hdr">diff --git a/src/parser.ts b/src/parser.ts</span>
-<span class="hdr">index 8c41a2..a4f1c0e 100644</span>
-<span class="hdr">--- a/src/parser.ts</span>
-<span class="hdr">+++ b/src/parser.ts</span>
-<span class="at">@@ -42,7 +42,10 @@ function parseToken(s) {</span>
-<span class="ctx">   const t = s.trim();</span>
-<span class="del">-  return t.split('.')[1];</span>
-<span class="add">+  if (!t || t.indexOf('.') &lt; 0) {</span>
-<span class="add">+    return null;</span>
-<span class="add">+  }</span>
-<span class="add">+  return t.split('.')[1] ?? null;</span>
-<span class="ctx"> }</span></pre>
-      </div>
-    </div>
-
-    <!-- branch tree + gauges -->
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">├─</span>
-        <span class="lbl">BRANCH TREE</span>
-        <span class="pre">─</span>
-        <span style="color:var(--fg-faint)">local · remote</span>
-      </div>
-      <div class="widget branchtree" style="padding-top:5px;">
-<pre style="font-family:inherit; font-size:11px; line-height:1.45; margin:0;"><span class="g">* main</span>                <span class="f">a4f1c0e</span> <span class="m">[origin/main: ↑3]</span>
-<span class="f">│</span>  feat/auth          <span class="f">f7a09cb</span> <span class="m">[origin/feat/auth]</span>
-<span class="f">│</span>  feat/login         <span class="f">2bc81d4</span> <span class="m">[gone]</span>
-<span class="f">│</span>  fix/parser-null    <span class="f">a4f1c0e</span>
-<span class="f">│</span>  chore/deps         <span class="f">5a92c3b</span> <span class="hd">⚠ 14 days stale</span>
-<span class="f">└─</span> <span class="c">remotes/origin/HEAD → main</span></pre>
-      </div>
-      <div class="widget">
-        <div class="wh">REPO HEALTH <span class="b">─────────────</span></div>
-        <div class="gauge">
-          <span>working tree</span>
-          <span class="bar"><span class="fill g" style="width:78%"></span></span>
-          <span class="v" style="color:var(--green)">clean</span>
-        </div>
-        <div class="gauge">
-          <span>commits ahead</span>
-          <span class="bar"><span class="fill y" style="width:32%"></span></span>
-          <span class="v">3</span>
-        </div>
-        <div class="gauge">
-          <span>conflicts</span>
-          <span class="bar"><span class="fill" style="width:0%"></span></span>
-          <span class="v">0</span>
-        </div>
-        <div class="gauge">
-          <span>stash entries</span>
-          <span class="bar"><span class="fill y" style="width:18%"></span></span>
-          <span class="v">2</span>
-        </div>
-        <div class="gauge">
-          <span>reflog size</span>
-          <span class="bar"><span class="fill" style="width:54%"></span></span>
-          <span class="v">274</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FIRE PANEL -->
-  <div class="fire">
-    <div class="fire-head">
-      <span class="blink">◆</span>
-      <span style="color:var(--red); font-weight:600;">WHEN EVERYTHING IS ON FIRE</span>
-      <span style="color:var(--fg-faint)">─ destructive ops can be undone. nothing is lost while in reflog.</span>
-      <span class="marquee">ttl 90 days · gc.reflogExpire=90d</span>
-    </div>
-
-    <div class="fire-grid">
-
-      <!-- fire 1 -->
-      <div class="fire-cell">
-        <div class="h">
-          <span class="sigil">●</span><span class="name">git reflog</span>
-          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 1 · audit</span>
-        </div>
-        <div class="d">Shows all HEAD movements. including ones you thought were lost.</div>
-        <div class="ex"><span class="p">$</span>git reflog --date=iso | head -40</div>
-        <div class="note">▸ exits 0 always. SHAs in column 1 are recoverable. copy one.</div>
-      </div>
-
-      <!-- fire 2 -->
-      <div class="fire-cell">
-        <div class="h">
-          <span class="sigil">●</span><span class="name">git reset --hard ORIG_HEAD</span>
-          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 2 · revert</span>
-        </div>
-        <div class="d">Undoes last destructive op. merge, rebase, reset.</div>
-        <div class="ex"><span class="p">$</span>git reset --hard ORIG_HEAD</div>
-        <div class="note">▸ ORIG_HEAD set automatically before merge/rebase/reset. one-shot.</div>
-      </div>
-
-      <!-- fire 3 -->
-      <div class="fire-cell">
-        <div class="h">
-          <span class="sigil">●</span><span class="name">git cherry-pick &lt;sha&gt;</span>
-          <span style="color:var(--fg-faint); font-size:10.5px; margin-left:auto;">step 3 · graft</span>
-        </div>
-        <div class="d">Recovers a single commit by SHA from reflog. onto current branch.</div>
-        <div class="ex"><span class="p">$</span>git cherry-pick 6e0fa12</div>
-        <div class="note">▸ conflict? --abort to bail, --continue when resolved.</div>
-      </div>
-    </div>
-
-    <!-- escalation ladder -->
-    <div style="border-top:1px solid var(--border); padding:6px 12px; font-size:11px; color:var(--fg-dim); display:flex; gap:14px; flex-wrap:wrap;">
-      <span style="color:var(--fg-faint);">escalation ladder ▸</span>
-      <span><span style="color:var(--green)">L1</span> git status</span>
-      <span style="color:var(--fg-faint)">→</span>
-      <span><span style="color:var(--cyan)">L2</span> git diff</span>
-      <span style="color:var(--fg-faint)">→</span>
-      <span><span style="color:var(--yellow)">L3</span> git reflog</span>
-      <span style="color:var(--fg-faint)">→</span>
-      <span><span style="color:var(--yellow)">L4</span> git reset --hard ORIG_HEAD</span>
-      <span style="color:var(--fg-faint)">→</span>
-      <span><span style="color:var(--red)">L5</span> git cherry-pick &lt;sha&gt;</span>
-      <span style="color:var(--fg-faint)">→</span>
-      <span><span style="color:var(--red)">L6</span> ask a senior. paste reflog.</span>
-    </div>
-  </div>
-
-  <!-- legend strip -->
-  <div class="main" style="grid-template-columns: 1fr 1fr;">
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">├─</span><span class="lbl">LEGEND</span><span class="pre">─</span>
-        <span style="color:var(--fg-faint)">command classification</span>
-      </div>
-      <div class="widget legend" style="border-bottom:none;">
-        <div><span class="sw" style="color:var(--green)">●</span> <span style="color:var(--green)">safe</span>      &nbsp;cannot mutate remote</div>
-        <div><span class="sw" style="color:var(--cyan-2)">●</span> <span style="color:var(--cyan-2)">read</span>      &nbsp;no writes to .git</div>
-        <div><span class="sw" style="color:var(--yellow)">●</span> <span style="color:var(--yellow)">write</span>     &nbsp;local history changes</div>
-        <div><span class="sw" style="color:var(--red)">●</span> <span style="color:var(--red)">destructive</span> &nbsp;reflog is your seatbelt</div>
-        <div><span class="sw">▌</span> selected row</div>
-        <div><span class="sw">█</span> cursor</div>
-        <div><span class="sw">◆</span> alert</div>
-        <div><span class="sw">▸</span> recovery hint</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <span class="pre">├─</span><span class="lbl">KEYMAP</span><span class="pre">─</span>
-        <span style="color:var(--fg-faint)">vim-style. emacs unbound.</span>
-      </div>
-      <div class="widget keymap" style="border-bottom:none;">
-        <div class="k"><span class="kc">k / j</span><span>move up / down one row</span></div>
-        <div class="k"><span class="kc">g / G</span><span>jump first / last command</span></div>
-        <div class="k"><span class="kc">enter</span><span>expand row · show man page</span></div>
-        <div class="k"><span class="kc">/</span><span>incremental search</span></div>
-        <div class="k"><span class="kc">y</span><span>yank example to clipboard</span></div>
-        <div class="k"><span class="kc">r</span><span>refresh status bar</span></div>
-        <div class="k"><span class="kc">?</span><span>open this help</span></div>
-        <div class="k"><span class="kc">q · esc</span><span>quit / back one level</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- bottom help bar (the one the user asked for) -->
-  <div class="helpbar">
-    <span><span class="kb">q</span> quit</span>
-    <span><span class="kb">?</span> help</span>
-    <span><span class="kb">/</span> search</span>
-    <span><span class="kb">enter</span> expand</span>
-    <span><span class="kb">esc</span> back</span>
-    <span><span class="kb">k/j</span> navigate</span>
-    <span><span class="kb">y</span> yank</span>
-    <span><span class="kb">r</span> refresh</span>
-    <span class="right">
-      <span>git 2.44.0</span>
-      <span>survival-kit v1.0</span>
-      <span class="blink-c">READY</span>
-    </span>
-  </div>
-
+  <nav aria-label="All twelve stops">
+    <ol class="strip">
+<li class="sm-main"><a href="#status"><span class="sm-n">01</span>status</a></li>
+<li class="sm-main"><a href="#add"><span class="sm-n">02</span>add</a></li>
+<li class="sm-main"><a href="#commit"><span class="sm-n">03</span>commit</a></li>
+<li class="sm-main"><a href="#pull"><span class="sm-n">04</span>pull</a></li>
+<li class="sm-main"><a href="#push"><span class="sm-n">05</span>push</a></li>
+<li class="sm-main sm-ring"><a href="#switch"><span class="sm-n">06</span>switch</a></li>
+<li class="sm-branch"><a href="#diff"><span class="sm-n">07</span>diff</a></li>
+<li class="sm-branch"><a href="#log"><span class="sm-n">08</span>log</a></li>
+<li class="sm-branch"><a href="#stash"><span class="sm-n">09</span>stash</a></li>
+<li class="sm-branch"><a href="#restore"><span class="sm-n">10</span>restore</a></li>
+<li class="sm-main sm-ring"><a href="#revert"><span class="sm-n">11</span>revert</a></li>
+<li class="sm-main sm-ring"><a href="#reflog"><span class="sm-n">12</span>reflog</a></li>
+    </ol>
+  </nav>
 </div>
 
+<main>
+<section class="zone end depot" aria-label="Day 0">
+  <div class="wrap zone-in">
+    <header class="zone-label"><h2><span class="zn">Depot</span><span class="zw">Day 0</span></h2></header>
+    <div class="zone-stops">
+      <article class="stop" id="clone">
+        <div class="rail" aria-hidden="true"><i class="ln ghost from-st"></i><i class="ln main from-st"></i><i class="gdot"></i><i class="bar"></i></div>
+        <div class="stop-main">
+          <h3><code>git clone &lt;url&gt;</code><span class="dek">The line starts here. It doesn’t count as a stop.</span></h3>
+          <p class="body">You’ll run it once, on day one. It copies the project and its whole history into a new folder. Everything below happens inside that folder, and the reflog starts writing from this moment.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="zone alt" aria-labelledby="z1">
+<div class="wrap zone-in">
+  <header class="zone-label"><h2 id="z1"><span class="zn">Zone 1</span><span class="zw">Day 1</span></h2><p>Your first commit</p></header>
+  <div class="zone-stops">
+<article class="stop" id="status" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="tick on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git status</code><span class="dek">Run it before every other command.</span></h3>
+  <p class="meta">Stop 01 · Main line</p>
+  <p class="body">It tells you which branch you’re on, what’s staged for the next commit, what’s changed but not staged, and which files git isn’t tracking yet. It never changes anything, so you can run it fifty times a day.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git status"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">status</span></span>
+<span class="t-out">On branch main</span>
+<span class="t-out">Changes not staged for commit:</span>
+<span class="t-out">  (use "git restore &lt;file&gt;..." to discard changes)</span>
+<span class="t-out">	modified:   src/login.js</span>
+<span class="t-blank"></span>
+<span class="t-out">Untracked files:</span>
+<span class="t-out">	notes.txt</span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git status">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Lost track of what state you’re in</h4><p>Run <code>git status</code> and read the lines in parentheses. Git prints the undo command for most states right there.</p></div>
+</aside>
+</article>
+<article class="stop" id="add" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="tick on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git add</code><span class="dek">Stage files on purpose, not with a dot.</span></h3>
+  <p class="meta">Stop 02 · Main line</p>
+  <p class="body">Adding moves a change into the staging area, the draft of your next commit. <code>git add .</code> grabs everything, including the debug file you forgot about. Name files, or pick hunks one at a time with <code>-p</code>.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git add"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">add</span> <span class="tk">src/login.js</span> <span class="t-cm"># stage one file</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">add</span> <span class="tk">-p</span> <span class="t-cm"># review each change, answer y or n</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git add">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Staged the wrong file</h4><p><code>git restore --staged notes.txt</code> unstages it. Your edits stay in the file.</p></div>
+</aside>
+</article>
+<article class="stop" id="commit" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="gdot"></i><i class="tick on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git commit</code><span class="dek">Commit small, and say why.</span></h3>
+  <p class="meta">Stop 03 · Main line<span class="logged"><i aria-hidden="true"></i>Logged in reflog as “commit”</span></p>
+  <p class="body">A commit saves the staged snapshot with a message. Keep each one to a single idea, so it can be read, reviewed, and reverted on its own. The message should explain the change to someone who wasn’t there.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git commit"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">commit</span> <span class="tk">-m</span> <span class="tk">&quot;Fix</span> <span class="tk">typo</span> <span class="tk">in</span> <span class="tk">login</span> <span class="tk">button</span> <span class="tk">label&quot;</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git commit">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Typo in the message, or a file left out (not pushed yet)</h4><p>Stage the missing file, then <code>git commit --amend --no-edit</code>. Drop <code>--no-edit</code> to rewrite the message.</p></div><div class="exit"><h4>Committed too early</h4><p><code>git reset --soft HEAD~1</code> takes the commit back and leaves every change staged.</p></div>
+</aside>
+</article>
+<article class="stop" id="pull" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="gdot"></i><i class="tick on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git pull</code><span class="dek">Pull before you start, and again before you push.</span></h3>
+  <p class="meta">Stop 04 · Main line<span class="logged"><i aria-hidden="true"></i>Logged in reflog as “pull”</span></p>
+  <p class="body">Pull fetches your teammates’ commits and folds them into your branch. With <code>--rebase</code> your own commits are replayed on top, so history stays a straight line instead of a knot of merge commits.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git pull"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">pull</span> <span class="tk">--rebase</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">config</span> <span class="tk">--global</span> <span class="tk">pull.rebase</span> <span class="tk">true</span> <span class="t-cm"># always rebase</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git pull">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>It stops with CONFLICT</h4><p>Open the files it names, keep the right lines, delete the <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers, <code>git add</code> them, then <code>git rebase --continue</code>.</p></div><div class="exit"><h4>You want out of the conflict entirely</h4><p><code>git rebase --abort</code> puts everything back as it was before the pull. Pulled with merge instead? <code>git merge --abort</code>.</p></div>
+</aside>
+</article>
+<article class="stop" id="push" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="tick on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git push</code><span class="dek">Push your own branch, never someone else’s history.</span></h3>
+  <p class="meta">Stop 05 · Main line</p>
+  <p class="body">Push sends your commits to the shared remote. The first push of a branch needs <code>-u</code> to link it to its remote twin; after that, a bare <code>git push</code> is enough.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git push"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">push</span> <span class="tk">-u</span> <span class="tk">origin</span> <span class="tk">fix-login</span> <span class="t-cm"># first push of a branch</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">push</span> <span class="t-cm"># every push after</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git push">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Rejected: “the remote contains work that you do not have locally”</h4><p>Someone pushed first. <code>git pull --rebase</code>, then push again.</p></div><div class="exit is-danger"><h4>You amended or rebased a branch you already pushed<span class="warn">Loses work</span></h4><p><code>git push --force-with-lease</code> overwrites the remote copy of <em>your</em> branch, and refuses if anyone else pushed to it meanwhile. Never on main.</p></div>
+</aside>
+</article></div>
+</div>
+</section>
+
+<section class="zone" aria-labelledby="z2">
+<div class="wrap zone-in">
+  <header class="zone-label"><h2 id="z2"><span class="zn">Zone 2</span><span class="zw">Week 1</span></h2><p>Working on a branch</p></header>
+  <div class="zone-stops">
+<article class="stop" id="switch" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><svg class="curve fork" viewBox="0 0 32 48" preserveAspectRatio="none"><path d="M0 0 C0 28 32 20 32 48"/></svg><i class="ln branch from-fork"></i><i class="gdot"></i><i class="ring on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git switch</code><span class="dek">Make a branch for every change.</span></h3>
+  <p class="meta">Stop 06 · Change here for the branch line<span class="logged"><i aria-hidden="true"></i>Logged in reflog as “checkout”</span></p>
+  <p class="body">Branches are cheap: a branch is just a name pointing at a commit. Start each task on a new one so main stays clean and every change can become its own pull request.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git switch"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">switch</span> <span class="tk">-c</span> <span class="tk">fix-login</span> <span class="t-cm"># create and move to it</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">switch</span> <span class="tk">main</span> <span class="t-cm"># go back to main</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">switch</span> <span class="tk">-</span> <span class="t-cm"># toggle to the previous branch</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git switch">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit is-danger"><h4>You committed to main by accident (not pushed)<span class="warn">Loses work</span></h4><p>Save the commits on a branch with <code>git branch fix-login</code>, reset main with <code>git reset --hard origin/main</code>, then <code>git switch fix-login</code>. Commit or stash anything unsaved first: <code>--hard</code> discards it.</p></div><div class="exit"><h4>“Your local changes would be overwritten”</h4><p>Git won’t switch over unsaved work. Commit it, or park it with <code>git stash</code> (stop 09).</p></div>
+</aside>
+</article>
+<article class="stop" id="diff" data-lane="branch">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="ln branch"></i><i class="tick on-branch"></i></div>
+<div class="stop-main">
+  <h3><code>git diff</code><span class="dek">Read your change before anyone else does.</span></h3>
+  <p class="meta">Stop 07 · Branch line</p>
+  <p class="body">Diff shows line by line what changed. Run it before every commit; reviewers will find the stray <code>console.log</code> if you don’t.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git diff"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">diff</span> <span class="t-cm"># changed, not yet staged</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">diff</span> <span class="tk">--staged</span> <span class="t-cm"># what the next commit will contain</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">diff</span> <span class="tk">main...fix-login</span> <span class="t-cm"># what your branch adds</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git diff">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>It shows nothing, but you definitely changed things</h4><p>Those changes are already staged; use <code>--staged</code>. Brand-new files don’t appear until you <code>git add</code> them.</p></div>
+</aside>
+</article>
+<article class="stop" id="log" data-lane="branch">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="ln branch"></i><i class="tick on-branch"></i></div>
+<div class="stop-main">
+  <h3><code>git log</code><span class="dek">Know where you are before you move.</span></h3>
+  <p class="meta">Stop 08 · Branch line</p>
+  <p class="body">Log lists commits, newest first. The one-line graph view is the version worth memorising: it shows where branches split and where they meet again.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git log"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">log</span> <span class="tk">--oneline</span> <span class="tk">--graph</span> <span class="tk">-15</span></span>
+<span class="t-out">* 28ac35e (HEAD -&gt; fix-login) Fix typo in login button</span>
+<span class="t-out">* 187e9ab (origin/main, main) Add login form</span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git log">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Stuck in a screen with a colon at the bottom</h4><p>That’s the pager. Press <kbd>q</kbd>. Arrow keys scroll, <kbd>/</kbd> searches.</p></div>
+</aside>
+</article></div>
+</div>
+</section>
+
+<section class="zone alt" aria-labelledby="z3">
+<div class="wrap zone-in">
+  <header class="zone-label has-branch"><h2 id="z3"><span class="zn">Zone 3</span><span class="zw">Weeks 2–4</span></h2><p>Parking and discarding</p></header>
+  <div class="zone-stops">
+<article class="stop" id="stash" data-lane="branch">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="ln branch"></i><i class="tick on-branch"></i></div>
+<div class="stop-main">
+  <h3><code>git stash</code><span class="dek">Park unfinished work, briefly.</span></h3>
+  <p class="meta">Stop 09 · Branch line</p>
+  <p class="body">Stash shelves your uncommitted changes and gives you a clean folder, so you can switch branches or pull. Pop brings them back. A stash older than a week is a branch you forgot to make.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git stash"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">stash</span> <span class="tk">push</span> <span class="tk">-u</span> <span class="tk">-m</span> <span class="tk">&quot;half-done</span> <span class="tk">header&quot;</span> <span class="t-cm"># with new files</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">stash</span> <span class="tk">list</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">stash</span> <span class="tk">pop</span> <span class="t-cm"># reapply and remove</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git stash">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>Pop stopped with a conflict</h4><p>Your stash is still safe in <code>git stash list</code>. Resolve the files, then <code>git stash drop</code> it yourself.</p></div>
+</aside>
+</article>
+<article class="stop" id="restore" data-lane="branch">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="ln branch"></i><i class="tick on-branch"></i></div>
+<div class="stop-main">
+  <h3><code>git restore</code><span class="dek">Throw away a change, deliberately.</span></h3>
+  <p class="meta">Stop 10 · Branch line</p>
+  <p class="body">Restore puts a file back the way it was in the last commit, or the way it is on another branch. It is the right tool when you want a fresh start on one file.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git restore"><code><span class="t-cmd t-danger"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">restore</span> <span class="tk">src/login.js</span> <span class="t-cm"># uncommitted edits are gone</span></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">restore</span> <span class="tk">--source=main</span> <span class="tk">src/login.js</span> <span class="t-cm"># main’s copy</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git restore">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit is-danger"><h4>You restored the wrong file<span class="warn">Loses work</span></h4><p>This is the one git can’t undo. Uncommitted edits were never saved, so no command brings them back, not even the reflog. When unsure, <code>git stash</code> instead: same clean file, with a receipt.</p></div>
+</aside>
+</article></div>
+</div>
+</section>
+
+<section class="zone" aria-labelledby="z4">
+<div class="wrap zone-in">
+  <header class="zone-label has-branch"><h2 id="z4"><span class="zn">Zone 4</span><span class="zw">Month 2</span></h2><p>Undoing in public</p></header>
+  <div class="zone-stops">
+<article class="stop" id="revert" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost"></i><i class="ln main"></i><i class="ln branch to-merge"></i><svg class="curve merge" viewBox="0 0 32 48" preserveAspectRatio="none"><path d="M32 0 C32 28 0 20 0 48"/></svg><i class="gdot"></i><i class="ring on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git revert</code><span class="dek">Undo pushed work with a new commit.</span></h3>
+  <p class="meta">Stop 11 · Branch line rejoins main<span class="logged"><i aria-hidden="true"></i>Logged in reflog as “revert”</span></p>
+  <p class="body">Once a commit is on a shared branch, don’t erase it. Revert adds a new commit that does the exact opposite, so history stays honest and nobody’s copy breaks.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git revert"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">revert</span> <span class="tk">28ac35e</span></span>
+<span class="t-out">[main 24865e2] Revert "Fix typo in login button"</span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git revert">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>The bad commit is a merge</h4><p><code>git revert -m 1 &lt;sha&gt;</code>. The <code>1</code> tells git to keep main’s side and undo what the merge brought in.</p></div><div class="exit"><h4>You reverted the wrong commit</h4><p>Revert the revert. It’s a commit like any other.</p></div>
+</aside>
+</article></div>
+</div>
+</section>
+
+<section class="zone alt" aria-labelledby="z5">
+<div class="wrap zone-in">
+  <header class="zone-label"><h2 id="z5"><span class="zn">Zone 5</span><span class="zw">Day 90</span></h2><p>Or your first bad day</p></header>
+  <div class="zone-stops">
+<article class="stop" id="reflog" data-lane="main">
+<div class="rail" aria-hidden="true"><i class="ln ghost to-st"></i><i class="ln main"></i><i class="gdot"></i><i class="link"></i><i class="ring on-ghost"></i><i class="ring on-main"></i></div>
+<div class="stop-main">
+  <h3><code>git reflog</code><span class="dek">Find the commit you think you lost.</span></h3>
+  <p class="meta">Stop 12 · Change here for the ghost line</p>
+  <p class="body">Every time HEAD moves (a commit, a pull, a switch, a reset) git writes it down. The reflog is that diary. A commit no branch points to still lives here, and you can put a branch back on it.</p>
+  <pre class="term" tabindex="0" aria-label="Example: git reflog"><code><span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">reflog</span></span>
+<span class="t-out">9c1d2e4 HEAD@{0}: reset: moving to HEAD~1</span>
+<span class="t-out">b7a3f10 HEAD@{1}: commit: Add password check</span>
+<span class="t-out">9c1d2e4 HEAD@{2}: commit: Fix typo in login button</span>
+<span class="t-out">4e8f2a1 HEAD@{3}: checkout: moving from main to fix-login</span>
+<span class="t-blank"></span>
+<span class="t-cmd"><span class="t-ps" aria-hidden="true">$ </span><span class="tk">git</span> <span class="tk">branch</span> <span class="tk">rescue</span> <span class="tk">b7a3f10</span> <span class="t-cm"># back on a branch</span></span></code></pre>
+</div>
+<aside class="plate" aria-label="Way out for git reflog">
+  <p class="plate-head"><span class="arrow" aria-hidden="true"></span>Way out</p>
+  <div class="exit"><h4>A reset ate your work</h4><p>Find the line just before the reset, then <code>git branch rescue &lt;sha&gt;</code>. Safer than resetting again: nothing else moves.</p></div><div class="exit"><h4>How long you have</h4><p>Entries stay 90 days by default, but only 30 for commits no branch can reach. Lost something? Act within the month. The reflog lives on your laptop only.</p></div>
+</aside>
+</article></div>
+</div>
+</section>
+<section class="zone end terminus" aria-label="End of the line">
+  <div class="wrap zone-in">
+    <header class="zone-label"></header>
+    <div class="zone-stops">
+      <article class="stop" id="end">
+        <div class="rail" aria-hidden="true"><i class="ln main to-st"></i><i class="bar"></i></div>
+        <div class="stop-main">
+          <h3><span class="dek">End of the line. You’ll stop needing the map around day 90.</span></h3>
+          <p class="body">That’s also how far back the reflog remembers. If something goes wrong before then, the way out is almost always on this page: read <code>git status</code>, then come back to the stop you were at.</p>
+          <p class="ps"><b>P.S.</b> Before you try anything clever on a repo you’re scared of, copy the whole folder: <code>cp -r acme-web acme-web-backup</code>. It isn’t a git command. It’s still the one undo that works when you’ve misunderstood everything.</p>
+          <p class="checked">Commands, flags, and messages checked against Git 2.50.1 and its manual pages on 22 October 2026. <code>git switch</code> and <code>git restore</code> arrived in Git 2.23 (August 2019) to split up the overloaded <code>git checkout</code>; their manuals still say “experimental,” though <code>git status</code> already points you to <code>restore</code>. Example hashes are illustrative.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement, slot=document.getElementById('toggle-slot');
+  try{var saved=localStorage.getItem('git-line-theme'); if(saved) root.setAttribute('data-theme',saved);}catch(e){}
+  function isDark(){var t=root.getAttribute('data-theme'); if(t) return t==='dark'; return window.matchMedia('(prefers-color-scheme: dark)').matches;}
+  var b=document.createElement('button'); b.className='toggle'; b.type='button';
+  function paint(){var d=isDark();
+    b.innerHTML=(d?'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.5" fill="currentColor"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3" stroke="currentColor" stroke-width="1.5"/></svg>Day service':'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 10.5A6 6 0 0 1 5.5 3a6 6 0 1 0 7.5 7.5z" fill="currentColor"/></svg>Night service');
+    b.setAttribute('aria-label', d?'Switch to the light theme (day service)':'Switch to the dark theme (night service)');}
+  b.addEventListener('click',function(){var next=isDark()?'light':'dark'; root.setAttribute('data-theme',next); try{localStorage.setItem('git-line-theme',next);}catch(e){} paint();});
+  paint(); slot.appendChild(b);
+})();
+</script>
 </body>
 </html>

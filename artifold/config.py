@@ -102,6 +102,7 @@ DEFAULTS = {
     "intent_model": "claude-haiku-4-5",
     "intent_concurrency": 5,
     "drop_dir": None,          # where `artifold import <url>` saves fetched artifacts
+    "share_credit": True,      # one-line "Made with craft" link on shared pages
 }
 
 # Config keys `artifold config` may read or write. Roots and allow-lists have
@@ -113,6 +114,7 @@ SETTABLE = {
     "intent_concurrency": int,
     "max_depth": int,
     "drop_dir": str,
+    "share_credit": bool,
 }
 
 
