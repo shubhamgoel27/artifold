@@ -312,6 +312,33 @@ def record_open(sha: str) -> dict | None:
     return e
 
 
+def set_hidden(paths: list[Path], hidden: bool) -> int:
+    """Hide or unhide files in the dashboard. The file is never touched.
+
+    The flag lives on the content-hash entry, so it follows a rename (same
+    bytes, same hash) and an in-place edit (carry_forward copies it). The
+    path is stamped too, which is what lets carry_forward find the entry.
+    Byte-identical copies share one entry, so they hide together, the same
+    way they already share tags and shares.
+    One write for the whole list. Returns how many entries changed."""
+    d = _load_raw()
+    items = d["items"]
+    n = 0
+    for p in paths:
+        sha = sha1_of(p)
+        if hidden:
+            e = items.setdefault(sha, {"added_at": _now()})
+            e.setdefault("path", str(p))
+            if not e.get("hidden"):
+                e["hidden"] = True
+                n += 1
+        elif items.get(sha, {}).pop("hidden", None):
+            n += 1
+    if n:
+        _save_raw(d)
+    return n
+
+
 def sha_for_path(path: str | Path) -> str | None:
     """Find the live entry recorded at `path`. Lets the server count an open
     from the path the dashboard already has, without re-hashing the file.

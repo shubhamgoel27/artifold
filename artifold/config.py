@@ -5,6 +5,7 @@ config.json schema:
       "roots": ["/Users/me/Downloads", "/Users/me/work"],
       "allow_repos": [],            # dir names with their own .git to include anyway
       "max_depth": 3,               # max nesting under a project dir
+      "hidden_dirs": [],            # folders kept out of the dashboard
       "categories": { ... }         # optional override of DEFAULT_CATEGORIES
     }
 """
@@ -103,6 +104,7 @@ DEFAULTS = {
     "intent_concurrency": 5,
     "drop_dir": None,          # where `artifold import <url>` saves fetched artifacts
     "share_credit": True,      # one-line "Made with craft" link on shared pages
+    "hidden_dirs": [],         # folders kept out of the dashboard (files untouched)
 }
 
 # Config keys `artifold config` may read or write. Roots and allow-lists have
@@ -231,3 +233,24 @@ def remove_allow_repo(name: str) -> tuple[bool, str]:
 
 def allow_repos() -> list[str]:
     return list(load().get("allow_repos") or [])
+
+
+def hidden_dirs() -> list[Path]:
+    return [Path(d) for d in (load().get("hidden_dirs") or [])]
+
+
+def set_dir_hidden(path: str | Path, hidden: bool) -> bool:
+    """Hide or unhide a folder in the dashboard. Returns True if it changed.
+    A folder rule, unlike a per-file flag, also covers files added later."""
+    s = str(Path(path).expanduser().resolve())
+    cfg = load()
+    dirs = list(cfg.get("hidden_dirs") or [])
+    if (s in dirs) == hidden:
+        return False
+    if hidden:
+        dirs.append(s)
+    else:
+        dirs.remove(s)
+    cfg["hidden_dirs"] = sorted(dirs)
+    save(cfg)
+    return True

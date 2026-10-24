@@ -121,3 +121,33 @@ Refresh = run one script. Cards show screenshot thumbnails.
   all 22 pages is clean.
 - Old README screenshots showed the old name (Folio) and private pages.
   Replaced from a throwaway library.
+
+## v0.16: hide (2026-10-24)
+Hide a page from the dashboard without touching the file.
+- [x] Store: `hidden` flag on the provenance entry of every file in the
+      project (survives renames, since the hash is the key, and in-place
+      edits through carry_forward; a new -v2 stays hidden because the
+      older versions are). Folders: `hidden_dirs` in config, so new
+      files in a hidden folder stay hidden.
+- [x] Scan: each project gets `hidden: "self" | "folder"` (absent when
+      visible), plus `hidden_dir`.
+- [x] Server: POST /hide {paths | dir, hidden}. Paths outside a root
+      are refused, like /trash.
+- [x] Dashboard: hidden pages leave the grid, counts and ⌘K. A "Hidden"
+      view in the sidebar (shown only when there are some) lists them.
+      Hide/unhide button on the card and in the detail header. The toast
+      offers Undo and "Hide folder".
+- [x] CLI: `artifold hide <file|dir>`, `artifold unhide <file|dir>`,
+      `artifold hidden`. `search` skips hidden unless `--all`.
+- [x] Tests, CHANGELOG, README, version 0.16.0, release.
+
+### Review
+- Browser run on a throwaway library: hide from a card, Undo, "Hide all
+  of <folder>", Hidden view, unhide from the detail header and from a
+  folder-hidden card, state kept across a reload. No console errors;
+  files untouched.
+- CLI run with and without a live server: `serve` now writes its port to
+  the cache dir, so `artifold hide` asks only its own library's server
+  to rescan, and rebuilds data.json itself when none runs.
+- Byte-identical copies share a provenance entry, so they hide together.
+  Kept: it is how tags and shares already treat duplicates.

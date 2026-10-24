@@ -25,7 +25,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from . import config
-from .paths import CACHE_DIR, DATA
+from .paths import CACHE_DIR, DATA, SERVER_FILE
 
 DEBOUNCE = 2.0
 # How long an edited artifact must sit untouched before its thumbnail is
@@ -192,6 +192,27 @@ def _trash_paths(raw: list[str]) -> tuple[list[str], list[dict]]:
     return trashed, errors
 
 
+def hide_request(body: dict) -> tuple[int, dict]:
+    """Apply a /hide request: {paths: [...]} or {dir: ...}, plus `hidden`
+    (default true). Everything must sit under a configured root, the same
+    rule as /trash, so the store never gains entries for arbitrary files."""
+    from . import provenance
+    hidden = body.get("hidden", True) is not False
+    if body.get("dir"):
+        d = Path(body["dir"])
+        if not d.is_dir() or not _allowed_path(d):
+            return 403, {"error": "folder not under any configured root"}
+        changed = config.set_dir_hidden(d, hidden)
+        return 200, {"changed": int(changed)}
+    raw = body.get("paths") or []
+    if not raw:
+        return 400, {"error": "paths or dir required"}
+    paths = [Path(p) for p in raw]
+    if not all(p.is_file() and _allowed_path(p) for p in paths):
+        return 403, {"error": "path not under any configured root"}
+    return 200, {"changed": provenance.set_hidden(paths, hidden)}
+
+
 def _token_for_dir(d: Path) -> str:
     """Register `d` and return a stable 12-char hash used in /asset/<token>/…
     URLs. Same dir → same token across calls."""
@@ -247,6 +268,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self._handle_export_pdf()
         if path == "/trash":
             return self._handle_trash()
+        if path == "/hide":
+            return self._handle_hide()
         if path == "/opened":
             # The dashboard beacons here when the user opens an artifact in a
             # new tab. That open never touches the server otherwise, so
@@ -325,6 +348,16 @@ class Handler(SimpleHTTPRequestHandler):
         # scan now to reconcile the library in the background.
         threading.Thread(target=_run_scan, args=("trash-followup",), daemon=True).start()
         return self._json({"ok": True, "trashed": trashed, "errors": errors})
+
+    def _handle_hide(self):
+        """Hide or unhide files (`paths`) or a folder (`dir`) in the
+        dashboard. The files are not touched; see `hide_paths`."""
+        body = self._read_json()
+        status, payload = hide_request(body)
+        if status != 200:
+            return self._json({"ok": False, **payload}, status)
+        threading.Thread(target=_run_scan, args=("hide-followup",), daemon=True).start()
+        return self._json({"ok": True, **payload})
 
     def _handle_export_pdf(self):
         from . import pdf as pdf_mod
@@ -703,6 +736,10 @@ def serve(port: int = 8787, open_browser: bool = True) -> None:
     httpd = QuietThreadingHTTPServer(("127.0.0.1", port),
                                      partial(Handler, directory=str(CACHE_DIR)))
     url = f"http://127.0.0.1:{port}/"
+    # Lets CLI commands (artifold hide) ask this server, and no other, to
+    # rescan. It lives in this library's cache dir, so a server for another
+    # library on the same machine is never the one asked.
+    SERVER_FILE.write_text(str(port))
     print(f"\nArtifold live at {url}\n"
           f"(Ctrl+C to stop · ⌘K palette · auto-rescans on changes)\n")
     if open_browser:
@@ -711,5 +748,7 @@ def serve(port: int = 8787, open_browser: bool = True) -> None:
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\nstopped.")
+    finally:
+        SERVER_FILE.unlink(missing_ok=True)
         if obs:
             obs.stop(); obs.join(timeout=2)

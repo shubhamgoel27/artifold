@@ -291,6 +291,7 @@ body {
 .card-acts .ca-open  { top: 8px; right: 8px; }
 .card-acts .ca-trash { bottom: 8px; right: 8px; }
 .card-acts .ca-trash:hover { background: #c84c4c; }
+.card-acts .ca-hide  { bottom: 8px; right: 42px; }
 .card .body { padding: 10px 12px 12px; min-height: 0; }
 .card .title { font-size: 13px; font-weight: 550; letter-spacing: -0.005em;
                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -667,6 +668,7 @@ body {
         <div class="facet" data-facet="status:all"><span class="label"><span class="name">All</span></span><span class="count" id="ct-all">0</span></div>
         <div class="facet" data-facet="status:shared"><span class="label"><span class="name">Shared</span></span><span class="count" id="ct-shared">0</span></div>
         <div class="facet" data-facet="status:local"><span class="label"><span class="name">Local only</span></span><span class="count" id="ct-local">0</span></div>
+        <div class="facet" data-facet="status:hidden" id="facet-hidden" style="display:none"><span class="label"><span class="name">Hidden</span></span><span class="count" id="ct-hidden">0</span></div>
       </div>
       <div class="side-section">
         <div class="side-label">Category</div>
@@ -724,6 +726,7 @@ body {
             data-tip="Share publicly (~30–60s on first share)"></button>
     <button class="icon-btn" id="d-pdf"
             data-tip="Export to PDF (renders with @media print rules)"></button>
+    <button class="icon-btn" id="d-hide"></button>
     <button class="icon-btn" id="d-trash"
             data-tip="Move this version to Trash (recoverable)"></button>
     <button class="icon-btn" id="d-open"
@@ -856,6 +859,8 @@ const ICON = {
   diff:     `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 2v12"/><path d="M4 6.5v3M2.5 8h3"/><path d="M10.5 8h3"/></svg>`,
   themeMorph: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><mask id="m"><rect width="24" height="24" fill="#fff"/><circle class="bite" cx="18" cy="6" r="6" fill="#000"/></mask><circle class="orb" cx="12" cy="12" r="5" fill="currentColor" mask="url(#m)" stroke="none"/><g class="rays"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.5" y1="4.5" x2="6" y2="6"/><line x1="18" y1="18" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6" y2="18"/><line x1="18" y1="6" x2="19.5" y2="4.5"/></g></svg>`,
 };
+ICON.eye = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/></svg>`;
+ICON.eyeOff = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.7A6.6 6.6 0 0 1 8 3.5c4 0 6.5 4.5 6.5 4.5a11 11 0 0 1-1.7 2.2M4.2 4.9C2.5 6.1 1.5 8 1.5 8S4 12.5 8 12.5c1.3 0 2.4-.4 3.4-1M6.6 6.6a2 2 0 0 0 2.8 2.8M2 2l12 12"/></svg>`;
 const ic = name => ICON[name] || '';
 
 // ---------- custom tooltip (delegated, single shared node) ----------
@@ -920,6 +925,10 @@ function computeMixedTools() {
 }
 computeMixedTools();
 const isShared = p => ((provenance(p).shares || []).length > 0);
+// Hidden pages stay in D (the Hidden view lists them) but leave every
+// other view, count and the palette. The files themselves are untouched.
+const shownProjects = () => D.projects.filter(p => !p.hidden);
+const hiddenProjects = () => D.projects.filter(p => p.hidden);
 const shareURL = p => { const s = provenance(p).shares || []; return s[s.length-1] && s[s.length-1].url; };
 
 // --- state ---
@@ -930,27 +939,38 @@ let state = { q: '', sort: 'recent', view: 'grid',
 
 // --- header bits ---
 function setStatusbar() {
-  const tot = D.projects.reduce((s,p) => s + p.file_count, 0);
-  $('status-meta').textContent = `${D.projects.length} projects · ${tot} files · generated ${new Date(D.generated_at).toLocaleString()}`;
+  const shown = shownProjects(), nHidden = D.projects.length - shown.length;
+  const tot = shown.reduce((s,p) => s + p.file_count, 0);
+  $('status-meta').textContent = `${shown.length} projects · ${tot} files`
+    + (nHidden ? ` · ${nHidden} hidden` : '')
+    + ` · generated ${new Date(D.generated_at).toLocaleString()}`;
 }
 
 // --- sidebar facets ---
 function buildSidebar() {
   // counts
-  const all = D.projects;
+  const all = shownProjects();
+  const nHidden = D.projects.length - all.length;
+  // Never strand the user in an empty Hidden view after the last unhide.
+  if (state.status === 'hidden' && !nHidden) state.status = 'all';
+  $('facet-hidden').style.display = nHidden ? '' : 'none';
+  $('ct-hidden').textContent = nHidden;
   const shared = all.filter(isShared);
   const local = all.filter(p => !isShared(p));
   $('ct-all').textContent = all.length;
   $('ct-shared').textContent = shared.length;
   $('ct-local').textContent = local.length;
   const now = Date.now() / 1000;
-  $('ct-7d').textContent = all.filter(p => now - p.latest_mtime < 7 * 86400).length;
-  $('ct-30d').textContent = all.filter(p => now - p.latest_mtime < 30 * 86400).length;
+  // Category, tool and date counts describe the view you are in, so in the
+  // Hidden view they count hidden pages.
+  const pool = state.status === 'hidden' ? hiddenProjects() : all;
+  $('ct-7d').textContent = pool.filter(p => now - p.latest_mtime < 7 * 86400).length;
+  $('ct-30d').textContent = pool.filter(p => now - p.latest_mtime < 30 * 86400).length;
 
   // categories
   const cf = $('cat-facets'); cf.innerHTML = '';
   D.categories.forEach(c => {
-    const n = D.counts[c];
+    const n = pool.filter(p => p.category === c).length;
     const el = document.createElement('div');
     el.className = 'facet'; el.dataset.facet = 'cat:' + c;
     el.style.setProperty('--c', catColor(c));
@@ -962,7 +982,7 @@ function buildSidebar() {
 
   // tools
   const tools = {};
-  all.forEach(p => {
+  pool.forEach(p => {
     const t = provenance(p).tool || '(unlabeled)';
     tools[t] = (tools[t] || 0) + 1;
   });
@@ -1001,7 +1021,8 @@ function toggleSet(s, v, cb) { s.has(v) ? s.delete(v) : s.add(v); cb(); }
 // --- list/grid renderer ---
 function filteredProjects() {
   const now = Date.now() / 1000;
-  return D.projects.filter(p => {
+  const base = state.status === 'hidden' ? hiddenProjects() : shownProjects();
+  return base.filter(p => {
     if (state.q) {
       const hay = p.search_text + ' ' + p.name.toLowerCase();
       const prov = provenance(p);
@@ -1028,7 +1049,8 @@ function filteredProjects() {
 function render() {
   buildSidebar();
   const list = filteredProjects();
-  $('result-count').textContent = `${list.length} of ${D.projects.length}`;
+  const total = state.status === 'hidden' ? hiddenProjects().length : shownProjects().length;
+  $('result-count').textContent = `${list.length} of ${total}`;
   if (!list.length) {
     $('results').innerHTML = D.projects.length === 0 ? emptyHTML() :
       `<div class="empty-state"><p>No artifacts match these filters.</p></div>`;
@@ -1072,6 +1094,7 @@ function rowHTML(p) {
       ${shared ? `<button title="Copy share URL" onclick='copyShareURL(${JSON.stringify(p.id)})'>⎘</button>`
                : `<button title="Share publicly" onclick='quickShare(${JSON.stringify(p.id)},this)'>↑</button>`}
       <button title="Open in new tab" onclick='event.stopPropagation();openInNewTab("${reportURL(p.primary.path)}")'>↗</button>
+      <button title="${p.hidden ? 'Unhide' : 'Hide from the dashboard (the file stays)'}" onclick='event.stopPropagation();toggleHideById(${JSON.stringify(p.id)})'>${ic(p.hidden ? 'eye' : 'eyeOff')}</button>
     </div>
   </div>`;
 }
@@ -1101,6 +1124,8 @@ function cardHTML(p) {
     <div class="card-acts">
       <button class="ca-open" title="Open in new tab"
               onclick='event.stopPropagation();openArtifactById(${pid})'>${ic('arrowUR')}</button>
+      <button class="ca-hide" title="${p.hidden ? 'Unhide' : 'Hide from the dashboard (the file stays)'}"
+              onclick='event.stopPropagation();toggleHideById(${pid})'>${ic(p.hidden ? 'eye' : 'eyeOff')}</button>
       <button class="ca-trash" title="Move to Trash"
               onclick='event.stopPropagation();confirmTrashProject(${pid})'>${ic('trash')}</button>
     </div>
@@ -1116,6 +1141,7 @@ function cardHTML(p) {
              title="Open the published page on claude.ai (private to you until you share it)"
              onclick="event.stopPropagation()">link</a>` : ''}
         ${isShared(p) ? `<span class="shared-mark" title="Shared publicly">●</span>` : ''}
+        ${p.hidden === 'folder' ? `<span class="revs" title="Hidden with its folder: ${escape(p.hidden_dir)}">folder hidden</span>` : ''}
       </div>
     </div>
   </div>`;
@@ -1384,6 +1410,13 @@ function renderActions() {
   pdfBtn.style.color = '';
   pdfBtn.onclick = () => doExportPDF(openProj);
 
+  const hideBtn = $('d-hide');
+  hideBtn.innerHTML = ic(openProj.hidden ? 'eye' : 'eyeOff');
+  hideBtn.dataset.tip = openProj.hidden
+    ? (openProj.hidden === 'folder' ? 'Unhide (shows the whole folder again)' : 'Unhide')
+    : 'Hide from the dashboard (the file stays)';
+  hideBtn.onclick = () => toggleHide(openProj);
+
   // Trash button — destructive but recoverable (sends to system Trash)
   const trashBtn = $('d-trash');
   trashBtn.innerHTML = ic('trash');
@@ -1534,6 +1567,73 @@ async function doTrashBulk(paths, projectName, projectId) {
     }
     toast(`Trash failed: ${e.message}`);
   }
+}
+
+// --- hide (out of the dashboard; the files stay where they are) ---
+function projectPaths(p) {
+  const s = new Set([p.primary.path]);
+  (p.versions || []).forEach(v => v.path && s.add(v.path));
+  (p.variants || []).forEach(v => v.path && s.add(v.path));
+  return [...s];
+}
+// Absolute folder a project lives in, or '' for files directly in a root.
+function projectFolder(p) { return shownDir(p) ? p.root.replace(/\/$/, '') + '/' + p.dir : ''; }
+const inFolder = (p, dir) => p.primary.path.startsWith(dir + '/');
+
+function toggleHideById(id) {
+  const p = D.projects.find(x => x.id === id);
+  if (p) toggleHide(p);
+}
+
+function toggleHide(p) {
+  if (!SERVED) return toast('Run artifold serve to hide pages');
+  if (!p.hidden) return hidePages(p);
+  if (p.hidden === 'folder') return setFolderHidden(p.hidden_dir, false);
+  return unhidePages(p);
+}
+
+// Flip local state first, like trash does: the server answers in a few ms
+// and the rescan that follows only confirms it.
+async function sendHide(body, apply, undo) {
+  apply(); render(); if (openProj) renderActions();
+  try { await postJSON('/hide', body); return true; }
+  catch (e) { undo(); render(); toast('Hide failed: ' + e.message); return false; }
+}
+
+async function hidePages(p) {
+  const was = p.hidden;
+  if (openProj && openProj.id === p.id) close_();
+  const ok = await sendHide({ paths: projectPaths(p), hidden: true },
+    () => { p.hidden = 'self'; }, () => { p.hidden = was; });
+  if (!ok) return;
+  const folder = projectFolder(p);
+  const acts = [{ label: 'Undo', onclick: () => unhidePages(p) }];
+  if (folder) acts.push({ label: `Hide all of ${p.dir}`, onclick: () => setFolderHidden(folder, true) });
+  showActionToast(`Hid "${p.name}". The file is still on disk.`, acts);
+}
+
+async function unhidePages(p) {
+  const ok = await sendHide({ paths: projectPaths(p), hidden: false },
+    () => { delete p.hidden; }, () => { p.hidden = 'self'; });
+  if (ok) toast(`"${p.name}" is back`);
+}
+
+async function setFolderHidden(dir, hidden) {
+  const hit = D.projects.filter(p => inFolder(p, dir));
+  const before = hit.map(p => [p.hidden, p.hidden_dir]);
+  if (hidden && openProj && hit.includes(openProj)) close_();
+  const ok = await sendHide({ dir, hidden },
+    () => hit.forEach(p => {
+      if (hidden) { p.hidden = 'folder'; p.hidden_dir = dir; }
+      else if (p.hidden === 'folder') { delete p.hidden; delete p.hidden_dir; }
+    }),
+    () => hit.forEach((p, i) => { [p.hidden, p.hidden_dir] = before[i]; }));
+  if (!ok) return;
+  const name = dir.split('/').pop();
+  const n = hit.length === 1 ? '1 page' : `${hit.length} pages`;
+  if (hidden) showActionToast(`Hid the ${name} folder (${n}), including pages added later.`,
+                              [{ label: 'Undo', onclick: () => setFolderHidden(dir, false) }]);
+  else toast(`The ${name} folder is back (${n})`);
 }
 
 // --- PDF export ---
@@ -1734,7 +1834,7 @@ function cmdkRender() {
     type:'action', a, label:a.label, sub:'Action', icon:a.icon,
     s: q ? fuzzy(q, a.label) : 100  // always shown when no query
   })).filter(x => q ? x.s > 0 : true);
-  const artHits = D.projects.map(p => ({
+  const artHits = shownProjects().map(p => ({
     type:'artifact', p, label:p.name, sub:shownDir(p),
     s: q ? fuzzy(q, `${p.name} ${p.dir} ${p.category} ${(provenance(p).intent || '')}`)
          : -p.latest_mtime / 1e9

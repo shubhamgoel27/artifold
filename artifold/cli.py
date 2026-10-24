@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
+import io
 import sys
 import webbrowser
 from pathlib import Path
@@ -397,6 +399,8 @@ def _cmd_search(args):
 
     hits = []
     for p in d.get("projects") or []:
+        if p.get("hidden") and not args.all:
+            continue
         fs = {k: v.lower() for k, v in fields_of(p).items()}
         score = 0
         for t in terms:
@@ -698,6 +702,91 @@ def _cmd_trash(args):
     return 0
 
 
+def _project_files(target: Path) -> list[Path]:
+    """Every file of the project `target` belongs to, from the last scan.
+    Hiding works per project, so unhiding one version alone would leave
+    the page hidden by its siblings. Falls back to just the file."""
+    import json
+    from .paths import DATA
+    t = target.as_posix()
+    try:
+        projects = json.loads(DATA.read_text()).get("projects") or []
+    except Exception:
+        projects = []
+    for p in projects:
+        files = {p["primary"]["path"],
+                 *(v["path"] for v in p.get("versions") or []),
+                 *(v["path"] for v in p.get("variants") or [])}
+        if t in files:
+            return [Path(f) for f in sorted(files) if Path(f).is_file()]
+    return [target]
+
+
+def _refresh_library() -> None:
+    """Make a hide show up. A running dashboard rescans and pushes the
+    change to open tabs; without one, rebuild data.json here (cached
+    thumbnails, so it stays under a second) so `search` sees it too."""
+    import urllib.request
+    from .paths import SERVER_FILE
+    try:
+        port = int(SERVER_FILE.read_text())
+        urllib.request.urlopen(urllib.request.Request(
+            f"http://127.0.0.1:{port}/rescan", method="POST"), timeout=5)
+        return
+    except Exception:
+        pass
+    from . import scan, shoot, build
+    with contextlib.redirect_stdout(io.StringIO()):
+        projects = scan.scan_all()
+        shoot.resolve_cached_thumbs(projects)
+        build.build(projects, [str(r) for r in config.roots()])
+
+
+def _cmd_hide(args, hidden: bool = True):
+    """Hide a page (all its versions) or a folder from the dashboard and
+    from `search`. The files stay where they are."""
+    from . import provenance
+    verb = "hid" if hidden else "unhid"
+    for raw in args.paths:
+        target = Path(raw).expanduser().resolve()
+        if target.is_dir():
+            changed = config.set_dir_hidden(target, hidden)
+            print(f"  {verb} folder {target}" if changed
+                  else f"  (folder already {'hidden' if hidden else 'visible'}: {target})")
+        elif target.is_file():
+            files = _project_files(target)
+            provenance.set_hidden(files, hidden)
+            extra = f" and {len(files) - 1} other version(s)" if len(files) > 1 else ""
+            print(f"  {verb} {target}{extra}")
+        else:
+            print(f"  ! not found: {target}")
+            return 1
+    _refresh_library()
+    return 0
+
+
+def _cmd_hidden(_args):
+    """List what is hidden, and why."""
+    import json
+    from .paths import DATA
+    dirs = config.hidden_dirs()
+    try:
+        projects = json.loads(DATA.read_text()).get("projects") or []
+    except Exception:
+        projects = []
+    pages = [p for p in projects if p.get("hidden") == "self"]
+    if not dirs and not pages:
+        print("  nothing is hidden")
+        return 0
+    for d in dirs:
+        n = sum(1 for p in projects if p.get("hidden_dir") == str(d))
+        print(f"  folder  {d}  ({n} page{'s' if n != 1 else ''})")
+    for p in pages:
+        print(f"  page    {p['primary']['path']}")
+    print("  undo with: artifold unhide <path>")
+    return 0
+
+
 def _cmd_export_pdf(args):
     """Render an HTML artifact to PDF via headless chromium."""
     from . import pdf as pdf_mod
@@ -899,6 +988,16 @@ def main(argv=None) -> int:
                     help="skip confirmation prompt")
     tr.set_defaults(fn=_cmd_trash)
 
+    hd = sub.add_parser("hide",
+        help="keep a page (all its versions) or a folder out of the dashboard "
+             "and search; the files are not touched")
+    hd.add_argument("paths", nargs="+", metavar="path", help="an .html file or a folder")
+    hd.set_defaults(fn=_cmd_hide)
+    uh = sub.add_parser("unhide", help="bring a hidden page or folder back")
+    uh.add_argument("paths", nargs="+", metavar="path", help="an .html file or a folder")
+    uh.set_defaults(fn=lambda a: _cmd_hide(a, hidden=False))
+    sub.add_parser("hidden", help="list hidden pages and folders").set_defaults(fn=_cmd_hidden)
+
     ep = sub.add_parser("export-pdf",
                         help="render an HTML artifact to PDF (next to source by default)")
     ep.add_argument("path", help="path to the .html file")
@@ -946,6 +1045,8 @@ def main(argv=None) -> int:
     se.add_argument("--json", action="store_true",
                     help="machine-readable JSON output (stable contract for scripts/skills)")
     se.add_argument("--limit", type=int, default=10, help="max results (default 10)")
+    se.add_argument("--all", action="store_true",
+                    help="include pages hidden from the dashboard")
     se.set_defaults(fn=_cmd_search)
 
     dg = sub.add_parser("designs", help="list or dump design fingerprints (style + skeleton)")

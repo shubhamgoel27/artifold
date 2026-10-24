@@ -11,7 +11,10 @@ from .paths import DATA, INDEX, ensure_dirs
 def build(projects: list[dict], roots: list[str]) -> dict:
     ensure_dirs()
     cats = sorted({p["category"] for p in projects})
-    counts = {c: sum(1 for p in projects if p["category"] == c) for c in cats}
+    # Counts are what the dashboard shows, and it does not show hidden pages.
+    counts = {c: sum(1 for p in projects
+                     if p["category"] == c and not p.get("hidden"))
+              for c in cats}
     total_files = sum(p["file_count"] for p in projects)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

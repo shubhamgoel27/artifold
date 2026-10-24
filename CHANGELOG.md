@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.16.0
+
+- **Hide pages without deleting them.** The eye button on a card (or in
+  the detail header) takes a page and all its versions out of the
+  dashboard. The file is not touched. The toast offers Undo and "Hide all
+  of <folder>"; a hidden folder also covers pages added to it later.
+  Hidden pages leave the grid, the counts, the palette and `artifold
+  search` (`--all` includes them). The Hidden view in the sidebar lists
+  them and brings them back.
+- New commands: `artifold hide <file|dir>`, `artifold unhide <file|dir>`,
+  `artifold hidden`.
+- A hidden page stays hidden after a rename, an in-place edit, or a new
+  `-v2`. Byte-identical copies share one record, so they hide together.
+
 ## 0.15.0
 
 - **craft is a Claude Code plugin.** `/plugin install craft --marketplace

@@ -6,6 +6,7 @@ Layout (mac):
               ├── index.html
               ├── data.json
               ├── manifest.json
+              ├── serve.port  (while `artifold serve` runs)
               ├── thumbs/<hash>.jpg
               └── browsers/  (Playwright chromium, isolated to artifold)
 
@@ -28,6 +29,7 @@ MANIFEST = CACHE_DIR / "manifest.json"
 DATA = CACHE_DIR / "data.json"
 INDEX = CACHE_DIR / "index.html"
 BROWSERS = CACHE_DIR / "browsers"
+SERVER_FILE = CACHE_DIR / "serve.port"    # port of the running `serve`, if any
 
 
 def ensure_dirs() -> None:

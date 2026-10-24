@@ -84,6 +84,13 @@ prompts and intents. `⌘K` jumps to anything.
 It skips `node_modules`, build output, cloned git repos, server
 templates, and anything nested deeper than `max_depth` (3 by default).
 
+To keep a page out of view without deleting it, hide it: the eye button
+on its card, or `artifold hide <file>`. The file stays where it is. You
+can hide a whole folder too, and pages added to it later stay hidden.
+Hidden pages leave the grid, the counts, `⌘K` and `artifold search`, and
+the Hidden view in the sidebar brings them back. This is for clutter and
+screen sharing, not security: a hidden page can still be opened and shared.
+
 ### Keeps the history
 
 Files named `report-v2.html` or `report (1).html`, or dated copies of the
@@ -219,6 +226,8 @@ artifold share --revoke <id> # take a share down
 artifold share --reconcile   # rebuild share records from what is published
 artifold export-pdf <file>   # render an artifact to PDF
 artifold trash <file>        # move an artifact to the system Trash
+artifold hide <file|dir>     # keep a page or folder out of the dashboard
+artifold unhide <file|dir>   # bring it back (artifold hidden lists them)
 
 artifold import <url>        # save a public share (Claude, ChatGPT, v0, Lovable, …)
 artifold link <file> --tool claude --source URL --prompt "..."

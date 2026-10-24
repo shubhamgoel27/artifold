@@ -386,6 +386,20 @@ def _body_text(path: Path) -> str:
     return _clean(raw)[:4000]
 
 
+def _hidden_state(primary: Path, versions: list[dict],
+                  hidden_dirs: list[Path]) -> tuple[str | None, str | None]:
+    """Why a project is out of the dashboard, if it is: "folder" when it
+    sits under a hidden folder, "self" when any of its versions was hidden.
+    Any version counts, so a new -v2 of a hidden page stays hidden."""
+    parent = primary.resolve().parent
+    for d in hidden_dirs:
+        if parent == d or d in parent.parents:
+            return "folder", str(d)
+    if any((v.get("provenance") or {}).get("hidden") for v in versions):
+        return "self", None
+    return None, None
+
+
 def _scan_root(root: Path, cfg: dict, cats: dict,
                intent_jobs: dict[str, tuple[str, str, Path]]) -> list[dict]:
     """Scan one root; mutates `intent_jobs` with (sha → (title, body, file))
@@ -395,6 +409,7 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
     max_depth = int(cfg.get("max_depth") or 3)
     root_slug = _slugify(root.name) or "root"
     intent_on = intent.enabled(cfg)
+    hidden_dirs = [Path(d) for d in (cfg.get("hidden_dirs") or [])]
 
     # Top-level files share ONE group per root (was: one group per file,
     # which meant `report.html` + `report-v2.html` at root level, and any
@@ -503,6 +518,8 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                     "provenance": p,
                 })
 
+            hidden, hidden_dir = _hidden_state(primary, versions_payload,
+                                               hidden_dirs)
             projects.append({
                 "id": _slugify(uid),
                 "name": proj_name,
@@ -545,6 +562,10 @@ def _scan_root(root: Path, cfg: dict, cats: dict,
                     f"{metas[f]['title']} {metas[f]['heading']} {metas[f]['snippet']}"
                     for f in all_files).lower(),
             })
+            if hidden:
+                projects[-1]["hidden"] = hidden
+                if hidden_dir:
+                    projects[-1]["hidden_dir"] = hidden_dir
 
     return projects
 
