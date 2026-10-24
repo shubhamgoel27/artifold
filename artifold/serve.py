@@ -731,6 +731,12 @@ def serve(port: int = 8787, open_browser: bool = True) -> None:
     if not DATA.exists():
         print("  no dashboard yet — running an initial scan…")
         _run_scan("initial")
+    else:
+        # The dashboard page is rendered from the installed template at scan
+        # time. After an upgrade, the old page would stay until some file
+        # changed, so new controls never showed. One scan in the background
+        # brings the page and data up to date; open tabs get it over SSE.
+        threading.Thread(target=_run_scan, args=("startup",), daemon=True).start()
 
     obs = _start_watcher()
     httpd = QuietThreadingHTTPServer(("127.0.0.1", port),

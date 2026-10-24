@@ -2,7 +2,7 @@
   "$schema": "https://code.claude.com/docs/schemas/plugin-manifest.json",
   "name": "craft",
   "displayName": "craft",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Makes reports, slide decks, trackers and explainers as single HTML pages with a layout, type and voice chosen for the subject, checked in a headless browser before you see them.",
   "author": {
     "name": "Shubham Goel",

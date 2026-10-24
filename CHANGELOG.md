@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.1
+
+- `artifold serve` rescans once at startup, so after an upgrade the
+  dashboard shows the new version's page and controls right away. Before,
+  it kept the old page until a file changed.
+
 ## 0.16.0
 
 - **Hide pages without deleting them.** The eye button on a card (or in
