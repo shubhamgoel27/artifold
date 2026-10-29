@@ -306,7 +306,7 @@ issue](https://github.com/shubhamgoel27/artifold/issues/new); one line is enough
 
 ## Roadmap
 
-- [ ] A dashboard layout that works on a phone
+- [ ] Open the dashboard from your phone (it only listens on your computer today)
 - [ ] `artifold adopt <file>` to move existing files into the inbox
 - [ ] Cloudflare Pages as a sharing option for people without the `gh` CLI
 - [ ] First-class Markdown files

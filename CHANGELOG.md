@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.17.0
+
+- **The dashboard works in narrow windows and on phones.** Below 760px
+  the sidebar becomes a Filters drawer (the button shows how many filters
+  are on), the top bar shrinks to the logo, search and icons, cards go
+  one or two to a row, and the detail header splits into a title line
+  and an actions line. Nothing scrolls sideways at 390px. Wide screens
+  are unchanged.
+- On touch screens the hover-only card buttons are gone (they were
+  invisible but still tappable); the detail pane has every action.
+  Inputs use 16px text there, so iOS does not zoom in on focus.
+- Gallery site: on phones the side arrows, which covered the pictures,
+  are replaced by a Prev / Next bar along the bottom, and you can swipe
+  between topics.
+
 ## 0.16.1
 
 - `artifold serve` rescans once at startup, so after an upgrade the

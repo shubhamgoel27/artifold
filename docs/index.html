@@ -197,6 +197,26 @@
     .nav { width: 44px; height: 44px; }
     .nav.prev { left: 10px; } .nav.next { right: 10px; }
   }
+  /* Phones: side arrows would sit on top of the pictures, so the controls
+     move to a bar along the bottom edge, and the stage takes swipes. */
+  .mnav { display: none; }
+  @media (max-width: 760px) {
+    .nav { display: none; }
+    main { padding: 10px 16px 88px; }
+    .mnav {
+      display: flex; align-items: center; justify-content: space-between;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: var(--bg); border-top: 1px solid var(--line-2);
+    }
+    .mnav button {
+      min-width: 96px; height: 44px; border-radius: 999px;
+      background: white; color: var(--ink); border: 1px solid var(--line-2);
+      font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .mnav button:disabled { opacity: 0.35; }
+    .mnav span { font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-dim); }
+  }
 
   /* - overview modal - */
   .overview {
@@ -307,6 +327,11 @@
 
 <button class="nav prev" id="prev" aria-label="Previous topic">◀</button>
 <button class="nav next" id="next" aria-label="Next topic">▶</button>
+<nav class="mnav" aria-label="Gallery navigation">
+  <button id="mprev" aria-label="Previous topic">◀ Prev</button>
+  <span id="mcur"></span>
+  <button id="mnext" aria-label="Next topic">Next ▶</button>
+</nav>
 
 <div class="overview" id="overview" role="dialog" aria-modal="true" aria-label="All gallery topics">
   <div class="overview-inner">
@@ -451,6 +476,8 @@
   const stage   = document.getElementById("stage");
   const dotsEl  = document.getElementById("dots");
   const curEl   = document.getElementById("cur");
+  const mprev = document.getElementById("mprev"), mnext = document.getElementById("mnext");
+  const mcur = document.getElementById("mcur");
   const totEl   = document.getElementById("tot");
   const prevBtn = document.getElementById("prev");
   const nextBtn = document.getElementById("next");
@@ -542,6 +569,9 @@
     curEl.textContent = idx + 1;
     prevBtn.disabled = idx === 0;
     nextBtn.disabled = idx === TOPICS.length - 1;
+    mprev.disabled = prevBtn.disabled;
+    mnext.disabled = nextBtn.disabled;
+    mcur.textContent = `${idx + 1} / ${TOPICS.length}`;
     if (history.replaceState) history.replaceState(null, "", `#t/${idx+1}`);
     // preload neighbors
     [idx - 1, idx + 1].forEach(i => {
@@ -561,6 +591,21 @@
 
   prevBtn.addEventListener("click", () => go(idx - 1));
   nextBtn.addEventListener("click", () => go(idx + 1));
+  mprev.addEventListener("click", () => { go(idx - 1); scrollTo(0, 0); });
+  mnext.addEventListener("click", () => { go(idx + 1); scrollTo(0, 0); });
+
+  // Swipe between topics. Only a clearly sideways swipe counts, so a
+  // vertical scroll that drifts a little never changes the topic.
+  let tx = null, ty = null;
+  stage.addEventListener("touchstart", e => {
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    tx = ty = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
 
   function openOverview()  { overview.classList.add("open"); }
   function closeOverview() { overview.classList.remove("open"); }

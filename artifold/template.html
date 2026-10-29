@@ -51,17 +51,16 @@ body {
 .app {
   display: grid;
   grid-template-rows: 48px 1fr 28px;
+  /* Without a bounded column the grid grows to its widest child's minimum
+     (the top bar, ~520px), and on a phone everything past that is cut off. */
+  grid-template-columns: minmax(0, 1fr);
   height: 100vh;
+  height: 100dvh;      /* phones: the visible height, not under the browser bar */
 }
 .shell {
   display: grid;
   grid-template-columns: 220px 1fr;
   min-height: 0;
-}
-@media (max-width: 760px) {
-  .shell { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
-  .sidebar.open { display: flex; position: absolute; inset: 48px 0 28px 0; z-index: 30; background: var(--bg); }
 }
 
 /* === topbar ================================================= */
@@ -134,6 +133,7 @@ body {
   font-size: 12.5px;
 }
 .side-section { padding: 12px 8px 8px 8px; }
+.side-head { display: none; }      /* only in the narrow-screen drawer */
 .side-section + .side-section { border-top: 1px solid var(--line); }
 .side-label {
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
@@ -245,7 +245,7 @@ body {
 /* === grid view (cards) ====================================== */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 14px;
   padding: 14px;
 }
@@ -334,7 +334,7 @@ body {
 .scrim.on { opacity: 1; pointer-events: auto; }
 .detail {
   position: fixed; top: 0; right: 0; height: 100vh;
-  width: min(880px, 60vw);
+  width: min(880px, max(60vw, 560px));
   background: var(--bg);
   border-left: 1px solid var(--line);
   transform: translateX(100%);
@@ -633,6 +633,71 @@ body {
 @keyframes s { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* === narrow screens (phones, half-width windows) ============ */
+/* Last in the sheet on purpose: these must win over the base rules. */
+#btn-filters { display: none; }
+#btn-filters .n:empty { display: none; }
+#btn-filters .n {
+  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+  background: var(--accent); color: white; font-size: 10.5px; line-height: 16px; text-align: center;
+}
+@media (max-width: 760px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  /* The sidebar becomes a drawer from the left, opened by Filters. */
+  .sidebar {
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 45;
+    width: min(300px, 86vw);
+    border-right: 1px solid var(--line-2);
+    transform: translateX(-100%);
+    transition: transform .22s cubic-bezier(.2,.7,.2,1);
+    font-size: 14px;
+  }
+  .sidebar.open { transform: none; box-shadow: 8px 0 30px rgba(0,0,0,0.25); }
+  .side-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--line);
+    font-weight: 600; position: sticky; top: 0; background: var(--surface); z-index: 1;
+  }
+  .facet { padding: 9px 8px; }
+  #btn-filters { display: inline-flex; }
+
+  .topbar { gap: 8px; padding: 0 10px; }
+  .brand { padding-right: 0; border-right: 0; }
+  .brand-name { display: none; }
+  .search { min-width: 0; max-width: none; }
+  .search input { min-width: 0; width: 100%; }
+  .search kbd { display: none; }
+  #btn-import { padding: 5px 7px; }
+  #btn-import span { display: none; }
+  .top-actions { gap: 2px; }
+
+  .filter-bar { padding: 8px 10px; }
+  .grid { gap: 10px; padding: 10px; }
+  .row { display: flex; gap: 10px; padding: 10px 12px; }
+  .row .col-meta { flex: 1; }
+  .row .tool-pill, .row .ver-mini, .row > span:empty { display: none; }
+
+  /* Detail header on two lines: title and close, then the actions. */
+  .detail-head { flex-wrap: wrap; row-gap: 8px; }
+  .detail-head .t { flex: 1 1 calc(100% - 40px); }
+  .detail-head #d-close { order: 1; }
+  .detail-head > :not(.t):not(#d-close) { order: 2; }
+  .detail-head .t .d { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabs { padding: 0 4px; }
+
+  .toast { left: 10px; right: 10px; max-width: none; flex-wrap: wrap; }
+  #status-meta { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .live { top: 106px; right: auto; left: 50%; transform: translateX(-50%); }   /* over the cards, not the controls */
+  .statusbar { gap: 8px; padding: 0 10px; }
+}
+/* Touch screens have no hover. The hover-only card buttons would be
+   invisible yet still tappable, so they go; the detail pane has them all. */
+@media (hover: none) {
+  .card-acts, .row .quick-acts { display: none; }
+  .search input, .cmdk input, .modal .body input { font-size: 16px; }   /* iOS zooms on smaller */
+  .cmdk .hint { display: none; }
+}
 </style>
 <script>
 (function(){var t=localStorage.getItem('artifold-theme');
@@ -644,7 +709,7 @@ body {
 <div class="app">
   <!-- topbar -->
   <header class="topbar">
-    <div class="brand"><span class="mark">A</span>Artifold</div>
+    <div class="brand"><span class="mark">A</span><span class="brand-name">Artifold</span></div>
     <div class="search" id="search-box">
       <span class="search-icon"></span>
       <input id="q" placeholder="Search title, content, prompt…" autofocus>
@@ -663,6 +728,7 @@ body {
   <!-- main grid: sidebar + content -->
   <div class="shell">
     <aside class="sidebar" id="sidebar">
+      <div class="side-head"><span>Filters</span><button class="btn" id="side-done">Done</button></div>
       <div class="side-section">
         <div class="side-label">View</div>
         <div class="facet" data-facet="status:all"><span class="label"><span class="name">All</span></span><span class="count" id="ct-all">0</span></div>
@@ -687,6 +753,7 @@ body {
 
     <main class="main">
       <div class="filter-bar">
+        <button class="btn" id="btn-filters" aria-label="Filters"></button>
         <span id="result-count" style="color:var(--text-mut);font-size:12px;font-variant-numeric:tabular-nums"></span>
         <span class="fb-spacer"></span>
         <select id="sort" class="select-styled">
@@ -716,6 +783,7 @@ body {
 
 <!-- detail pane -->
 <div class="scrim" id="scrim"></div>
+<div class="scrim" id="side-scrim"></div>
 <aside class="detail" id="detail">
   <div class="detail-head">
     <div class="t"><div class="n" id="d-name"></div><div class="d" id="d-meta"></div></div>
@@ -861,6 +929,7 @@ const ICON = {
 };
 ICON.eye = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/></svg>`;
 ICON.eyeOff = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.7A6.6 6.6 0 0 1 8 3.5c4 0 6.5 4.5 6.5 4.5a11 11 0 0 1-1.7 2.2M4.2 4.9C2.5 6.1 1.5 8 1.5 8S4 12.5 8 12.5c1.3 0 2.4-.4 3.4-1M6.6 6.6a2 2 0 0 0 2.8 2.8M2 2l12 12"/></svg>`;
+ICON.filter = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>`;
 const ic = name => ICON[name] || '';
 
 // ---------- custom tooltip (delegated, single shared node) ----------
@@ -954,6 +1023,10 @@ function buildSidebar() {
   // Never strand the user in an empty Hidden view after the last unhide.
   if (state.status === 'hidden' && !nHidden) state.status = 'all';
   $('facet-hidden').style.display = nHidden ? '' : 'none';
+  // On narrow screens the sidebar is a drawer, so the Filters button says
+  // how many filters are on; otherwise a filtered grid looks like data loss.
+  const nOn = state.cats.size + state.tools.size + (state.status !== 'all') + (state.date ? 1 : 0);
+  $('btn-filters').innerHTML = ic('filter') + `<span>Filters</span><span class="n">${nOn || ''}</span>`;
   $('ct-hidden').textContent = nHidden;
   const shared = all.filter(isShared);
   const local = all.filter(p => !isShared(p));
@@ -1903,11 +1976,21 @@ cmdkq.addEventListener('keydown', e => {
 });
 cmdk.addEventListener('click', e => { if (e.target === cmdk) closeCmdk(); });
 
+// --- filters drawer (narrow screens) ---
+function openFilters(on) {
+  $('sidebar').classList.toggle('open', on);
+  $('side-scrim').classList.toggle('on', on);
+}
+$('btn-filters').onclick = () => openFilters(true);
+$('side-done').onclick = () => openFilters(false);
+$('side-scrim').onclick = () => openFilters(false);
+
 // --- global keys ---
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openCmdk(); return; }
   if (e.key === 'Escape') {
     if (cmdk.classList.contains('on')) return closeCmdk();
+    if ($('sidebar').classList.contains('open')) return openFilters(false);
     if ($('modal-import').classList.contains('on')) return $('modal-import').classList.remove('on');
     if ($('detail').classList.contains('on')) return close_();
   }

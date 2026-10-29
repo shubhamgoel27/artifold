@@ -151,3 +151,24 @@ Hide a page from the dashboard without touching the file.
   to rescan, and rebuilds data.json itself when none runs.
 - Byte-identical copies share a provenance entry, so they hide together.
   Kept: it is how tags and shares already treat duplicates.
+
+## v0.17: phone and narrow-window layout (2026-10-29)
+Checked at 390px: craft pages fit; gallery arrows cover content; the
+dashboard needs ~520px (top bar, sidebar, sort bar, cards, detail header).
+- [x] Gallery site: prev/next arrows stop covering content on small screens.
+- [x] Dashboard below ~760px: sidebar becomes a Filters drawer; top bar
+      keeps logo mark, search and a compact action row; sort bar wraps;
+      one card per row; detail header on two lines (title row, actions
+      row); modals, palette and toast fit the screen.
+- [x] Verify at 390, 600 and 1400 px with Playwright: no sideways scroll,
+      nothing clipped, desktop unchanged. Tests, CHANGELOG, release.
+
+### Review
+- Root causes: the old phone rule sat above the base `.sidebar` rule, so
+  it never applied; and the page grid column had no bound, so the top
+  bar's minimum width (~520px) set the width of everything. Tests now
+  guard both (they fail on the old template).
+- Checked at 390 (touch), 600 and 1400 px: nothing past the right edge
+  in the grid, list, detail, toast or palette; Filters drawer and badge
+  work; desktop unchanged. Gallery: bottom bar and swipe work, content
+  clears the bar.
