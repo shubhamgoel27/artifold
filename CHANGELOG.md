@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.17.1
+
+- Fixed `artifold serve` rescanning forever on Linux. The watcher took
+  the open and read-only close events that inotify reports for every
+  read as changes, and a scan reads every page, so each scan scheduled
+  the next one.
+
 ## 0.17.0
 
 - **The dashboard works in narrow windows and on phones.** Below 760px

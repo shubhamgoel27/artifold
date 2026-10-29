@@ -634,6 +634,45 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 
+# Watchdog event types that report a read, not a change. Only the Linux
+# inotify backend sends them: "opened" since watchdog 2.3, "closed_no_write"
+# since 5.0. A scan reads every page, so treating them as changes made each
+# scan schedule the next one, forever. Compared as strings because the event
+# classes differ across the watchdog versions pyproject allows.
+READ_ONLY_EVENTS = frozenset({"opened", "closed_no_write"})
+
+
+def library_change(ev) -> Path | None:
+    """The library page a file-system event changed, or None if it changed
+    nothing a scan would see. Created, modified, closed (after a write),
+    deleted and moved count; reads and directory events do not."""
+    if ev.is_directory or ev.event_type in READ_ONLY_EVENTS:
+        return None
+    # For atomic-write rename patterns (editor saves as foo.html.tmp
+    # then `mv foo.html.tmp foo.html`), the move event's src_path is
+    # the .tmp file which would be filtered out. Check dest_path too.
+    paths = [getattr(ev, "src_path", "")]
+    dest = getattr(ev, "dest_path", "")  # only set on moves
+    if dest:
+        paths.append(dest)
+    from . import scan as _scan
+    for sp in paths:
+        if not sp:
+            continue
+        p = Path(sp)
+        if not p.name.lower().endswith(".html"):
+            continue
+        if CACHE_DIR in p.parents:
+            continue
+        # Same rules as a scan (depth cap, cloned repos, skip dirs).
+        # Config is re-read so `artifold allow-repo` takes effect
+        # without a restart; cheap, and only reached for .html paths.
+        if _scan.is_library_path(
+                p, [r.resolve() for r in config.roots()], config.load()):
+            return p
+    return None
+
+
 def _start_watcher():
     try:
         from watchdog.events import FileSystemEventHandler
@@ -660,44 +699,17 @@ def _start_watcher():
 
     class H(FileSystemEventHandler):
         def on_any_event(self, ev):
-            if ev.is_directory:
+            p = library_change(ev)
+            if p is None:
                 return
-            # For atomic-write rename patterns (editor saves as foo.html.tmp
-            # then `mv foo.html.tmp foo.html`), the move event's src_path is
-            # the .tmp file which would be filtered out. Check dest_path too.
-            paths = [getattr(ev, "src_path", "")]
-            dest = getattr(ev, "dest_path", "")  # only set on FileMovedEvent
-            if dest:
-                paths.append(dest)
-            for sp in paths:
-                if not sp:
-                    continue
-                p = Path(sp)
-                if not p.name.lower().endswith(".html"):
-                    continue
-                try:
-                    if CACHE_DIR in p.parents:
-                        continue
-                except Exception:
-                    pass
-                # Same rules as a scan (depth cap, cloned repos, skip dirs).
-                # Config is re-read so `artifold allow-repo` takes effect
-                # without a restart; cheap, and only reached for .html paths.
-                from . import scan as _scan
-                if not _scan.is_library_path(
-                        p, [r.resolve() for r in config.roots()], config.load()):
-                    continue
-                # Survived all filters — schedule a debounced scan and log it
-                # so the operator can see the watcher is alive and working.
-                try:
-                    rel = p.relative_to(Path.home())
-                    label = f"~/{rel}"
-                except ValueError:
-                    label = str(p)
-                kind = type(ev).__name__.replace("File", "").replace("Event", "").lower()
-                print(f"  • watch: {kind} {label}  (scan in {DEBOUNCE:.0f}s)")
-                schedule()
-                return  # one schedule per event is enough
+            # Log it so the operator can see the watcher is alive and working.
+            try:
+                rel = p.relative_to(Path.home())
+                label = f"~/{rel}"
+            except ValueError:
+                label = str(p)
+            print(f"  • watch: {ev.event_type} {label}  (scan in {DEBOUNCE:.0f}s)")
+            schedule()
 
     obs = Observer()
     for r in roots:
