@@ -9,7 +9,7 @@ Each entry shape:
       "source":   "https://claude.ai/share/...",  // chat or artifact URL
       "tool":     "claude" | "chatgpt" | "v0" | "lovable" | "bolt" | "gemini"
                   | "manual" | null,
-      "model":    "claude-opus-4-7" | null,
+      "model":    "claude-opus-5-5" | null,
       "prompt":   "<the prompt that made it>" | null,
       "tags":     [],
       "notes":    "",

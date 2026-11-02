@@ -23,7 +23,7 @@ Register drives headlines and labels, not just body copy. Fit first; freshness b
 | `tarot-reader` | portentous, second-person, symbol-heavy | "You draw the Refactor. Inverted. Interesting." |
 | `group-chat` | lowercase, fragments, real reactions | "ok but WHY does the 8B beat the 70B here. genuinely" |
 | `bedtime-story` | gentle, once-upon-a-time cadence | "Once there was a matrix who wanted to be smaller." |
-| `museum-docent` | urbane, pointing things out, mildly conspiratorial | "Notice, here, the loss curve. It was not always so calm." |
+| `museum-docent` | urbane, pointing things out, mildly conspiratorial | "The loss curve, calm now, was not always so." |
 | `weather-forecast` | fronts, systems, five-day outlooks | "A high-pressure system of free time moves in Thursday." |
 | `liner-notes` | reverent track-by-track credits | "Track 4: the refactor. Written in one sitting, 2 a.m." |
 | `oral-history` | attributed interview fragments, past tense | "'We shipped Friday. Nobody slept.' (the deploy log)" |

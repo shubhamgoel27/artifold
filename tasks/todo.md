@@ -172,3 +172,38 @@ dashboard needs ~520px (top bar, sidebar, sort bar, cards, detail header).
   in the grid, list, detail, toast or palette; Filters drawer and badge
   work; desktop unchanged. Gallery: bottom bar and swipe work, content
   clears the bar.
+
+## v0.18: tune for Opus 5.5 (2026-10-30)
+Evidence: 0/11 plain Opus 5.5 gallery pages use purple or load a web font;
+lengths run thin on tools and long on explainers. craft still warns about
+the old look, and clearly wins only 5 of 11 pairs.
+- [x] 1. Project CLAUDE.md: what this is, tests, release steps, safety
+      rules (isolated HOME for public runs, token never printed, modes.md
+      side effect, restart serve).
+- [x] 2. craft: rewrite "ways pages go wrong" around what Opus 5.5 does
+      by default; cut guidance the plain pages already follow (checked
+      against the 11 plain pages, not guessed).
+- [x] 3. Rerun the craft side of the 6 close pairs (gemini, git, kid,
+      macintosh, transformers, yosemite) with the edited skill, isolated
+      library; blind side-by-side judging; keep the edit only if it helps.
+- [x] 4. Draft a gentler global ~/.claude/CLAUDE.md (plan mode, subagents)
+      plus the plain-English rule; user approves before it is written.
+
+### Review
+- Why the 6 pairs were close (analysis agent): explainers all got the same
+  centered-figure-with-callouts skeleton; sentences shrank into 13.6 px
+  notes and two formulas were clipped; the controls plain pages had
+  (filters, sliders, copy buttons) were dropped; "Cut" removed the part
+  people come back for; glance made a kid's chart austere. Edits target
+  exactly these, plus an opening that describes Opus 5.5's real default.
+- Blind result, 2 judges x 12 pairs, left/right shuffled: new craft beat
+  old craft 11 of 12 and plain Opus 5.5 11 of 12 (7 clear). Both judges
+  gave clear wins over plain on the kid chart, the Mac and transformers.
+- Caveats: one run per topic, model judges, screenshots cannot show
+  interaction. My first screenshots stretched the window and broke a vh
+  hero; reshot and re-judged the 3 affected pairs.
+- Leak: 3 of 6 pages addressed the author by name, one used private
+  interview notes from ~/work. Not usable in public; prompts now carry a
+  public-gallery note and pages get a name scan.
+- Cost: 6 craft runs took 2.2 to 2.6 h each (about 14 Opus-hours), not the
+  15 to 20 min I estimated.

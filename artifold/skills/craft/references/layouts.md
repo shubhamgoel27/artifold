@@ -1,13 +1,13 @@
 # Layout Archetypes: the page skeleton
 
-**Layout = bones** (mode is only paint). Pick it **independently** of mode; fit first, freshness breaks ties (SKILL.md section 4). The default `single-column-scroll` is just *one of twenty-five*, reaching for it by reflex is the bug.
+**Layout = bones** (mode is only paint). Pick it **independently** of mode; fit first, freshness breaks ties (SKILL.md section 4). `single-column-scroll` is one of twenty-five: overused for reports, right for step-by-step teaching.
 
 Each entry: the skeleton, how the eye moves, and a CSS scaffold hint. Build the skeleton first, then apply the mode's paint.
 
 ---
 
 ### 1. `single-column-scroll`
-One narrow column, top-to-bottom. **The overused default, use sparingly and only when the content is genuinely linear prose.**
+One narrow column, top-to-bottom. **Overused for reports. Right for linear prose and step-by-step teaching** (explainers, tutorials, paper walkthroughs), with figures set wide between paragraphs.
 Flow: vertical, linear. Scaffold: `max-width: 70ch; margin: auto`. Reading rhythm must still vary (don't repeat `header→§n→table`).
 
 ### 2. `multi-column-newspaper`
@@ -110,6 +110,6 @@ Flow: center outward, ring by ring. Scaffold: nested circles (or one SVG) with i
 
 ## Choosing a layout
 
-1. **Format-first.** Itinerary → `single-object` (boarding passes) or `timeline-spine`. Comparison → `comparison-matrix-first`, `split-screen`, or `quadrant-map`. Roadmap → `timeline-spine`, `radial-centerpiece`, or `orbit-rings`. Manifesto → `poster-asymmetric`. Catalog/options → `grid-of-tiles`. Reference → `sidebar-nav-docs`, `tabbed-binder`, or `accordion-index` (FAQ-shaped). Monitoring → `dashboard-grid`. Story/marketing → `zigzag-alternating-bands` or `full-bleed-deck`. Story-with-data → `scrolly-stepper`. Essay → `magazine-spread` or `multi-column-newspaper`. Investigation/personal collage → `corkboard-scatter`. Journey/chronology-as-experience → `horizontal-panorama`. Dialogue/debate/explainer-as-banter → `chat-thread`. Schedule/habit/streak → `calendar-grid`. Decision guide → `branching-path`.
+1. **Format-first.** Itinerary → `single-object` (boarding passes) or `timeline-spine`. Comparison → `comparison-matrix-first`, `split-screen`, or `quadrant-map`. Roadmap → `timeline-spine`, `radial-centerpiece`, or `orbit-rings`. Manifesto → `poster-asymmetric`. Catalog/options → `grid-of-tiles`. Reference → `sidebar-nav-docs`, `tabbed-binder`, or `accordion-index` (FAQ-shaped). Monitoring → `dashboard-grid`. Story/marketing → `zigzag-alternating-bands` or `full-bleed-deck`. Story-with-data → `scrolly-stepper`. Explainer/tutorial → `single-column-scroll` with wide figures, or `scrolly-stepper`. Essay → `magazine-spread` or `multi-column-newspaper`. Investigation/personal collage → `corkboard-scatter`. Journey/chronology-as-experience → `horizontal-panorama`. Dialogue/debate/explainer-as-banter → `chat-thread`. Schedule/habit/streak → `calendar-grid`. Decision guide → `branching-path`.
 2. **Freshness breaks ties** (SKILL.md section 4), and if your last few picks all came from #1–#12, give #13–#25 first refusal.
-3. **Reward surprise.** A defensible non-obvious layout beats the safe pick when it still serves the content.
+3. **Reward surprise.** A defensible non-obvious layout beats the safe pick when it still serves the content. For teaching, reading order wins over surprise.

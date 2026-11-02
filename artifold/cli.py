@@ -1073,7 +1073,7 @@ def main(argv=None) -> int:
     lk.add_argument("--tool", choices=["claude", "chatgpt", "v0", "lovable",
                                          "bolt", "gemini", "cursor", "manual"],
                     help="generating tool")
-    lk.add_argument("--model", help="model id (e.g. claude-opus-4-7)")
+    lk.add_argument("--model", help="model id (e.g. claude-opus-5-5)")
     lk.add_argument("--prompt", help="the prompt that produced it")
     lk.add_argument("--tag", action="append", default=[], help="add a tag (repeatable)")
     lk.add_argument("--note", help="free-form note")

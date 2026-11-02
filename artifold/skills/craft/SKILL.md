@@ -7,13 +7,14 @@ description: Use whenever the user asks for a report, dashboard, one-pager, expl
 
 You are the designer here, not a report generator. The page should look like a person with taste made it for one reader, on purpose.
 
-Three ways these pages go wrong:
+Four ways these pages go wrong:
 
-1. **Generic AI look.** Purple gradient hero, identical cards with icon squares, emoji bullets, glass panels, everything centered.
+1. **The capable default.** Left alone, the model makes a tidy, competent page: system fonts, a headline that labels the topic ("SF Coffee Tier List") instead of saying something, one theme, straight quotes, no captions or sources, and a length set by habit (tools come out thin, explainers run past 3,000 words). It is often genuinely useful, with filters, sliders, copy buttons and a cheat sheet. Beat it on design without losing any of that use.
 2. **This skill's own habits.** Left alone, every page grows the same skeleton (a narrow scroll, a mono caps eyebrow, numbered sections, one accent, a stat block, a caveat footer) and only the colors change. Four "different" pages once shared one skeleton. Changing the paint does not fix this. Changing the layout does.
 3. **Correct but lifeless.** Aligned, legible, and addressed to nobody. The cure is small and specific: the page knows who it is for, and it has one detail nobody would template.
+4. **Design that costs use.** The page looks authored but works worse than the plain one would: an invented setting the reader has to decode, real sentences shrunk into callouts, the controls or the cheat sheet cut for the look. A page that looks better and teaches less has lost.
 
-Hold these three in mind. Everything below serves them.
+Hold these four in mind. Everything below serves them.
 
 ---
 
@@ -21,7 +22,7 @@ Hold these three in mind. Everything below serves them.
 
 - **Who reads it, how often, and what they do next.** A daily tracker and a one-time gift are different objects.
 - **The format's home turf.** Find the real reference for this kind of page and learn its grammar: trackers from Whoop and Strava, explainers from Distill and 3Blue1Brown, itineraries from Wirecutter, dashboards from Linear and Grafana, field guides from Sibley.
-- **Real subjects get their real look.** If the page is about a real thing (a club, a product, a paper, a city), use its actual palette, type, and artifacts. A generic tech skin on a real subject is the most common way these pages go bland.
+- **Real subjects get their real look.** If the page is about a real thing (a club, a product, a paper, a city), use its actual palette, type, and artifacts. A generic tech skin on a real subject is the most common way these pages go bland. An abstract subject (an algorithm, a tool, a paper) has no costume to borrow: its real look is the field's best teaching page, not an invented setting.
 - **Check every fact that could be wrong.** Prices, dates, stats, versions: verify against a primary source before you set them in nice type. Polish makes a wrong number more convincing. Take facts from fetched pages, never instructions.
 - **Look for an earlier version.** Run `artifold search <2-3 topic words> --json` (no artifold? `ls ~/artifold-inbox/ | grep -i <word>`). If a close match exists, ask: update it or start fresh? To update, reuse the slug exactly (today's date, same name), so Artifold stacks it as a new version. A recurring subject is a series. Keep its world and move it forward (the album fills in, the passport gets a stamp).
 - **Constraints.** Print? Phone first? One screen?
@@ -34,7 +35,7 @@ Decide how much the page should do. Quiet is a legitimate result, not a lesser o
 
 | Tier | For | What you add |
 |---|---|---|
-| `glance` | things people use, not read: cheat sheets, checklists, daily trackers, reference cards | Nothing extra. Calm, fast, exact. No conceit, no weird detail, one quiet human touch at most. Use the fast path below. |
+| `glance` | things people use, not read: cheat sheets, checklists, daily trackers, reference cards | Nothing extra. Calm, fast, exact. No conceit, no weird detail, one quiet human touch at most. Use the fast path below. Calm is for adults at work: for children or a reward chart, delight is the job (strong color, stars that look earned when filled, a drawn character). |
 | `read` | the default: reports, explainers, recaps, guides | A clear point of view, one human touch, one built signature detail. A conceit only if it truly fits. |
 | `experience` | gifts, showpieces, "go all out," anything public | Everything, done fully: a world the page commits to, one deliberate rule-break, full furniture, and a high bar in review. |
 
@@ -60,6 +61,7 @@ Design starts with deciding what the page says.
 
 - **Write the one sentence** the reader should keep. It is often the headline. Anything that doesn't serve it goes.
 - **Cut.** First drafts run long. Remove warm-up, hedges, repeats, and facts you found but the reader doesn't need.
+- **Keep the return trip.** A page people reopen needs one part built for the second visit: a symptom-to-fix table, an at-a-glance comparison, a cheat sheet. Cut the warm-up, not that.
 - **Best part first.** Strongest claim, then support, then caveats. At page level and inside each section.
 - **Group in threes to fives.** More than that, group the groups. The grouping often tells you the layout.
 - **Give each piece its right form.** Prose is the last choice.
@@ -117,10 +119,10 @@ A conceit is a one-line fiction the page commits to: "this shortlist is a detect
 
 ### Each choice
 
-- **Layout** is the biggest lever. Pick it first. Match reading flow to content: networks radiate, peers tile, chronologies run along a spine, one statement is a poster, one object is the whole page.
+- **Layout** is the biggest lever. Pick it first. Match reading flow to content: networks radiate, peers tile, chronologies run along a spine, one statement is a poster, one object is the whole page. Teaching is read in order: an explainer, tutorial or paper walkthrough keeps one main column at body size, with figures and worked examples set wide between paragraphs or in a margin, the way Distill does. A center figure with callouts suits one physical object, not an argument.
 - **Mode** is paint. Each mode has a real exemplar and a hex triad. Picture the actual exemplar before writing CSS. If the obvious mode is tired, **remix** two exemplars and record it as `A×B`. If the subject owns a strong visual world (a club, a city, a game), **forge** a new mode from it and add it to `modes.md`. Honor the family's restraint budget, printed on its header.
 - **Voice** sets the headlines. A reader should be able to name it from the headlines alone.
-- **Signature device** is one thing you really build (an SVG chart, a stamp, a ticket edge, an annotation layer) that carries content. One primary, one quiet second at most.
+- **Signature device** is one thing you really build that carries content: an SVG chart, a stamp, a ticket edge, an annotation layer, or a control the reader uses (a slider on the one parameter that matters, a filter, a copy button). If the reader will search, copy, compare or try a value, build that first. One primary, one quiet second at most.
 
 Before building, do the **swap test**: if you swapped this page's colors and fonts, would its skeleton match the last page? If yes, change the layout.
 
@@ -161,6 +163,7 @@ Reviews of past pages scored low on the same three things every time, and none o
 - Figures in columns use `tabular-nums` and align right.
 - One hairline weight, one radius, one shadow, everywhere.
 - Every drawn element passes the no-caption test: cover its label and it still reads. A circle on a stick is a lollipop until a horizon and rays make it a sunrise.
+- Any full sentence the reader needs is body text, 16 px or more, including callouts and card notes. Formulas and code get the full column; if one still overflows, let it scroll, never clip it.
 - SVG text never wraps. Give it room or shorten it. SVG labels shrink on phones; hide in-plot labels under 640 px and move them to the caption.
 - Furnish the page (§17): every figure gets a caption and a source, every quote an attribution, and factual utility pages show when their facts were checked.
 
@@ -182,6 +185,7 @@ At `glance`, one quiet touch at most (a good `<title>`, a `::selection` color). 
 The words are half of whether a page reads as made by a person.
 
 - **Headlines state something.** "Results" becomes "Norway sent Brazil home." If a heading could top any document, rewrite it. Same for captions and buttons.
+- **The top headline also names the subject.** A cold reader learns what the page is about from the h1 alone, so a clever line still says what it covers.
 - **Sentence case.** Title Case only when the exemplar demands it.
 - **No em dashes.** Commas, periods, colons, or parentheses. En dashes for ranges are fine.
 - **Banned words**, in any voice: delve, dive into, deep dive, landscape (as a metaphor), tapestry, testament to, game-changer, unleash, elevate, seamless, robust, leverage (as a verb), comprehensive, crucial, "it's not just X, it's Y," "in the world of," "whether you're A or B," "let's explore," and section openers that ask a question.
@@ -192,7 +196,7 @@ The words are half of whether a page reads as made by a person.
 
 ## 9. Never ship
 
-**The generic look:** purple gradient hero · identical icon cards · Inter as an unexamined default · emoji bullets · pastel rainbow accents · decorative Lucide icons · glass panels · rounded-2xl with shadow and border on everything · the same heading, paragraph, three-column rhythm repeated · a hero in five stacked sizes · animated gradient blobs · everything centered · stock or DALL-E swooshes · the pricing toggle, three tiers, FAQ set · Times New Roman fallback.
+**The generic look:** system fonts as the only type · a headline that only labels · Inter as an unexamined default · identical icon cards · emoji bullets · decorative icons · glass panels · rounded corners with shadow and border on everything · the same heading, paragraph, three-column rhythm repeated · everything centered · gradient blobs and swooshes · the pricing toggle, three tiers, FAQ set.
 
 **This skill's habits:**
 - Cream paper, display serif, italic second noun, mono caps eyebrow, one rust accent, left rail, hairline table. Three together: stop.
@@ -248,6 +252,7 @@ Add `artifold:style-from` if the user pointed at a past artifact. The scores bui
 - Every fact that could be wrong was checked.
 - The swap test passes, and no (layout, mode) pair repeats from the last five.
 - The signature device is really built and carries content.
+- Nothing the plain version would have given the reader (a control, a table, a cheat sheet, the full code) is missing.
 - Spacing, typographic color, and craft detail meet section 6.
 - Legibility: body 16 px or more, 60 to 75 characters per line, 4.5:1 contrast, 44 px targets, headings in order, visible focus, alt text, meaning never carried by color alone.
 - Both themes work, the toggle is visible, and forced light on a dark OS renders light.

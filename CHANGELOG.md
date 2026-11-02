@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.18.0
+
+- **craft is tuned for Claude Opus 5.5.** Plain Opus 5.5 no longer makes the
+  purple-gradient page the skill was written against: across the gallery
+  it uses no web fonts and no theme toggle, labels instead of headlines,
+  and runs long on explainers, but it is often genuinely useful. The skill
+  now names that default and a fourth failure, design that costs use.
+  Explainers go back to one reading column with wide figures, a reader
+  control can be the signature device, pages keep a part for the second
+  visit, full sentences stay at 16 px or more, formulas are never clipped,
+  the top headline names the subject, and charts for children are allowed
+  to delight. In a blind test on the six closest gallery topics (two
+  judges, shuffled sides), the new skill beat the old one 11 of 12 times
+  and plain Opus 5.5 11 of 12 times.
+- The repo has a `CLAUDE.md` with the test command, release steps and
+  the rules that are easy to break.
+
 ## 0.17.1
 
 - Fixed `artifold serve` rescanning forever on Linux. The watcher took

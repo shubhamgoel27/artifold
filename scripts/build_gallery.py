@@ -12,6 +12,14 @@ addressed to its author by name. Put a wrapper first on PATH:
     #!/bin/sh
     HOME=/path/to/empty-demo-home exec /path/to/.venv/bin/artifold "$@"
 
+An empty library is not enough. The session still knows the account's
+name, and with permissions bypassed it can read any file on disk: a run
+once found the author's interview notes and wrote them into the page.
+End every gallery prompt with: "(This page is for a public gallery. Write
+for a general reader: address no one by name, and use nothing from my
+files, notes or past work.)" Then grep every page for the author's name,
+family and employers (whole words) before it goes in docs/.
+
 The plain side: `claude -p --disable-slash-commands "<prompt>..."`.
 Afterwards, check `git status artifold/skills`: craft records the modes it
 invents in references/modes.md.
