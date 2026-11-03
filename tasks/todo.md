@@ -207,3 +207,30 @@ the old look, and clearly wins only 5 of 11 pairs.
   public-gallery note and pages get a name scan.
 - Cost: 6 craft runs took 2.2 to 2.6 h each (about 14 Opus-hours), not the
   15 to 20 min I estimated.
+
+## v0.19: craft language (2026-11-02)
+- [x] 1. Hand-off message in plain words (no catalog IDs or score strings).
+- [x] 2. Reader's words: define terms for newcomers, no insider slang.
+- [x] 3. Replace the old banned-word list (0 hits in 39 pages) with one line.
+- [x] 4. One idea per sentence, most under 20 words.
+- [x] Research natural, varied writing (agent); turn the best into variant B.
+- [x] A/B: A = 1-4, B = A + research. Same prompts, isolated, high effort.
+      Blind judge on page text and hand-off; counts as a cross-check.
+      Research edits ship only if B wins.
+
+### Review
+- Research (agent) measured 17 craft pages: classic AI tells were already
+  gone; what remained was colon reveals, "X, not Y" lines, comma-joined
+  headings, headline triads and fragment runs.
+- A/B, 4 prompts x 2 versions at high effort (10 to 39 min per run),
+  blind text-only judging by 2 judges: B (research edits) won the page
+  text 8 of 8. Counts were mixed: B cut colons (8.1 to 6.5 per 100
+  sentences), comma headings (42% to 30%) and triads (3 to 0), but had
+  more fragment runs (1 to 3) and "X, not Y" (2.5 to 3.0 per page).
+- Edit 4 ("most sentences under 20 words") overshot in both versions:
+  short sentences 23% to 29%. B's wording ("in full sentences") kept
+  the judges happy; worth watching.
+- Hand-off: no catalog names in either version. Both judges found stale
+  "review still running" openings; fixed by writing the message once,
+  after all checks. That fix comes from the test, not the research, and
+  was not A/B tested on its own.

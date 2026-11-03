@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.19.0
+
+- **craft writes more like a person.** The page copy now uses the
+  reader's words (terms explained for newcomers, no insider slang), full
+  sentences of one idea each, colons only for lists and labels, mixed
+  heading shapes, lists as long as the facts, and "X, not Y" only to
+  correct a likely misreading. The old banned-word list is gone: none of
+  its words appeared in 39 recent pages. In a blind test (4 prompts, two
+  judges reading only the text), pages from this version read better
+  than the version without these changes 8 times out of 8.
+- **The finishing message is plain.** Where the file is, what the page
+  is, the one design choice that matters and why, and anything not
+  checked. No catalog names or score strings, and it is written once,
+  after every check has finished.
+
 ## 0.18.1
 
 - **craft runs at `high` effort**, set in the skill itself. A session saved

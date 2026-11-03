@@ -186,10 +186,14 @@ At `glance`, one quiet touch at most (a good `<title>`, a `::selection` color). 
 The words are half of whether a page reads as made by a person.
 
 - **Headlines state something.** "Results" becomes "Norway sent Brazil home." If a heading could top any document, rewrite it. Same for captions and buttons.
+- **Mix heading shapes.** Some headings make a claim, some are the plain name or number a reader scans for. Fewer than a third join two clauses with a comma.
+- **Lists as long as the facts.** Give a list as many items as there really are. In a headline, one sharp item usually beats three.
 - **The top headline also names the subject.** A cold reader learns what the page is about from the h1 alone, so a clever line still says what it covers.
 - **Sentence case.** Title Case only when the exemplar demands it.
-- **No em dashes.** Commas, periods, colons, or parentheses. En dashes for ranges are fine.
-- **Banned words**, in any voice: delve, dive into, deep dive, landscape (as a metaphor), tapestry, testament to, game-changer, unleash, elevate, seamless, robust, leverage (as a verb), comprehensive, crucial, "it's not just X, it's Y," "in the world of," "whether you're A or B," "let's explore," and section openers that ask a question.
+- **No em dashes.** Usually a period: split the sentence. En dashes for ranges are fine.
+- **Colons for lists, labels and definitions.** When the words after a colon are the main point, give them their own sentence.
+- **The reader's words.** Write for the reader the prompt names. If they are new to the subject, explain each term in plain words the first time, and skip insider slang they may not know ("ship it," "where the work lands," "spin up"). Open a section with its point. Say what a thing is; use "X, not Y" only to correct a likely misreading, at most twice on a page.
+- **One idea per sentence, in full sentences.** Short enough that a non-native reader gets it on first read, with a subject and a verb. One fragment can make a point; three in a row read like notes. The voice stays.
 - **Concrete over vague.** Numbers, names, dates, places. Cut adjectives that don't work. Use contractions.
 - **Vary the rhythm.** Two neighboring sections with the same shape read machine-made. Some sections deserve one line.
 - **Microcopy is copy.** Alt text, captions, `<title>`, empty states, the theme toggle's label: all in voice.
@@ -242,7 +246,13 @@ Add `artifold:style-from` if the user pointed at a past artifact. The scores bui
 
 **Save.** Get the path with `artifold inbox <topic>` (or `~/artifold-inbox/YYYY-MM-DD-<slug>.html`, slug 4 to 6 words, kebab-case) and write the finished file there once.
 
-**Hand off in two lines:** the path, then "Shows up in Artifold in about 2 seconds. Layout `<layout>` · mode `<mode>` · `<voice>` voice · `<device>`." Add one sentence on the key decision, usually the layout and why. Don't paste the HTML. Stop.
+**Hand off briefly, in plain words, once every check is finished.** Wait for the design review and any fixes before writing it, so the message never opens with a status that is already out of date. The reader is a person, not the catalog. Say:
+- where the file is (it shows up in Artifold in about 2 seconds),
+- what the page is, in one sentence,
+- the one design choice that matters most and why, in everyday words ("each command sits next to its undo"), not catalog names like `comparison-matrix-first` or score strings like 4/4/3,
+- anything you could not check or had to assume.
+
+Five short lines at most. Catalog names and review scores belong in the meta tags; give them only if asked. Don't paste the HTML. Stop.
 
 ---
 
@@ -257,7 +267,7 @@ Add `artifold:style-from` if the user pointed at a past artifact. The scores bui
 - Spacing, typographic color, and craft detail meet section 6.
 - Legibility: body 16 px or more, 60 to 75 characters per line, 4.5:1 contrast, 44 px targets, headings in order, visible focus, alt text, meaning never carried by color alone.
 - Both themes work, the toggle is visible, and forced light on a dark OS renders light.
-- Copy: headlines state things, no banned words, no em dashes, the page ends on purpose.
+- Copy: headlines state things, terms are explained for this reader, sentences are short, no em dashes, the page ends on purpose.
 - Typesetting scan is clean; every figure has a caption and a source.
 - Charts follow §18.
 - At `read` and up: one true human touch. At `experience`: one weird thing, made into a system.
