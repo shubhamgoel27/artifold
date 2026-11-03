@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.18.1
+
+- **craft runs at `high` effort**, set in the skill itself. A session saved
+  at `xhigh` made each page take about 2.5 hours (100 to 200 rounds of
+  edit, render and look, mostly hidden reasoning). At `high` the same
+  page takes about 13 minutes with nearly the same result.
+
 ## 0.18.0
 
 - **craft is tuned for Claude Opus 5.5.** Plain Opus 5.5 no longer makes the

@@ -1,5 +1,6 @@
 ---
 name: craft
+effort: high
 description: Use whenever the user asks for a report, dashboard, one-pager, explainer, tracker, guide, itinerary, or any single-page HTML artifact. Makes a page a designer would sign: sized to the job (glance, read, or experience), content edited before it is styled, a layout, skin, voice, and one built detail chosen for this subject, real typesetting, both themes, verified in a headless browser, and saved to the Artifold inbox.
 ---
 

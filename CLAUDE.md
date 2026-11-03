@@ -32,6 +32,7 @@ Ask before publishing when someone else is verifying the commit first (for examp
 ## Rules that are easy to break
 
 - **Public output never sees the real library, or anything personal.** The gallery, README screenshots and demo GIF are made against an empty library: put a wrapper first on PATH that runs `HOME=<empty demo home> .venv/bin/artifold "$@"`. That is not enough on its own: a session still knows the account's name and can read any file on disk. One run found the author's interview notes in `~/work` and wrote them into the page. End gallery prompts with the public-gallery note in `scripts/build_gallery.py`, and grep every page for names and employers before it goes in `docs/`.
+- **craft sets its own effort (`effort: high` in SKILL.md).** At `xhigh` one page took about 2.5 hours instead of about 13 minutes. Keep it unless a blind test shows a higher level is worth the time.
 - **craft edits its own catalog.** Runs can append invented modes to `references/modes.md` through the symlink. After any batch of craft runs, check `git status artifold/skills` and revert what you did not mean to keep.
 - **The watcher reacts only to changes.** Linux reports reads as events; reacting to them made every scan trigger the next (fixed in 0.17.1, guarded by `tests/test_watcher.py`).
 - **Responsive CSS goes at the end of `template.html`.** A phone rule placed above the base rule it overrides never applies (guarded by `tests/test_template_layout.py`).
